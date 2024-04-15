@@ -1,3 +1,23 @@
 {
-  "extends": "next/core-web-vitals"
+    "extends": ["next/core-web-vitals", "prettier"],
+    "plugins": ["import", "react"],
+    "parser": "@typescript-eslint/parser",
+    "rules": {
+        "import/no-unresolved": "",
+        "import/named": "error",
+        "import/namespace": "error",
+        "import/default": "error",
+        "import/export": "error",
+        "no-multiple-empty-lines": ["error", { "max": 0 }],
+        "react/jsx-indent": ["error", 4],
+        "react/jsx-indent-props": ["error", 4]
+    },
+    "settings": {
+        "import/resolver": {
+            "typescript": {
+                "alwaysTryTypes": true
+            },
+            "node": [".js", ".jsx", ".ts", ".tsx"]
+        }
+    }
 }

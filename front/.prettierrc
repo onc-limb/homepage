@@ -1,0 +1,9 @@
+{
+    "semi": true,
+    "singleQuote": true,
+    "printWidth": 90,
+    "tabWidth": 4,
+    "trailingComma": "all",
+    "endOfLine": "lf",
+    "no-multiple-empty-lines": { "max": 0, "maxEOF": 0}
+}
