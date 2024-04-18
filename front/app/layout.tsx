@@ -1,8 +1,9 @@
-import Footer from '@/public/components/footer';
-import Header from '@/public/components/header';
+import Footer from '@/components/footer';
+import Header from '@/components/header';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import Head from 'next/head';
+import './globals.css';
 
 import { cn } from '@/lib/utils';
 
