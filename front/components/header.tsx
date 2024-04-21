@@ -1,18 +1,21 @@
 import Link from 'next/link';
-import Logo from '@/app/favicon.ico';
+import Logo from '@/public/MainLogo.jpg';
 import Image from 'next/image';
+import HeaderButton from '@/components/HeaderButton';
 
 const Header = () => {
     return (
         <header>
-            <div className="flex item-center space-x-8">
-                <Link href="/" className="flex item-center space-x-2">
-                    <Image src={Logo} alt="メインロゴ" width={120} height={120} />
-                    <p className="text-2xl">onc-limb</p>
+            <div className="flex items-center justify-between mb-2 bg-rose-100">
+                <Link href="/" className="mx-8 my-2">
+                    <Image src={Logo} alt="メインロゴ" width={180} objectFit="contain" />
                 </Link>
-                <Link href="/portfolio">ポートフォリオ</Link>
-                <Link href="/blog">ブログ</Link>
-                <Link href="profile">プロフィール</Link>
+                <div className="space-x-4 mx-8">
+                    <HeaderButton href="/">トップ</HeaderButton>
+                    <HeaderButton href="/portfolio">ポートフォリオ</HeaderButton>
+                    <HeaderButton href="/blog">ブログ</HeaderButton>
+                    <HeaderButton href="/profile">プロフィール</HeaderButton>
+                </div>
             </div>
         </header>
     );
