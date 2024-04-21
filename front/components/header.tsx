@@ -6,7 +6,7 @@ import HeaderButton from '@/components/HeaderButton';
 const Header = () => {
     return (
         <header>
-            <div className="flex items-center justify-between mb-2 bg-rose-100">
+            <div className="flex items-center justify-between mb-2 bg-rose-50">
                 <Link href="/" className="mx-8 my-2">
                     <Image src={Logo} alt="メインロゴ" width={180} objectFit="contain" />
                 </Link>
