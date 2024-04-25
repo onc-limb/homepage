@@ -9,7 +9,7 @@ type Props = {
 
 const HeaderButton = ({ href, children }: Props) => {
     return (
-        <Button className="p-8">
+        <Button variant="ghost" className="p-6 text-white text-base">
             <Link href={href}>{children}</Link>
         </Button>
     );
