@@ -1,6 +1,10 @@
+import ComingSoon from '@/components/ComingSoon';
+
 const Blog = () => {
     return (
-        <h1>onc-limbのブログ</h1>
-    )
-}
+        <div>
+            <ComingSoon>onc-limbのブログ</ComingSoon>
+        </div>
+    );
+};
 export default Blog;

@@ -1,6 +1,10 @@
+import ComingSoon from '@/components/ComingSoon';
+
 const Portfolio = () => {
     return (
-        <h1>onc-limbのポートフォリオ</h1>
-    )
-}
+        <div>
+            <ComingSoon>onc-limbのポートフォリオ</ComingSoon>
+        </div>
+    );
+};
 export default Portfolio;
