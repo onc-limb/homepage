@@ -8,7 +8,7 @@ const MAIN_TITLE = 'onc-limb';
 const Header = () => {
     return (
         <header>
-            <div className="flex items-center justify-between mb-2 bg-neutral-700">
+            <div className="flex items-center justify-between bg-neutral-700">
                 <Link
                     href="/"
                     className="flex flex space-x-4 mx-8 my-2 bg-neutral-900 rounded-full border-neutral-400 border-4 p-3"
