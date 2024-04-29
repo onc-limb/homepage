@@ -9,9 +9,11 @@ type Props = {
 
 const HeaderButton = ({ href, children }: Props) => {
     return (
-        <Button variant="ghost" className="p-6 text-white text-base">
-            <Link href={href}>{children}</Link>
-        </Button>
+        <Link href={href}>
+            <Button variant="ghost" className="p-6 text-white text-base">
+                {children}
+            </Button>
+        </Link>
     );
 };
 

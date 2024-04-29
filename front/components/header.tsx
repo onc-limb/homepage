@@ -26,8 +26,8 @@ const Header = () => {
                 </Link>
                 <div className="space-x-4 mx-8">
                     <HeaderButton href="/">トップ</HeaderButton>
-                    <HeaderButton href="/portfolio">ポートフォリオ</HeaderButton>
                     <HeaderButton href="/blog">ブログ</HeaderButton>
+                    <HeaderButton href="/portfolio">ポートフォリオ</HeaderButton>
                     <HeaderButton href="/profile">プロフィール</HeaderButton>
                 </div>
             </div>
