@@ -24,17 +24,23 @@ func main() {
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{echo.GET, echo.POST, echo.OPTIONS},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
+	}))
+	
 
 	e.GET("/", welcome())
 
 	graphqlHandler := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
-	playgroundHandler := playground.Handler("GraphQL", "/api")
+	playgroundHandler := playground.Handler("GraphQL", "/graphql")
 
 	e.GET("/playground", func(c echo.Context) error {
 		playgroundHandler.ServeHTTP(c.Response(), c.Request())
 		return nil
 	})
-	e.POST("/api", func(c echo.Context) error {
+	e.POST("/graphql", func(c echo.Context) error {
 		graphqlHandler.ServeHTTP(c.Response(), c.Request())
 		return nil
 	})

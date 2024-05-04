@@ -10,14 +10,26 @@ import (
 	"fmt"
 )
 
-// CreateTodo is the resolver for the createTodo field.
-func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: CreateTodo - createTodo"))
+// CreateArticle is the resolver for the createArticle field.
+func (r *mutationResolver) CreateArticle(ctx context.Context, input model.NewArticle) (*model.Article, error) {
+	panic(fmt.Errorf("not implemented: CreateArticle - createArticle"))
 }
 
-// Todos is the resolver for the todos field.
-func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: Todos - todos"))
+// EditArticle is the resolver for the editArticle field.
+func (r *mutationResolver) EditArticle(ctx context.Context, input model.EditArticle) (*model.Article, error) {
+	panic(fmt.Errorf("not implemented: EditArticle - editArticle"))
+}
+
+// AllArticles is the resolver for the allArticles field.
+func (r *queryResolver) AllArticles(ctx context.Context) ([]*model.Article, error) {
+	articleResolver := ArticleResolver{}
+	return articleResolver.AllArticles(ctx)
+}
+
+// Article is the resolver for the article field.
+func (r *queryResolver) Article(ctx context.Context) (*model.Article, error) {
+	articleResolver := ArticleResolver{}
+	return articleResolver.Article(ctx)
 }
 
 // Mutation returns MutationResolver implementation.
