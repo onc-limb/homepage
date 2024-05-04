@@ -3,7 +3,7 @@
 # https://gqlgen.com/getting-started/
 
 type Article {
-  id: ID!
+  id: Int!
   title: String!
   content: String!
   category: Category!
@@ -17,7 +17,7 @@ enum Category {
 
 type Query {
   allArticles: [Article!]!
-  article: Article!
+  article(input: Int!): Article!
 }
 
 input NewArticle {
@@ -27,7 +27,7 @@ input NewArticle {
 }
 
 input EditArticle {
-  id: ID!
+  id: Int!
   title: String
   content: String
   category: Category

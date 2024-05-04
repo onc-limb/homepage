@@ -9,14 +9,14 @@ import (
 )
 
 type Article struct {
-	ID       string   `json:"id"`
+	ID       int      `json:"id"`
 	Title    string   `json:"title"`
 	Content  string   `json:"content"`
 	Category Category `json:"category"`
 }
 
 type EditArticle struct {
-	ID       string    `json:"id"`
+	ID       int       `json:"id"`
 	Title    *string   `json:"title,omitempty"`
 	Content  *string   `json:"content,omitempty"`
 	Category *Category `json:"category,omitempty"`

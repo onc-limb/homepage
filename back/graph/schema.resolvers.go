@@ -7,17 +7,18 @@ package graph
 import (
 	"back/graph/model"
 	"context"
-	"fmt"
 )
 
 // CreateArticle is the resolver for the createArticle field.
 func (r *mutationResolver) CreateArticle(ctx context.Context, input model.NewArticle) (*model.Article, error) {
-	panic(fmt.Errorf("not implemented: CreateArticle - createArticle"))
+	articleResolver := ArticleResolver{}
+	return articleResolver.CreateArticle(ctx, input)
 }
 
 // EditArticle is the resolver for the editArticle field.
 func (r *mutationResolver) EditArticle(ctx context.Context, input model.EditArticle) (*model.Article, error) {
-	panic(fmt.Errorf("not implemented: EditArticle - editArticle"))
+	articleResolver := ArticleResolver{}
+	return articleResolver.EditArticle(ctx, input)
 }
 
 // AllArticles is the resolver for the allArticles field.
@@ -27,9 +28,9 @@ func (r *queryResolver) AllArticles(ctx context.Context) ([]*model.Article, erro
 }
 
 // Article is the resolver for the article field.
-func (r *queryResolver) Article(ctx context.Context) (*model.Article, error) {
+func (r *queryResolver) Article(ctx context.Context, input int) (*model.Article, error) {
 	articleResolver := ArticleResolver{}
-	return articleResolver.Article(ctx)
+	return articleResolver.Article(ctx, input)
 }
 
 // Mutation returns MutationResolver implementation.
