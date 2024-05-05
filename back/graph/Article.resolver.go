@@ -22,10 +22,22 @@ func (r *ArticleResolver) Article(ctx context.Context, id int) (*model.Article, 
 }
 
 func (r *ArticleResolver) AllArticles(ctx context.Context) ([]*model.Article, error) {
-	// v, _ := blog.GetAllArticles()
-	// m := []model.Article{}
+	v, e := blog.GetAllArticles()
+	if e != nil {
+		return nil, e
+	}
 
-	return nil, nil
+	m := make([]*model.Article, len(v))
+	for i, a := range v {
+		m[i] = &model.Article{
+			ID:       a.ID,
+			Title:    a.Title,
+			Content:  a.Content,
+			Category: model.Category(a.Category),
+		}
+	}
+
+	return m, nil
 }
 
 func (r *ArticleResolver) CreateArticle(ctx context.Context, input model.NewArticle) (*model.Article, error) {
