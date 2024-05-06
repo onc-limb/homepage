@@ -2,16 +2,28 @@ package graph
 
 import (
 	"back/blog/application"
+	"back/blog/domain"
 	"back/graph/model"
 	"context"
 )
 
 type ArticleResolver struct {
 	*Resolver
+	ArticleUsecase *application.ArticleUsecase
+}
+
+func NewResolver(ArticleRepo domain.ArticleRepository) *ArticleResolver {
+	articleUsecase := application.NewArticleUsecase(ArticleRepo)
+	return &ArticleResolver{
+		ArticleUsecase: articleUsecase,
+	}
 }
 
 func (r *ArticleResolver) Article(ctx context.Context, id uint) (*model.Article, error) {
-	v, _ := application.GetArticle(r.DB, id)
+	v, err := r.ArticleUsecase.GetArticle(id)
+	if err != nil {
+		return nil, err
+	}
 	m := model.Article{
 		ID:       v.ID,
 		Title:    v.Title,
@@ -22,9 +34,9 @@ func (r *ArticleResolver) Article(ctx context.Context, id uint) (*model.Article,
 }
 
 func (r *ArticleResolver) AllArticles(ctx context.Context) ([]*model.Article, error) {
-	v, e := application.GetAllArticles()
-	if e != nil {
-		return nil, e
+	v, err := r.ArticleUsecase.GetAllArticles()
+	if err != nil {
+		return nil, err
 	}
 
 	m := make([]*model.Article, len(v))
@@ -41,12 +53,16 @@ func (r *ArticleResolver) AllArticles(ctx context.Context) ([]*model.Article, er
 }
 
 func (r *ArticleResolver) CreateArticle(ctx context.Context, input model.NewArticle) (*model.Article, error) {
-	n := application.NewArticle{
+	new := domain.NewArticle{
 		Title:    input.Title,
 		Content:  input.Content,
-		Category: application.Category(input.Category),
+		Category: domain.Category(input.Category),
 	}
-	v, _ := application.CreateArticle(n)
+	v, err := r.ArticleUsecase.CreateArticle(new)
+	if err != nil {
+		return nil, err
+	}
+
 	m := model.Article{
 		ID:       v.ID,
 		Title:    v.Title,
@@ -58,13 +74,16 @@ func (r *ArticleResolver) CreateArticle(ctx context.Context, input model.NewArti
 }
 
 func (r *ArticleResolver) EditArticle(ctx context.Context, input model.EditArticle) (*model.Article, error) {
-	n := application.ArticleDto{
+	new := domain.ArticleRoot{
 		ID:       input.ID,
 		Title:    *input.Title,
 		Content:  *input.Content,
-		Category: application.Category(*input.Category),
+		Category: domain.Category(*input.Category),
 	}
-	v, _ := application.EditArticle(n)
+	v, err := r.ArticleUsecase.EditArticle(new)
+	if err != nil {
+		return nil, err
+	}
 	m := model.Article{
 		ID:       v.ID,
 		Title:    v.Title,

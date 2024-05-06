@@ -32,11 +32,11 @@ func (r *ArticleRepository) FindByID(id uint) (domain.ArticleRoot, error) {
 	return v, nil
 }
 
-func (r *ArticleRepository) Save(article domain.ArticleRoot) (domain.ArticleRoot, error) {
+func (r *ArticleRepository) Save(article domain.NewArticle) (domain.ArticleRoot, error) {
 	newArticle := database.Article{
-		Title:    article.Title,
-		Content:  article.Content,
-		Category: database.Category{Name: string(article.Category)},
+		Title:      article.Title,
+		Content:    article.Content,
+		CategoryID: 1,
 	}
 	result := r.DB.Create(&newArticle)
 	if result.Error != nil {

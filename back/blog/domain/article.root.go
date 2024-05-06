@@ -14,3 +14,9 @@ const (
 	ENGINEERING Category = "engineering"
 	LIFE        Category = "life"
 )
+
+type NewArticle struct {
+	Title    string
+	Content  string
+	Category Category
+}

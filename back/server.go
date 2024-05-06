@@ -1,6 +1,7 @@
 package main
 
 import (
+	"back/blog/infra"
 	"back/database"
 	"back/graph"
 	"flag"
@@ -23,7 +24,7 @@ func main() {
 	}
 	flag.Parse()
 
-	_, err := database.SetupDB()
+	db, err := database.SetupDB()
 	if err != nil {
 		panic("failed to connect database")
 	}
@@ -40,7 +41,9 @@ func main() {
 
 	e.GET("/", welcome())
 
-	graphqlHandler := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
+	articleRepository := infra.NewArticleRepository(db)
+
+	graphqlHandler := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{ArticleRepository: articleRepository}}))
 	playgroundHandler := playground.Handler("GraphQL", "/graphql")
 
 	e.GET("/playground", func(c echo.Context) error {

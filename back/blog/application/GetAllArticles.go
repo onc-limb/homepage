@@ -1,22 +1,25 @@
 package application
 
-func GetAllArticles() ([]ArticleDto, error) {
-	v := []ArticleDto{
+import "back/blog/domain"
+
+func (u *ArticleUsecase) GetAllArticles() ([]domain.ArticleRoot, error) {
+
+	v := []domain.ArticleRoot{
 		{ID: 1,
 			Title:    "一つ目の記事",
 			Content:  "testtest",
-			Category: CLIMBING},
+			Category: domain.CLIMBING},
 		{
 			ID:       2,
 			Title:    "二つ目の記事",
 			Content:  "テストテスト",
-			Category: ENGINEERING,
+			Category: domain.ENGINEERING,
 		},
 		{
 			ID:       3,
 			Title:    "三つ目の記事",
 			Content:  "てすとてすと",
-			Category: LIFE,
+			Category: domain.LIFE,
 		},
 	}
 	return v, nil
