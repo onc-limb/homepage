@@ -1,7 +1,9 @@
 package main
 
 import (
+	database "back/db"
 	"back/graph"
+	"flag"
 	"log"
 	"net/http"
 	"os"
@@ -19,6 +21,12 @@ func main() {
 	if port == "" {
 		port = defaultPort
 	}
+	flag.Parse()
+
+	_, err := database.SetupDB()
+	if err != nil {
+		panic("failed to connect database")
+	}
 
 	e := echo.New()
 
@@ -29,7 +37,6 @@ func main() {
 		AllowMethods: []string{echo.GET, echo.POST, echo.OPTIONS},
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
 	}))
-	
 
 	e.GET("/", welcome())
 

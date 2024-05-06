@@ -14,7 +14,7 @@ services:
     container_name: homepage-db
     restart: always
     environment:
-      POSTGRES_USER: admin
+      POSTGRES_USER: homepage_user
       POSTGRES_PASSWORD: homepage_pass
       POSTGRES_DB: homepage_db
     volumes:
