@@ -61,7 +61,7 @@ type ComplexityRoot struct {
 
 	Query struct {
 		AllArticles func(childComplexity int) int
-		Article     func(childComplexity int, input int) int
+		Article     func(childComplexity int, input uint) int
 	}
 }
 
@@ -71,7 +71,7 @@ type MutationResolver interface {
 }
 type QueryResolver interface {
 	AllArticles(ctx context.Context) ([]*model.Article, error)
-	Article(ctx context.Context, input int) (*model.Article, error)
+	Article(ctx context.Context, input uint) (*model.Article, error)
 }
 
 type executableSchema struct {
@@ -162,7 +162,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Article(childComplexity, args["input"].(int)), true
+		return e.complexity.Query.Article(childComplexity, args["input"].(uint)), true
 
 	}
 	return 0, false
@@ -338,10 +338,10 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 func (ec *executionContext) field_Query_article_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 int
+	var arg0 uint
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
+		arg0, err = ec.unmarshalNID2uint(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -414,9 +414,9 @@ func (ec *executionContext) _Article_id(ctx context.Context, field graphql.Colle
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int)
+	res := resTmp.(uint)
 	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
+	return ec.marshalNID2uint(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Article_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -426,7 +426,7 @@ func (ec *executionContext) fieldContext_Article_id(ctx context.Context, field g
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Int does not have child fields")
+			return nil, errors.New("field of type ID does not have child fields")
 		},
 	}
 	return fc, nil
@@ -762,7 +762,7 @@ func (ec *executionContext) _Query_article(ctx context.Context, field graphql.Co
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Article(rctx, fc.Args["input"].(int))
+		return ec.resolvers.Query().Article(rctx, fc.Args["input"].(uint))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2731,7 +2731,7 @@ func (ec *executionContext) unmarshalInputEditArticle(ctx context.Context, obj i
 		switch k {
 		case "id":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			data, err := ec.unmarshalNInt2int(ctx, v)
+			data, err := ec.unmarshalNID2uint(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3430,13 +3430,13 @@ func (ec *executionContext) unmarshalNEditArticle2backᚋgraphᚋmodelᚐEditArt
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
-	res, err := graphql.UnmarshalInt(v)
+func (ec *executionContext) unmarshalNID2uint(ctx context.Context, v interface{}) (uint, error) {
+	res, err := graphql.UnmarshalUint(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
-	res := graphql.MarshalInt(v)
+func (ec *executionContext) marshalNID2uint(ctx context.Context, sel ast.SelectionSet, v uint) graphql.Marshaler {
+	res := graphql.MarshalUint(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")

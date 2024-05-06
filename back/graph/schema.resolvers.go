@@ -28,7 +28,7 @@ func (r *queryResolver) AllArticles(ctx context.Context) ([]*model.Article, erro
 }
 
 // Article is the resolver for the article field.
-func (r *queryResolver) Article(ctx context.Context, input int) (*model.Article, error) {
+func (r *queryResolver) Article(ctx context.Context, input uint) (*model.Article, error) {
 	articleResolver := ArticleResolver{}
 	return articleResolver.Article(ctx, input)
 }

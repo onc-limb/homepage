@@ -1,7 +1,7 @@
 package main
 
 import (
-	database "back/db"
+	"back/database"
 	"back/graph"
 	"flag"
 	"log"
