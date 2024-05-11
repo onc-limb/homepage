@@ -1,0 +1,3 @@
+back/tmp/
+*/.env.local
+*/.env
