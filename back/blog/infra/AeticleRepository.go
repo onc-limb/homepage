@@ -3,8 +3,11 @@ package infra
 import (
 	"back/blog/domain"
 	"back/database"
+	"back/notion"
+	"fmt"
 	"log"
 
+	"github.com/jomei/notionapi"
 	"gorm.io/gorm"
 )
 
@@ -28,6 +31,54 @@ func (r *ArticleRepository) FindByID(id uint) (domain.ArticleRoot, error) {
 		Title:    article.Title,
 		Content:  article.Content,
 		Category: domain.Category(article.Category.Name),
+	}
+	return v, nil
+}
+
+func (r *ArticleRepository) FindByNotionPageID(pageId string) (domain.NotionArticle, error) {
+	cn := notion.NewClient()
+	page, err := cn.GetPage(pageId)
+	if err != nil {
+		log.Print(err)
+	}
+
+	// fixme: Titleフィールドがなかった時の判定を追加する
+	var title []string
+	// title := page.Properties["Title"].(*notionapi.TitleProperty).Title[0].PlainText
+	if titleProp, ok := page.Properties["title"].(*notionapi.TitleProperty); ok {
+		for _, t := range titleProp.Title {
+			title = append(title, t.PlainText)
+		}
+	} else {
+		title = append(title, "no title")
+	}
+
+	blocks, err := cn.GetAllBlocks(pageId)
+	if err != nil {
+		log.Print(err)
+	}
+
+	var contents []domain.Content
+
+	for _, block := range blocks {
+		// switch block.GetType() {
+		// case "paragraph":
+
+		// case "bulleted_list_item":
+
+		// case "code":
+
+		// default:
+		// }
+		fmt.Println(block.GetType())
+	}
+
+	v := domain.NotionArticle{
+		PageID:    page.ID.String(),
+		Title:     title[0],
+		CreatedAt: page.CreatedTime.Local(),
+		EditedAt:  page.LastEditedTime.Local(),
+		Contents:  contents,
 	}
 	return v, nil
 }

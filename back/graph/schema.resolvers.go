@@ -33,6 +33,12 @@ func (r *queryResolver) Article(ctx context.Context, input uint) (*model.Article
 	return articleResolver.Article(ctx, input)
 }
 
+// NotionArticle is the resolver for the notionArticle field.
+func (r *queryResolver) NotionArticle(ctx context.Context, input *string) (*model.NotionArticle, error) {
+	articleResolver := NewResolver(r.ArticleRepository)
+	return articleResolver.NotionArticle(ctx, *input)
+}
+
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 

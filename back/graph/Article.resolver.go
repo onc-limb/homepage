@@ -5,6 +5,7 @@ import (
 	"back/blog/domain"
 	"back/graph/model"
 	"context"
+	"fmt"
 )
 
 type ArticleResolver struct {
@@ -31,6 +32,28 @@ func (r *ArticleResolver) Article(ctx context.Context, id uint) (*model.Article,
 		Category: model.Category(v.Category),
 	}
 	return &m, nil
+}
+
+func (r *ArticleResolver) NotionArticle(ctx context.Context, pageId string) (*model.NotionArticle, error) {
+	v, err := r.ArticleUsecase.GetNotionArticle(pageId)
+	if err != nil {
+		return nil, err
+	}
+	var c []*model.Content
+
+	for _, content := range v.Contents {
+		fmt.Printf("content:%s", content.Text)
+	}
+
+	m := model.NotionArticle{
+		ID:        v.PageID,
+		Title:     v.Title,
+		CreatedAt: v.CreatedAt,
+		EditedAt:  v.EditedAt,
+		Contents:  c,
+	}
+	return &m, nil
+
 }
 
 func (r *ArticleResolver) AllArticles(ctx context.Context) ([]*model.Article, error) {

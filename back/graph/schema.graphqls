@@ -2,11 +2,35 @@
 #
 # https://gqlgen.com/getting-started/
 
+scalar Time
+
 type Article {
   id: ID!
   title: String!
   content: String!
   category: Category!
+}
+
+type NotionArticle {
+  id: String!
+  title: String!
+  createdAt: Time!
+  EditedAt: Time!
+  Contents: [Content]!
+}
+
+type Content {
+  type: String!
+  annotations: Annotation!
+  text: String!
+}
+
+type Annotation {
+  bold: Boolean!
+  italic: Boolean!
+  strikThrough: Boolean!
+  underLine: Boolean!
+  code: Boolean!
 }
 
 enum Category {
@@ -18,6 +42,7 @@ enum Category {
 type Query {
   allArticles: [Article!]!
   article(input: ID!): Article!
+  notionArticle(input: String): NotionArticle!
 }
 
 input NewArticle {

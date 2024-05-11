@@ -6,13 +6,28 @@ import (
 	"fmt"
 	"io"
 	"strconv"
+	"time"
 )
+
+type Annotation struct {
+	Bold         bool `json:"bold"`
+	Italic       bool `json:"italic"`
+	StrikThrough bool `json:"strikThrough"`
+	UnderLine    bool `json:"underLine"`
+	Code         bool `json:"code"`
+}
 
 type Article struct {
 	ID       uint     `json:"id"`
 	Title    string   `json:"title"`
 	Content  string   `json:"content"`
 	Category Category `json:"category"`
+}
+
+type Content struct {
+	Type        string      `json:"type"`
+	Annotations *Annotation `json:"annotations"`
+	Text        string      `json:"text"`
 }
 
 type EditArticle struct {
@@ -29,6 +44,14 @@ type NewArticle struct {
 	Title    string   `json:"title"`
 	Content  string   `json:"content"`
 	Category Category `json:"category"`
+}
+
+type NotionArticle struct {
+	ID        string     `json:"id"`
+	Title     string     `json:"title"`
+	CreatedAt time.Time  `json:"createdAt"`
+	EditedAt  time.Time  `json:"EditedAt"`
+	Contents  []*Content `json:"Contents"`
 }
 
 type Query struct {
