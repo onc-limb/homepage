@@ -21,11 +21,7 @@ type NotionArticle {
 
 type Content {
   type: String!
-  annotations: Annotation!
   text: String!
-}
-
-type Annotation {
   bold: Boolean!
   italic: Boolean!
   strikThrough: Boolean!

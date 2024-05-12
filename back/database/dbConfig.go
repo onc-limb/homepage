@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var models = []interface{}{&Article{}, &Category{}}
+var models = []interface{}{&Category{}, &Article{}, &NotionArticle{}, &Content{}}
 var migrateCommand = flag.Bool("migrate", false, "Run database migrations")
 
 func SetupDB() (*gorm.DB, error) {

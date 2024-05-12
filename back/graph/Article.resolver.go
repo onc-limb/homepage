@@ -5,7 +5,6 @@ import (
 	"back/blog/domain"
 	"back/graph/model"
 	"context"
-	"fmt"
 )
 
 type ArticleResolver struct {
@@ -42,7 +41,15 @@ func (r *ArticleResolver) NotionArticle(ctx context.Context, pageId string) (*mo
 	var c []*model.Content
 
 	for _, content := range v.Contents {
-		fmt.Printf("content:%s", content.Text)
+		c = append(c, &model.Content{
+			Type:         content.Type,
+			Text:         content.Text,
+			Bold:         content.Bold,
+			Italic:       content.Italic,
+			StrikThrough: content.StrikThrough,
+			UnderLine:    content.UnderLine,
+			Code:         content.Code,
+		})
 	}
 
 	m := model.NotionArticle{

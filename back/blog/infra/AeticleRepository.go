@@ -61,16 +61,108 @@ func (r *ArticleRepository) FindByNotionPageID(pageId string) (domain.NotionArti
 	var contents []domain.Content
 
 	for _, block := range blocks {
-		// switch block.GetType() {
-		// case "paragraph":
+		switch block.GetType() {
+		case "paragraph":
+			p := block.(*notionapi.ParagraphBlock).Paragraph
+			if len(p.RichText) > 0 {
+				contents = append(contents, domain.Content{
+					Type:         string(block.GetType()),
+					Text:         p.RichText[0].PlainText,
+					Bold:         p.RichText[0].Annotations.Bold,
+					Italic:       p.RichText[0].Annotations.Italic,
+					StrikThrough: p.RichText[0].Annotations.Strikethrough,
+					UnderLine:    p.RichText[0].Annotations.Underline,
+					Code:         p.RichText[0].Annotations.Code,
+				})
+			} else {
+				contents = append(contents, domain.Content{
+					Type:         string(block.GetType()),
+					Text:         "\n",
+					Bold:         false,
+					Italic:       false,
+					StrikThrough: false,
+					UnderLine:    false,
+					Code:         false,
+				})
+			}
 
-		// case "bulleted_list_item":
+		case "heading_1":
+			rt := block.(*notionapi.Heading1Block).Heading1.RichText[0]
+			fmt.Printf("Head1:%s", rt.PlainText)
+			contents = append(contents, domain.Content{
+				Type:         string(block.GetType()),
+				Text:         rt.PlainText,
+				Bold:         rt.Annotations.Bold,
+				Italic:       rt.Annotations.Italic,
+				StrikThrough: rt.Annotations.Strikethrough,
+				UnderLine:    rt.Annotations.Underline,
+				Code:         rt.Annotations.Code,
+			})
 
-		// case "code":
+		case "heading_2":
+			rt := block.(*notionapi.Heading2Block).Heading2.RichText[0]
+			fmt.Printf("Head2:%s", rt.PlainText)
+			contents = append(contents, domain.Content{
+				Type:         string(block.GetType()),
+				Text:         rt.PlainText,
+				Bold:         rt.Annotations.Bold,
+				Italic:       rt.Annotations.Italic,
+				StrikThrough: rt.Annotations.Strikethrough,
+				UnderLine:    rt.Annotations.Underline,
+				Code:         rt.Annotations.Code,
+			})
 
-		// default:
-		// }
-		fmt.Println(block.GetType())
+		case "heading_3":
+			rt := block.(*notionapi.Heading3Block).Heading3.RichText[0]
+			contents = append(contents, domain.Content{
+				Type:         string(block.GetType()),
+				Text:         rt.PlainText,
+				Bold:         rt.Annotations.Bold,
+				Italic:       rt.Annotations.Italic,
+				StrikThrough: rt.Annotations.Strikethrough,
+				UnderLine:    rt.Annotations.Underline,
+				Code:         rt.Annotations.Code,
+			})
+
+		case "bulleted_list_item":
+			rt := block.(*notionapi.BulletedListItemBlock).BulletedListItem.RichText[0]
+			fmt.Printf("List:%s", rt.PlainText)
+			contents = append(contents, domain.Content{
+				Type:         string(block.GetType()),
+				Text:         rt.PlainText,
+				Bold:         rt.Annotations.Bold,
+				Italic:       rt.Annotations.Italic,
+				StrikThrough: rt.Annotations.Strikethrough,
+				UnderLine:    rt.Annotations.Underline,
+				Code:         rt.Annotations.Code,
+			})
+
+		case "code":
+			rt := block.(*notionapi.CodeBlock).Code.RichText[0]
+			fmt.Printf("Code:%s", rt.PlainText)
+			contents = append(contents, domain.Content{
+				Type:         string(block.GetType()),
+				Text:         rt.PlainText,
+				Bold:         rt.Annotations.Bold,
+				Italic:       rt.Annotations.Italic,
+				StrikThrough: rt.Annotations.Strikethrough,
+				UnderLine:    rt.Annotations.Underline,
+				Code:         rt.Annotations.Code,
+			})
+
+		default:
+			rt := block.(*notionapi.UnsupportedBlock).GetRichTextString()
+			fmt.Printf("Def:%s", rt)
+			contents = append(contents, domain.Content{
+				Type:         "unsupported",
+				Text:         rt,
+				Bold:         false,
+				Italic:       false,
+				StrikThrough: false,
+				UnderLine:    false,
+				Code:         false,
+			})
+		}
 	}
 
 	v := domain.NotionArticle{

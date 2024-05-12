@@ -9,14 +9,6 @@ import (
 	"time"
 )
 
-type Annotation struct {
-	Bold         bool `json:"bold"`
-	Italic       bool `json:"italic"`
-	StrikThrough bool `json:"strikThrough"`
-	UnderLine    bool `json:"underLine"`
-	Code         bool `json:"code"`
-}
-
 type Article struct {
 	ID       uint     `json:"id"`
 	Title    string   `json:"title"`
@@ -25,9 +17,13 @@ type Article struct {
 }
 
 type Content struct {
-	Type        string      `json:"type"`
-	Annotations *Annotation `json:"annotations"`
-	Text        string      `json:"text"`
+	Type         string `json:"type"`
+	Text         string `json:"text"`
+	Bold         bool   `json:"bold"`
+	Italic       bool   `json:"italic"`
+	StrikThrough bool   `json:"strikThrough"`
+	UnderLine    bool   `json:"underLine"`
+	Code         bool   `json:"code"`
 }
 
 type EditArticle struct {

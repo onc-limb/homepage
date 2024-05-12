@@ -1,12 +1,8 @@
 package domain
 
 type Content struct {
-	Type        string
-	Annotations Annotation
-	Text        string
-}
-
-type Annotation struct {
+	Type         string
+	Text         string
 	Bold         bool
 	Italic       bool
 	StrikThrough bool
