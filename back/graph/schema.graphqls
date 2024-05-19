@@ -5,21 +5,20 @@
 scalar Time
 
 type Article {
-  id: ID!
+  id: Int!
+  pageId: String!
   title: String!
-  content: String!
-  category: Category!
-}
-
-type NotionArticle {
-  id: String!
-  title: String!
+  Contents: [Content]!
+  featurePoint: Int!
+  isPublished: Boolean!
   createdAt: Time!
   EditedAt: Time!
-  Contents: [Content]!
 }
 
 type Content {
+  id: Int!
+  articleId: Int!
+  order: Int!
   type: String!
   text: String!
   bold: Boolean!
@@ -37,24 +36,21 @@ enum Category {
 
 type Query {
   allArticles: [Article!]!
-  article(input: ID!): Article!
-  notionArticle(input: String): NotionArticle!
-}
-
-input NewArticle {
-  title: String!
-  content: String!
-  category: Category!
+  article(input: Int!): Article!
 }
 
 input EditArticle {
-  id: ID!
+  id: Int!
   title: String
   content: String
   category: Category
 }
 
+input NotionPage {
+  pageId: String
+}
+
 type Mutation {
-  createArticle(input: NewArticle!): Article!
+  insertArticle(input: NotionPage!): Article!
   editArticle(input: EditArticle!): Article!
 }

@@ -4,31 +4,24 @@ import (
 	"time"
 )
 
-type ArticleRoot struct {
-	ID       uint
-	Title    string
-	Content  string
-	Category Category
+type Article struct {
+	ID           uint
+	PageID       string
+	Title        string
+	CategoryId   uint
+	Category     Category
+	Contents     []Content
+	FeaturePoint uint
+	IsPublished  bool
+	CreatedAt    time.Time
+	EditedAt     time.Time
 }
-
-type NotionArticle struct {
-	PageID    string
-	Title     string
-	CreatedAt time.Time
-	EditedAt  time.Time
-	Contents  []Content
-}
-
-type Category string
-
-const (
-	CLIMBING    Category = "climbing"
-	ENGINEERING Category = "engineering"
-	LIFE        Category = "life"
-)
 
 type NewArticle struct {
-	Title    string
-	Content  string
-	Category Category
+	PageID       string
+	Title        string
+	CategoryId   uint
+	Contents     []Content
+	FeaturePoint uint
+	IsPublished  bool
 }

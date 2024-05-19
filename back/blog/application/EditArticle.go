@@ -2,13 +2,8 @@ package application
 
 import "back/blog/domain"
 
-func (u *ArticleUsecase) EditArticle(input domain.ArticleRoot) (domain.ArticleRoot, error) {
+func (u *ArticleUsecase) EditArticle(input domain.Article) (domain.Article, error) {
 	// fixme: idでレコードを特定して、該当カラムを更新する処理をrepositoryに定義してから呼ぶ
-	v := domain.ArticleRoot{
-		ID:       5,
-		Title:    input.Title,
-		Content:  input.Content,
-		Category: input.Category,
-	}
+	v := domain.Article{}
 	return v, nil
 }

@@ -1,7 +1,8 @@
 package domain
 
 type ArticleRepository interface {
-	FindByID(id uint) (ArticleRoot, error)
-	FindByNotionPageID(pageId string) (NotionArticle, error)
-	Save(article NewArticle) (ArticleRoot, error)
+	FindByID(uint) (Article, error)
+	FindByNotionPageID(string) (NewArticle, error)
+	Insert(NewArticle) (Article, error)
+	Edit(Article) (Article, error)
 }

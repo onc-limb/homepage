@@ -2,13 +2,13 @@ package application
 
 import (
 	"back/blog/domain"
-	"log"
 )
 
-func (u *ArticleUsecase) CreateArticle(input domain.NewArticle) (domain.ArticleRoot, error) {
-	v, err := u.ArticleRepository.Save(input)
+func (u *ArticleUsecase) InsertArticle(pageId string) (domain.Article, error) {
+	article, err := u.ArticleRepository.FindByNotionPageID(pageId)
 	if err != nil {
-		log.Fatal(err)
+		return domain.Article{}, err
 	}
-	return v, nil
+
+	return u.ArticleRepository.Insert(article)
 }

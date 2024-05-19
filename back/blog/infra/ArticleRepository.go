@@ -19,23 +19,43 @@ func NewArticleRepository(db *gorm.DB) *ArticleRepository {
 	return &ArticleRepository{DB: db}
 }
 
-func (r *ArticleRepository) FindByID(id uint) (domain.ArticleRoot, error) {
+func (r *ArticleRepository) FindByID(id uint) (domain.Article, error) {
 	var article database.Article
-	result := r.DB.First(&article, id)
-	if result.Error != nil {
-		log.Fatal(result.Error)
+	if err := r.DB.Preload("Contents").Preload("Category").First(&article, id).Error; err != nil {
+		log.Fatal(err)
 	}
 
-	v := domain.ArticleRoot{
-		ID:       article.ID,
-		Title:    article.Title,
-		Content:  article.Content,
-		Category: domain.Category(article.Category.Name),
+	var contents []domain.Content
+	for _, content := range article.Contents {
+		contents = append(contents, domain.Content{
+			ID:           content.ID,
+			ArticleID:    content.ArticleID,
+			Order:        content.Order,
+			Type:         content.Type,
+			Text:         content.Text,
+			Bold:         content.Bold,
+			Italic:       content.Italic,
+			StrikThrough: content.StrikThrough,
+			UnderLine:    content.UnderLine,
+			Code:         content.Code,
+		})
 	}
-	return v, nil
+
+	return domain.Article{
+		ID:           article.ID,
+		PageID:       article.PageID,
+		Title:        article.Title,
+		CategoryId:   article.CategoryID,
+		Category:     domain.Category(article.Category.Name),
+		Contents:     contents,
+		FeaturePoint: article.FeaturePoint,
+		IsPublished:  article.IsPublished,
+		CreatedAt:    article.CreatedAt,
+		EditedAt:     article.UpdatedAt,
+	}, nil
 }
 
-func (r *ArticleRepository) FindByNotionPageID(pageId string) (domain.NotionArticle, error) {
+func (r *ArticleRepository) FindByNotionPageID(pageId string) (domain.NewArticle, error) {
 	cn := notion.NewClient()
 	page, err := cn.GetPage(pageId)
 	if err != nil {
@@ -88,7 +108,7 @@ func (r *ArticleRepository) FindByNotionPageID(pageId string) (domain.NotionArti
 
 		case "heading_1":
 			rt := block.(*notionapi.Heading1Block).Heading1.RichText[0]
-			fmt.Printf("Head1:%s", rt.PlainText)
+			fmt.Printf("Head1:%s\n", rt.PlainText)
 			contents = append(contents, domain.Content{
 				Type:         string(block.GetType()),
 				Text:         rt.PlainText,
@@ -101,7 +121,7 @@ func (r *ArticleRepository) FindByNotionPageID(pageId string) (domain.NotionArti
 
 		case "heading_2":
 			rt := block.(*notionapi.Heading2Block).Heading2.RichText[0]
-			fmt.Printf("Head2:%s", rt.PlainText)
+			fmt.Printf("Head2:%s\n", rt.PlainText)
 			contents = append(contents, domain.Content{
 				Type:         string(block.GetType()),
 				Text:         rt.PlainText,
@@ -126,7 +146,7 @@ func (r *ArticleRepository) FindByNotionPageID(pageId string) (domain.NotionArti
 
 		case "bulleted_list_item":
 			rt := block.(*notionapi.BulletedListItemBlock).BulletedListItem.RichText[0]
-			fmt.Printf("List:%s", rt.PlainText)
+			fmt.Printf("List:%s\n", rt.PlainText)
 			contents = append(contents, domain.Content{
 				Type:         string(block.GetType()),
 				Text:         rt.PlainText,
@@ -139,7 +159,7 @@ func (r *ArticleRepository) FindByNotionPageID(pageId string) (domain.NotionArti
 
 		case "code":
 			rt := block.(*notionapi.CodeBlock).Code.RichText[0]
-			fmt.Printf("Code:%s", rt.PlainText)
+			fmt.Printf("Code:%s\n", rt.PlainText)
 			contents = append(contents, domain.Content{
 				Type:         string(block.GetType()),
 				Text:         rt.PlainText,
@@ -152,7 +172,7 @@ func (r *ArticleRepository) FindByNotionPageID(pageId string) (domain.NotionArti
 
 		default:
 			rt := block.(*notionapi.UnsupportedBlock).GetRichTextString()
-			fmt.Printf("Def:%s", rt)
+			fmt.Printf("Def:%s\n", rt)
 			contents = append(contents, domain.Content{
 				Type:         "unsupported",
 				Text:         rt,
@@ -165,32 +185,58 @@ func (r *ArticleRepository) FindByNotionPageID(pageId string) (domain.NotionArti
 		}
 	}
 
-	v := domain.NotionArticle{
-		PageID:    page.ID.String(),
-		Title:     title[0],
-		CreatedAt: page.CreatedTime.Local(),
-		EditedAt:  page.LastEditedTime.Local(),
-		Contents:  contents,
+	v := domain.NewArticle{
+		PageID:       page.ID.String(),
+		Title:        title[0],
+		CategoryId:   1,
+		Contents:     contents,
+		FeaturePoint: 0,
+		IsPublished:  true,
 	}
 	return v, nil
 }
 
-func (r *ArticleRepository) Save(article domain.NewArticle) (domain.ArticleRoot, error) {
-	newArticle := database.Article{
-		Title:      article.Title,
-		Content:    article.Content,
-		CategoryID: 1,
-	}
-	result := r.DB.Create(&newArticle)
-	if result.Error != nil {
-		log.Fatal(result.Error)
+func (r *ArticleRepository) Insert(input domain.NewArticle) (domain.Article, error) {
+	article := database.Article{
+		PageID:       input.PageID,
+		Title:        input.Title,
+		CategoryID:   input.CategoryId,
+		FeaturePoint: input.FeaturePoint,
+		IsPublished:  input.IsPublished,
 	}
 
-	v := domain.ArticleRoot{
-		ID:       newArticle.ID,
-		Title:    newArticle.Title,
-		Content:  newArticle.Content,
-		Category: domain.Category(newArticle.Category.Name),
+	err := r.DB.Transaction(func(tx *gorm.DB) error {
+		if err := r.DB.Create(&article).Error; err != nil {
+			return err
+		}
+
+		var contents []database.Content
+		for i, c := range input.Contents {
+			contents = append(contents, database.Content{
+				ArticleID:    article.ID,
+				Order:        uint(i),
+				Type:         c.Type,
+				Text:         c.Text,
+				Bold:         c.Bold,
+				Italic:       c.Italic,
+				StrikThrough: c.StrikThrough,
+				UnderLine:    c.UnderLine,
+				Code:         c.Code,
+			})
+		}
+
+		if err := r.DB.Create(&contents).Error; err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return domain.Article{}, err
 	}
-	return v, nil
+
+	return r.FindByID(article.ID)
+}
+
+func (r *ArticleRepository) Edit(new domain.Article) (domain.Article, error) {
+	return domain.Article{}, nil
 }

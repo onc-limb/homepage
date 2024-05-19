@@ -20,106 +20,70 @@ func NewResolver(ArticleRepo domain.ArticleRepository) *ArticleResolver {
 }
 
 func (r *ArticleResolver) Article(ctx context.Context, id uint) (*model.Article, error) {
-	v, err := r.ArticleUsecase.GetArticle(id)
+	article, err := r.ArticleUsecase.GetArticle(id)
 	if err != nil {
 		return nil, err
 	}
-	m := model.Article{
-		ID:       v.ID,
-		Title:    v.Title,
-		Content:  v.Content,
-		Category: model.Category(v.Category),
-	}
-	return &m, nil
-}
-
-func (r *ArticleResolver) NotionArticle(ctx context.Context, pageId string) (*model.NotionArticle, error) {
-	v, err := r.ArticleUsecase.GetNotionArticle(pageId)
-	if err != nil {
-		return nil, err
-	}
-	var c []*model.Content
-
-	for _, content := range v.Contents {
-		c = append(c, &model.Content{
-			Type:         content.Type,
-			Text:         content.Text,
-			Bold:         content.Bold,
-			Italic:       content.Italic,
-			StrikThrough: content.StrikThrough,
-			UnderLine:    content.UnderLine,
-			Code:         content.Code,
-		})
-	}
-
-	m := model.NotionArticle{
-		ID:        v.PageID,
-		Title:     v.Title,
-		CreatedAt: v.CreatedAt,
-		EditedAt:  v.EditedAt,
-		Contents:  c,
-	}
-	return &m, nil
-
+	return convertToModel(article)
 }
 
 func (r *ArticleResolver) AllArticles(ctx context.Context) ([]*model.Article, error) {
-	v, err := r.ArticleUsecase.GetAllArticles()
+	articles, err := r.ArticleUsecase.GetAllArticles()
 	if err != nil {
 		return nil, err
 	}
 
-	m := make([]*model.Article, len(v))
-	for i, a := range v {
+	m := make([]*model.Article, len(articles))
+	for i, article := range articles {
 		m[i] = &model.Article{
-			ID:       a.ID,
-			Title:    a.Title,
-			Content:  a.Content,
-			Category: model.Category(a.Category),
+			ID:    int(article.ID),
+			Title: article.Title,
 		}
 	}
 
-	return m, nil
-}
-
-func (r *ArticleResolver) CreateArticle(ctx context.Context, input model.NewArticle) (*model.Article, error) {
-	new := domain.NewArticle{
-		Title:    input.Title,
-		Content:  input.Content,
-		Category: domain.Category(input.Category),
-	}
-	v, err := r.ArticleUsecase.CreateArticle(new)
-	if err != nil {
-		return nil, err
-	}
-
-	m := model.Article{
-		ID:       v.ID,
-		Title:    v.Title,
-		Content:  v.Content,
-		Category: model.Category(v.Category),
-	}
-
-	return &m, nil
+	return []*model.Article{}, nil
 }
 
 func (r *ArticleResolver) EditArticle(ctx context.Context, input model.EditArticle) (*model.Article, error) {
-	new := domain.ArticleRoot{
-		ID:       input.ID,
-		Title:    *input.Title,
-		Content:  *input.Content,
-		Category: domain.Category(*input.Category),
-	}
-	v, err := r.ArticleUsecase.EditArticle(new)
+
+	return &model.Article{}, nil
+}
+
+func (r *ArticleResolver) InsertArticle(ctx context.Context, input model.NotionPage) (*model.Article, error) {
+	article, err := r.ArticleUsecase.InsertArticle(*input.PageID)
 	if err != nil {
 		return nil, err
 	}
-	m := model.Article{
-		ID:       v.ID,
-		Title:    v.Title,
-		Content:  v.Content,
-		Category: model.Category(v.Category),
+
+	return convertToModel(article)
+}
+
+func convertToModel(input domain.Article) (*model.Article, error) {
+	var contents []*model.Content
+
+	for _, c := range input.Contents {
+		contents = append(contents, &model.Content{
+			ID:           int(c.ID),
+			ArticleID:    int(c.ArticleID),
+			Order:        int(c.Order),
+			Type:         c.Type,
+			Text:         c.Text,
+			Bold:         c.Bold,
+			Italic:       c.Italic,
+			StrikThrough: c.StrikThrough,
+			UnderLine:    c.UnderLine,
+			Code:         c.Code,
+		})
 	}
 
-	return &m, nil
+	return &model.Article{
+		ID:           int(input.ID),
+		PageID:       input.PageID,
+		Title:        input.Title,
+		Contents:     contents,
+		FeaturePoint: int(input.FeaturePoint),
+		IsPublished:  input.IsPublished,
+		CreatedAt:    input.CreatedAt,
+		EditedAt:     input.EditedAt,
+	}, nil
 }

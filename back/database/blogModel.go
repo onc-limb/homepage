@@ -2,25 +2,20 @@ package database
 
 import "gorm.io/gorm"
 
-type Article struct {
-	gorm.Model
-	Title      string
-	Content    string
-	CategoryID uint
-	Category   Category `gorm:"foreignKey: CategoryID;references:ID"`
-}
-
 type Category struct {
 	gorm.Model
 	Name string
 }
 
-type NotionArticle struct {
+type Article struct {
 	gorm.Model
-	Title      string
-	CategoryID uint
-	Category   Category  `gorm:"foreignKey: CategoryID;references:ID"`
-	Contents   []Content `gorm:"foreignKey:ArticleID;references:ID"`
+	PageID       string
+	Title        string
+	CategoryID   uint
+	Category     Category  `gorm:"foreignKey: CategoryID;references:ID"`
+	Contents     []Content `gorm:"foreignKey:ArticleID;references:ID"`
+	FeaturePoint uint
+	IsPublished  bool
 }
 
 type Content struct {

@@ -10,13 +10,20 @@ import (
 )
 
 type Article struct {
-	ID       uint     `json:"id"`
-	Title    string   `json:"title"`
-	Content  string   `json:"content"`
-	Category Category `json:"category"`
+	ID           int        `json:"id"`
+	PageID       string     `json:"pageId"`
+	Title        string     `json:"title"`
+	Contents     []*Content `json:"Contents"`
+	FeaturePoint int        `json:"featurePoint"`
+	IsPublished  bool       `json:"isPublished"`
+	CreatedAt    time.Time  `json:"createdAt"`
+	EditedAt     time.Time  `json:"EditedAt"`
 }
 
 type Content struct {
+	ID           int    `json:"id"`
+	ArticleID    int    `json:"articleId"`
+	Order        int    `json:"order"`
 	Type         string `json:"type"`
 	Text         string `json:"text"`
 	Bold         bool   `json:"bold"`
@@ -27,7 +34,7 @@ type Content struct {
 }
 
 type EditArticle struct {
-	ID       uint      `json:"id"`
+	ID       int       `json:"id"`
 	Title    *string   `json:"title,omitempty"`
 	Content  *string   `json:"content,omitempty"`
 	Category *Category `json:"category,omitempty"`
@@ -36,18 +43,8 @@ type EditArticle struct {
 type Mutation struct {
 }
 
-type NewArticle struct {
-	Title    string   `json:"title"`
-	Content  string   `json:"content"`
-	Category Category `json:"category"`
-}
-
-type NotionArticle struct {
-	ID        string     `json:"id"`
-	Title     string     `json:"title"`
-	CreatedAt time.Time  `json:"createdAt"`
-	EditedAt  time.Time  `json:"EditedAt"`
-	Contents  []*Content `json:"Contents"`
+type NotionPage struct {
+	PageID *string `json:"pageId,omitempty"`
 }
 
 type Query struct {
