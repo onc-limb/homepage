@@ -10,7 +10,7 @@ import (
 )
 
 // InsertArticle is the resolver for the insertArticle field.
-func (r *mutationResolver) InsertArticle(ctx context.Context, input model.NotionPage) (*model.Article, error) {
+func (r *mutationResolver) InsertArticle(ctx context.Context, input model.InsertDto) (*model.Article, error) {
 	ar := NewResolver(r.ArticleRepository)
 	return ar.InsertArticle(ctx, input)
 }

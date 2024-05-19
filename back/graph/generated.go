@@ -3,6 +3,7 @@
 package graph
 
 import (
+	"back/blog/domain"
 	"back/graph/model"
 	"bytes"
 	"context"
@@ -74,7 +75,7 @@ type ComplexityRoot struct {
 
 	Mutation struct {
 		EditArticle   func(childComplexity int, input model.EditArticle) int
-		InsertArticle func(childComplexity int, input model.NotionPage) int
+		InsertArticle func(childComplexity int, input model.InsertDto) int
 	}
 
 	Query struct {
@@ -84,7 +85,7 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
-	InsertArticle(ctx context.Context, input model.NotionPage) (*model.Article, error)
+	InsertArticle(ctx context.Context, input model.InsertDto) (*model.Article, error)
 	EditArticle(ctx context.Context, input model.EditArticle) (*model.Article, error)
 }
 type QueryResolver interface {
@@ -259,7 +260,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.InsertArticle(childComplexity, args["input"].(model.NotionPage)), true
+		return e.complexity.Mutation.InsertArticle(childComplexity, args["input"].(model.InsertDto)), true
 
 	case "Query.allArticles":
 		if e.complexity.Query.AllArticles == nil {
@@ -289,7 +290,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	ec := executionContext{rc, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputEditArticle,
-		ec.unmarshalInputNotionPage,
+		ec.unmarshalInputInsertDto,
 	)
 	first := true
 
@@ -424,10 +425,10 @@ func (ec *executionContext) field_Mutation_editArticle_args(ctx context.Context,
 func (ec *executionContext) field_Mutation_insertArticle_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.NotionPage
+	var arg0 model.InsertDto
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNotionPage2backᚋgraphᚋmodelᚐNotionPage(ctx, tmp)
+		arg0, err = ec.unmarshalNInsertDto2backᚋgraphᚋmodelᚐInsertDto(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1332,7 +1333,7 @@ func (ec *executionContext) _Mutation_insertArticle(ctx context.Context, field g
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().InsertArticle(rctx, fc.Args["input"].(model.NotionPage))
+		return ec.resolvers.Mutation().InsertArticle(rctx, fc.Args["input"].(model.InsertDto))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3538,7 +3539,7 @@ func (ec *executionContext) unmarshalInputEditArticle(ctx context.Context, obj i
 			it.Content = data
 		case "category":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("category"))
-			data, err := ec.unmarshalOCategory2ᚖbackᚋgraphᚋmodelᚐCategory(ctx, v)
+			data, err := ec.unmarshalOCategory2ᚖbackᚋblogᚋdomainᚐCategory(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3549,14 +3550,14 @@ func (ec *executionContext) unmarshalInputEditArticle(ctx context.Context, obj i
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputNotionPage(ctx context.Context, obj interface{}) (model.NotionPage, error) {
-	var it model.NotionPage
+func (ec *executionContext) unmarshalInputInsertDto(ctx context.Context, obj interface{}) (model.InsertDto, error) {
+	var it model.InsertDto
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"pageId"}
+	fieldsInOrder := [...]string{"pageId", "category"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -3570,6 +3571,13 @@ func (ec *executionContext) unmarshalInputNotionPage(ctx context.Context, obj in
 				return it, err
 			}
 			it.PageID = data
+		case "category":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("category"))
+			data, err := ec.unmarshalOCategory2ᚖbackᚋblogᚋdomainᚐCategory(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Category = data
 		}
 	}
 
@@ -4334,6 +4342,11 @@ func (ec *executionContext) unmarshalNEditArticle2backᚋgraphᚋmodelᚐEditArt
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNInsertDto2backᚋgraphᚋmodelᚐInsertDto(ctx context.Context, v interface{}) (model.InsertDto, error) {
+	res, err := ec.unmarshalInputInsertDto(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
 	res, err := graphql.UnmarshalInt(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -4347,11 +4360,6 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 		}
 	}
 	return res
-}
-
-func (ec *executionContext) unmarshalNNotionPage2backᚋgraphᚋmodelᚐNotionPage(ctx context.Context, v interface{}) (model.NotionPage, error) {
-	res, err := ec.unmarshalInputNotionPage(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
@@ -4663,16 +4671,16 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return res
 }
 
-func (ec *executionContext) unmarshalOCategory2ᚖbackᚋgraphᚋmodelᚐCategory(ctx context.Context, v interface{}) (*model.Category, error) {
+func (ec *executionContext) unmarshalOCategory2ᚖbackᚋblogᚋdomainᚐCategory(ctx context.Context, v interface{}) (*domain.Category, error) {
 	if v == nil {
 		return nil, nil
 	}
-	var res = new(model.Category)
+	var res = new(domain.Category)
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOCategory2ᚖbackᚋgraphᚋmodelᚐCategory(ctx context.Context, sel ast.SelectionSet, v *model.Category) graphql.Marshaler {
+func (ec *executionContext) marshalOCategory2ᚖbackᚋblogᚋdomainᚐCategory(ctx context.Context, sel ast.SelectionSet, v *domain.Category) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}

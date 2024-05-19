@@ -49,8 +49,8 @@ func (r *ArticleResolver) EditArticle(ctx context.Context, input model.EditArtic
 	return &model.Article{}, nil
 }
 
-func (r *ArticleResolver) InsertArticle(ctx context.Context, input model.NotionPage) (*model.Article, error) {
-	article, err := r.ArticleUsecase.InsertArticle(*input.PageID)
+func (r *ArticleResolver) InsertArticle(ctx context.Context, input model.InsertDto) (*model.Article, error) {
+	article, err := r.ArticleUsecase.InsertArticle(*input.PageID, *input.Category)
 	if err != nil {
 		return nil, err
 	}

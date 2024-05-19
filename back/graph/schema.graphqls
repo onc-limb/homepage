@@ -46,11 +46,12 @@ input EditArticle {
   category: Category
 }
 
-input NotionPage {
+input InsertDto {
   pageId: String
+  category: Category
 }
 
 type Mutation {
-  insertArticle(input: NotionPage!): Article!
+  insertArticle(input: InsertDto!): Article!
   editArticle(input: EditArticle!): Article!
 }

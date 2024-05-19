@@ -3,9 +3,7 @@
 package model
 
 import (
-	"fmt"
-	"io"
-	"strconv"
+	"back/blog/domain"
 	"time"
 )
 
@@ -34,61 +32,19 @@ type Content struct {
 }
 
 type EditArticle struct {
-	ID       int       `json:"id"`
-	Title    *string   `json:"title,omitempty"`
-	Content  *string   `json:"content,omitempty"`
-	Category *Category `json:"category,omitempty"`
+	ID       int              `json:"id"`
+	Title    *string          `json:"title,omitempty"`
+	Content  *string          `json:"content,omitempty"`
+	Category *domain.Category `json:"category,omitempty"`
+}
+
+type InsertDto struct {
+	PageID   *string          `json:"pageId,omitempty"`
+	Category *domain.Category `json:"category,omitempty"`
 }
 
 type Mutation struct {
 }
 
-type NotionPage struct {
-	PageID *string `json:"pageId,omitempty"`
-}
-
 type Query struct {
-}
-
-type Category string
-
-const (
-	CategoryClimbing    Category = "CLIMBING"
-	CategoryEngineering Category = "ENGINEERING"
-	CategoryLife        Category = "LIFE"
-)
-
-var AllCategory = []Category{
-	CategoryClimbing,
-	CategoryEngineering,
-	CategoryLife,
-}
-
-func (e Category) IsValid() bool {
-	switch e {
-	case CategoryClimbing, CategoryEngineering, CategoryLife:
-		return true
-	}
-	return false
-}
-
-func (e Category) String() string {
-	return string(e)
-}
-
-func (e *Category) UnmarshalGQL(v interface{}) error {
-	str, ok := v.(string)
-	if !ok {
-		return fmt.Errorf("enums must be strings")
-	}
-
-	*e = Category(str)
-	if !e.IsValid() {
-		return fmt.Errorf("%s is not a valid Category", str)
-	}
-	return nil
-}
-
-func (e Category) MarshalGQL(w io.Writer) {
-	fmt.Fprint(w, strconv.Quote(e.String()))
 }
