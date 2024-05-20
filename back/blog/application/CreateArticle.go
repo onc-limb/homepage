@@ -15,6 +15,8 @@ func (u *ArticleUsecase) InsertArticle(pageId string, category domain.Category) 
 		PageID:       article.PageID,
 		Title:        article.Title,
 		CategoryId:   uint(category),
+		Contents:     article.Contents,
 		FeaturePoint: article.FeaturePoint,
+		IsPublished:  true,
 	})
 }

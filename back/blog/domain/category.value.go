@@ -17,11 +17,11 @@ const (
 func (c Category) String() string {
 	switch c {
 	case CLIMBING:
-		return "CLIMBING"
+		return "クライミング"
 	case ENGINEERING:
-		return "ENGINEERING"
+		return "エンジニアリング"
 	case LIFE:
-		return "LIFE"
+		return "生活"
 	default:
 		return fmt.Sprintf("Category(%d)", c)
 	}
@@ -38,11 +38,11 @@ func (c *Category) UnmarshalGQL(v interface{}) error {
 	}
 
 	switch str {
-	case "CLIMBING":
+	case "クライミング":
 		*c = CLIMBING
-	case "ENGINEERING":
+	case "エンジニアリング":
 		*c = ENGINEERING
-	case "LIFE":
+	case "生活":
 		*c = LIFE
 	default:
 		return fmt.Errorf("invalid Category: %s", str)
@@ -57,11 +57,11 @@ func UnmarshalCategory(v interface{}) (Category, error) {
 	}
 
 	switch str {
-	case "CLIMBING":
+	case "クライミング":
 		return CLIMBING, nil
-	case "ENGINEERING":
+	case "エンジニアリング":
 		return ENGINEERING, nil
-	case "LIFE":
+	case "生活":
 		return LIFE, nil
 	default:
 		return 0, fmt.Errorf("invalid Category: %s", str)
