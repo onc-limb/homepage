@@ -5,6 +5,8 @@ import (
 	"back/blog/domain"
 	"back/graph/model"
 	"context"
+
+	"github.com/russross/blackfriday/v2"
 )
 
 type ArticleResolver struct {
@@ -59,12 +61,14 @@ func (r *ArticleResolver) InsertArticle(ctx context.Context, input model.InsertD
 }
 
 func convertToModel(input domain.Article) (*model.Article, error) {
+	md := []byte(input.Content)
+	html := blackfriday.Run(md)
 	return &model.Article{
 		ID:           int(input.ID),
 		Title:        input.Title,
 		CategoryID:   int(input.CategoryId),
 		Category:     input.Category,
-		Content:      input.Content,
+		Content:      string(html),
 		FeaturePoint: int(input.FeaturePoint),
 		IsPublished:  input.IsPublished,
 		CreatedAt:    input.CreatedAt,

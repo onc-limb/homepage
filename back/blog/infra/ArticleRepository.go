@@ -18,7 +18,7 @@ func NewArticleRepository(db *gorm.DB) *ArticleRepository {
 
 func (r *ArticleRepository) FindByID(id uint) (domain.Article, error) {
 	var article database.Article
-	if err := r.DB.Preload("Contents").Preload("Category").First(&article, id).Error; err != nil {
+	if err := r.DB.Preload("Category").First(&article, id).Error; err != nil {
 		log.Fatal(err)
 	}
 	c, _ := domain.UnmarshalCategory(article.Category.Name)
