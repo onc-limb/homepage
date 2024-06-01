@@ -8,27 +8,15 @@ import (
 )
 
 type Article struct {
-	ID           int        `json:"id"`
-	PageID       string     `json:"pageId"`
-	Title        string     `json:"title"`
-	Contents     []*Content `json:"Contents"`
-	FeaturePoint int        `json:"featurePoint"`
-	IsPublished  bool       `json:"isPublished"`
-	CreatedAt    time.Time  `json:"createdAt"`
-	EditedAt     time.Time  `json:"EditedAt"`
-}
-
-type Content struct {
-	ID           int    `json:"id"`
-	ArticleID    int    `json:"articleId"`
-	Order        int    `json:"order"`
-	Type         string `json:"type"`
-	Text         string `json:"text"`
-	Bold         bool   `json:"bold"`
-	Italic       bool   `json:"italic"`
-	StrikThrough bool   `json:"strikThrough"`
-	UnderLine    bool   `json:"underLine"`
-	Code         bool   `json:"code"`
+	ID           int             `json:"id"`
+	Title        string          `json:"title"`
+	CategoryID   int             `json:"categoryId"`
+	Category     domain.Category `json:"category"`
+	Content      string          `json:"content"`
+	FeaturePoint int             `json:"featurePoint"`
+	IsPublished  bool            `json:"isPublished"`
+	CreatedAt    time.Time       `json:"createdAt"`
+	EditedAt     time.Time       `json:"EditedAt"`
 }
 
 type EditArticle struct {
@@ -39,8 +27,16 @@ type EditArticle struct {
 }
 
 type InsertDto struct {
-	PageID   *string          `json:"pageId,omitempty"`
-	Category *domain.Category `json:"category,omitempty"`
+	Title        string          `json:"title"`
+	Category     domain.Category `json:"category"`
+	Content      string          `json:"content"`
+	FeaturePoint int             `json:"featurePoint"`
+	IsPublished  bool            `json:"isPublished"`
+}
+
+type InsertFromNotionDto struct {
+	PageID   string          `json:"pageId"`
+	Category domain.Category `json:"category"`
 }
 
 type Mutation struct {

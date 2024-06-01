@@ -4,24 +4,22 @@ import (
 	"time"
 )
 
-type Article struct {
-	ID           uint
-	PageID       string
+type BaseArticle struct {
 	Title        string
 	CategoryId   uint
-	Category     Category
-	Contents     []Content
+	Content      string
 	FeaturePoint uint
 	IsPublished  bool
-	CreatedAt    time.Time
-	EditedAt     time.Time
+}
+
+type Article struct {
+	ID        uint
+	Category  Category
+	CreatedAt time.Time
+	EditedAt  time.Time
+	BaseArticle
 }
 
 type NewArticle struct {
-	PageID       string
-	Title        string
-	CategoryId   uint
-	Contents     []Content
-	FeaturePoint uint
-	IsPublished  bool
+	BaseArticle
 }

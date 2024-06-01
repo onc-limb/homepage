@@ -2,21 +2,17 @@ package application
 
 import (
 	"back/blog/domain"
-	"back/notion"
+	"back/graph/model"
 )
 
-func (u *ArticleUsecase) InsertArticle(pageId string, category domain.Category) (domain.Article, error) {
-	article, err := notion.GetPageAndBlocks(pageId)
-	if err != nil {
-		return domain.Article{}, err
-	}
-
+func (u *ArticleUsecase) InsertArticle(article model.InsertDto) (domain.Article, error) {
 	return u.ArticleRepository.Insert(domain.NewArticle{
-		PageID:       article.PageID,
-		Title:        article.Title,
-		CategoryId:   uint(category),
-		Contents:     article.Contents,
-		FeaturePoint: article.FeaturePoint,
-		IsPublished:  true,
+		BaseArticle: domain.BaseArticle{
+			Title:        article.Title,
+			CategoryId:   uint(article.Category),
+			Content:      article.Content,
+			FeaturePoint: uint(article.FeaturePoint),
+			IsPublished:  article.IsPublished,
+		},
 	})
 }

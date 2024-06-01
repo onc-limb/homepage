@@ -50,7 +50,7 @@ func (r *ArticleResolver) EditArticle(ctx context.Context, input model.EditArtic
 }
 
 func (r *ArticleResolver) InsertArticle(ctx context.Context, input model.InsertDto) (*model.Article, error) {
-	article, err := r.ArticleUsecase.InsertArticle(*input.PageID, *input.Category)
+	article, err := r.ArticleUsecase.InsertArticle(input)
 	if err != nil {
 		return nil, err
 	}
@@ -59,28 +59,12 @@ func (r *ArticleResolver) InsertArticle(ctx context.Context, input model.InsertD
 }
 
 func convertToModel(input domain.Article) (*model.Article, error) {
-	var contents []*model.Content
-
-	for _, c := range input.Contents {
-		contents = append(contents, &model.Content{
-			ID:           int(c.ID),
-			ArticleID:    int(c.ArticleID),
-			Order:        int(c.Order),
-			Type:         c.Type,
-			Text:         c.Text,
-			Bold:         c.Bold,
-			Italic:       c.Italic,
-			StrikThrough: c.StrikThrough,
-			UnderLine:    c.UnderLine,
-			Code:         c.Code,
-		})
-	}
-
 	return &model.Article{
 		ID:           int(input.ID),
-		PageID:       input.PageID,
 		Title:        input.Title,
-		Contents:     contents,
+		CategoryID:   int(input.CategoryId),
+		Category:     input.Category,
+		Content:      input.Content,
 		FeaturePoint: int(input.FeaturePoint),
 		IsPublished:  input.IsPublished,
 		CreatedAt:    input.CreatedAt,

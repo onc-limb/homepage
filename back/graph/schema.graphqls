@@ -6,26 +6,14 @@ scalar Time
 
 type Article {
   id: Int!
-  pageId: String!
   title: String!
-  Contents: [Content]!
+  categoryId: Int!
+  category: Category!
+  content: String!
   featurePoint: Int!
   isPublished: Boolean!
   createdAt: Time!
   EditedAt: Time!
-}
-
-type Content {
-  id: Int!
-  articleId: Int!
-  order: Int!
-  type: String!
-  text: String!
-  bold: Boolean!
-  italic: Boolean!
-  strikThrough: Boolean!
-  underLine: Boolean!
-  code: Boolean!
 }
 
 enum Category {
@@ -47,11 +35,20 @@ input EditArticle {
 }
 
 input InsertDto {
-  pageId: String
-  category: Category
+  title: String!
+  category: Category!
+  content: String!
+  featurePoint: Int!
+  isPublished: Boolean!
+}
+
+input InsertFromNotionDto {
+  pageId: String!
+  category: Category!
 }
 
 type Mutation {
   insertArticle(input: InsertDto!): Article!
+  insertArticleFromNotion(input: InsertFromNotionDto!): Article!
   editArticle(input: EditArticle!): Article!
 }

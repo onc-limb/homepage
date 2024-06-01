@@ -14,7 +14,16 @@ type NotionClient struct {
 	client *notionapi.Client
 }
 
-func GetPageAndBlocks(pageId string) (domain.NewArticle, error) {
+type NotionArticle struct {
+	PageID       string
+	Title        string
+	CategoryId   uint
+	Contents     []domain.Content
+	FeaturePoint uint
+	IsPublished  bool
+}
+
+func GetPageAndBlocks(pageId string) (NotionArticle, error) {
 	cn := newClient()
 	page, err := cn.getPage(pageId)
 	if err != nil {
@@ -144,7 +153,7 @@ func GetPageAndBlocks(pageId string) (domain.NewArticle, error) {
 		}
 	}
 
-	v := domain.NewArticle{
+	v := NotionArticle{
 		PageID:       page.ID.String(),
 		Title:        title[0],
 		CategoryId:   1,

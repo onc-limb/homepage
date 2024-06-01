@@ -50,32 +50,21 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Article struct {
-		Contents     func(childComplexity int) int
+		Category     func(childComplexity int) int
+		CategoryID   func(childComplexity int) int
+		Content      func(childComplexity int) int
 		CreatedAt    func(childComplexity int) int
 		EditedAt     func(childComplexity int) int
 		FeaturePoint func(childComplexity int) int
 		ID           func(childComplexity int) int
 		IsPublished  func(childComplexity int) int
-		PageID       func(childComplexity int) int
 		Title        func(childComplexity int) int
 	}
 
-	Content struct {
-		ArticleID    func(childComplexity int) int
-		Bold         func(childComplexity int) int
-		Code         func(childComplexity int) int
-		ID           func(childComplexity int) int
-		Italic       func(childComplexity int) int
-		Order        func(childComplexity int) int
-		StrikThrough func(childComplexity int) int
-		Text         func(childComplexity int) int
-		Type         func(childComplexity int) int
-		UnderLine    func(childComplexity int) int
-	}
-
 	Mutation struct {
-		EditArticle   func(childComplexity int, input model.EditArticle) int
-		InsertArticle func(childComplexity int, input model.InsertDto) int
+		EditArticle             func(childComplexity int, input model.EditArticle) int
+		InsertArticle           func(childComplexity int, input model.InsertDto) int
+		InsertArticleFromNotion func(childComplexity int, input model.InsertFromNotionDto) int
 	}
 
 	Query struct {
@@ -86,6 +75,7 @@ type ComplexityRoot struct {
 
 type MutationResolver interface {
 	InsertArticle(ctx context.Context, input model.InsertDto) (*model.Article, error)
+	InsertArticleFromNotion(ctx context.Context, input model.InsertFromNotionDto) (*model.Article, error)
 	EditArticle(ctx context.Context, input model.EditArticle) (*model.Article, error)
 }
 type QueryResolver interface {
@@ -112,12 +102,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	_ = ec
 	switch typeName + "." + field {
 
-	case "Article.Contents":
-		if e.complexity.Article.Contents == nil {
+	case "Article.category":
+		if e.complexity.Article.Category == nil {
 			break
 		}
 
-		return e.complexity.Article.Contents(childComplexity), true
+		return e.complexity.Article.Category(childComplexity), true
+
+	case "Article.categoryId":
+		if e.complexity.Article.CategoryID == nil {
+			break
+		}
+
+		return e.complexity.Article.CategoryID(childComplexity), true
+
+	case "Article.content":
+		if e.complexity.Article.Content == nil {
+			break
+		}
+
+		return e.complexity.Article.Content(childComplexity), true
 
 	case "Article.createdAt":
 		if e.complexity.Article.CreatedAt == nil {
@@ -154,89 +158,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Article.IsPublished(childComplexity), true
 
-	case "Article.pageId":
-		if e.complexity.Article.PageID == nil {
-			break
-		}
-
-		return e.complexity.Article.PageID(childComplexity), true
-
 	case "Article.title":
 		if e.complexity.Article.Title == nil {
 			break
 		}
 
 		return e.complexity.Article.Title(childComplexity), true
-
-	case "Content.articleId":
-		if e.complexity.Content.ArticleID == nil {
-			break
-		}
-
-		return e.complexity.Content.ArticleID(childComplexity), true
-
-	case "Content.bold":
-		if e.complexity.Content.Bold == nil {
-			break
-		}
-
-		return e.complexity.Content.Bold(childComplexity), true
-
-	case "Content.code":
-		if e.complexity.Content.Code == nil {
-			break
-		}
-
-		return e.complexity.Content.Code(childComplexity), true
-
-	case "Content.id":
-		if e.complexity.Content.ID == nil {
-			break
-		}
-
-		return e.complexity.Content.ID(childComplexity), true
-
-	case "Content.italic":
-		if e.complexity.Content.Italic == nil {
-			break
-		}
-
-		return e.complexity.Content.Italic(childComplexity), true
-
-	case "Content.order":
-		if e.complexity.Content.Order == nil {
-			break
-		}
-
-		return e.complexity.Content.Order(childComplexity), true
-
-	case "Content.strikThrough":
-		if e.complexity.Content.StrikThrough == nil {
-			break
-		}
-
-		return e.complexity.Content.StrikThrough(childComplexity), true
-
-	case "Content.text":
-		if e.complexity.Content.Text == nil {
-			break
-		}
-
-		return e.complexity.Content.Text(childComplexity), true
-
-	case "Content.type":
-		if e.complexity.Content.Type == nil {
-			break
-		}
-
-		return e.complexity.Content.Type(childComplexity), true
-
-	case "Content.underLine":
-		if e.complexity.Content.UnderLine == nil {
-			break
-		}
-
-		return e.complexity.Content.UnderLine(childComplexity), true
 
 	case "Mutation.editArticle":
 		if e.complexity.Mutation.EditArticle == nil {
@@ -261,6 +188,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.InsertArticle(childComplexity, args["input"].(model.InsertDto)), true
+
+	case "Mutation.insertArticleFromNotion":
+		if e.complexity.Mutation.InsertArticleFromNotion == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_insertArticleFromNotion_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.InsertArticleFromNotion(childComplexity, args["input"].(model.InsertFromNotionDto)), true
 
 	case "Query.allArticles":
 		if e.complexity.Query.AllArticles == nil {
@@ -291,6 +230,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputEditArticle,
 		ec.unmarshalInputInsertDto,
+		ec.unmarshalInputInsertFromNotionDto,
 	)
 	first := true
 
@@ -414,6 +354,21 @@ func (ec *executionContext) field_Mutation_editArticle_args(ctx context.Context,
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNEditArticle2backᚋgraphᚋmodelᚐEditArticle(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_insertArticleFromNotion_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.InsertFromNotionDto
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNInsertFromNotionDto2backᚋgraphᚋmodelᚐInsertFromNotionDto(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -549,50 +504,6 @@ func (ec *executionContext) fieldContext_Article_id(_ context.Context, field gra
 	return fc, nil
 }
 
-func (ec *executionContext) _Article_pageId(ctx context.Context, field graphql.CollectedField, obj *model.Article) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Article_pageId(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.PageID, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Article_pageId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Article",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _Article_title(ctx context.Context, field graphql.CollectedField, obj *model.Article) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Article_title(ctx, field)
 	if err != nil {
@@ -637,8 +548,8 @@ func (ec *executionContext) fieldContext_Article_title(_ context.Context, field 
 	return fc, nil
 }
 
-func (ec *executionContext) _Article_Contents(ctx context.Context, field graphql.CollectedField, obj *model.Article) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Article_Contents(ctx, field)
+func (ec *executionContext) _Article_categoryId(ctx context.Context, field graphql.CollectedField, obj *model.Article) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Article_categoryId(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -651,7 +562,7 @@ func (ec *executionContext) _Article_Contents(ctx context.Context, field graphql
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Contents, nil
+		return obj.CategoryID, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -663,41 +574,107 @@ func (ec *executionContext) _Article_Contents(ctx context.Context, field graphql
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Content)
+	res := resTmp.(int)
 	fc.Result = res
-	return ec.marshalNContent2ᚕᚖbackᚋgraphᚋmodelᚐContent(ctx, field.Selections, res)
+	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Article_Contents(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Article_categoryId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Article",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_Content_id(ctx, field)
-			case "articleId":
-				return ec.fieldContext_Content_articleId(ctx, field)
-			case "order":
-				return ec.fieldContext_Content_order(ctx, field)
-			case "type":
-				return ec.fieldContext_Content_type(ctx, field)
-			case "text":
-				return ec.fieldContext_Content_text(ctx, field)
-			case "bold":
-				return ec.fieldContext_Content_bold(ctx, field)
-			case "italic":
-				return ec.fieldContext_Content_italic(ctx, field)
-			case "strikThrough":
-				return ec.fieldContext_Content_strikThrough(ctx, field)
-			case "underLine":
-				return ec.fieldContext_Content_underLine(ctx, field)
-			case "code":
-				return ec.fieldContext_Content_code(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Content", field.Name)
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Article_category(ctx context.Context, field graphql.CollectedField, obj *model.Article) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Article_category(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Category, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain.Category)
+	fc.Result = res
+	return ec.marshalNCategory2backᚋblogᚋdomainᚐCategory(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Article_category(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Article",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Category does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Article_content(ctx context.Context, field graphql.CollectedField, obj *model.Article) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Article_content(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Content, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Article_content(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Article",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -879,446 +856,6 @@ func (ec *executionContext) fieldContext_Article_EditedAt(_ context.Context, fie
 	return fc, nil
 }
 
-func (ec *executionContext) _Content_id(ctx context.Context, field graphql.CollectedField, obj *model.Content) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Content_id(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.ID, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(int)
-	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Content_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Content",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Int does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Content_articleId(ctx context.Context, field graphql.CollectedField, obj *model.Content) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Content_articleId(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.ArticleID, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(int)
-	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Content_articleId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Content",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Int does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Content_order(ctx context.Context, field graphql.CollectedField, obj *model.Content) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Content_order(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Order, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(int)
-	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Content_order(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Content",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Int does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Content_type(ctx context.Context, field graphql.CollectedField, obj *model.Content) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Content_type(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Type, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Content_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Content",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Content_text(ctx context.Context, field graphql.CollectedField, obj *model.Content) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Content_text(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Text, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Content_text(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Content",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Content_bold(ctx context.Context, field graphql.CollectedField, obj *model.Content) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Content_bold(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Bold, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Content_bold(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Content",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Boolean does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Content_italic(ctx context.Context, field graphql.CollectedField, obj *model.Content) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Content_italic(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Italic, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Content_italic(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Content",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Boolean does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Content_strikThrough(ctx context.Context, field graphql.CollectedField, obj *model.Content) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Content_strikThrough(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.StrikThrough, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Content_strikThrough(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Content",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Boolean does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Content_underLine(ctx context.Context, field graphql.CollectedField, obj *model.Content) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Content_underLine(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.UnderLine, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Content_underLine(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Content",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Boolean does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Content_code(ctx context.Context, field graphql.CollectedField, obj *model.Content) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Content_code(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Code, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Content_code(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Content",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Boolean does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _Mutation_insertArticle(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Mutation_insertArticle(ctx, field)
 	if err != nil {
@@ -1360,12 +897,14 @@ func (ec *executionContext) fieldContext_Mutation_insertArticle(ctx context.Cont
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_Article_id(ctx, field)
-			case "pageId":
-				return ec.fieldContext_Article_pageId(ctx, field)
 			case "title":
 				return ec.fieldContext_Article_title(ctx, field)
-			case "Contents":
-				return ec.fieldContext_Article_Contents(ctx, field)
+			case "categoryId":
+				return ec.fieldContext_Article_categoryId(ctx, field)
+			case "category":
+				return ec.fieldContext_Article_category(ctx, field)
+			case "content":
+				return ec.fieldContext_Article_content(ctx, field)
 			case "featurePoint":
 				return ec.fieldContext_Article_featurePoint(ctx, field)
 			case "isPublished":
@@ -1386,6 +925,81 @@ func (ec *executionContext) fieldContext_Mutation_insertArticle(ctx context.Cont
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_insertArticle_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_insertArticleFromNotion(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_insertArticleFromNotion(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().InsertArticleFromNotion(rctx, fc.Args["input"].(model.InsertFromNotionDto))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Article)
+	fc.Result = res
+	return ec.marshalNArticle2ᚖbackᚋgraphᚋmodelᚐArticle(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_insertArticleFromNotion(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Article_id(ctx, field)
+			case "title":
+				return ec.fieldContext_Article_title(ctx, field)
+			case "categoryId":
+				return ec.fieldContext_Article_categoryId(ctx, field)
+			case "category":
+				return ec.fieldContext_Article_category(ctx, field)
+			case "content":
+				return ec.fieldContext_Article_content(ctx, field)
+			case "featurePoint":
+				return ec.fieldContext_Article_featurePoint(ctx, field)
+			case "isPublished":
+				return ec.fieldContext_Article_isPublished(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Article_createdAt(ctx, field)
+			case "EditedAt":
+				return ec.fieldContext_Article_EditedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Article", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_insertArticleFromNotion_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -1433,12 +1047,14 @@ func (ec *executionContext) fieldContext_Mutation_editArticle(ctx context.Contex
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_Article_id(ctx, field)
-			case "pageId":
-				return ec.fieldContext_Article_pageId(ctx, field)
 			case "title":
 				return ec.fieldContext_Article_title(ctx, field)
-			case "Contents":
-				return ec.fieldContext_Article_Contents(ctx, field)
+			case "categoryId":
+				return ec.fieldContext_Article_categoryId(ctx, field)
+			case "category":
+				return ec.fieldContext_Article_category(ctx, field)
+			case "content":
+				return ec.fieldContext_Article_content(ctx, field)
 			case "featurePoint":
 				return ec.fieldContext_Article_featurePoint(ctx, field)
 			case "isPublished":
@@ -1506,12 +1122,14 @@ func (ec *executionContext) fieldContext_Query_allArticles(_ context.Context, fi
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_Article_id(ctx, field)
-			case "pageId":
-				return ec.fieldContext_Article_pageId(ctx, field)
 			case "title":
 				return ec.fieldContext_Article_title(ctx, field)
-			case "Contents":
-				return ec.fieldContext_Article_Contents(ctx, field)
+			case "categoryId":
+				return ec.fieldContext_Article_categoryId(ctx, field)
+			case "category":
+				return ec.fieldContext_Article_category(ctx, field)
+			case "content":
+				return ec.fieldContext_Article_content(ctx, field)
 			case "featurePoint":
 				return ec.fieldContext_Article_featurePoint(ctx, field)
 			case "isPublished":
@@ -1568,12 +1186,14 @@ func (ec *executionContext) fieldContext_Query_article(ctx context.Context, fiel
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_Article_id(ctx, field)
-			case "pageId":
-				return ec.fieldContext_Article_pageId(ctx, field)
 			case "title":
 				return ec.fieldContext_Article_title(ctx, field)
-			case "Contents":
-				return ec.fieldContext_Article_Contents(ctx, field)
+			case "categoryId":
+				return ec.fieldContext_Article_categoryId(ctx, field)
+			case "category":
+				return ec.fieldContext_Article_category(ctx, field)
+			case "content":
+				return ec.fieldContext_Article_content(ctx, field)
 			case "featurePoint":
 				return ec.fieldContext_Article_featurePoint(ctx, field)
 			case "isPublished":
@@ -3557,6 +3177,61 @@ func (ec *executionContext) unmarshalInputInsertDto(ctx context.Context, obj int
 		asMap[k] = v
 	}
 
+	fieldsInOrder := [...]string{"title", "category", "content", "featurePoint", "isPublished"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "title":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("title"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Title = data
+		case "category":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("category"))
+			data, err := ec.unmarshalNCategory2backᚋblogᚋdomainᚐCategory(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Category = data
+		case "content":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("content"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Content = data
+		case "featurePoint":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("featurePoint"))
+			data, err := ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FeaturePoint = data
+		case "isPublished":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isPublished"))
+			data, err := ec.unmarshalNBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IsPublished = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputInsertFromNotionDto(ctx context.Context, obj interface{}) (model.InsertFromNotionDto, error) {
+	var it model.InsertFromNotionDto
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
 	fieldsInOrder := [...]string{"pageId", "category"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
@@ -3566,14 +3241,14 @@ func (ec *executionContext) unmarshalInputInsertDto(ctx context.Context, obj int
 		switch k {
 		case "pageId":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pageId"))
-			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.PageID = data
 		case "category":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("category"))
-			data, err := ec.unmarshalOCategory2ᚖbackᚋblogᚋdomainᚐCategory(ctx, v)
+			data, err := ec.unmarshalNCategory2backᚋblogᚋdomainᚐCategory(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3608,18 +3283,23 @@ func (ec *executionContext) _Article(ctx context.Context, sel ast.SelectionSet, 
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "pageId":
-			out.Values[i] = ec._Article_pageId(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
 		case "title":
 			out.Values[i] = ec._Article_title(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "Contents":
-			out.Values[i] = ec._Article_Contents(ctx, field, obj)
+		case "categoryId":
+			out.Values[i] = ec._Article_categoryId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "category":
+			out.Values[i] = ec._Article_category(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "content":
+			out.Values[i] = ec._Article_content(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -3640,90 +3320,6 @@ func (ec *executionContext) _Article(ctx context.Context, sel ast.SelectionSet, 
 			}
 		case "EditedAt":
 			out.Values[i] = ec._Article_EditedAt(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch(ctx)
-	if out.Invalids > 0 {
-		return graphql.Null
-	}
-
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
-
-	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
-			Label:    label,
-			Path:     graphql.GetPath(ctx),
-			FieldSet: dfs,
-			Context:  ctx,
-		})
-	}
-
-	return out
-}
-
-var contentImplementors = []string{"Content"}
-
-func (ec *executionContext) _Content(ctx context.Context, sel ast.SelectionSet, obj *model.Content) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, contentImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	deferred := make(map[string]*graphql.FieldSet)
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Content")
-		case "id":
-			out.Values[i] = ec._Content_id(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "articleId":
-			out.Values[i] = ec._Content_articleId(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "order":
-			out.Values[i] = ec._Content_order(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "type":
-			out.Values[i] = ec._Content_type(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "text":
-			out.Values[i] = ec._Content_text(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "bold":
-			out.Values[i] = ec._Content_bold(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "italic":
-			out.Values[i] = ec._Content_italic(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "strikThrough":
-			out.Values[i] = ec._Content_strikThrough(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "underLine":
-			out.Values[i] = ec._Content_underLine(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "code":
-			out.Values[i] = ec._Content_code(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -3772,6 +3368,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "insertArticle":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_insertArticle(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "insertArticleFromNotion":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_insertArticleFromNotion(ctx, field)
 			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
@@ -4299,42 +3902,14 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) marshalNContent2ᚕᚖbackᚋgraphᚋmodelᚐContent(ctx context.Context, sel ast.SelectionSet, v []*model.Content) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalOContent2ᚖbackᚋgraphᚋmodelᚐContent(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
+func (ec *executionContext) unmarshalNCategory2backᚋblogᚋdomainᚐCategory(ctx context.Context, v interface{}) (domain.Category, error) {
+	var res domain.Category
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
 
-	}
-	wg.Wait()
-
-	return ret
+func (ec *executionContext) marshalNCategory2backᚋblogᚋdomainᚐCategory(ctx context.Context, sel ast.SelectionSet, v domain.Category) graphql.Marshaler {
+	return v
 }
 
 func (ec *executionContext) unmarshalNEditArticle2backᚋgraphᚋmodelᚐEditArticle(ctx context.Context, v interface{}) (model.EditArticle, error) {
@@ -4344,6 +3919,11 @@ func (ec *executionContext) unmarshalNEditArticle2backᚋgraphᚋmodelᚐEditArt
 
 func (ec *executionContext) unmarshalNInsertDto2backᚋgraphᚋmodelᚐInsertDto(ctx context.Context, v interface{}) (model.InsertDto, error) {
 	res, err := ec.unmarshalInputInsertDto(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNInsertFromNotionDto2backᚋgraphᚋmodelᚐInsertFromNotionDto(ctx context.Context, v interface{}) (model.InsertFromNotionDto, error) {
+	res, err := ec.unmarshalInputInsertFromNotionDto(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -4685,13 +4265,6 @@ func (ec *executionContext) marshalOCategory2ᚖbackᚋblogᚋdomainᚐCategory(
 		return graphql.Null
 	}
 	return v
-}
-
-func (ec *executionContext) marshalOContent2ᚖbackᚋgraphᚋmodelᚐContent(ctx context.Context, sel ast.SelectionSet, v *model.Content) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._Content(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
