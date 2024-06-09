@@ -8,6 +8,8 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import {Button} from '@/components/ui/button'
 import { ApolloProvider } from '@apollo/client';
 import useApolloClient from '@/lib/apolloClient';
+import DOMPurify from 'dompurify';
+
 
 const GET_ARTICLE_Detail = gql`
     query GetArticleDetail($id: Int!) {
@@ -45,7 +47,9 @@ const ArticleContent = ({id}: {id: number}) => {
     })
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error : {error.message}</p>;
-    const {article} = data
+    const {article} = data;
+
+    const safeHTML = DOMPurify.sanitize(article.content)
 
     return (
         <article className="w-full py-12 md:py-24 lg:py-32">
@@ -56,9 +60,7 @@ const ArticleContent = ({id}: {id: number}) => {
             <p className="text-gray-500 dark:text-gray-400">投稿日：{new Date(article.createdAt).toLocaleDateString()}</p>
             <p className="text-gray-500 dark:text-gray-400">更新日：{new Date(article.EditedAt).toLocaleDateString()}</p>
           </div>
-          <div className="prose prose-gray mx-auto dark:prose-invert">
-            {article.content}
-          </div>
+          <div className="prose prose-gray mx-auto dark:prose-invert" dangerouslySetInnerHTML={{ __html: safeHTML }} />
         </div>
       </div>
     </article>
