@@ -9,4 +9,4 @@ RUN go mod download && go mod verify
 
 COPY . .
 
-CMD ["air", "-c", ".air.toml","--", "--migrate"]
+CMD ["entrypoint.sh"]

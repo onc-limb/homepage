@@ -4,7 +4,7 @@ import Logo from '@/public/MainLogo.jpg';
 
 import Image from 'next/image';
 
-export default function Component() {
+export default function BlogTop() {
     return (
         <>
             <section className="w-full py-12 md:py-24 lg:py-32">

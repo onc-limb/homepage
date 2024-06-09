@@ -2,6 +2,8 @@ services:
   be:
     container_name: homepage-be
     build: .
+    environment:
+      - MIGRATE=${MIGRATE:-false}
     tty: true
     volumes:
       - .:/app
