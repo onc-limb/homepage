@@ -4,7 +4,6 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import Head from 'next/head';
 import './globals.css';
-
 import { cn } from '@/lib/utils';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
@@ -12,6 +11,9 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 export const metadata: Metadata = {
     title: 'onc-limb',
     description: 'onc-limb home page',
+    icons: {
+        icon: '/favicon.ico'
+    }
 };
 
 export default function RootLayout({
@@ -21,20 +23,15 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="ja">
-            <Head>
-                <title>ONC-LIMB</title>
-                <meta name="onc-limb" content="onc-limbのホームページ" />
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
             <body
                 className={cn(
                     'min-h-screen bg-background font-sans antialiased flex flex-col h-screen',
                     inter.variable,
                 )}
             >
-                <Header />
-                {children}
-                <Footer />
+                    <Header />
+                    {children}
+                    <Footer />
             </body>
         </html>
     );

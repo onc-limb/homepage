@@ -1,0 +1,54 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+scalar Time
+
+type Article {
+  id: Int!
+  title: String!
+  categoryId: Int!
+  category: Category!
+  content: String!
+  featurePoint: Int!
+  isPublished: Boolean!
+  createdAt: Time!
+  EditedAt: Time!
+}
+
+enum Category {
+  CLIMBING
+  ENGINEERING
+  LIFE
+}
+
+type Query {
+  allArticles: [Article!]!
+  article(input: Int!): Article!
+}
+
+input EditArticle {
+  id: Int!
+  title: String
+  content: String
+  category: Category
+}
+
+input InsertDto {
+  title: String!
+  category: Category!
+  content: String!
+  featurePoint: Int!
+  isPublished: Boolean!
+}
+
+input InsertFromNotionDto {
+  pageId: String!
+  category: Category!
+}
+
+type Mutation {
+  insertArticle(input: InsertDto!): Article!
+  insertArticleFromNotion(input: InsertFromNotionDto!): Article!
+  editArticle(input: EditArticle!): Article!
+}
