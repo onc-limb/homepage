@@ -4,7 +4,7 @@ import Logo from '@/public/MainLogo.jpg';
 
 import Image from 'next/image';
 
-export default function BlogTop() {
+export default function ArticleTop() {
     return (
         <>
             <section className="w-full py-12 md:py-24 lg:py-32">
@@ -26,14 +26,14 @@ export default function BlogTop() {
                         </div>
                         <Link
                             className="inline-flex h-10 items-center justify-center rounded-md bg-gray-900 px-8 text-sm text-gray-50 shadow hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
-                            href="/blog/list"
+                            href="/article/list"
                         >
                             記事一覧
                         </Link>
                     </div>
                     <Image
                         src={Logo}
-                        alt="ブログトップ"
+                        alt="記事トップ"
                         width={550}
                         height={550}
                         className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:order-last lg:aspect-square"
