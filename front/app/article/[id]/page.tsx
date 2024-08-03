@@ -1,17 +1,10 @@
-'use client'
-
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-
-import {gql, useQuery} from '@apollo/client'
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
-import {Button} from '@/components/ui/button'
-import { ApolloProvider } from '@apollo/client';
+import {gql} from '@apollo/client'
 import useApolloClient from '@/lib/apolloClient';
-import DOMPurify from 'dompurify';
+import Markdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 
-const GET_ARTICLE_Detail = gql`
+const GET_ARTICLE_DETAIL = gql`
     query GetArticleDetail($id: Int!) {
         article(input: $id) {
             id
@@ -26,30 +19,19 @@ const GET_ARTICLE_Detail = gql`
     }
 `
 
-const Article = ({initialApolloState, params}: {initialApolloState: any, params: {id: string}}) => {
-    const client = useApolloClient(initialApolloState);
-    if (!client) {
-        return <div>Loading...</div>
-    }
-    const id = Number(params.id);
-    return (
-        <ApolloProvider client={client}>
-        <ArticleContent id={id}/>
-    </ApolloProvider>
-    )
-}
-
-export default Article
-
-const ArticleContent = ({id}: {id: number}) => {
-    const { loading, error, data } = useQuery(GET_ARTICLE_Detail, {
-        variables: {id: id}
+const ArticlePage = async ({params}: {params: {id: string}}) => {
+    const client = useApolloClient();
+    
+    const {data, errors} = await client.query({
+        query: GET_ARTICLE_DETAIL,
+        variables: {id: Number(params.id)}
     })
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error : {error.message}</p>;
-    const {article} = data;
 
-    const safeHTML = DOMPurify.sanitize(article.content)
+    if (errors) {
+    console.error('Error occurrd:', errors)
+    }
+
+    const {article} = data;
 
     return (
         <article className="w-full py-12 md:py-24 lg:py-32">
@@ -57,12 +39,17 @@ const ArticleContent = ({id}: {id: number}) => {
         <div className="space-y-6">
           <div className="space-y-2">
             <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl lg:text-6xl">{article.title}</h1>
-            <p className="text-gray-500 dark:text-gray-400">投稿日：{new Date(article.createdAt).toLocaleDateString()}</p>
-            <p className="text-gray-500 dark:text-gray-400">更新日：{new Date(article.EditedAt).toLocaleDateString()}</p>
+            <div className='flex space-x-4'>
+            <p className="flex-row text-gray-500 dark:text-gray-400">投稿日：{new Date(article.createdAt).toLocaleDateString()}</p>
+            <p className="flex-row text-gray-500 dark:text-gray-400">更新日：{new Date(article.EditedAt).toLocaleDateString()}</p>
+            </div>
           </div>
-          <div className="prose prose-gray mx-auto dark:prose-invert" dangerouslySetInnerHTML={{ __html: safeHTML }} />
+          <Markdown remarkPlugins={[remarkGfm]}>{article.content}</Markdown>
         </div>
       </div>
     </article>
     )
+    
 }
+
+export default ArticlePage

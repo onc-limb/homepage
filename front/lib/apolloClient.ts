@@ -32,7 +32,7 @@ const initApollo = (initState: any = null) => {
     return _client;
 };
 
-const useApolloClient = (initState: any) => {
+const useApolloClient = (initState: any = null) => {
     const store = useMemo(() => initApollo(initState), [initState]);
     return store;
 };
