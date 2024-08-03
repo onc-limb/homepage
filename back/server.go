@@ -1,7 +1,7 @@
 package main
 
 import (
-	"back/blog/infra"
+	"back/article/infra"
 	"back/database"
 	"back/graph"
 	"flag"

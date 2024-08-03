@@ -1,7 +1,7 @@
 package infra
 
 import (
-	"back/blog/domain"
+	"back/article/domain"
 	"back/database"
 	"log"
 

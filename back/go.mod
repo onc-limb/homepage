@@ -7,6 +7,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/jomei/notionapi v1.13.0
 	github.com/labstack/echo v3.3.10+incompatible
+	github.com/russross/blackfriday/v2 v2.1.0
 	github.com/vektah/gqlparser/v2 v2.5.12
 	gorm.io/driver/postgres v1.5.7
 	gorm.io/gorm v1.25.10
@@ -30,7 +31,6 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
-	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sosodev/duration v1.3.0 // indirect
 	github.com/urfave/cli/v2 v2.27.2 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect

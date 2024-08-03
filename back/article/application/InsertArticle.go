@@ -1,7 +1,7 @@
 package application
 
 import (
-	"back/blog/domain"
+	"back/article/domain"
 	"back/graph/model"
 )
 

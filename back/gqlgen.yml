@@ -83,4 +83,4 @@ models:
       - github.com/99designs/gqlgen/graphql.Int64
       - github.com/99designs/gqlgen/graphql.Int32
   Category:
-    model: back/blog/domain.Category
+    model: back/article/domain.Category

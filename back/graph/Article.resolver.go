@@ -1,8 +1,8 @@
 package graph
 
 import (
-	"back/blog/application"
-	"back/blog/domain"
+	"back/article/application"
+	"back/article/domain"
 	"back/graph/model"
 	"context"
 

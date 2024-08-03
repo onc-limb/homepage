@@ -3,7 +3,7 @@
 package model
 
 import (
-	"back/blog/domain"
+	"back/article/domain"
 	"time"
 )
 

@@ -3,7 +3,7 @@
 package graph
 
 import (
-	"back/blog/domain"
+	"back/article/domain"
 	"back/graph/model"
 	"bytes"
 	"context"
@@ -620,7 +620,7 @@ func (ec *executionContext) _Article_category(ctx context.Context, field graphql
 	}
 	res := resTmp.(domain.Category)
 	fc.Result = res
-	return ec.marshalNCategory2backᚋblogᚋdomainᚐCategory(ctx, field.Selections, res)
+	return ec.marshalNCategory2backᚋarticleᚋdomainᚐCategory(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Article_category(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3159,7 +3159,7 @@ func (ec *executionContext) unmarshalInputEditArticle(ctx context.Context, obj i
 			it.Content = data
 		case "category":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("category"))
-			data, err := ec.unmarshalOCategory2ᚖbackᚋblogᚋdomainᚐCategory(ctx, v)
+			data, err := ec.unmarshalOCategory2ᚖbackᚋarticleᚋdomainᚐCategory(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3193,7 +3193,7 @@ func (ec *executionContext) unmarshalInputInsertDto(ctx context.Context, obj int
 			it.Title = data
 		case "category":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("category"))
-			data, err := ec.unmarshalNCategory2backᚋblogᚋdomainᚐCategory(ctx, v)
+			data, err := ec.unmarshalNCategory2backᚋarticleᚋdomainᚐCategory(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3248,7 +3248,7 @@ func (ec *executionContext) unmarshalInputInsertFromNotionDto(ctx context.Contex
 			it.PageID = data
 		case "category":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("category"))
-			data, err := ec.unmarshalNCategory2backᚋblogᚋdomainᚐCategory(ctx, v)
+			data, err := ec.unmarshalNCategory2backᚋarticleᚋdomainᚐCategory(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3902,13 +3902,13 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) unmarshalNCategory2backᚋblogᚋdomainᚐCategory(ctx context.Context, v interface{}) (domain.Category, error) {
+func (ec *executionContext) unmarshalNCategory2backᚋarticleᚋdomainᚐCategory(ctx context.Context, v interface{}) (domain.Category, error) {
 	var res domain.Category
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNCategory2backᚋblogᚋdomainᚐCategory(ctx context.Context, sel ast.SelectionSet, v domain.Category) graphql.Marshaler {
+func (ec *executionContext) marshalNCategory2backᚋarticleᚋdomainᚐCategory(ctx context.Context, sel ast.SelectionSet, v domain.Category) graphql.Marshaler {
 	return v
 }
 
@@ -4251,7 +4251,7 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return res
 }
 
-func (ec *executionContext) unmarshalOCategory2ᚖbackᚋblogᚋdomainᚐCategory(ctx context.Context, v interface{}) (*domain.Category, error) {
+func (ec *executionContext) unmarshalOCategory2ᚖbackᚋarticleᚋdomainᚐCategory(ctx context.Context, v interface{}) (*domain.Category, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -4260,7 +4260,7 @@ func (ec *executionContext) unmarshalOCategory2ᚖbackᚋblogᚋdomainᚐCategor
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOCategory2ᚖbackᚋblogᚋdomainᚐCategory(ctx context.Context, sel ast.SelectionSet, v *domain.Category) graphql.Marshaler {
+func (ec *executionContext) marshalOCategory2ᚖbackᚋarticleᚋdomainᚐCategory(ctx context.Context, sel ast.SelectionSet, v *domain.Category) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}

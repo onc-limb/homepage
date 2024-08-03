@@ -1,7 +1,7 @@
 package notion
 
 import (
-	"back/blog/domain"
+	"back/article/domain"
 	"context"
 	"fmt"
 	"log"

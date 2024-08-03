@@ -1,6 +1,6 @@
 package application
 
-import "back/blog/domain"
+import "back/article/domain"
 
 func (u *ArticleUsecase) GetAllArticles() ([]domain.Article, error) {
 	// fixme: 未実装　引数にoffsetとlimitをもらう。

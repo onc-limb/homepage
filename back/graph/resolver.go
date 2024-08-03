@@ -1,7 +1,7 @@
 package graph
 
 import (
-	"back/blog/domain"
+	"back/article/domain"
 
 	"gorm.io/gorm"
 )

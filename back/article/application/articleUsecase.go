@@ -1,6 +1,6 @@
 package application
 
-import "back/blog/domain"
+import "back/article/domain"
 
 type ArticleUsecase struct {
 	ArticleRepository domain.ArticleRepository
