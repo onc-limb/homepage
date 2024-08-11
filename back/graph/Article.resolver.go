@@ -64,7 +64,7 @@ func convertToModel(input domain.Article) *model.Article {
 		Content:      input.Content,
 		FeaturePoint: int(input.FeaturePoint),
 		IsPublished:  input.IsPublished,
-		CreatedAt:    input.CreatedAt,
+		PublishedAt:  &input.PublishedAt,
 		EditedAt:     input.EditedAt,
 	}
 }

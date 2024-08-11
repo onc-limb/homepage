@@ -1,18 +1,22 @@
 package database
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type Category struct {
 	gorm.Model
-	Name string
+	Name string `gorm:"not null"`
 }
 
 type Article struct {
 	gorm.Model
-	Title        string
-	CategoryID   uint
-	Category     Category `gorm:"foreignKey: CategoryID;references:ID"`
+	PublishedAt  *time.Time
+	Title        string   `gorm:"not null"`
+	CategoryID   uint     `gorm:"not null"`
+	Category     Category `gorm:"foreignKey: CategoryID;references:ID; not null"`
 	Content      string
-	FeaturePoint uint
-	IsPublished  bool
+	FeaturePoint uint `gorm:"not null"`
 }

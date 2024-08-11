@@ -3,6 +3,7 @@ package infra
 import (
 	"back/article/domain"
 	"back/database"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -26,27 +27,33 @@ func (r *ArticleRepository) FindByID(id uint) (domain.Article, error) {
 	}
 
 	return domain.Article{
-		ID:        article.ID,
-		Category:  c,
-		CreatedAt: article.CreatedAt,
-		EditedAt:  article.UpdatedAt,
+		ID:          article.ID,
+		Category:    c,
+		PublishedAt: *article.PublishedAt,
+		EditedAt:    article.UpdatedAt,
 		BaseArticle: domain.BaseArticle{
 			Title:        article.Title,
 			CategoryId:   article.CategoryID,
 			Content:      article.Content,
 			FeaturePoint: article.FeaturePoint,
-			IsPublished:  article.IsPublished,
+			IsPublished:  article.PublishedAt != nil,
 		},
 	}, nil
 }
 
 func (r *ArticleRepository) Insert(input domain.NewArticle) (domain.Article, error) {
+	var publishedAt *time.Time = nil
+	if input.IsPublished {
+		now := time.Now()
+		publishedAt = &now
+	}
+
 	article := database.Article{
 		Title:        input.Title,
 		CategoryID:   input.CategoryId,
 		Content:      input.Content,
 		FeaturePoint: input.FeaturePoint,
-		IsPublished:  input.IsPublished,
+		PublishedAt:  publishedAt,
 	}
 
 	if err := r.DB.Create(&article).Error; err != nil {

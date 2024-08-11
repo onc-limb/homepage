@@ -15,8 +15,8 @@ type Article struct {
 	Content      string          `json:"content"`
 	FeaturePoint int             `json:"featurePoint"`
 	IsPublished  bool            `json:"isPublished"`
-	CreatedAt    time.Time       `json:"createdAt"`
-	EditedAt     time.Time       `json:"EditedAt"`
+	PublishedAt  *time.Time      `json:"publishedAt,omitempty"`
+	EditedAt     time.Time       `json:"editedAt"`
 }
 
 type EditArticle struct {

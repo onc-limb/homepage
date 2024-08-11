@@ -53,11 +53,11 @@ type ComplexityRoot struct {
 		Category     func(childComplexity int) int
 		CategoryID   func(childComplexity int) int
 		Content      func(childComplexity int) int
-		CreatedAt    func(childComplexity int) int
 		EditedAt     func(childComplexity int) int
 		FeaturePoint func(childComplexity int) int
 		ID           func(childComplexity int) int
 		IsPublished  func(childComplexity int) int
+		PublishedAt  func(childComplexity int) int
 		Title        func(childComplexity int) int
 	}
 
@@ -123,14 +123,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Article.Content(childComplexity), true
 
-	case "Article.createdAt":
-		if e.complexity.Article.CreatedAt == nil {
-			break
-		}
-
-		return e.complexity.Article.CreatedAt(childComplexity), true
-
-	case "Article.EditedAt":
+	case "Article.editedAt":
 		if e.complexity.Article.EditedAt == nil {
 			break
 		}
@@ -157,6 +150,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Article.IsPublished(childComplexity), true
+
+	case "Article.publishedAt":
+		if e.complexity.Article.PublishedAt == nil {
+			break
+		}
+
+		return e.complexity.Article.PublishedAt(childComplexity), true
 
 	case "Article.title":
 		if e.complexity.Article.Title == nil {
@@ -768,8 +768,8 @@ func (ec *executionContext) fieldContext_Article_isPublished(_ context.Context, 
 	return fc, nil
 }
 
-func (ec *executionContext) _Article_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.Article) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Article_createdAt(ctx, field)
+func (ec *executionContext) _Article_publishedAt(ctx context.Context, field graphql.CollectedField, obj *model.Article) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Article_publishedAt(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -782,24 +782,21 @@ func (ec *executionContext) _Article_createdAt(ctx context.Context, field graphq
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.CreatedAt, nil
+		return obj.PublishedAt, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(time.Time)
+	res := resTmp.(*time.Time)
 	fc.Result = res
-	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Article_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Article_publishedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Article",
 		Field:      field,
@@ -812,8 +809,8 @@ func (ec *executionContext) fieldContext_Article_createdAt(_ context.Context, fi
 	return fc, nil
 }
 
-func (ec *executionContext) _Article_EditedAt(ctx context.Context, field graphql.CollectedField, obj *model.Article) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Article_EditedAt(ctx, field)
+func (ec *executionContext) _Article_editedAt(ctx context.Context, field graphql.CollectedField, obj *model.Article) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Article_editedAt(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -843,7 +840,7 @@ func (ec *executionContext) _Article_EditedAt(ctx context.Context, field graphql
 	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Article_EditedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Article_editedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Article",
 		Field:      field,
@@ -909,10 +906,10 @@ func (ec *executionContext) fieldContext_Mutation_insertArticle(ctx context.Cont
 				return ec.fieldContext_Article_featurePoint(ctx, field)
 			case "isPublished":
 				return ec.fieldContext_Article_isPublished(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Article_createdAt(ctx, field)
-			case "EditedAt":
-				return ec.fieldContext_Article_EditedAt(ctx, field)
+			case "publishedAt":
+				return ec.fieldContext_Article_publishedAt(ctx, field)
+			case "editedAt":
+				return ec.fieldContext_Article_editedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Article", field.Name)
 		},
@@ -984,10 +981,10 @@ func (ec *executionContext) fieldContext_Mutation_insertArticleFromNotion(ctx co
 				return ec.fieldContext_Article_featurePoint(ctx, field)
 			case "isPublished":
 				return ec.fieldContext_Article_isPublished(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Article_createdAt(ctx, field)
-			case "EditedAt":
-				return ec.fieldContext_Article_EditedAt(ctx, field)
+			case "publishedAt":
+				return ec.fieldContext_Article_publishedAt(ctx, field)
+			case "editedAt":
+				return ec.fieldContext_Article_editedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Article", field.Name)
 		},
@@ -1059,10 +1056,10 @@ func (ec *executionContext) fieldContext_Mutation_editArticle(ctx context.Contex
 				return ec.fieldContext_Article_featurePoint(ctx, field)
 			case "isPublished":
 				return ec.fieldContext_Article_isPublished(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Article_createdAt(ctx, field)
-			case "EditedAt":
-				return ec.fieldContext_Article_EditedAt(ctx, field)
+			case "publishedAt":
+				return ec.fieldContext_Article_publishedAt(ctx, field)
+			case "editedAt":
+				return ec.fieldContext_Article_editedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Article", field.Name)
 		},
@@ -1134,10 +1131,10 @@ func (ec *executionContext) fieldContext_Query_allArticles(_ context.Context, fi
 				return ec.fieldContext_Article_featurePoint(ctx, field)
 			case "isPublished":
 				return ec.fieldContext_Article_isPublished(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Article_createdAt(ctx, field)
-			case "EditedAt":
-				return ec.fieldContext_Article_EditedAt(ctx, field)
+			case "publishedAt":
+				return ec.fieldContext_Article_publishedAt(ctx, field)
+			case "editedAt":
+				return ec.fieldContext_Article_editedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Article", field.Name)
 		},
@@ -1198,10 +1195,10 @@ func (ec *executionContext) fieldContext_Query_article(ctx context.Context, fiel
 				return ec.fieldContext_Article_featurePoint(ctx, field)
 			case "isPublished":
 				return ec.fieldContext_Article_isPublished(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Article_createdAt(ctx, field)
-			case "EditedAt":
-				return ec.fieldContext_Article_EditedAt(ctx, field)
+			case "publishedAt":
+				return ec.fieldContext_Article_publishedAt(ctx, field)
+			case "editedAt":
+				return ec.fieldContext_Article_editedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Article", field.Name)
 		},
@@ -3313,13 +3310,10 @@ func (ec *executionContext) _Article(ctx context.Context, sel ast.SelectionSet, 
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "createdAt":
-			out.Values[i] = ec._Article_createdAt(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "EditedAt":
-			out.Values[i] = ec._Article_EditedAt(ctx, field, obj)
+		case "publishedAt":
+			out.Values[i] = ec._Article_publishedAt(ctx, field, obj)
+		case "editedAt":
+			out.Values[i] = ec._Article_editedAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -4280,6 +4274,22 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 		return graphql.Null
 	}
 	res := graphql.MarshalString(*v)
+	return res
+}
+
+func (ec *executionContext) unmarshalOTime2ᚖtimeᚐTime(ctx context.Context, v interface{}) (*time.Time, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalTime(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOTime2ᚖtimeᚐTime(ctx context.Context, sel ast.SelectionSet, v *time.Time) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	res := graphql.MarshalTime(*v)
 	return res
 }
 

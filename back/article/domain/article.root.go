@@ -13,10 +13,10 @@ type BaseArticle struct {
 }
 
 type Article struct {
-	ID        uint
-	Category  Category
-	CreatedAt time.Time
-	EditedAt  time.Time
+	ID          uint
+	Category    Category
+	PublishedAt time.Time
+	EditedAt    time.Time
 	BaseArticle
 }
 

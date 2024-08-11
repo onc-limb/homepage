@@ -12,8 +12,8 @@ type Article {
   content: String!
   featurePoint: Int!
   isPublished: Boolean!
-  createdAt: Time!
-  EditedAt: Time!
+  publishedAt: Time
+  editedAt: Time!
 }
 
 enum Category {
