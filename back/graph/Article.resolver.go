@@ -24,7 +24,7 @@ func (r *ArticleResolver) Article(ctx context.Context, id uint) (*model.Article,
 	if err != nil {
 		return nil, err
 	}
-	return convertToModel(article)
+	return convertToModel(article), nil
 }
 
 func (r *ArticleResolver) AllArticles(ctx context.Context) ([]*model.Article, error) {
@@ -35,13 +35,10 @@ func (r *ArticleResolver) AllArticles(ctx context.Context) ([]*model.Article, er
 
 	m := make([]*model.Article, len(articles))
 	for i, article := range articles {
-		m[i] = &model.Article{
-			ID:    int(article.ID),
-			Title: article.Title,
-		}
+		m[i] = convertToModel(article)
 	}
 
-	return []*model.Article{}, nil
+	return m, nil
 }
 
 func (r *ArticleResolver) EditArticle(ctx context.Context, input model.EditArticle) (*model.Article, error) {
@@ -55,10 +52,10 @@ func (r *ArticleResolver) InsertArticle(ctx context.Context, input model.InsertD
 		return nil, err
 	}
 
-	return convertToModel(article)
+	return convertToModel(article), nil
 }
 
-func convertToModel(input domain.Article) (*model.Article, error) {
+func convertToModel(input domain.Article) *model.Article {
 	return &model.Article{
 		ID:           int(input.ID),
 		Title:        input.Title,
@@ -69,5 +66,5 @@ func convertToModel(input domain.Article) (*model.Article, error) {
 		IsPublished:  input.IsPublished,
 		CreatedAt:    input.CreatedAt,
 		EditedAt:     input.EditedAt,
-	}, nil
+	}
 }

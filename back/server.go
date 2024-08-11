@@ -4,16 +4,19 @@ import (
 	"back/article/infra"
 	"back/database"
 	"back/graph"
+	"context"
 	"flag"
 	"log"
 	"net/http"
 	"os"
 
+	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
+	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
 const defaultPort = "1323"
@@ -48,7 +51,8 @@ func main() {
 
 	articleRepository := infra.NewArticleRepository(db)
 
-	graphqlHandler := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{ArticleRepository: articleRepository}}))
+	gqlHandler := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{ArticleRepository: articleRepository}}))
+	gqlHandler.SetErrorPresenter(customeErrorPresenter)
 	playgroundHandler := playground.Handler("GraphQL", "/graphql")
 
 	e.GET("/playground", func(c echo.Context) error {
@@ -56,7 +60,7 @@ func main() {
 		return nil
 	})
 	e.POST("/graphql", func(c echo.Context) error {
-		graphqlHandler.ServeHTTP(c.Response(), c.Request())
+		gqlHandler.ServeHTTP(c.Response(), c.Request())
 		return nil
 	})
 
@@ -67,5 +71,13 @@ func main() {
 func welcome() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		return c.String(http.StatusOK, "Welcome!")
+	}
+}
+
+func customeErrorPresenter(ctx context.Context, err error) *gqlerror.Error {
+	switch err.(type) {
+	default:
+		return graphql.DefaultErrorPresenter(ctx, err)
+
 	}
 }

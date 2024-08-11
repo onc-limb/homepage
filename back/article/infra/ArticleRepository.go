@@ -3,7 +3,6 @@ package infra
 import (
 	"back/article/domain"
 	"back/database"
-	"log"
 
 	"gorm.io/gorm"
 )
@@ -19,9 +18,12 @@ func NewArticleRepository(db *gorm.DB) *ArticleRepository {
 func (r *ArticleRepository) FindByID(id uint) (domain.Article, error) {
 	var article database.Article
 	if err := r.DB.Preload("Category").First(&article, id).Error; err != nil {
-		log.Fatal(err)
+		return domain.Article{}, err
 	}
-	c, _ := domain.UnmarshalCategory(article.Category.Name)
+	c, err := domain.UnmarshalCategory(article.Category.Name)
+	if err != nil {
+		return domain.Article{}, err
+	}
 
 	return domain.Article{
 		ID:        article.ID,

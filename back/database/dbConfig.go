@@ -2,7 +2,9 @@ package database
 
 import (
 	"flag"
+	"fmt"
 	"log"
+	"os"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -12,7 +14,15 @@ var models = []interface{}{&Category{}, &Article{}}
 var migrateCommand = flag.Bool("migrate", false, "Run database migrations")
 
 func SetupDB() (*gorm.DB, error) {
-	dsn := "host=homepage-db user=homepage_user password=homepage_pass dbname=homepage_db port=5432 sslmode=disable TimeZone=Asia/Tokyo"
+	host := os.Getenv("DB_HOST")
+	user := os.Getenv("DB_USER")
+	password := os.Getenv("DB_PASSWORD")
+	dbname := os.Getenv("DB_NAME")
+	port := os.Getenv("DB_PORT")
+	sslmode := "disable"
+	timeZone := "Asia/Tokyo"
+
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=%s", host, user, password, dbname, port, sslmode, timeZone)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return nil, err
