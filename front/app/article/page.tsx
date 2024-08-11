@@ -12,16 +12,15 @@ export default function ArticleTop() {
                     <div className="flex flex-col justify-center space-y-4">
                         <div className="space-y-4">
                             <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
-                                塵は同じ場所に積め
+                                流楽雑記
                             </h1>
+                            <div className='text-3xl font-bold'>〜　技術の岩を登る　〜</div>
                             <p className="max-w-[600px] text-gray-500 md:text-xl dark:text-gray-400">
-                                人の記憶はあまりにも脆い。
+                                エンジニアリングは楽しい。自分の考えを実現できるから。
                                 <br />
-                                昨日の晩御飯でさえパッと思い出せない。
+                                クライミングは楽しい。自分の限界に挑戦できるから。
                                 <br />
-                                「塵も積もれば山となる」というけれど、塵を積んでいた場所を忘れてしまい毎度新しい場所に積んでいたらいつまで経っても山にはならない。
-                                <br />
-                                塵を同じ場所に積めるように、日々学んだこと、気づいたこと、ついでに楽しかったことを雑記していく。
+                                日々「流」れていく「楽」しいを「雑」に「記」していく。
                             </p>
                         </div>
                         <Link
