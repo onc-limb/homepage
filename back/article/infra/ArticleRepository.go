@@ -5,15 +5,17 @@ import (
 	"back/database"
 	"time"
 
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"gorm.io/gorm"
 )
 
 type ArticleRepository struct {
-	DB *gorm.DB
+	DB     *gorm.DB
+	Dynamo *dynamodb.Client
 }
 
-func NewArticleRepository(db *gorm.DB) *ArticleRepository {
-	return &ArticleRepository{DB: db}
+func NewArticleRepository(db *gorm.DB, dynamo *dynamodb.Client) *ArticleRepository {
+	return &ArticleRepository{DB: db, Dynamo: dynamo}
 }
 
 func (r *ArticleRepository) FindByID(id uint) (domain.Article, error) {

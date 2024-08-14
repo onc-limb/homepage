@@ -1,7 +1,6 @@
 package database
 
 import (
-	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -11,9 +10,8 @@ import (
 )
 
 var models = []interface{}{&Category{}, &Article{}}
-var migrateCommand = flag.Bool("migrate", false, "Run database migrations")
 
-func SetupDB() (*gorm.DB, error) {
+func SetupDB(migrateCommand bool) (*gorm.DB, error) {
 	host := os.Getenv("DB_HOST")
 	user := os.Getenv("DB_USER")
 	password := os.Getenv("DB_PASSWORD")
@@ -28,7 +26,7 @@ func SetupDB() (*gorm.DB, error) {
 		return nil, err
 	}
 
-	if *migrateCommand {
+	if migrateCommand {
 		runMigrate(db)
 	}
 	return db, nil

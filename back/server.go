@@ -2,6 +2,7 @@ package main
 
 import (
 	"back/article/infra"
+	"back/awssdk"
 	"back/database"
 	"back/graph"
 	"context"
@@ -21,6 +22,8 @@ import (
 
 const defaultPort = "1323"
 
+var migrateCommand = flag.Bool("migrate", false, "Run database migrations")
+
 func main() {
 	err := godotenv.Load()
 	if err != nil {
@@ -32,10 +35,17 @@ func main() {
 	}
 	flag.Parse()
 
-	db, err := database.SetupDB()
+	db, err := database.SetupDB(*migrateCommand)
 	if err != nil {
 		panic("failed to connect database")
 	}
+
+	sdkcfg, err := awssdk.SetSdkConfig()
+	if err != nil {
+		panic("failed to connect aws")
+	}
+
+	dynamo := sdkcfg.SetupDynamoDB(*migrateCommand)
 
 	e := echo.New()
 
@@ -49,7 +59,7 @@ func main() {
 
 	e.GET("/", welcome())
 
-	articleRepository := infra.NewArticleRepository(db)
+	articleRepository := infra.NewArticleRepository(db, dynamo)
 
 	gqlHandler := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{ArticleRepository: articleRepository}}))
 	gqlHandler.SetErrorPresenter(customeErrorPresenter)
