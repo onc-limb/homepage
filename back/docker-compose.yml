@@ -12,6 +12,7 @@ services:
     depends_on:
       - db
       - dynamodb-local
+
   db:
     image: postgres:latest
     container_name: homepage-db
@@ -24,6 +25,7 @@ services:
       - db-storage:/var/lib/postgresql/data
     ports:
       - "5435:5432"
+
   dynamodb-local:
     command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
     image: "amazon/dynamodb-local:latest"
@@ -31,7 +33,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - "dynamodb-local-storage:/home/dynamodblocal/data"
+      - "./dynamodb-local-storage:/home/dynamodblocal/data"
     working_dir: /home/dynamodblocal
 
 volumes:
