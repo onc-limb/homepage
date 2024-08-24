@@ -15,7 +15,7 @@ func (a *AwsConfig) SetupDynamoDB(migrateCommand bool) *dynamodb.Client {
 	switch os.Getenv("ENV") {
 	case "local":
 		client = dynamodb.NewFromConfig(a.config, func(o *dynamodb.Options) {
-			o.BaseEndpoint = aws.String("http://dynamodb-local:8000")
+			o.BaseEndpoint = aws.String(os.Getenv("DYNAMODB_ENDPOINT"))
 		})
 	case "prd":
 		client = dynamodb.NewFromConfig(a.config)
