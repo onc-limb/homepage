@@ -10,16 +10,14 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
-	"gorm.io/gorm"
 )
 
 type ArticleRepository struct {
-	DB     *gorm.DB
 	Dynamo *dynamodb.Client
 }
 
-func NewArticleRepository(db *gorm.DB, dynamo *dynamodb.Client) *ArticleRepository {
-	return &ArticleRepository{DB: db, Dynamo: dynamo}
+func NewArticleRepository(dynamo *dynamodb.Client) *ArticleRepository {
+	return &ArticleRepository{Dynamo: dynamo}
 }
 
 func (r *ArticleRepository) GetUnique(category domain.Category, id string) (domain.Article, error) {

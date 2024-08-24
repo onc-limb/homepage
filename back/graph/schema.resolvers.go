@@ -7,18 +7,12 @@ package graph
 import (
 	"back/graph/model"
 	"context"
-	"fmt"
 )
 
 // InsertArticle is the resolver for the insertArticle field.
 func (r *mutationResolver) InsertArticle(ctx context.Context, input model.InsertDto) (*model.Article, error) {
 	ar := NewResolver(r.ArticleRepository)
 	return ar.InsertArticle(ctx, input)
-}
-
-// InsertArticleFromNotion is the resolver for the insertArticleFromNotion field.
-func (r *mutationResolver) InsertArticleFromNotion(ctx context.Context, input model.InsertFromNotionDto) (*model.Article, error) {
-	panic(fmt.Errorf("not implemented: InsertArticleFromNotion - insertArticleFromNotion"))
 }
 
 // EditArticle is the resolver for the editArticle field.

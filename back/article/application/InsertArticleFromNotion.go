@@ -6,6 +6,7 @@ import (
 	"fmt"
 )
 
+// 使用しない
 func (u *ArticleUsecase) InsertArticleFromNotion(pageId string, category domain.Category) (domain.Article, error) {
 	article, err := notion.GetPageAndBlocks(pageId)
 	if err != nil {

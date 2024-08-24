@@ -68,9 +68,8 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		EditArticle             func(childComplexity int, input model.EditArticle) int
-		InsertArticle           func(childComplexity int, input model.InsertDto) int
-		InsertArticleFromNotion func(childComplexity int, input model.InsertFromNotionDto) int
+		EditArticle   func(childComplexity int, input model.EditArticle) int
+		InsertArticle func(childComplexity int, input model.InsertDto) int
 	}
 
 	Query struct {
@@ -81,7 +80,6 @@ type ComplexityRoot struct {
 
 type MutationResolver interface {
 	InsertArticle(ctx context.Context, input model.InsertDto) (*model.Article, error)
-	InsertArticleFromNotion(ctx context.Context, input model.InsertFromNotionDto) (*model.Article, error)
 	EditArticle(ctx context.Context, input model.EditArticle) (*model.Article, error)
 }
 type QueryResolver interface {
@@ -216,18 +214,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.InsertArticle(childComplexity, args["input"].(model.InsertDto)), true
 
-	case "Mutation.insertArticleFromNotion":
-		if e.complexity.Mutation.InsertArticleFromNotion == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_insertArticleFromNotion_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.InsertArticleFromNotion(childComplexity, args["input"].(model.InsertFromNotionDto)), true
-
 	case "Query.allArticles":
 		if e.complexity.Query.AllArticles == nil {
 			break
@@ -258,7 +244,6 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputArticleCompositeKey,
 		ec.unmarshalInputEditArticle,
 		ec.unmarshalInputInsertDto,
-		ec.unmarshalInputInsertFromNotionDto,
 	)
 	first := true
 
@@ -382,21 +367,6 @@ func (ec *executionContext) field_Mutation_editArticle_args(ctx context.Context,
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNEditArticle2backᚋgraphᚋmodelᚐEditArticle(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Mutation_insertArticleFromNotion_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 model.InsertFromNotionDto
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNInsertFromNotionDto2backᚋgraphᚋmodelᚐInsertFromNotionDto(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1081,77 +1051,6 @@ func (ec *executionContext) fieldContext_Mutation_insertArticle(ctx context.Cont
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_insertArticle_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Mutation_insertArticleFromNotion(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_insertArticleFromNotion(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().InsertArticleFromNotion(rctx, fc.Args["input"].(model.InsertFromNotionDto))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*model.Article)
-	fc.Result = res
-	return ec.marshalNArticle2ᚖbackᚋgraphᚋmodelᚐArticle(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Mutation_insertArticleFromNotion(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_Article_id(ctx, field)
-			case "title":
-				return ec.fieldContext_Article_title(ctx, field)
-			case "category":
-				return ec.fieldContext_Article_category(ctx, field)
-			case "content":
-				return ec.fieldContext_Article_content(ctx, field)
-			case "featurePoint":
-				return ec.fieldContext_Article_featurePoint(ctx, field)
-			case "publishedAt":
-				return ec.fieldContext_Article_publishedAt(ctx, field)
-			case "editedAt":
-				return ec.fieldContext_Article_editedAt(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Article", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_insertArticleFromNotion_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -3381,40 +3280,6 @@ func (ec *executionContext) unmarshalInputInsertDto(ctx context.Context, obj int
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputInsertFromNotionDto(ctx context.Context, obj interface{}) (model.InsertFromNotionDto, error) {
-	var it model.InsertFromNotionDto
-	asMap := map[string]interface{}{}
-	for k, v := range obj.(map[string]interface{}) {
-		asMap[k] = v
-	}
-
-	fieldsInOrder := [...]string{"pageId", "category"}
-	for _, k := range fieldsInOrder {
-		v, ok := asMap[k]
-		if !ok {
-			continue
-		}
-		switch k {
-		case "pageId":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pageId"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.PageID = data
-		case "category":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("category"))
-			data, err := ec.unmarshalNCategory2backᚋarticleᚋdomainᚐCategory(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Category = data
-		}
-	}
-
-	return it, nil
-}
-
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -3573,13 +3438,6 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "insertArticle":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_insertArticle(ctx, field)
-			})
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "insertArticleFromNotion":
-			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_insertArticleFromNotion(ctx, field)
 			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
@@ -4139,11 +3997,6 @@ func (ec *executionContext) unmarshalNEditArticle2backᚋgraphᚋmodelᚐEditArt
 
 func (ec *executionContext) unmarshalNInsertDto2backᚋgraphᚋmodelᚐInsertDto(ctx context.Context, v interface{}) (model.InsertDto, error) {
 	res, err := ec.unmarshalInputInsertDto(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) unmarshalNInsertFromNotionDto2backᚋgraphᚋmodelᚐInsertFromNotionDto(ctx context.Context, v interface{}) (model.InsertFromNotionDto, error) {
-	res, err := ec.unmarshalInputInsertFromNotionDto(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 

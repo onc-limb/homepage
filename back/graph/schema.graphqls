@@ -51,13 +51,7 @@ input InsertDto {
   content: String!
 }
 
-input InsertFromNotionDto {
-  pageId: String!
-  category: Category!
-}
-
 type Mutation {
   insertArticle(input: InsertDto!): Article!
-  insertArticleFromNotion(input: InsertFromNotionDto!): Article!
   editArticle(input: EditArticle!): Article!
 }

@@ -3,7 +3,6 @@ package main
 import (
 	"back/article/infra"
 	"back/awssdk"
-	"back/database"
 	"back/graph"
 	"context"
 	"flag"
@@ -35,10 +34,11 @@ func main() {
 	}
 	flag.Parse()
 
-	db, err := database.SetupDB(*migrateCommand)
-	if err != nil {
-		panic("failed to connect database")
-	}
+	// // postgres用
+	// db, err := database.SetupDB(*migrateCommand)
+	// if err != nil {
+	// 	panic("failed to connect database")
+	// }
 
 	sdkcfg, err := awssdk.SetSdkConfig()
 	if err != nil {
@@ -59,7 +59,7 @@ func main() {
 
 	e.GET("/", welcome())
 
-	articleRepository := infra.NewArticleRepository(db, dynamo)
+	articleRepository := infra.NewArticleRepository(dynamo)
 
 	gqlHandler := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{ArticleRepository: articleRepository}}))
 	gqlHandler.SetErrorPresenter(customeErrorPresenter)

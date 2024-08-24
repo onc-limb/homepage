@@ -43,11 +43,6 @@ type InsertDto struct {
 	Content  string          `json:"content"`
 }
 
-type InsertFromNotionDto struct {
-	PageID   string          `json:"pageId"`
-	Category domain.Category `json:"category"`
-}
-
 type Mutation struct {
 }
 
