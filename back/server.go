@@ -2,21 +2,26 @@ package main
 
 import (
 	"back/article/infra"
-	"back/database"
+	"back/awssdk"
 	"back/graph"
+	"context"
 	"flag"
 	"log"
 	"net/http"
 	"os"
 
+	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
+	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
 const defaultPort = "1323"
+
+var migrateCommand = flag.Bool("migrate", false, "Run database migrations")
 
 func main() {
 	err := godotenv.Load()
@@ -29,10 +34,18 @@ func main() {
 	}
 	flag.Parse()
 
-	db, err := database.SetupDB()
+	// // postgres用
+	// db, err := database.SetupDB(*migrateCommand)
+	// if err != nil {
+	// 	panic("failed to connect database")
+	// }
+
+	sdkcfg, err := awssdk.SetSdkConfig()
 	if err != nil {
-		panic("failed to connect database")
+		panic("failed to connect aws")
 	}
+
+	dynamo := sdkcfg.SetupDynamoDB(*migrateCommand)
 
 	e := echo.New()
 
@@ -46,9 +59,10 @@ func main() {
 
 	e.GET("/", welcome())
 
-	articleRepository := infra.NewArticleRepository(db)
+	articleRepository := infra.NewArticleRepository(dynamo)
 
-	graphqlHandler := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{ArticleRepository: articleRepository}}))
+	gqlHandler := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{ArticleRepository: articleRepository}}))
+	gqlHandler.SetErrorPresenter(customeErrorPresenter)
 	playgroundHandler := playground.Handler("GraphQL", "/graphql")
 
 	e.GET("/playground", func(c echo.Context) error {
@@ -56,7 +70,7 @@ func main() {
 		return nil
 	})
 	e.POST("/graphql", func(c echo.Context) error {
-		graphqlHandler.ServeHTTP(c.Response(), c.Request())
+		gqlHandler.ServeHTTP(c.Response(), c.Request())
 		return nil
 	})
 
@@ -67,5 +81,13 @@ func main() {
 func welcome() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		return c.String(http.StatusOK, "Welcome!")
+	}
+}
+
+func customeErrorPresenter(ctx context.Context, err error) *gqlerror.Error {
+	switch err.(type) {
+	default:
+		return graphql.DefaultErrorPresenter(ctx, err)
+
 	}
 }

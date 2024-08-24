@@ -38,11 +38,11 @@ func (c *Category) UnmarshalGQL(v interface{}) error {
 	}
 
 	switch str {
-	case "クライミング":
+	case "CLIMBING":
 		*c = CLIMBING
-	case "エンジニアリング":
+	case "ENGINEERING":
 		*c = ENGINEERING
-	case "生活":
+	case "LIFE":
 		*c = LIFE
 	default:
 		return fmt.Errorf("invalid Category: %s", str)

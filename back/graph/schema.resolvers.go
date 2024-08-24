@@ -7,18 +7,12 @@ package graph
 import (
 	"back/graph/model"
 	"context"
-	"fmt"
 )
 
 // InsertArticle is the resolver for the insertArticle field.
 func (r *mutationResolver) InsertArticle(ctx context.Context, input model.InsertDto) (*model.Article, error) {
 	ar := NewResolver(r.ArticleRepository)
 	return ar.InsertArticle(ctx, input)
-}
-
-// InsertArticleFromNotion is the resolver for the insertArticleFromNotion field.
-func (r *mutationResolver) InsertArticleFromNotion(ctx context.Context, input model.InsertFromNotionDto) (*model.Article, error) {
-	panic(fmt.Errorf("not implemented: InsertArticleFromNotion - insertArticleFromNotion"))
 }
 
 // EditArticle is the resolver for the editArticle field.
@@ -28,15 +22,15 @@ func (r *mutationResolver) EditArticle(ctx context.Context, input model.EditArti
 }
 
 // AllArticles is the resolver for the allArticles field.
-func (r *queryResolver) AllArticles(ctx context.Context) ([]*model.Article, error) {
+func (r *queryResolver) AllArticles(ctx context.Context) ([]*model.ArticleOverview, error) {
 	ar := NewResolver(r.ArticleRepository)
 	return ar.AllArticles(ctx)
 }
 
 // Article is the resolver for the article field.
-func (r *queryResolver) Article(ctx context.Context, input int) (*model.Article, error) {
+func (r *queryResolver) Article(ctx context.Context, input model.ArticleCompositeKey) (*model.Article, error) {
 	ar := NewResolver(r.ArticleRepository)
-	return ar.Article(ctx, uint(input))
+	return ar.Article(ctx, input)
 }
 
 // Mutation returns MutationResolver implementation.

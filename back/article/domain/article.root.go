@@ -2,24 +2,42 @@ package domain
 
 import (
 	"time"
+
+	"github.com/google/uuid"
 )
 
-type BaseArticle struct {
+type Article struct {
+	ID           string
+	Category     Category
 	Title        string
-	CategoryId   uint
 	Content      string
 	FeaturePoint uint
-	IsPublished  bool
+	PublishedAt  time.Time
+	EditedAt     time.Time
 }
 
-type Article struct {
-	ID        uint
-	Category  Category
-	CreatedAt time.Time
-	EditedAt  time.Time
-	BaseArticle
+type ArticleOverview struct {
+	ID          string
+	Category    Category
+	Title       string
+	PublishedAt time.Time
+	EditedAt    time.Time
 }
 
-type NewArticle struct {
-	BaseArticle
+type ArticleInput struct {
+	Title    string
+	Category Category
+	Content  string
+}
+
+func CreateArticle(input ArticleInput) Article {
+	return Article{
+		ID:           uuid.New().String(),
+		Category:     input.Category,
+		Title:        input.Title,
+		Content:      input.Content,
+		FeaturePoint: 0,
+		PublishedAt:  time.Now(),
+		EditedAt:     time.Now(),
+	}
 }

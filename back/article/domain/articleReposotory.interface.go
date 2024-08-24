@@ -1,7 +1,7 @@
 package domain
 
 type ArticleRepository interface {
-	FindByID(uint) (Article, error)
-	Insert(NewArticle) (Article, error)
+	GetUnique(Category, string) (Article, error)
+	Insert(Article) (Article, error)
 	Edit(Article) (Article, error)
 }

@@ -6,13 +6,9 @@ import (
 )
 
 func (u *ArticleUsecase) InsertArticle(article model.InsertDto) (domain.Article, error) {
-	return u.ArticleRepository.Insert(domain.NewArticle{
-		BaseArticle: domain.BaseArticle{
-			Title:        article.Title,
-			CategoryId:   uint(article.Category),
-			Content:      article.Content,
-			FeaturePoint: uint(article.FeaturePoint),
-			IsPublished:  article.IsPublished,
-		},
-	})
+	return u.ArticleRepository.Insert(domain.CreateArticle(domain.ArticleInput{
+		Category: domain.Category(article.Category),
+		Title:    article.Title,
+		Content:  article.Content,
+	}))
 }

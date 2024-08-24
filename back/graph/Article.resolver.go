@@ -19,29 +19,26 @@ func NewResolver(ArticleRepo domain.ArticleRepository) *ArticleResolver {
 	}
 }
 
-func (r *ArticleResolver) Article(ctx context.Context, id uint) (*model.Article, error) {
-	article, err := r.ArticleUsecase.GetArticle(id)
+func (r *ArticleResolver) Article(ctx context.Context, input model.ArticleCompositeKey) (*model.Article, error) {
+	article, err := r.ArticleUsecase.GetArticle(input.Category, input.ID)
 	if err != nil {
 		return nil, err
 	}
-	return convertToModel(article)
+	return convertToModel(article), nil
 }
 
-func (r *ArticleResolver) AllArticles(ctx context.Context) ([]*model.Article, error) {
+func (r *ArticleResolver) AllArticles(ctx context.Context) ([]*model.ArticleOverview, error) {
 	articles, err := r.ArticleUsecase.GetAllArticles()
 	if err != nil {
 		return nil, err
 	}
 
-	m := make([]*model.Article, len(articles))
+	m := make([]*model.ArticleOverview, len(articles))
 	for i, article := range articles {
-		m[i] = &model.Article{
-			ID:    int(article.ID),
-			Title: article.Title,
-		}
+		m[i] = convertToModelOverview(article)
 	}
 
-	return []*model.Article{}, nil
+	return m, nil
 }
 
 func (r *ArticleResolver) EditArticle(ctx context.Context, input model.EditArticle) (*model.Article, error) {
@@ -55,19 +52,27 @@ func (r *ArticleResolver) InsertArticle(ctx context.Context, input model.InsertD
 		return nil, err
 	}
 
-	return convertToModel(article)
+	return convertToModel(article), nil
 }
 
-func convertToModel(input domain.Article) (*model.Article, error) {
+func convertToModel(input domain.Article) *model.Article {
 	return &model.Article{
-		ID:           int(input.ID),
+		ID:           input.ID,
 		Title:        input.Title,
-		CategoryID:   int(input.CategoryId),
 		Category:     input.Category,
 		Content:      input.Content,
 		FeaturePoint: int(input.FeaturePoint),
-		IsPublished:  input.IsPublished,
-		CreatedAt:    input.CreatedAt,
+		PublishedAt:  input.PublishedAt,
 		EditedAt:     input.EditedAt,
-	}, nil
+	}
+}
+
+func convertToModelOverview(input domain.ArticleOverview) *model.ArticleOverview {
+	return &model.ArticleOverview{
+		ID:          input.ID,
+		Title:       input.Title,
+		Category:    input.Category,
+		PublishedAt: input.PublishedAt,
+		EditedAt:    input.EditedAt,
+	}
 }
