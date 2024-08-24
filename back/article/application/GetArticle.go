@@ -4,6 +4,6 @@ import (
 	"back/article/domain"
 )
 
-func (u *ArticleUsecase) GetArticle(id uint) (domain.Article, error) {
-	return u.ArticleRepository.FindByID(id)
+func (u *ArticleUsecase) GetArticle(category domain.Category, id string) (domain.Article, error) {
+	return u.ArticleRepository.GetUnique(category, id)
 }

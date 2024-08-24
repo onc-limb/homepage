@@ -34,7 +34,11 @@ func createTable(d *dynamodb.Client) {
 		TableName: aws.String("Article"),
 		AttributeDefinitions: []types.AttributeDefinition{
 			{
-				AttributeName: aws.String("id"),
+				AttributeName: aws.String("category"),
+				AttributeType: types.ScalarAttributeTypeS,
+			},
+			{
+				AttributeName: aws.String("articleId"),
 				AttributeType: types.ScalarAttributeTypeS,
 			},
 			{
@@ -42,26 +46,46 @@ func createTable(d *dynamodb.Client) {
 				AttributeType: types.ScalarAttributeTypeS,
 			},
 			{
-				AttributeName: aws.String("category"),
-				AttributeType: types.ScalarAttributeTypeS,
-			},
-			{
 				AttributeName: aws.String("featurePoint"),
 				AttributeType: types.ScalarAttributeTypeN,
+			},
+			{
+				AttributeName: aws.String("globalKey"),
+				AttributeType: types.ScalarAttributeTypeS,
 			},
 		},
 		KeySchema: []types.KeySchemaElement{
 			{
-				AttributeName: aws.String("id"),
+				AttributeName: aws.String("category"),
 				KeyType:       types.KeyTypeHash,
+			},
+			{
+				AttributeName: aws.String("articleId"),
+				KeyType:       types.KeyTypeRange,
 			},
 		},
 		GlobalSecondaryIndexes: []types.GlobalSecondaryIndex{
 			{
-				IndexName: aws.String("CategoryIndex"),
+				IndexName: aws.String("ArticleIDIndex"),
 				KeySchema: []types.KeySchemaElement{
 					{
-						AttributeName: aws.String("category"),
+						AttributeName: aws.String("articleId"),
+						KeyType:       types.KeyTypeHash,
+					},
+				},
+				Projection: &types.Projection{
+					ProjectionType: types.ProjectionTypeAll,
+				},
+				ProvisionedThroughput: &types.ProvisionedThroughput{
+					ReadCapacityUnits:  aws.Int64(5),
+					WriteCapacityUnits: aws.Int64(5),
+				},
+			},
+			{
+				IndexName: aws.String("EditedAtIndex"),
+				KeySchema: []types.KeySchemaElement{
+					{
+						AttributeName: aws.String("globalKey"),
 						KeyType:       types.KeyTypeHash,
 					},
 					{
@@ -81,7 +105,7 @@ func createTable(d *dynamodb.Client) {
 				IndexName: aws.String("FeaturePointIndex"),
 				KeySchema: []types.KeySchemaElement{
 					{
-						AttributeName: aws.String("category"),
+						AttributeName: aws.String("globalKey"),
 						KeyType:       types.KeyTypeHash,
 					},
 					{
@@ -106,6 +130,8 @@ func createTable(d *dynamodb.Client) {
 	_, err := d.CreateTable(context.TODO(), input)
 	if err != nil {
 		log.Println("Failed to create table", err)
+	} else {
+		log.Println("Success to create table")
 	}
-	log.Println("Success to create table")
+
 }

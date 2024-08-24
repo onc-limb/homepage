@@ -5,14 +5,20 @@
 scalar Time
 
 type Article {
-  id: Int!
+  id: String!
   title: String!
-  categoryId: Int!
   category: Category!
   content: String!
   featurePoint: Int!
-  isPublished: Boolean!
-  publishedAt: Time
+  publishedAt: Time!
+  editedAt: Time!
+}
+
+type ArticleOverview {
+  id: String!
+  title: String!
+  category: Category!
+  publishedAt: Time!
   editedAt: Time!
 }
 
@@ -22,13 +28,18 @@ enum Category {
   LIFE
 }
 
+input ArticleCompositeKey {
+  category: Category!
+  id: String!
+}
+
 type Query {
-  allArticles: [Article!]!
-  article(input: Int!): Article!
+  allArticles: [ArticleOverview!]!
+  article(input: ArticleCompositeKey!): Article!
 }
 
 input EditArticle {
-  id: Int!
+  id: String!
   title: String
   content: String
   category: Category
@@ -38,8 +49,6 @@ input InsertDto {
   title: String!
   category: Category!
   content: String!
-  featurePoint: Int!
-  isPublished: Boolean!
 }
 
 input InsertFromNotionDto {

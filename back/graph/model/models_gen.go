@@ -8,30 +8,39 @@ import (
 )
 
 type Article struct {
-	ID           int             `json:"id"`
+	ID           string          `json:"id"`
 	Title        string          `json:"title"`
-	CategoryID   int             `json:"categoryId"`
 	Category     domain.Category `json:"category"`
 	Content      string          `json:"content"`
 	FeaturePoint int             `json:"featurePoint"`
-	IsPublished  bool            `json:"isPublished"`
-	PublishedAt  *time.Time      `json:"publishedAt,omitempty"`
+	PublishedAt  time.Time       `json:"publishedAt"`
 	EditedAt     time.Time       `json:"editedAt"`
 }
 
+type ArticleCompositeKey struct {
+	Category domain.Category `json:"category"`
+	ID       string          `json:"id"`
+}
+
+type ArticleOverview struct {
+	ID          string          `json:"id"`
+	Title       string          `json:"title"`
+	Category    domain.Category `json:"category"`
+	PublishedAt time.Time       `json:"publishedAt"`
+	EditedAt    time.Time       `json:"editedAt"`
+}
+
 type EditArticle struct {
-	ID       int              `json:"id"`
+	ID       string           `json:"id"`
 	Title    *string          `json:"title,omitempty"`
 	Content  *string          `json:"content,omitempty"`
 	Category *domain.Category `json:"category,omitempty"`
 }
 
 type InsertDto struct {
-	Title        string          `json:"title"`
-	Category     domain.Category `json:"category"`
-	Content      string          `json:"content"`
-	FeaturePoint int             `json:"featurePoint"`
-	IsPublished  bool            `json:"isPublished"`
+	Title    string          `json:"title"`
+	Category domain.Category `json:"category"`
+	Content  string          `json:"content"`
 }
 
 type InsertFromNotionDto struct {
