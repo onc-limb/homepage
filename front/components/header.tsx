@@ -17,7 +17,7 @@ const Header = () => {
                         src={Logo}
                         alt="メインロゴ"
                         width={50}
-                        objectFit="contain"
+                        style={{objectFit:"contain"}}
                         className="ml-4"
                     />
                     <h1 className="flex items-center uppercase text-white font-serif text-4xl italic">
