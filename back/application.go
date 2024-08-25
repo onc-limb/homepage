@@ -19,7 +19,7 @@ import (
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
-const defaultPort = "1323"
+const defaultPort = "5000"
 
 var migrateCommand = flag.Bool("migrate", false, "Run database migrations")
 

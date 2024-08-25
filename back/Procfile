@@ -1,0 +1,1 @@
+web: GOSUMDB=off go build -o bin/application application.go && ./bin/application
