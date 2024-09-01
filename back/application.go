@@ -19,14 +19,14 @@ import (
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
-const defaultPort = "1323"
+const defaultPort = "5000"
 
 var migrateCommand = flag.Bool("migrate", false, "Run database migrations")
 
 func main() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Println("Error loading .env file")
 	}
 	port := os.Getenv("PORT")
 	if port == "" {
