@@ -17,10 +17,21 @@ type AwsConfig struct {
 func SetSdkConfig() (*AwsConfig, error) {
 	reagion := os.Getenv("AWS_REGION")
 
-	cfg, err := config.LoadDefaultConfig(context.TODO(),
-		config.WithRegion(reagion),
-		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(os.Getenv("AWS_ACCESS_KEY_ID"), os.Getenv("AWS_SECRET_ACCESS_KEY"), "")),
-	)
+	var cfg aws.Config
+	var err error
+
+	switch os.Getenv("ENV") {
+	case "local":
+		cfg, err = config.LoadDefaultConfig(context.TODO(),
+			config.WithRegion(reagion),
+			config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(os.Getenv("AWS_ACCESS_KEY_ID"), os.Getenv("AWS_SECRET_ACCESS_KEY"), "")),
+		)
+	case "prd":
+		cfg, err = config.LoadDefaultConfig(context.TODO(),
+			config.WithRegion(reagion),
+		)
+	}
+
 	if err != nil {
 		return nil, fmt.Errorf("unable to load SDK config: %w", err)
 	}
