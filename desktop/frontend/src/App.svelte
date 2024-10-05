@@ -2,7 +2,7 @@
   import { Router, Route, Link } from "svelte-routing";
   import View from "./View.svelte";
   import Insert from "./Insert.svelte";
-  import {
+  import type {
     RouterType,
     RouteType,
     LinkType,
