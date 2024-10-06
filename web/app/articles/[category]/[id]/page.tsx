@@ -15,7 +15,7 @@ const getCategoryString = (category: number): string => {
 };
 
 const ArticleDetail = async ({params}: {params: {category: string, id: string}}) => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/getDetail`, {
+  const res = await fetch(`${process.env.VERCEL_URL}/api/getDetail`, {
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json'

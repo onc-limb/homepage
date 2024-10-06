@@ -15,7 +15,7 @@ const Header = () => {
                 >
                     <Image
                         src={Logo}
-                        alt="メインロゴ"
+                        alt="main-logo"
                         width={50}
                         style={{objectFit:"contain"}}
                         className="ml-4"
@@ -26,7 +26,7 @@ const Header = () => {
                 </Link>
                 <div className="space-x-4 mx-8">
                     <HeaderButton href="/">トップ</HeaderButton>
-                    <HeaderButton href="/article">記事</HeaderButton>
+                    <HeaderButton href="/articles">記事一覧</HeaderButton>
                     <HeaderButton href="/portfolio">ポートフォリオ</HeaderButton>
                     <HeaderButton href="/profile">プロフィール</HeaderButton>
                 </div>
