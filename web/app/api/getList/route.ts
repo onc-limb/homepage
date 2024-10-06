@@ -1,9 +1,9 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { NextRequest, NextResponse } from 'next/server';
 
 export const runtime = 'nodejs';
 
-export async function GET(req: NextApiRequest, res: NextApiResponse) {
-    res.status(200).json([
+export async function GET(req: NextRequest, res: NextResponse) {
+    return NextResponse.json([
         {
             id: 1,
             category: 'engineering',
