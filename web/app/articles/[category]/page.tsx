@@ -3,7 +3,7 @@ import ComingSoon from "@/components/ComingSoon";
 const ArticleListPage = () => {
     return (
         <div>
-            <ComingSoon>article list</ComingSoon>
+            <ComingSoon>article category list</ComingSoon>
         </div>
     );
 }

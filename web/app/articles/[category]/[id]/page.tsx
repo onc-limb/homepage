@@ -1,22 +1,5 @@
-import {gql} from '@apollo/client'
-import useApolloClient from '@/lib/apolloClient';
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-
-
-const GET_ARTICLE_DETAIL = gql`
-    query GetArticleDetail($input: ArticleCompositeKey!) {
-        article(input: $input) {
-            id
-            title
-            category
-            content
-            featurePoint
-            publishedAt
-            editedAt
-        }
-    }
-`
 
 const getCategoryString = (category: number): string => {
   switch (category) {
@@ -31,26 +14,18 @@ const getCategoryString = (category: number): string => {
   }
 };
 
-const ArticlePage = async ({params}: {params: {category: string, id: string}}) => {
-    const client = useApolloClient();
-    const category = getCategoryString(parseInt(params.category))
-    var article: any
-    try {
-      const {data, errors} = await client.query({
-        query: GET_ARTICLE_DETAIL,
-        variables: {input: {
-          category: category,
-          id: params.id
-        }}
-    })
-    article = data.article
-    } catch (e: any) {
-      console.log("Gエラー:", e)
-      throw new Error
-    }
+const ArticleDetail = async ({params}: {params: {category: string, id: string}}) => {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/getDetail`, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
+    cache: 'no-store'
+  })
+  const article = await res.json()
 
     return (
-        <article className="w-full py-12 md:py-24 lg:py-32">
+    <article className="w-full py-12 md:py-24 lg:py-32">
       <div className="container px-4 md:px-6 lg:max-w-4xl">
         <div className="space-y-6">
           <div className="space-y-2">
@@ -68,4 +43,6 @@ const ArticlePage = async ({params}: {params: {category: string, id: string}}) =
     
 }
 
-export default ArticlePage
+export default ArticleDetail
+
+export const revalidate = 86400;
