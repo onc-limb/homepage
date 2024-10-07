@@ -1,6 +1,8 @@
 package main
 
 import (
+	"desktop/article"
+	"desktop/infra"
 	"embed"
 
 	"github.com/wailsapp/wails/v2"
@@ -12,12 +14,13 @@ import (
 var assets embed.FS
 
 func main() {
+	dynamoClient, _ := infra.SetupDynamoDB()
 	// Create an instance of the app structure
 	app := NewApp()
-
+	repo := article.NewRepository(dynamoClient)
 	// Create application with options
 	err := wails.Run(&options.App{
-		Title:  "desktop",
+		Title:  "home-page admin",
 		Width:  1024,
 		Height: 768,
 		AssetServer: &assetserver.Options{
@@ -27,6 +30,7 @@ func main() {
 		OnStartup:        app.startup,
 		Bind: []interface{}{
 			app,
+			article.NewModule(repo),
 		},
 	})
 
