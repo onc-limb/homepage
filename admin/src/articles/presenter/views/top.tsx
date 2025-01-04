@@ -1,10 +1,11 @@
 import type { FC } from "hono/jsx";
-import Layout from "./layout";
+import Layout from "../../../layout";
   
 const Top: FC = () => {
     return (
       <Layout>
-        <h1>This Page is Top</h1>
+        <h1>投稿記事一覧</h1>
+        <a href="/articles/new">記事投稿</a>
       </Layout>
     )
   }

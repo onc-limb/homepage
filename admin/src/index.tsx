@@ -6,8 +6,7 @@ const app = new Hono();
 app.route("/", router)
 
 app.get("/", (c) => {
-  const message = ["Good Morning", "Good Evening", "Good Night"];
-  return c.html(<Top message={message} />);
+  return c.html(<Top />);
 });
 
 export default app;
