@@ -5,6 +5,7 @@ import Logo from '@/public/MainLogo.jpg';
 import Image from 'next/image';
 
 export default function Top() {
+    const featuredArticles = ["[golang] gqlgenとgormでDB操作の依存性注入(DI)を行う.md"]
     return (
         <>
             <section className="w-full py-6 md:py-12 lg:py-18">
@@ -14,19 +15,11 @@ export default function Top() {
                             <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
                                 技術登攀録
                             </h1>
-                            <div className='text-3xl font-bold'>〜　技術の壁を登攀する　〜</div>
+                            <div className='text-3xl font-bold'>〜　理解することを諦めない　〜</div>
                             <p className="max-w-[600px] text-gray-500 md:text-xl dark:text-gray-400">
-                            <ol>
-                                <li>
-                                    仕事としてのエンジニアリング（課題解決）
-                                </li>
-                                <li>
-                                    趣味としてのエンジニアリング（知的好奇心）
-                                </li>
-                                <li>
-                                    生き甲斐としてのクライミング（生きる意味）
-                                </li>
-                            </ol>
+                                インフラがGUIで簡単に構築できる。<br/>
+                                フレームワークを使ったらすぐにウェブサイトが作成できる。<br/>
+                                そんな時代にこそ、技術に使われるのではなく技術を理解し使えるエンジニアを目指す者の記録
                             </p>
                         </div>
                         <Link
@@ -45,94 +38,35 @@ export default function Top() {
                     />
                 </div>
             </section>
-            <section className="w-full py-8 md:py-12 lg:py-16 bg-gray-100 dark:bg-gray-800">
-                <div className="container px-4 md:px-6 flex flex-col items-center justify-center space-y-8 text-center">
-                    <div className="space-y-2">
-                        <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                            記事のカテゴリー
-                        </h2>
-                    </div>
-                    <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
-                        <Link
-                            className="inline-flex h-16 items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-gray-900 shadow-sm transition-colors hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-950 dark:text-gray-50 dark:hover:bg-gray-800 dark:focus-visible:ring-gray-300"
-                            href="/articles/engineering"
-                        >
-                            エンジニアリング
-                        </Link>
-                        <Link
-                            className="inline-flex h-16 items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-gray-900 shadow-sm transition-colors hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-950 dark:text-gray-50 dark:hover:bg-gray-800 dark:focus-visible:ring-gray-300"
-                            href="/articles/climbing"
-                        >
-                            クライミング
-                        </Link>
-                        <Link
-                            className="inline-flex h-16 items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-gray-900 shadow-sm transition-colors hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-950 dark:text-gray-50 dark:hover:bg-gray-800 dark:focus-visible:ring-gray-300"
-                            href="/articles/others"
-                        >
-                            生活・その他
-                        </Link>
-                    </div>
-                </div>
-            </section>
-            <section className="w-full py-12 md:py-24 lg:py-32">
+            <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-100 dark:bg-gray-800">
                 <div className="container px-4 md:px-6 space-y-4">
                     <div className="space-y-2">
                         <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
-                            最新の投稿
+                            おすすめの投稿
                         </h2>
                     </div>
                     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        <Card>
-                            <CardContent>
-                                <div className="space-y-2">
-                                    <h3 className="text-xl font-semibold">タイトル１</h3>
-                                    <p className="text-gray-500 dark:text-gray-400">
-                                        テキスト
-                                    </p>
-                                    <Link
-                                        className="inline-flex items-center text-sm font-medium text-gray-900 transition-colors hover:text-gray-700 dark:text-gray-50 dark:hover:text-gray-300"
-                                        href="#"
-                                    >
-                                        全文を読む
-                                        <ArrowRightIcon className="ml-1 h-4 w-4" />
-                                    </Link>
-                                </div>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardContent>
-                                <div className="space-y-2">
-                                    <h3 className="text-xl font-semibold">タイトル１</h3>
-                                    <p className="text-gray-500 dark:text-gray-400">
-                                        テキスト
-                                    </p>
-                                    <Link
-                                        className="inline-flex items-center text-sm font-medium text-gray-900 transition-colors hover:text-gray-700 dark:text-gray-50 dark:hover:text-gray-300"
-                                        href="#"
-                                    >
-                                        全文を読む
-                                        <ArrowRightIcon className="ml-1 h-4 w-4" />
-                                    </Link>
-                                </div>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardContent>
-                                <div className="space-y-2">
-                                    <h3 className="text-xl font-semibold">タイトル１</h3>
-                                    <p className="text-gray-500 dark:text-gray-400">
-                                        テキスト
-                                    </p>
-                                    <Link
-                                        className="inline-flex items-center text-sm font-medium text-gray-900 transition-colors hover:text-gray-700 dark:text-gray-50 dark:hover:text-gray-300"
-                                        href="#"
-                                    >
-                                        全文を読む
-                                        <ArrowRightIcon className="ml-1 h-4 w-4" />
-                                    </Link>
-                                </div>
-                            </CardContent>
-                        </Card>
+                        {featuredArticles.map((article, index) => {
+                            const file = article.replace(/\.[^/.]+$/, "")
+                            const [category, title] = file.replace(/\.[^/.]+$/, "").split(' ');
+                            return <Card key={index}>
+                                <CardContent>
+                                    <div className="space-y-2">
+                                        <h3 className="text-xl font-semibold">{title}</h3>
+                                        <p className="text-gray-500 dark:text-gray-400">
+                                            {category}
+                                        </p>
+                                        <Link
+                                            className="inline-flex items-center text-sm font-medium text-gray-900 transition-colors hover:text-gray-700 dark:text-gray-50 dark:hover:text-gray-300"
+                                            href={`/articles/${file}`}
+                                        >
+                                            全文を読む
+                                            <ArrowRightIcon className="ml-1 h-4 w-4" />
+                                        </Link>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        })}
                     </div>
                 </div>
             </section>

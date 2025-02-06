@@ -3,7 +3,7 @@ import Logo from '@/public/MainLogo.jpg';
 import Image from 'next/image';
 import HeaderButton from '@/components/HeaderButton';
 
-const MAIN_TITLE = 'onc-limb';
+const MAIN_TITLE = '技術登攀録';
 
 const Header = () => {
     return (
@@ -11,7 +11,7 @@ const Header = () => {
             <div className="flex items-center justify-between bg-neutral-700">
                 <Link
                     href="/"
-                    className="flex flex space-x-4 mx-8 my-2 bg-neutral-900 rounded-full border-neutral-400 border-4 p-3"
+                    className="flex space-x-4 mx-8 my-2 bg-neutral-900 rounded-full border-neutral-400 border-4 p-3"
                 >
                     <Image
                         src={Logo}
