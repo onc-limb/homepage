@@ -3,15 +3,14 @@ import Link from 'next/link';
 
 export default async function ArticleList() {
     const articles = await getArticles();
-    console.log(articles);
 
     return (
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mt-12">
             {articles.map((article) => {
                 return (
                     <Link
-                        key={article.name}
-                        href={`/articles/${article.name}`}
+                        key={article.slug}
+                        href={`/articles/${article.slug}`}
                         className="group flex flex-col bg-card rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
                         prefetch={false}
                     >

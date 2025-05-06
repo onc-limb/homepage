@@ -1,14 +1,11 @@
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import fs from 'fs';
 import Link from 'next/link';
+import { getArticle } from '@/lib/article';
 
 const ArticleDetail = async ({ params }: { params: { title: string } }) => {
     const decodedTitle = decodeURIComponent(params.title);
-    const [category, title] = decodedTitle.split(' ');
-    const path = `${__dirname}/../../../../../articles/${decodedTitle}`;
-    const articleContent = fs.readFileSync(path, 'utf8');
-    const editedAt = fs.statSync(path).mtime;
+    const article = await getArticle(decodedTitle);
 
     return (
         <>
@@ -24,21 +21,26 @@ const ArticleDetail = async ({ params }: { params: { title: string } }) => {
                     <div className="space-y-6">
                         <div className="space-y-2">
                             <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl lg:text-6xl">
-                                {title}
+                                {article.data.title}
                             </h1>
                             <div className="flex space-x-4">
-                                <p className="flex-row text-gray-500 dark:text-gray-400">
-                                    {category}
-                                </p>
-                                <p className="flex-row text-gray-500 dark:text-gray-400">
-                                    更新日：{editedAt.toLocaleDateString()}
-                                </p>
+                                <span>
+                                    {article.data.topics &&
+                                        article.data.topics.map((topic, index) => (
+                                            <span
+                                                key={index}
+                                                className="px-2 py-1 bg-muted rounded-full"
+                                            >
+                                                {topic}
+                                            </span>
+                                        ))}
+                                </span>
                             </div>
                         </div>
                         <hr className="my-4 border-t border-gray-200 w-full" />
                         <div className="markdown prose prose-lg dark:prose-invert">
                             <Markdown remarkPlugins={[remarkGfm]}>
-                                {articleContent}
+                                {article.content}
                             </Markdown>
                         </div>
                     </div>

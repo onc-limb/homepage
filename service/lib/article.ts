@@ -1,10 +1,14 @@
 import matter from 'gray-matter';
 
 type ArticleMeta = {
-    name: string;
     title: string;
     slug: string;
     topics: string[];
+};
+
+type Article = {
+    data: ArticleMeta;
+    content: string;
 };
 
 export const getArticles = async () => {
@@ -23,14 +27,34 @@ export const getArticles = async () => {
             const { data } = matter(raw);
 
             articles.push({
-                name: file.name,
                 title: data.title,
-                slug: data.slug || file.name.replace('.md', ''),
+                slug: file.name.replace('.md', ''),
                 topics: data.topics,
             });
         }
     }
-    console.log('data: ', articles);
 
     return articles;
+};
+
+export const getArticle = async (slug: string) => {
+    const repo = 'onc-limb/knowledge-hub';
+    const dir = 'articles';
+    const apiUrl = `https://api.github.com/repos/${repo}/contents/${dir}/${slug}.md`;
+
+    const res = await fetch(apiUrl);
+    const json = await res.json();
+    const decoded = Buffer.from(json.content, 'base64').toString('utf-8');
+    const file = matter(decoded);
+
+    const article = {
+        data: {
+            title: file.data.title,
+            slug: slug,
+            topics: file.data.topics,
+        },
+        content: file.content,
+    };
+
+    return article as Article;
 };
