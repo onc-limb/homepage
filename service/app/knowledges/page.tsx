@@ -1,4 +1,5 @@
 import ArticleList from '@/components/articleList';
+import KnowledgeList from '@/components/knowledgeList';
 
 export default function ArticleListPage() {
     return (
@@ -7,14 +8,14 @@ export default function ArticleListPage() {
                 <div className="flex flex-col items-center justify-center space-y-4 text-center">
                     <div className="space-y-2">
                         <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                            記事一覧
+                            ナレッジベース
                         </h2>
                         <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                            普段使用する技術を少しだけ深く、少しだけ広く理解できるような記事
+                            学んだ知識、得た経験を乱雑に記録する
                         </p>
                     </div>
                 </div>
-                <ArticleList />
+                <KnowledgeList />
             </div>
         </section>
     );

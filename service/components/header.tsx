@@ -17,7 +17,7 @@ const Header = () => {
                         src={Logo}
                         alt="main-logo"
                         width={50}
-                        style={{objectFit:"contain"}}
+                        style={{ objectFit: 'contain' }}
                         className="ml-4"
                     />
                     <h1 className="flex items-center uppercase text-white font-serif text-4xl italic">
@@ -27,7 +27,7 @@ const Header = () => {
                 <div className="space-x-4 mx-8">
                     <HeaderButton href="/">トップ</HeaderButton>
                     <HeaderButton href="/articles">記事一覧</HeaderButton>
-                    <HeaderButton href="/portfolio">ポートフォリオ</HeaderButton>
+                    <HeaderButton href="/knowledges">ナレッジベース</HeaderButton>
                     <HeaderButton href="/profile">プロフィール</HeaderButton>
                 </div>
             </div>
