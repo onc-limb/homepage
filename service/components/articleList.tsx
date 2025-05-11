@@ -1,6 +1,8 @@
 import { getArticles } from '@/lib/article';
 import Link from 'next/link';
 
+export const revalidate = 3600; // 1時間ごとにバックグラウンド更新
+
 export default async function ArticleList() {
     const articles = await getArticles();
 
