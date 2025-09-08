@@ -106,7 +106,7 @@ export default function KnowledgeNode({
             <div
                 className={`relative rounded-full border-3 transition-all duration-300 cursor-pointer flex items-center justify-center shadow-lg ${
                     isExpanded 
-                        ? 'bg-neutral-600 border-neutral-800 shadow-2xl scale-110' 
+                        ? 'bg-red-800 border-red-900 shadow-2xl scale-110' 
                         : 'bg-gradient-to-br from-neutral-500 to-neutral-700 border-neutral-600 hover:shadow-xl hover:scale-105'
                 }`}
                 style={{
