@@ -1,12 +1,16 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { Category, SubCategory, getKnowledgeFilePath } from '@/lib/knowledge';
+
 interface KnowledgeNodeProps {
     category: Category;
     maxPoint: number;
+    containerWidth: number;
+    containerHeight: number;
+    position: { x: number; y: number };
+    onPositionUpdate: (categoryName: string, position: { x: number; y: number }) => void;
 }
 // SubCategory component to handle hooks properly
 function SubCategoryNode({ 
@@ -25,21 +29,21 @@ function SubCategoryNode({
             <Link
                 key={filename}
                 href={`/knowledges/${encodedPath}`}
-                className="block px-3 py-2 text-sm bg-blue-50 hover:bg-blue-100 rounded border-l-4 border-blue-400 transition-colors"
+                className="block px-3 py-2 text-sm bg-neutral-50 hover:bg-neutral-100 rounded border-l-4 border-neutral-400 transition-colors"
             >
                 📄 {displayName}
             </Link>
         );
     };
     return (
-        <div className="ml-4 border-l-2 border-gray-200 pl-4">
+        <div className="ml-4 border-l-2 border-neutral-200 pl-4">
             <button
                 onClick={() => setSubExpanded(!subExpanded)}
-                className="flex items-center gap-2 w-full text-left p-2 bg-purple-50 hover:bg-purple-100 rounded transition-colors"
+                className="flex items-center gap-2 w-full text-left p-2 bg-neutral-50 hover:bg-neutral-100 rounded transition-colors"
             >
                 {subExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                 <span className="font-medium">📁 {subcategory.category}</span>
-                <span className="text-sm text-gray-600">({subcategory.point} points)</span>
+                <span className="text-sm text-neutral-600">({subcategory.point} points)</span>
             </button>
             {subExpanded && (
                 <div className="mt-2 space-y-1">
@@ -51,11 +55,25 @@ function SubCategoryNode({
         </div>
     );
 }
-export default function KnowledgeNode({ category, maxPoint }: KnowledgeNodeProps) {
+export default function KnowledgeNode({ 
+    category, 
+    maxPoint, 
+    containerWidth, 
+    containerHeight, 
+    position,
+    onPositionUpdate 
+}: KnowledgeNodeProps) {
     const [isExpanded, setIsExpanded] = useState(false);
-    // Calculate node size based on point value (20% to 100% of max size)
+    const nodeRef = useRef<HTMLDivElement>(null);
+    
+    // Calculate node size based on point value (50px to 120px)
     const sizePercentage = Math.max(20, (category.point / maxPoint) * 100);
-    const nodeSize = `${sizePercentage}%`;
+    const circleSize = Math.max(50, Math.min(120, (sizePercentage / 100) * 120));
+    
+    // Check if category name fits in circle (rough estimation)
+    const categoryNameLength = category.category.length;
+    const showNameOutside = categoryNameLength > 8 || circleSize < 80;
+
     const handleToggle = () => {
         setIsExpanded(!isExpanded);
     };
@@ -67,58 +85,104 @@ export default function KnowledgeNode({ category, maxPoint }: KnowledgeNodeProps
             <Link
                 key={filename}
                 href={`/knowledges/${encodedPath}`}
-                className="block px-3 py-2 text-sm bg-blue-50 hover:bg-blue-100 rounded border-l-4 border-blue-400 transition-colors"
+                className="block px-3 py-2 text-sm bg-neutral-50 hover:bg-neutral-100 rounded border-l-4 border-neutral-400 transition-colors"
             >
                 📄 {displayName}
             </Link>
         );
     };
     return (
-        <div className="knowledge-node">
-            <Card 
-                className={`transition-all duration-300 cursor-pointer hover:shadow-lg ${
-                    isExpanded ? 'shadow-lg border-blue-500' : 'hover:border-gray-400'
+        <div 
+            ref={nodeRef}
+            className="knowledge-node absolute"
+            style={{
+                left: `${position.x}px`,
+                top: `${position.y}px`,
+            }}
+        >
+            {/* Circular Node */}
+            <div
+                className={`relative rounded-full border-3 transition-all duration-300 cursor-pointer flex items-center justify-center shadow-lg ${
+                    isExpanded 
+                        ? 'bg-neutral-600 border-neutral-800 shadow-2xl scale-110' 
+                        : 'bg-gradient-to-br from-neutral-500 to-neutral-700 border-neutral-600 hover:shadow-xl hover:scale-105'
                 }`}
-                style={{ width: nodeSize, minWidth: '200px' }}
+                style={{
+                    width: `${circleSize}px`,
+                    height: `${circleSize}px`,
+                }}
+                onClick={handleToggle}
             >
-                <CardHeader onClick={handleToggle} className="pb-2">
-                    <CardTitle className="flex items-center justify-between text-lg">
-                        <span>🗂️ {category.category}</span>
-                        <div className="flex items-center gap-2">
-                            <span className="text-sm font-normal bg-blue-100 px-2 py-1 rounded">
-                                {category.point} points
-                            </span>
-                            {isExpanded ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
+                {!showNameOutside && (
+                    <div className="text-center text-white">
+                        <div className="font-bold text-xs leading-tight px-1">
+                            {category.category}
                         </div>
-                    </CardTitle>
-                </CardHeader>
-                {isExpanded && (
-                    <CardContent className="pt-0">
-                        <div className="space-y-3">
-                            {/* Direct files in category */}
-                            {category.names && category.names.length > 0 && (
-                                <div className="space-y-1">
-                                    {category.names.map(filename => 
-                                        renderFileLink(filename, category.category)
-                                    )}
-                                </div>
-                            )}
-                            {/* Subcategories */}
-                            {category.subCategories && category.subCategories.length > 0 && (
-                                <div className="space-y-2">
-                                    {category.subCategories.map(subcategory => (
-                                        <SubCategoryNode 
-                                            key={subcategory.category}
-                                            subcategory={subcategory}
-                                            categoryName={category.category}
-                                        />
-                                    ))}
-                                </div>
-                            )}
+                        <div className="text-xs opacity-90 mt-1">
+                            {category.point}
                         </div>
-                    </CardContent>
+                    </div>
                 )}
-            </Card>
+                {showNameOutside && (
+                    <div className="text-center text-white">
+                        <div className="font-bold text-lg">
+                            {category.point}
+                        </div>
+                        <div className="text-xs opacity-90">
+                            pts
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* Category name displayed outside the circle if needed */}
+            {showNameOutside && (
+                <div 
+                    className="absolute text-center font-semibold text-neutral-700 text-sm mt-2 whitespace-nowrap"
+                    style={{
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        top: `${circleSize + 5}px`,
+                    }}
+                >
+                    {category.category}
+                </div>
+            )}
+
+            {/* Expanded Content Modal */}
+            {isExpanded && (
+                <div className="absolute z-50 mt-2 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-2xl border border-neutral-300 p-4 min-w-[300px] max-w-[400px]">
+                    <div className="mb-3">
+                        <h3 className="font-bold text-lg text-neutral-800">{category.category}</h3>
+                        <span className="text-sm text-neutral-600 bg-neutral-100 px-2 py-1 rounded">
+                            {category.point} points
+                        </span>
+                    </div>
+                    
+                    <div className="max-h-60 overflow-y-auto space-y-3">
+                        {/* Direct files in category */}
+                        {category.names && category.names.length > 0 && (
+                            <div className="space-y-1">
+                                {category.names.map(filename => 
+                                    renderFileLink(filename, category.category)
+                                )}
+                            </div>
+                        )}
+                        {/* Subcategories */}
+                        {category.subCategories && category.subCategories.length > 0 && (
+                            <div className="space-y-2">
+                                {category.subCategories.map(subcategory => (
+                                    <SubCategoryNode 
+                                        key={subcategory.category}
+                                        subcategory={subcategory}
+                                        categoryName={category.category}
+                                    />
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
