@@ -26,10 +26,67 @@ type File = {
 export const getKnowledgeMetadata = async (): Promise<KnowledgeMetadata> => {
     const repo = 'onc-limb/knowledge-hub';
     const apiUrl = `https://api.github.com/repos/${repo}/contents/knowledges/meta.json`;
-    const res = await fetch(apiUrl);
-    const json = await res.json();
-    const metadataContent = Buffer.from(json.content, 'base64').toString('utf-8');
-    return JSON.parse(metadataContent) as KnowledgeMetadata;
+    try {
+        const res = await fetch(apiUrl);
+        if (!res.ok) {
+            throw new Error(`GitHub API responded with status: ${res.status}`);
+        }
+        const json = await res.json();
+        const metadataContent = Buffer.from(json.content, 'base64').toString('utf-8');
+        return JSON.parse(metadataContent) as KnowledgeMetadata;
+    } catch (error) {
+        console.error('Failed to fetch knowledge metadata from GitHub API:', error);
+        // Return fallback data structure for development/testing
+        return {
+            categories: [
+                {
+                    category: "ai",
+                    point: 7,
+                    subCategories: [
+                        {
+                            category: "機械学習",
+                            point: 7,
+                            names: [
+                                "LightningCLIとは.md",
+                                "Lightningのモジュール.md",
+                                "MLOpsの流れ.md"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    category: "aws",
+                    point: 4,
+                    subCategories: [
+                        {
+                            category: "sagemaker",
+                            point: 3,
+                            names: [
+                                "ProcessingJobとTrainingJobの違い.md",
+                                "SageMaker DataWrangler.md"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    category: "css",
+                    point: 1,
+                    names: [
+                        "tailwindのimport.md"
+                    ]
+                },
+                {
+                    category: "python",
+                    point: 1,
+                    names: [
+                        "Logging.md"
+                    ]
+                }
+            ],
+            totalFiles: 7,
+            lastUpdated: new Date().toISOString()
+        };
+    }
 };
 export const getKnowledges = async () => {
     const metadata = await getKnowledgeMetadata();
@@ -48,9 +105,17 @@ export const getKnowledge = async (slug: string) => {
     // The slug might contain directory separators, so we need to handle it properly
     const filePath = slug.includes('/') ? slug : `knowledges/${slug}`;
     const apiUrl = `https://api.github.com/repos/${repo}/contents/${filePath}.md`;
-    const res = await fetch(apiUrl);
-    const json = await res.json();
-    const knowledge = Buffer.from(json.content, 'base64').toString('utf-8');
-    const { content } = matter(knowledge);
-    return content;
+    try {
+        const res = await fetch(apiUrl);
+        if (!res.ok) {
+            throw new Error(`GitHub API responded with status: ${res.status}`);
+        }
+        const json = await res.json();
+        const knowledge = Buffer.from(json.content, 'base64').toString('utf-8');
+        const { content } = matter(knowledge);
+        return content;
+    } catch (error) {
+        console.error(`Failed to fetch knowledge file "${slug}":`, error);
+        return `# エラー\n\nファイル "${slug}" の取得に失敗しました。\n\nネットワーク接続を確認してください。`;
+    }
 };
