@@ -11,6 +11,8 @@ interface KnowledgeNodeProps {
     containerHeight: number;
     position: { x: number; y: number };
     onPositionUpdate: (categoryName: string, position: { x: number; y: number }) => void;
+    isExpanded: boolean;
+    onToggle: (categoryName: string) => void;
 }
 // SubCategory component to handle hooks properly
 function SubCategoryNode({ 
@@ -61,21 +63,21 @@ export default function KnowledgeNode({
     containerWidth, 
     containerHeight, 
     position,
-    onPositionUpdate 
+    onPositionUpdate,
+    isExpanded,
+    onToggle
 }: KnowledgeNodeProps) {
-    const [isExpanded, setIsExpanded] = useState(false);
     const nodeRef = useRef<HTMLDivElement>(null);
     
     // Calculate node size based on point value (50px to 120px)
     const sizePercentage = Math.max(20, (category.point / maxPoint) * 100);
     const circleSize = Math.max(50, Math.min(120, (sizePercentage / 100) * 120));
     
-    // Check if category name fits in circle (rough estimation)
-    const categoryNameLength = category.category.length;
-    const showNameOutside = categoryNameLength > 8 || circleSize < 80;
+    // Calculate font size based on circle size (proportional scaling)
+    const fontSize = Math.max(12, Math.min(32, circleSize / 4));
 
     const handleToggle = () => {
-        setIsExpanded(!isExpanded);
+        onToggle(category.category);
     };
     const renderFileLink = (filename: string, categoryName: string, subcategoryName?: string) => {
         const filePath = getKnowledgeFilePath(categoryName, subcategoryName || null, filename);
@@ -113,76 +115,93 @@ export default function KnowledgeNode({
                 }}
                 onClick={handleToggle}
             >
-                {!showNameOutside && (
-                    <div className="text-center text-white">
-                        <div className="font-bold text-xs leading-tight px-1">
-                            {category.category}
-                        </div>
-                        <div className="text-xs opacity-90 mt-1">
-                            {category.point}
-                        </div>
+                <div className="text-center text-white">
+                    <div 
+                        className="font-bold leading-none"
+                        style={{ fontSize: `${fontSize}px` }}
+                    >
+                        {category.point}
                     </div>
-                )}
-                {showNameOutside && (
-                    <div className="text-center text-white">
-                        <div className="font-bold text-lg">
-                            {category.point}
-                        </div>
-                        <div className="text-xs opacity-90">
-                            pts
-                        </div>
-                    </div>
-                )}
+                </div>
             </div>
 
-            {/* Category name displayed outside the circle if needed */}
-            {showNameOutside && (
-                <div 
-                    className="absolute text-center font-semibold text-neutral-700 text-sm mt-2 whitespace-nowrap"
-                    style={{
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        top: `${circleSize + 5}px`,
-                    }}
-                >
-                    {category.category}
-                </div>
-            )}
+            {/* Category name always displayed below the circle */}
+            <div 
+                className="absolute text-center font-semibold text-neutral-700 text-sm mt-2 whitespace-nowrap"
+                style={{
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    top: `${circleSize + 5}px`,
+                }}
+            >
+                {category.category}
+            </div>
 
             {/* Expanded Content Modal */}
-            {isExpanded && (
-                <div className="absolute z-50 mt-2 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-2xl border border-neutral-300 p-4 min-w-[300px] max-w-[400px]">
-                    <div className="mb-3">
-                        <h3 className="font-bold text-lg text-neutral-800">{category.category}</h3>
-                        <span className="text-sm text-neutral-600 bg-neutral-100 px-2 py-1 rounded">
-                            {category.point} points
-                        </span>
+            {isExpanded && (() => {
+                // Calculate modal position to stay within container bounds
+                const modalWidth = 350;
+                const modalHeight = 300;
+                
+                // Calculate horizontal position
+                let leftOffset = -modalWidth / 2; // Default: center
+                const rightBoundary = position.x + modalWidth / 2;
+                const leftBoundary = position.x - modalWidth / 2;
+                
+                if (rightBoundary > containerWidth - 20) {
+                    leftOffset = -(modalWidth - (containerWidth - position.x - 20));
+                } else if (leftBoundary < 20) {
+                    leftOffset = -position.x + 20;
+                }
+                
+                // Calculate vertical position
+                let topOffset = circleSize + 35; // Default: below the node
+                if (position.y + topOffset + modalHeight > containerHeight - 20) {
+                    topOffset = -(modalHeight + 10); // Show above the node
+                }
+                
+                return (
+                    <div 
+                        className="absolute z-50 bg-white rounded-lg shadow-2xl border border-neutral-300 p-4"
+                        style={{
+                            left: `${leftOffset}px`,
+                            top: `${topOffset}px`,
+                            width: `${modalWidth}px`,
+                            maxHeight: `${modalHeight}px`,
+                        }}
+                    >
+                        <div className="mb-3">
+                            <h3 className="font-bold text-lg text-neutral-800">{category.category}</h3>
+                            <span className="text-sm text-neutral-600 bg-neutral-100 px-2 py-1 rounded">
+                                {category.point} points
+                            </span>
+                        </div>
+                        
+                        <div className="max-h-48 overflow-y-auto space-y-3">
+                            {/* Direct files in category */}
+                            {category.names && category.names.length > 0 && (
+                                <div className="space-y-1">
+                                    {category.names.map(filename => 
+                                        renderFileLink(filename, category.category)
+                                    )}
+                                </div>
+                            )}
+                            {/* Subcategories */}
+                            {category.subCategories && category.subCategories.length > 0 && (
+                                <div className="space-y-2">
+                                    {category.subCategories.map(subcategory => (
+                                        <SubCategoryNode 
+                                            key={subcategory.category}
+                                            subcategory={subcategory}
+                                            categoryName={category.category}
+                                        />
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
-                    
-                    <div className="max-h-60 overflow-y-auto space-y-3">
-                        {/* Direct files in category */}
-                        {category.names && category.names.length > 0 && (
-                            <div className="space-y-1">
-                                {category.names.map(filename => 
-                                    renderFileLink(filename, category.category)
-                                )}
-                            </div>
-                        )}
-                        {/* Subcategories */}
-                        {category.subCategories && category.subCategories.length > 0 && (
-                            <div className="space-y-2">
-                                {category.subCategories.map(subcategory => (
-                                    <SubCategoryNode 
-                                        key={subcategory.category}
-                                        subcategory={subcategory}
-                                        categoryName={category.category}
-                                    />
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                </div>
-            )}
+                );
+            })()}
         </div>
     );
 }

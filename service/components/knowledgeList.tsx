@@ -34,11 +34,10 @@ function generatePositions(categories: Category[], containerWidth: number, conta
         const sizePercentage = Math.max(20, (category.point / maxPoint) * 100);
         const circleSize = Math.max(50, Math.min(120, (sizePercentage / 100) * 120));
         
-        // Add space for external text if category name is long
+        // Add space for external text (category name is always shown below)
         const categoryNameLength = category.category.length;
-        const showNameOutside = categoryNameLength > 8 || circleSize < 80;
-        const nodeHeight = showNameOutside ? circleSize + 30 : circleSize;
-        const nodeWidth = showNameOutside ? Math.max(circleSize, category.category.length * 8) : circleSize;
+        const nodeHeight = circleSize + 30; // Always add space for text below
+        const nodeWidth = Math.max(circleSize, categoryNameLength * 8); // Ensure width covers text
         
         let attempts = 0;
         let position: { x: number; y: number } | null = null;
@@ -86,6 +85,7 @@ function generatePositions(categories: Category[], containerWidth: number, conta
 export default function KnowledgeList() {
     const [metadata, setMetadata] = useState<any>(null);
     const [positions, setPositions] = useState<Record<string, { x: number; y: number }>>({});
+    const [expandedNode, setExpandedNode] = useState<string | null>(null); // Track which node is expanded
     const containerWidth = 1000;
     const containerHeight = 700;
 
@@ -108,6 +108,10 @@ export default function KnowledgeList() {
             ...prev,
             [categoryName]: position
         }));
+    };
+
+    const handleNodeToggle = (categoryName: string) => {
+        setExpandedNode(prev => prev === categoryName ? null : categoryName);
     };
 
     if (!metadata) {
@@ -139,6 +143,8 @@ export default function KnowledgeList() {
                         containerHeight={containerHeight}
                         position={positions[category.category] || { x: 0, y: 0 }}
                         onPositionUpdate={handlePositionUpdate}
+                        isExpanded={expandedNode === category.category}
+                        onToggle={handleNodeToggle}
                     />
                 ))}
             </div>
