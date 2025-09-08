@@ -1,0 +1,267 @@
+name: "⚙️ サードパーティ設定"
+description: "外部ライブラリの導入、設定変更、アップデートに関するリクエスト"
+title: "[CONFIG] "
+labels: ["configuration", "dependencies"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 概要
+        サードパーティライブラリや外部サービスの設定について詳細を記載してください。GitHub Copilot Code Agentが正確に設定作業を行えるよう、目的と具体的な要件を明確に記述してください。
+
+  - type: dropdown
+    id: config_type
+    attributes:
+      label: "🔧 設定の種類"
+      description: "実施する設定作業の種類を選択してください"
+      options:
+        - "新規ライブラリの導入"
+        - "既存ライブラリのアップデート"
+        - "ライブラリの設定変更"
+        - "外部サービスの連携設定"
+        - "ビルドツールの設定"
+        - "開発環境の設定"
+        - "CI/CDの設定"
+        - "その他"
+    validations:
+      required: true
+
+  - type: textarea
+    id: config_summary
+    attributes:
+      label: "📝 設定概要"
+      description: "実施したい設定作業の概要を簡潔に説明してください"
+      placeholder: "例：記事の検索機能実装のため、Fuse.js ライブラリを導入して全文検索を可能にする"
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: "🎯 目的・背景"
+      description: "なぜこの設定が必要なのか、どのような問題を解決するのかを説明してください"
+      placeholder: |
+        例：
+        - 記事数が増加し、ユーザーが目的の記事を見つけにくくなっている
+        - 現在のフィルタリング機能では検索精度が低い
+        - 全文検索機能を実装して検索体験を向上させたい
+    validations:
+      required: true
+
+  - type: textarea
+    id: target_library
+    attributes:
+      label: "📚 対象ライブラリ・サービス"
+      description: "導入・設定するライブラリやサービスの詳細を記載してください"
+      placeholder: |
+        ## ライブラリ情報
+        - **名前**: Fuse.js
+        - **バージョン**: ^7.0.0
+        - **URL**: https://fusejs.io/
+        - **ライセンス**: Apache License 2.0
+
+        ## 選定理由
+        - 軽量で高速なファジー検索が可能
+        - TypeScript対応
+        - Reactとの統合が容易
+        - 設定が柔軟で拡張性が高い
+    validations:
+      required: true
+
+  - type: textarea
+    id: technical_requirements
+    attributes:
+      label: "🛠️ 技術要件"
+      description: "設定に関する技術的な要件や制約を記載してください"
+      placeholder: |
+        ## 機能要件
+        - [ ] 記事タイトル・本文での検索
+        - [ ] リアルタイム検索（入力中に結果更新）
+        - [ ] 検索結果のハイライト表示
+
+        ## 非機能要件
+        - [ ] 検索レスポンス時間: 200ms以下
+        - [ ] Bundle size への影響を最小限にする
+        - [ ] SEOへの影響を考慮する
+
+        ## 互換性要件
+        - [ ] Next.js 15.3.2 との互換性
+        - [ ] TypeScript 5.5.4 との互換性
+        - [ ] 既存のTailwind CSS設定との統合
+    validations:
+      required: true
+
+  - type: textarea
+    id: configuration_details
+    attributes:
+      label: "⚙️ 設定詳細"
+      description: "具体的な設定内容や設定値を記載してください"
+      placeholder: |
+        ## Fuse.js 設定例
+        ```typescript
+        const fuseOptions = {
+          keys: ['title', 'content', 'tags'],
+          threshold: 0.3,
+          distance: 100,
+          includeMatches: true,
+          includeScore: true
+        }
+        ```
+
+        ## 検索対象フィールド
+        - title: 記事タイトル（重み: 1.0）
+        - content: 記事本文（重み: 0.7）
+        - tags: タグ（重み: 0.5）
+
+        ## UI/UX設定
+        - 最小検索文字数: 2文字
+        - 最大表示結果数: 10件
+        - 検索ボックスの配置: ヘッダー部分
+    validations:
+      required: true
+
+  - type: textarea
+    id: installation_tasks
+    attributes:
+      label: "📦 インストール・設定タスク"
+      description: "設定に必要な具体的なタスクを段階的に列挙してください"
+      placeholder: |
+        ## Phase 1: ライブラリのインストール
+        - [ ] `yarn add fuse.js` - Fuse.js本体
+        - [ ] `yarn add -D @types/fuse.js` - TypeScript型定義（必要に応じて）
+
+        ## Phase 2: 設定ファイルの作成
+        - [ ] `lib/search.ts` - 検索ロジックの実装
+        - [ ] `hooks/useSearch.ts` - 検索状態管理のカスタムフック
+
+        ## Phase 3: コンポーネントの作成
+        - [ ] `components/SearchBox.tsx` - 検索入力コンポーネント
+        - [ ] `components/SearchResults.tsx` - 検索結果表示コンポーネント
+
+        ## Phase 4: 既存コンポーネントの更新
+        - [ ] `components/header.tsx` - 検索ボックスの組み込み
+        - [ ] `app/articles/page.tsx` - 検索機能の統合
+
+        ## Phase 5: スタイリングと最適化
+        - [ ] 検索UI のTailwind CSS実装
+        - [ ] パフォーマンス最適化（debounce等）
+        - [ ] レスポンシブ対応
+
+        ## Phase 6: テスト・動作確認
+        - [ ] 検索機能の動作確認
+        - [ ] パフォーマンステスト
+        - [ ] 各種ブラウザでの確認
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: integration_requirements
+    attributes:
+      label: "🔗 統合要件"
+      description: "既存システムとの統合時に考慮すべき要件をチェックしてください"
+      options:
+        - label: "既存のコードスタイルと一貫性を保つ"
+          required: true
+        - label: "TypeScriptの型安全性を維持する"
+          required: true
+        - label: "ESLintルールに準拠する"
+          required: true
+        - label: "既存のBundle sizeへの影響を最小限にする"
+          required: false
+        - label: "SEOへの影響を考慮する"
+          required: false
+        - label: "アクセシビリティを維持する"
+          required: false
+        - label: "パフォーマンスを維持・向上させる"
+          required: false
+
+  - type: textarea
+    id: configuration_files
+    attributes:
+      label: "📄 設定ファイル"
+      description: "変更・作成が必要な設定ファイルを列挙してください"
+      placeholder: |
+        ## 新規作成ファイル
+        - `lib/search.ts` - 検索設定とロジック
+        - `hooks/useSearch.ts` - 検索用カスタムフック
+        - `types/search.ts` - 検索関連の型定義
+
+        ## 変更が必要なファイル
+        - `package.json` - 依存関係の追加
+        - `tsconfig.json` - 型設定の調整（必要に応じて）
+        - `next.config.mjs` - Next.js設定（必要に応じて）
+
+        ## 影響を受ける可能性があるファイル
+        - `components/header.tsx` - 検索ボックス統合
+        - `app/layout.tsx` - グローバルな影響の確認
+
+  - type: textarea
+    id: testing_strategy
+    attributes:
+      label: "🧪 テスト戦略"
+      description: "設定後のテスト方法や確認項目を記載してください"
+      placeholder: |
+        ## 機能テスト
+        - [ ] 基本的な検索機能の動作確認
+        - [ ] 日本語・英語での検索確認
+        - [ ] 特殊文字を含む検索の確認
+        - [ ] 検索結果なしの場合の表示確認
+
+        ## パフォーマンステスト  
+        - [ ] 大量データでの検索速度確認
+        - [ ] Bundle sizeの影響測定
+        - [ ] メモリ使用量の確認
+
+        ## 互換性テスト
+        - [ ] 異なるブラウザでの動作確認
+        - [ ] モバイルデバイスでの動作確認
+        - [ ] 既存機能への影響確認
+
+        ## ビルドテスト
+        - [ ] `npm run build` の成功確認
+        - [ ] `npm run lint` の成功確認
+        - [ ] TypeScriptコンパイルエラーの確認
+
+  - type: textarea
+    id: documentation_updates
+    attributes:
+      label: "📖 ドキュメント更新"
+      description: "設定に関連して更新が必要なドキュメントがあれば記載してください"
+      placeholder: |
+        - [ ] README.md - 新機能の説明追加
+        - [ ] package.json - scripts の更新（必要に応じて）
+        - [ ] コンポーネントのJSDocコメント追加
+        - [ ] 設定ファイルのコメント追記
+
+  - type: textarea
+    id: rollback_plan
+    attributes:
+      label: "🔄 ロールバック計画"
+      description: "設定に問題が発生した場合の対処法を記載してください"
+      placeholder: |
+        ## 即座のロールバック手順
+        1. `yarn remove fuse.js` - パッケージの削除
+        2. 作成したファイルの削除
+        3. 変更したファイルの元に戻す
+
+        ## 部分的なロールバック
+        - 検索UIのみを無効化
+        - ライブラリは残してロジックのみ無効化
+
+        ## 問題の切り分け方法
+        - コンソールエラーの確認
+        - Bundle analyzer での影響確認
+        - パフォーマンス測定ツールでの確認
+
+  - type: textarea
+    id: additional_considerations
+    attributes:
+      label: "💡 追加考慮事項"
+      description: "その他、設定時に考慮すべき点や制約事項があれば記載してください"
+      placeholder: |
+        例：
+        - 将来的にElasticsearchなどの外部検索サービスへの移行可能性
+        - 多言語対応の検討
+        - 検索ログの収集・分析の必要性
+        - セキュリティ上の考慮事項（XSS対策など）
