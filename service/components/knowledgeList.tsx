@@ -1,28 +1,28 @@
-import { getArticles } from '@/lib/article';
 import { getKnowledges } from '@/lib/knowledge';
-import Link from 'next/link';
-
+import KnowledgeNode from './KnowledgeNode';
 export default async function KnowledgeList() {
-    const knowledges = await getKnowledges();
-
+    const metadata = await getKnowledges();
+    // Find the maximum point value for sizing
+    const maxPoint = Math.max(...metadata.categories.map(cat => cat.point));
     return (
-        <div className="grid gap-8 md:grid-cols-4 lg:grid-cols-6 mt-12">
-            {knowledges.map((knowledge) => {
-                return (
-                    <Link
-                        key={knowledge}
-                        href={`/knowledges/${knowledge}`}
-                        className="group flex flex-col bg-card rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
-                        prefetch={false}
-                    >
-                        <div className="p-6 flex flex-col gap-4">
-                            <div className="flex items-center gap-2 text-xl font-bold">
-                                {knowledge}
-                            </div>
-                        </div>
-                    </Link>
-                );
-            })}
+        <div className="mt-12">
+            <div className="mb-6 text-center">
+                <p className="text-sm text-muted-foreground">
+                    総ファイル数: {metadata.totalFiles} | 
+                    最終更新: {new Date(metadata.lastUpdated).toLocaleDateString('ja-JP')}
+                </p>
+            </div>
+            <div className="grid gap-6 justify-items-center" style={{
+                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))'
+            }}>
+                {metadata.categories.map((category) => (
+                    <KnowledgeNode
+                        key={category.category}
+                        category={category}
+                        maxPoint={maxPoint}
+                    />
+                ))}
+            </div>
         </div>
     );
 }
