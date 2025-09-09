@@ -1,11 +1,8 @@
 import { getArticles } from '@/lib/article';
 import Link from 'next/link';
-
 export const revalidate = 3600; // 1時間ごとにバックグラウンド更新
-
 export default async function ArticleList() {
     const articles = await getArticles();
-
     return (
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mt-12">
             {articles.map((article) => {

@@ -3,7 +3,6 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { Category, SubCategory, getKnowledgeFilePath } from '@/lib/knowledge';
-
 interface KnowledgeNodeProps {
     category: Category;
     maxPoint: number;
@@ -68,14 +67,11 @@ export default function KnowledgeNode({
     onToggle
 }: KnowledgeNodeProps) {
     const nodeRef = useRef<HTMLDivElement>(null);
-    
     // Calculate node size based on point value (50px to 120px)
     const sizePercentage = Math.max(20, (category.point / maxPoint) * 100);
     const circleSize = Math.max(50, Math.min(120, (sizePercentage / 100) * 120));
-    
     // Calculate font size based on circle size (proportional scaling)
     const fontSize = Math.max(12, Math.min(32, circleSize / 4));
-
     const handleToggle = () => {
         onToggle(category.category);
     };
@@ -124,7 +120,6 @@ export default function KnowledgeNode({
                     </div>
                 </div>
             </div>
-
             {/* Category name always displayed below the circle */}
             <div 
                 className="absolute text-center font-semibold text-neutral-700 text-sm mt-2 whitespace-nowrap"
@@ -136,30 +131,25 @@ export default function KnowledgeNode({
             >
                 {category.category}
             </div>
-
             {/* Expanded Content Modal */}
             {isExpanded && (() => {
                 // Calculate modal position to stay within container bounds
                 const modalWidth = 350;
                 const modalHeight = 300;
-                
                 // Calculate horizontal position
                 let leftOffset = -modalWidth / 2; // Default: center
                 const rightBoundary = position.x + modalWidth / 2;
                 const leftBoundary = position.x - modalWidth / 2;
-                
                 if (rightBoundary > containerWidth - 20) {
                     leftOffset = -(modalWidth - (containerWidth - position.x - 20));
                 } else if (leftBoundary < 20) {
                     leftOffset = -position.x + 20;
                 }
-                
                 // Calculate vertical position
                 let topOffset = circleSize + 35; // Default: below the node
                 if (position.y + topOffset + modalHeight > containerHeight - 20) {
                     topOffset = -(modalHeight + 10); // Show above the node
                 }
-                
                 return (
                     <div 
                         className="absolute z-50 bg-white rounded-lg shadow-2xl border border-neutral-300 p-4"
@@ -176,7 +166,6 @@ export default function KnowledgeNode({
                                 {category.point} points
                             </span>
                         </div>
-                        
                         <div className="max-h-48 overflow-y-auto space-y-3">
                             {/* Direct files in category */}
                             {category.names && category.names.length > 0 && (

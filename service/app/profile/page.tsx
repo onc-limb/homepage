@@ -1,5 +1,4 @@
 import ComingSoon from '@/components/ComingSoon';
-
 const Profile = () => {
     return (
         <div>

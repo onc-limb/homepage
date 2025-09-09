@@ -1,9 +1,7 @@
 import Link from 'next/link';
 import { CardContent, Card } from '@/components/ui/card';
 import Logo from '@/public/MainLogo.jpg';
-
 import Image from 'next/image';
-
 export default function Top() {
     const featuredArticles = ["[golang] gqlgenとgormでDB操作の依存性注入(DI)を行う.md"]
     return (
@@ -73,7 +71,6 @@ export default function Top() {
         </>
     );
 }
-
 const ArrowRightIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => {
     return (
         <svg
