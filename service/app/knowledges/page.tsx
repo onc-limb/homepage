@@ -1,6 +1,5 @@
 import ArticleList from '@/components/articleList';
 import KnowledgeList from '@/components/knowledgeList';
-
 export default function ArticleListPage() {
     return (
         <section className="w-full py-12 md:py-24">

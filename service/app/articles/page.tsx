@@ -1,5 +1,4 @@
 import ArticleList from '@/components/articleList';
-
 export default function ArticleListPage() {
     return (
         <section className="w-full py-12 md:py-24">

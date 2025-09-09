@@ -2,11 +2,9 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Link from 'next/link';
 import { getArticle } from '@/lib/article';
-
 const ArticleDetail = async ({ params }: { params: { title: string } }) => {
     const decodedTitle = decodeURIComponent(params.title);
     const article = await getArticle(decodedTitle);
-
     return (
         <>
             <Link
@@ -49,7 +47,5 @@ const ArticleDetail = async ({ params }: { params: { title: string } }) => {
         </>
     );
 };
-
 export default ArticleDetail;
-
 export const revalidate = 86400;

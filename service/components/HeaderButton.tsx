@@ -1,12 +1,10 @@
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ReactNode } from 'react';
-
 type Props = {
     href: string;
     children: ReactNode;
 };
-
 const HeaderButton = ({ href, children }: Props) => {
     return (
         <Link href={href}>
@@ -16,5 +14,4 @@ const HeaderButton = ({ href, children }: Props) => {
         </Link>
     );
 };
-
 export default HeaderButton;
