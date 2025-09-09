@@ -1,0 +1,124 @@
+name: "🚀 新機能の実装"
+description: "新しい機能の実装や改善に関するリクエスト"
+title: "[FEATURE] "
+labels: ["feature", "enhancement"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 概要
+        新機能の実装について詳細を記載してください。GitHub Copilot Code Agentがタスクを正確に理解し実行できるよう、できるだけ具体的に記述してください。
+
+  - type: textarea
+    id: overview
+    attributes:
+      label: "📝 機能概要"
+      description: "実装したい機能の概要を簡潔に説明してください"
+      placeholder: "例：ユーザーがお気に入り記事をブックマークできる機能を実装したい"
+    validations:
+      required: true
+
+  - type: textarea
+    id: background
+    attributes:
+      label: "🎯 背景・目的"
+      description: "なぜこの機能が必要なのか、どのような問題を解決するのかを説明してください"
+      placeholder: "例：記事が多くなってきたため、ユーザーが後で読み返したい記事を簡単に見つけられるようにしたい"
+    validations:
+      required: true
+
+  - type: textarea
+    id: specification
+    attributes:
+      label: "📋 詳細仕様"
+      description: "実装する機能の詳細な仕様を記載してください"
+      placeholder: |
+        ## UI/UX要件
+        - [ ] 記事詳細ページにブックマークボタンを配置
+        - [ ] ブックマーク済みの視覚的フィードバック
+
+        ## 機能要件
+        - [ ] ブックマークの追加/削除
+        - [ ] ブックマーク一覧ページ
+        - [ ] ローカルストレージでの永続化
+
+        ## 技術要件
+        - [ ] React useState/useEffectの使用
+        - [ ] shadcn/uiコンポーネントの活用
+        - [ ] Tailwind CSSでのスタイリング
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: "✅ 受け入れ条件"
+      description: "機能が完成したと判断するための条件を列挙してください"
+      placeholder: |
+        - [ ] ユーザーが記事をブックマークできる
+        - [ ] ブックマーク一覧ページでブックマークした記事を確認できる
+        - [ ] ブックマークの追加・削除が正常に動作する
+        - [ ] レスポンシブデザインに対応している
+        - [ ] TypeScriptの型安全性が保たれている
+    validations:
+      required: true
+
+  - type: textarea
+    id: tasks
+    attributes:
+      label: "🔧 実装タスク"
+      description: "実装に必要な具体的なタスクを詳細に列挙してください"
+      placeholder: |
+        ## ファイル作成・編集
+        - [ ] `lib/bookmark.ts` - ブックマーク管理ロジックの作成
+        - [ ] `components/BookmarkButton.tsx` - ブックマークボタンコンポーネント
+        - [ ] `app/bookmarks/page.tsx` - ブックマーク一覧ページ
+        - [ ] `app/articles/[title]/page.tsx` - ブックマークボタンの追加
+
+        ## スタイリング
+        - [ ] ブックマークボタンのTailwind CSSスタイル実装
+        - [ ] ブックマーク一覧ページのレイアウト実装
+
+        ## 機能実装
+        - [ ] ローカルストレージへの保存機能
+        - [ ] ブックマーク状態の管理
+        - [ ] ブックマーク一覧の表示機能
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: technical_requirements
+    attributes:
+      label: "🛠️ 技術要件"
+      description: "実装時に考慮すべき技術的な要件をチェックしてください"
+      options:
+        - label: "TypeScriptの型安全性を維持する"
+          required: true
+        - label: "ESLintルールに準拠する"
+          required: true
+        - label: "既存のコードスタイルと一貫性を保つ"
+          required: true
+        - label: "shadcn/uiコンポーネントを優先的に使用する"
+          required: false
+        - label: "レスポンシブデザインに対応する"
+          required: false
+        - label: "アクセシビリティを考慮する"
+          required: false
+
+  - type: textarea
+    id: references
+    attributes:
+      label: "📚 参考資料・関連Issue"
+      description: "参考になるドキュメントや関連するIssue/PRがあれば記載してください"
+      placeholder: |
+        - [参考サイト] https://example.com
+        - [関連Issue] #123
+        - [デザイン案] Figmaリンクなど
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: "💡 追加情報"
+      description: "その他、実装時に考慮すべき点や制約事項があれば記載してください"
+      placeholder: "例：既存のAPIとの互換性を保つ必要がある、パフォーマンスに注意が必要など"

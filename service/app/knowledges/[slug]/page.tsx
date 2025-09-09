@@ -3,11 +3,9 @@ import remarkGfm from 'remark-gfm';
 import Link from 'next/link';
 import { getArticle } from '@/lib/article';
 import { getKnowledge } from '@/lib/knowledge';
-
 export default async function KnowledgeDetail({ params }: { params: { slug: string } }) {
     const decodedSlug = decodeURIComponent(params.slug);
     const knowledge = await getKnowledge(decodedSlug);
-
     return (
         <>
             <Link
@@ -35,5 +33,4 @@ export default async function KnowledgeDetail({ params }: { params: { slug: stri
         </>
     );
 }
-
 export const revalidate = 86400;

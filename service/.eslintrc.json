@@ -3,7 +3,7 @@
     "plugins": ["import", "react"],
     "parser": "@typescript-eslint/parser",
     "rules": {
-        "import/no-unresolved": "",
+        "import/no-unresolved": "off",
         "import/named": "error",
         "import/namespace": "error",
         "import/default": "error",

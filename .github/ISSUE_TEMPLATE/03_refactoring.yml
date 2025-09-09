@@ -1,0 +1,231 @@
+name: "🔧 リファクタリング"
+description: "コードの改善、最適化、リファクタリングに関するリクエスト"
+title: "[REFACTOR] "
+labels: ["refactoring", "improvement"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 概要
+        リファクタリングの内容について詳細を記載してください。GitHub Copilot Code Agentが改善の目的と範囲を正確に理解できるよう、現状の課題と改善後の目標を明確に記述してください。
+
+  - type: textarea
+    id: refactor_summary
+    attributes:
+      label: "📝 リファクタリング概要"
+      description: "実施したいリファクタリングの概要を簡潔に説明してください"
+      placeholder: "例：記事一覧コンポーネントの責務を分離し、再利用性と保守性を向上させる"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: refactor_type
+    attributes:
+      label: "🔄 リファクタリングの種類"
+      description: "主なリファクタリングの種類を選択してください"
+      options:
+        - "コンポーネント分割・統合"
+        - "関数・メソッドの抽出・統合"
+        - "型定義の改善"
+        - "パフォーマンス最適化"
+        - "コードの重複排除"
+        - "アーキテクチャの改善"
+        - "依存関係の整理"
+        - "命名の改善"
+        - "その他"
+    validations:
+      required: true
+
+  - type: textarea
+    id: current_issues
+    attributes:
+      label: "❌ 現状の課題"
+      description: "現在のコードが抱えている課題や問題点を詳しく説明してください"
+      placeholder: |
+        ## コードの課題
+        - [ ] ArticleListコンポーネントが肥大化している（200行以上）
+        - [ ] データ取得、表示、ページネーションが1つのコンポーネントに混在
+        - [ ] 類似のロジックが他のページでも重複している
+        - [ ] テストが困難な構造になっている
+
+        ## 保守性の問題
+        - [ ] 新しい機能追加時に既存コードへの影響が大きい
+        - [ ] コンポーネントの責務が不明確
+        - [ ] 再利用が困難
+    validations:
+      required: true
+
+  - type: textarea
+    id: improvement_goals
+    attributes:
+      label: "✨ 改善目標"
+      description: "リファクタリング後に達成したい状態を説明してください"
+      placeholder: |
+        ## コード品質の向上
+        - [ ] 単一責任原則に従ったコンポーネント設計
+        - [ ] 各コンポーネントが100行以下
+        - [ ] 明確な責務の分離（データ取得、表示、制御）
+
+        ## 再利用性の向上
+        - [ ] 他のページでも利用可能な汎用コンポーネント
+        - [ ] カスタムフックによる状態管理の分離
+
+        ## 保守性の向上
+        - [ ] 新機能追加時の影響範囲の最小化
+        - [ ] テストしやすい構造
+        - [ ] 型安全性の向上
+    validations:
+      required: true
+
+  - type: textarea
+    id: refactor_scope
+    attributes:
+      label: "🎯 リファクタリング範囲"
+      description: "どのファイル・コンポーネント・機能をリファクタリング対象とするかを明確に記載してください"
+      placeholder: |
+        ## 対象ファイル
+        - `components/articleList.tsx` - メインのリファクタリング対象
+        - `app/articles/page.tsx` - ArticleListの使用箇所
+        - `lib/article.ts` - 関連するユーティリティ
+
+        ## 影響を受ける可能性があるファイル
+        - `components/knowledgeList.tsx` - 類似のコンポーネント
+        - `app/knowledges/page.tsx` - KnowledgeListの使用箇所
+    validations:
+      required: true
+
+  - type: textarea
+    id: refactor_approach
+    attributes:
+      label: "🛠️ リファクタリング方針"
+      description: "どのようなアプローチでリファクタリングを進めるかを説明してください"
+      placeholder: |
+        ## 分割方針
+        1. **データ取得の分離**: カスタムフック `useArticles` を作成
+        2. **表示の分離**: `ArticleCard` コンポーネントを独立させる  
+        3. **ページネーション分離**: `Pagination` コンポーネントを汎用化
+        4. **コンテナコンポーネント化**: `ArticleListContainer` で状態管理
+
+        ## 技術的アプローチ
+        - React Hooks を活用した状態管理
+        - TypeScript の厳密な型定義
+        - Composition パターンの活用
+        - テスタブルな構造の実現
+    validations:
+      required: true
+
+  - type: textarea
+    id: refactor_tasks
+    attributes:
+      label: "📋 実装タスク"
+      description: "リファクタリングに必要な具体的なタスクを段階的に列挙してください"
+      placeholder: |
+        ## Phase 1: カスタムフックの作成
+        - [ ] `hooks/useArticles.ts` - データ取得ロジックの分離
+        - [ ] `hooks/usePagination.ts` - ページネーションロジックの分離
+
+        ## Phase 2: コンポーネントの分割
+        - [ ] `components/ArticleCard.tsx` - 個別記事表示コンポーネント
+        - [ ] `components/ui/pagination.tsx` - 汎用ページネーション（既存の拡張）
+
+        ## Phase 3: コンテナコンポーネントの作成  
+        - [ ] `components/ArticleListContainer.tsx` - 状態管理コンポーネント
+        - [ ] `components/articleList.tsx` - 表示専用コンポーネントに変更
+
+        ## Phase 4: 型定義の改善
+        - [ ] `types/article.ts` - 記事関連の型定義整理
+        - [ ] インターフェースの明確化
+
+        ## Phase 5: 適用・テスト
+        - [ ] `app/articles/page.tsx` の更新
+        - [ ] 動作確認とテスト
+        - [ ] 他の類似コンポーネントへの適用検討
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: refactor_principles
+    attributes:
+      label: "💡 リファクタリング原則"
+      description: "リファクタリング時に従う原則をチェックしてください"
+      options:
+        - label: "既存機能の動作を変更しない"
+          required: true
+        - label: "段階的なリファクタリングを行う"
+          required: true
+        - label: "各段階でテストを実施する"
+          required: true
+        - label: "単一責任原則に従う"
+          required: false
+        - label: "DRY原則（重複の排除）を適用する"
+          required: false
+        - label: "SOLID原則を考慮する"
+          required: false
+        - label: "パフォーマンスの維持・向上を図る"
+          required: false
+
+  - type: checkboxes
+    id: technical_requirements
+    attributes:
+      label: "🛠️ 技術要件"
+      description: "リファクタリング時に考慮すべき技術的要件をチェックしてください"
+      options:
+        - label: "TypeScriptの型安全性を向上させる"
+          required: true
+        - label: "ESLintルールに準拠する"
+          required: true
+        - label: "既存のコードスタイルと一貫性を保つ"
+          required: true
+        - label: "パフォーマンスの劣化を避ける"
+          required: false
+        - label: "アクセシビリティを維持する"
+          required: false
+        - label: "SEOへの影響を考慮する"
+          required: false
+
+  - type: textarea
+    id: validation_criteria
+    attributes:
+      label: "✅ 完了条件・検証方法"
+      description: "リファクタリングが完了したと判断する条件と検証方法を記載してください"
+      placeholder: |
+        ## 完了条件
+        - [ ] 全てのコンポーネントが100行以下になっている
+        - [ ] 各コンポーネントが明確な単一責任を持っている  
+        - [ ] カスタムフックが適切に抽出されている
+        - [ ] TypeScriptエラーが発生していない
+
+        ## 検証方法
+        - [ ] `npm run build` が成功する
+        - [ ] `npm run lint` がエラーなしで完了する
+        - [ ] 既存の全ての機能が正常に動作する
+        - [ ] パフォーマンスが維持・向上している
+        - [ ] ブラウザでの動作確認が完了している
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact_analysis
+    attributes:
+      label: "🔍 影響範囲の分析"
+      description: "リファクタリングが他の部分に与える可能性がある影響を分析してください"
+      placeholder: |
+        ## 直接的な影響
+        - `app/articles/page.tsx` - ArticleListの使用方法変更
+        - 関連するimport文の修正が必要
+
+        ## 間接的な影響  
+        - 類似の `knowledgeList.tsx` への適用を検討
+        - 他の開発者への変更内容の共有が必要
+
+        ## リスク
+        - 大規模な変更のため、意図しない副作用の可能性
+        - 一時的なビルドエラーが発生する可能性
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: "💡 追加情報"
+      description: "その他、リファクタリング時に考慮すべき点や制約事項があれば記載してください"
+      placeholder: "例：チームでの合意が必要、特定の期限までに完了する必要がある、パフォーマンス要件があるなど"
