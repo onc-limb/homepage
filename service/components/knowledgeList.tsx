@@ -70,19 +70,33 @@ export default function KnowledgeList() {
     const [metadata, setMetadata] = useState<any>(null);
     const [positions, setPositions] = useState<Record<string, { x: number; y: number }>>({});
     const [expandedNode, setExpandedNode] = useState<string | null>(null); // Track which node is expanded
-    const containerWidth = 1000;
-    const containerHeight = 700;
+    const [containerDimensions, setContainerDimensions] = useState({ width: 1000, height: 700 });
+    // レスポンシブなコンテナサイズを計算
+    useEffect(() => {
+        const updateDimensions = () => {
+            const viewportWidth = window.innerWidth;
+            const isMobile = viewportWidth < 768;
+            const containerWidth = isMobile 
+                ? Math.min(viewportWidth - 32, 400) // モバイル: ビューポート幅-32px、最大400px
+                : Math.min(viewportWidth - 100, 1000); // デスクトップ: ビューポート幅-100px、最大1000px
+            const containerHeight = isMobile ? 500 : 700;
+            setContainerDimensions({ width: containerWidth, height: containerHeight });
+        };
+        updateDimensions();
+        window.addEventListener('resize', updateDimensions);
+        return () => window.removeEventListener('resize', updateDimensions);
+    }, []);
     useEffect(() => {
         const loadData = async () => {
             const data = await getKnowledges();
             setMetadata(data);
             // Generate positions after data is loaded
             const maxPoint = Math.max(...data.categories.map((cat: Category) => cat.point));
-            const newPositions = generatePositions(data.categories, containerWidth, containerHeight, maxPoint);
+            const newPositions = generatePositions(data.categories, containerDimensions.width, containerDimensions.height, maxPoint);
             setPositions(newPositions);
         };
         loadData();
-    }, []);
+    }, [containerDimensions]);
     const handlePositionUpdate = (categoryName: string, position: { x: number; y: number }) => {
         setPositions(prev => ({
             ...prev,
@@ -107,8 +121,8 @@ export default function KnowledgeList() {
             <div 
                 className="relative mx-auto border-2 border-neutral-300 rounded-lg bg-neutral-50 overflow-hidden"
                 style={{
-                    width: `${containerWidth}px`,
-                    height: `${containerHeight}px`,
+                    width: `${containerDimensions.width}px`,
+                    height: `${containerDimensions.height}px`,
                 }}
             >
                 {metadata.categories.map((category: Category) => (
@@ -116,8 +130,8 @@ export default function KnowledgeList() {
                         key={category.category}
                         category={category}
                         maxPoint={maxPoint}
-                        containerWidth={containerWidth}
-                        containerHeight={containerHeight}
+                        containerWidth={containerDimensions.width}
+                        containerHeight={containerDimensions.height}
                         position={positions[category.category] || { x: 0, y: 0 }}
                         onPositionUpdate={handlePositionUpdate}
                         isExpanded={expandedNode === category.category}

@@ -30,24 +30,24 @@ function SubCategoryNode({
             <Link
                 key={filename}
                 href={`/knowledges/${encodedPath}`}
-                className="block px-3 py-2 text-sm bg-neutral-50 hover:bg-neutral-100 rounded border-l-4 border-neutral-400 transition-colors"
+                className="block px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm bg-neutral-50 hover:bg-neutral-100 rounded border-l-2 sm:border-l-4 border-neutral-400 transition-colors break-words"
             >
                 📄 {displayName}
             </Link>
         );
     };
     return (
-        <div className="ml-4 border-l-2 border-neutral-200 pl-4">
+        <div className="ml-2 sm:ml-4 border-l-2 border-neutral-200 pl-2 sm:pl-4">
             <button
                 onClick={() => setSubExpanded(!subExpanded)}
-                className="flex items-center gap-2 w-full text-left p-2 bg-neutral-50 hover:bg-neutral-100 rounded transition-colors"
+                className="flex items-center gap-1 sm:gap-2 w-full text-left p-1.5 sm:p-2 bg-neutral-50 hover:bg-neutral-100 rounded transition-colors"
             >
-                {subExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-                <span className="font-medium">📁 {subcategory.category}</span>
-                <span className="text-sm text-neutral-600">({subcategory.point} points)</span>
+                {subExpanded ? <ChevronDown size={14} className="sm:w-4 sm:h-4" /> : <ChevronRight size={14} className="sm:w-4 sm:h-4" />}
+                <span className="font-medium text-sm sm:text-base truncate">📁 {subcategory.category}</span>
+                <span className="text-xs sm:text-sm text-neutral-600 shrink-0">({subcategory.point} points)</span>
             </button>
             {subExpanded && (
-                <div className="mt-2 space-y-1">
+                <div className="mt-1 sm:mt-2 space-y-1">
                     {subcategory.names.map(filename => 
                         renderFileLink(filename, categoryName, subcategory.category)
                     )}
@@ -83,7 +83,7 @@ export default function KnowledgeNode({
             <Link
                 key={filename}
                 href={`/knowledges/${encodedPath}`}
-                className="block px-3 py-2 text-sm bg-neutral-50 hover:bg-neutral-100 rounded border-l-4 border-neutral-400 transition-colors"
+                className="block px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm bg-neutral-50 hover:bg-neutral-100 rounded border-l-2 sm:border-l-4 border-neutral-400 transition-colors break-words"
             >
                 📄 {displayName}
             </Link>
@@ -134,25 +134,31 @@ export default function KnowledgeNode({
             {/* Expanded Content Modal */}
             {isExpanded && (() => {
                 // Calculate modal position to stay within container bounds
-                const modalWidth = 350;
-                const modalHeight = 300;
+                const isMobile = containerWidth < 500;
+                const modalWidth = isMobile 
+                    ? Math.min(containerWidth - 20, 280) // モバイル: 最大280px、コンテナ幅-20px
+                    : 350; // デスクトップ: 350px
+                const modalHeight = isMobile ? 220 : 300;
                 // Calculate horizontal position
+                const margin = isMobile ? 10 : 20;
                 let leftOffset = -modalWidth / 2; // Default: center
                 const rightBoundary = position.x + modalWidth / 2;
                 const leftBoundary = position.x - modalWidth / 2;
-                if (rightBoundary > containerWidth - 20) {
-                    leftOffset = -(modalWidth - (containerWidth - position.x - 20));
-                } else if (leftBoundary < 20) {
-                    leftOffset = -position.x + 20;
+                if (rightBoundary > containerWidth - margin) {
+                    leftOffset = -(modalWidth - (containerWidth - position.x - margin));
+                } else if (leftBoundary < margin) {
+                    leftOffset = -position.x + margin;
                 }
                 // Calculate vertical position
                 let topOffset = circleSize + 35; // Default: below the node
-                if (position.y + topOffset + modalHeight > containerHeight - 20) {
+                if (position.y + topOffset + modalHeight > containerHeight - margin) {
                     topOffset = -(modalHeight + 10); // Show above the node
                 }
                 return (
                     <div 
-                        className="absolute z-50 bg-white rounded-lg shadow-2xl border border-neutral-300 p-4"
+                        className={`absolute z-50 bg-white rounded-lg shadow-2xl border border-neutral-300 ${
+                            isMobile ? 'p-3' : 'p-4'
+                        }`}
                         style={{
                             left: `${leftOffset}px`,
                             top: `${topOffset}px`,
@@ -160,13 +166,19 @@ export default function KnowledgeNode({
                             maxHeight: `${modalHeight}px`,
                         }}
                     >
-                        <div className="mb-3">
-                            <h3 className="font-bold text-lg text-neutral-800">{category.category}</h3>
-                            <span className="text-sm text-neutral-600 bg-neutral-100 px-2 py-1 rounded">
+                        <div className={isMobile ? "mb-2" : "mb-3"}>
+                            <h3 className={`font-bold text-neutral-800 ${
+                                isMobile ? "text-base" : "text-lg"
+                            }`}>{category.category}</h3>
+                            <span className={`text-neutral-600 bg-neutral-100 px-2 py-1 rounded ${
+                                isMobile ? "text-xs" : "text-sm"
+                            }`}>
                                 {category.point} points
                             </span>
                         </div>
-                        <div className="max-h-48 overflow-y-auto space-y-3">
+                        <div className={`overflow-y-auto ${
+                            isMobile ? "max-h-40 space-y-2" : "max-h-48 space-y-3"
+                        }`}>
                             {/* Direct files in category */}
                             {category.names && category.names.length > 0 && (
                                 <div className="space-y-1">
@@ -177,7 +189,7 @@ export default function KnowledgeNode({
                             )}
                             {/* Subcategories */}
                             {category.subCategories && category.subCategories.length > 0 && (
-                                <div className="space-y-2">
+                                <div className={isMobile ? "space-y-1.5" : "space-y-2"}>
                                     {category.subCategories.map(subcategory => (
                                         <SubCategoryNode 
                                             key={subcategory.category}
