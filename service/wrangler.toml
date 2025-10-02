@@ -1,0 +1,23 @@
+main = ".open-next/worker.js"
+name = "onc-limb"
+compatibility_date = "2025-10-01"
+compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
+
+[assets]
+directory = ".open-next/assets"
+binding = "ASSETS"
+
+[build]
+command = "yarn build:cloudflare"
+
+[site]
+bucket = ".open-next"
+
+# Use R2 incremental cache
+# See https://opennext.js.org/cloudflare/caching
+[[r2_buckets]]
+binding = "NEXT_INC_CACHE_R2_BUCKET"
+# Create the bucket before deploying
+# You can change the bucket name if you want
+# See https://developers.cloudflare.com/workers/wrangler/commands/#r2-bucket-create
+bucket_name = "cache"
