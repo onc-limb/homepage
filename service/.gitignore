@@ -40,3 +40,4 @@ next-env.d.ts
 
 .vscode
 .open-next
+.wrangler
