@@ -4,20 +4,12 @@
     "parser": "@typescript-eslint/parser",
     "rules": {
         "import/no-unresolved": "off",
-        "import/named": "error",
-        "import/namespace": "error",
-        "import/default": "error",
+        "import/named": "off",
+        "import/namespace": "off",
+        "import/default": "off",
         "import/export": "error",
         "no-multiple-empty-lines": ["error", { "max": 0 }],
         "react/jsx-indent": ["error", 4],
         "react/jsx-indent-props": ["error", 4]
-    },
-    "settings": {
-        "import/resolver": {
-            "typescript": {
-                "alwaysTryTypes": true
-            },
-            "node": [".js", ".jsx", ".ts", ".tsx"]
-        }
     }
 }

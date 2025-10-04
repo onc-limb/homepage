@@ -2,8 +2,9 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Link from 'next/link';
 import { getArticle } from '@/lib/article';
-const ArticleDetail = async ({ params }: { params: { title: string } }) => {
-    const decodedTitle = decodeURIComponent(params.title);
+const ArticleDetail = async ({ params }: { params: Promise<{ title: string }> }) => {
+    const { title } = await params;
+    const decodedTitle = decodeURIComponent(title);
     const article = await getArticle(decodedTitle);
     return (
         <>

@@ -3,8 +3,9 @@ import remarkGfm from 'remark-gfm';
 import Link from 'next/link';
 import { getArticle } from '@/lib/article';
 import { getKnowledge } from '@/lib/knowledge';
-export default async function KnowledgeDetail({ params }: { params: { slug: string } }) {
-    const decodedSlug = decodeURIComponent(params.slug);
+export default async function KnowledgeDetail({ params }: { params: Promise<{ slug: string }> }) {
+    const { slug } = await params;
+    const decodedSlug = decodeURIComponent(slug);
     const knowledge = await getKnowledge(decodedSlug);
     return (
         <>
