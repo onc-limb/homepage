@@ -3,6 +3,9 @@
     "name": "onc-limb",
     "compatibility_date": "2025-10-01",
     "compatibility_flags": ["nodejs_compat"],
+    "build": {
+        "command": "opennextjs-cloudflare build"
+    },
     "assets": {
         "directory": ".open-next/assets",
         "binding": "ASSETS"
