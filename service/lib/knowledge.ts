@@ -104,7 +104,11 @@ export const getKnowledgeFilePath = (
         return `knowledges/${category}/${filename}`;
     }
 };
-export const getKnowledge = async (slug: string) => {
+type KnowledgeContent = {
+    title: string;
+    content: string;
+};
+export const getKnowledge = async (slug: string): Promise<KnowledgeContent> => {
     const repo = 'onc-limb/knowledge-hub';
     // The slug might contain directory separators, so we need to handle it properly
     const filePath = slug.includes('/') ? slug : `knowledges/${slug}`;
@@ -120,10 +124,20 @@ export const getKnowledge = async (slug: string) => {
         }
         const json = await res.json();
         const knowledge = Buffer.from(json.content, 'base64').toString('utf-8');
-        const { content } = matter(knowledge);
-        return content;
+        const { data, content } = matter(knowledge);
+        const filename = slug.split('/').pop() || '';
+        const titleFromFilename = filename.endsWith('.md')
+            ? filename.slice(0, -3)
+            : filename;
+        return {
+            title: data.title || titleFromFilename || 'タイトルなし',
+            content,
+        };
     } catch (error) {
         console.error(`Failed to fetch knowledge file "${slug}":`, error);
-        return `# エラー\n\nファイル "${slug}" の取得に失敗しました。\n\nネットワーク接続を確認してください。`;
+        return {
+            title: 'エラー',
+            content: `# エラー\n\nファイル "${slug}" の取得に失敗しました。\n\nネットワーク接続を確認してください。`,
+        };
     }
 };
