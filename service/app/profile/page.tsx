@@ -9,7 +9,7 @@ const Profile = () => {
                     <AvatarFallback>OC</AvatarFallback>
                 </Avatar>
                 <h1 className="text-4xl font-bold mb-2">onclimb</h1>
-                <p className="text-xl text-muted-foreground">Software Engineer</p>
+                <p className="text-xl text-muted-foreground">フルスタックエンジニア</p>
             </div>
             <div className="space-y-6">
                 <Card>
@@ -75,6 +75,39 @@ const Profile = () => {
                                     <li>• DynamoDB</li>
                                     <li>• Redis</li>
                                 </ul>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>経歴</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-4">
+                            <div className="border-l-2 border-primary pl-4">
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-1">
+                                    <span className="font-semibold text-foreground">2020年 - 現在</span>
+                                </div>
+                                <p className="text-muted-foreground">
+                                    フルスタックエンジニアとしてWebアプリケーション開発に従事
+                                </p>
+                            </div>
+                            <div className="border-l-2 border-primary pl-4">
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-1">
+                                    <span className="font-semibold text-foreground">2018年 - 2020年</span>
+                                </div>
+                                <p className="text-muted-foreground">
+                                    バックエンド開発とAPI設計を担当
+                                </p>
+                            </div>
+                            <div className="border-l-2 border-primary pl-4">
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-1">
+                                    <span className="font-semibold text-foreground">2015年 - 2018年</span>
+                                </div>
+                                <p className="text-muted-foreground">
+                                    フロントエンド開発からキャリアをスタート
+                                </p>
                             </div>
                         </div>
                     </CardContent>
