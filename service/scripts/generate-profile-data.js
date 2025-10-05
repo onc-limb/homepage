@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const profilePath = path.join(__dirname, '..', 'app', 'profile', 'profile.md');
+const profilePath = path.join(__dirname, '..', 'docs', 'profile.md');
 const outputPath = path.join(__dirname, '..', 'lib', 'profileData.ts');
 // profile.md の内容を読み込む
 const profileContent = fs.readFileSync(profilePath, 'utf-8');
