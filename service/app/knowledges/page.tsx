@@ -1,9 +1,8 @@
-import ArticleList from '@/components/articleList';
-import KnowledgeList from '@/components/knowledgeList';
-export default function ArticleListPage() {
+import KnowledgeHierarchy from '@/components/KnowledgeHierarchy';
+export default function KnowledgeListPage() {
     return (
         <section className="w-full py-12 md:py-24">
-            <div className="container px-4 md:px-6">
+            <div className="container px-4 md:px-6 max-w-5xl">
                 <div className="flex flex-col items-center justify-center space-y-4 text-center">
                     <div className="space-y-2">
                         <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
@@ -14,7 +13,7 @@ export default function ArticleListPage() {
                         </p>
                     </div>
                 </div>
-                <KnowledgeList />
+                <KnowledgeHierarchy />
             </div>
         </section>
     );
