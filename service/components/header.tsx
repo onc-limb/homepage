@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
-const MAIN_TITLE = '技術登攀録';
+const MAIN_TITLE = 'onclimb';
 const Header = () => {
     const [isVisible, setIsVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
@@ -66,9 +66,8 @@ const Header = () => {
                 </Link>
                 {/* Desktop Navigation */}
                 <div className="hidden md:flex space-x-4 mx-8">
-                    <HeaderButton href="/">トップ</HeaderButton>
-                    <HeaderButton href="/articles">記事一覧</HeaderButton>
                     <HeaderButton href="/knowledges">ナレッジベース</HeaderButton>
+                    <HeaderButton href="/articles">記事一覧</HeaderButton>
                     <HeaderButton href="/profile">プロフィール</HeaderButton>
                 </div>
                 {/* Mobile Navigation - Hamburger Menu */}
@@ -82,18 +81,13 @@ const Header = () => {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-48">
                             <DropdownMenuItem asChild>
-                                <Link href="/" className="w-full cursor-pointer">
-                                    トップ
+                                <Link href="/knowledges" className="w-full cursor-pointer">
+                                    ナレッジベース
                                 </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem asChild>
                                 <Link href="/articles" className="w-full cursor-pointer">
                                     記事一覧
-                                </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem asChild>
-                                <Link href="/knowledges" className="w-full cursor-pointer">
-                                    ナレッジベース
                                 </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem asChild>
