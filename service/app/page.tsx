@@ -1,13 +1,11 @@
 import Link from 'next/link';
-import Logo from '@/public/MainLogo.jpg';
-import Image from 'next/image';
 import KnowledgeList from '@/components/knowledgeList';
 export default function Top() {
     return (
         <>
             <section className="w-full py-6 md:py-12 lg:py-18">
                 <div className="container px-4 md:px-6">
-                    <div className="flex flex-col items-center justify-center space-y-8 text-center">
+                    <div className="flex flex-col items-center justify-center space-y-4 text-center">
                         <div className="space-y-4">
                             <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
                                 onclimb
@@ -17,13 +15,6 @@ export default function Top() {
                                 ナレッジベースや技術記事を通じて、学んだことや経験を共有します
                             </p>
                         </div>
-                        <Image
-                            src={Logo}
-                            alt="onclimb"
-                            width={300}
-                            height={300}
-                            className="rounded-xl object-cover"
-                        />
                     </div>
                 </div>
             </section>
