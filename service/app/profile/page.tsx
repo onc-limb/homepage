@@ -1,117 +1,143 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-const Profile = () => {
+import { getProfile } from '@/lib/profile';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+const Profile = async () => {
+    const profile = await getProfile();
+    const { data, content } = profile;
+    // Markdownコンテンツをセクションごとに分割(## レベルのみ)
+    const parseSections = () => {
+        const result: { [key: string]: string } = {};
+        const lines = content.split('\n');
+        let currentSection = '';
+        let currentContent: string[] = [];
+        lines.forEach((line) => {
+            // ## で始まる行はセクションタイトル
+            if (line.startsWith('## ')) {
+                // 前のセクションを保存
+                if (currentSection) {
+                    result[currentSection] = currentContent.join('\n').trim();
+                }
+                // 新しいセクション開始
+                currentSection = line.replace('## ', '').trim();
+                currentContent = [];
+            } else if (currentSection) {
+                // セクション内のコンテンツを追加
+                currentContent.push(line);
+            }
+        });
+        // 最後のセクションを保存
+        if (currentSection) {
+            result[currentSection] = currentContent.join('\n').trim();
+        }
+        return result;
+    };
+    const sectionData = parseSections();
     return (
         <div className="container mx-auto px-4 py-8 max-w-4xl">
             <div className="mb-8 text-center">
                 <Avatar className="w-32 h-32 mx-auto mb-4">
-                    <AvatarImage src="/MainLogo.jpg" alt="onclimb" />
+                    <AvatarImage src={data.avatar} alt={data.name} />
                     <AvatarFallback>OC</AvatarFallback>
                 </Avatar>
-                <h1 className="text-4xl font-bold mb-2">onclimb</h1>
-                <p className="text-xl text-muted-foreground">フルスタックエンジニア</p>
+                <h1 className="text-4xl font-bold mb-2">{data.name}</h1>
+                <p className="text-xl text-muted-foreground">{data.title}</p>
             </div>
             <div className="space-y-6">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>自己紹介</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-muted-foreground leading-relaxed">
-                            フルスタックエンジニアとして、Webアプリケーションの設計・開発に携わっています。
-                            モダンな技術スタックを活用し、ユーザー体験を重視したプロダクト開発を心がけています。
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader>
-                        <CardTitle>関心分野</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <ul className="space-y-2 text-muted-foreground">
-                            <li>• モダンなWebアプリケーション開発</li>
-                            <li>• レスポンシブ・アクセシブルなUI/UX設計</li>
-                            <li>• RESTful API設計と実装</li>
-                            <li>• クラウドインフラの構築と運用</li>
-                            <li>• パフォーマンス最適化</li>
-                        </ul>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader>
-                        <CardTitle>技術スタック</CardTitle>
-                        <CardDescription>主に使用している技術</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <h3 className="font-semibold mb-2">フロントエンド</h3>
-                                <ul className="space-y-1 text-muted-foreground">
-                                    <li>• React / Next.js</li>
-                                    <li>• TypeScript</li>
-                                    <li>• Tailwind CSS</li>
-                                </ul>
+                {sectionData['自己紹介'] && (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>自己紹介</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-muted-foreground leading-relaxed prose prose-sm max-w-none">
+                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                    {sectionData['自己紹介']}
+                                </ReactMarkdown>
                             </div>
-                            <div>
-                                <h3 className="font-semibold mb-2">バックエンド</h3>
-                                <ul className="space-y-1 text-muted-foreground">
-                                    <li>• Node.js</li>
-                                    <li>• Python</li>
-                                    <li>• REST API / GraphQL</li>
-                                </ul>
+                        </CardContent>
+                    </Card>
+                )}
+                {sectionData['関心分野'] && (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>関心分野</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-muted-foreground prose prose-sm max-w-none">
+                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                    {sectionData['関心分野']}
+                                </ReactMarkdown>
                             </div>
-                            <div>
-                                <h3 className="font-semibold mb-2">インフラ・ツール</h3>
-                                <ul className="space-y-1 text-muted-foreground">
-                                    <li>• AWS / Cloudflare</li>
-                                    <li>• Docker</li>
-                                    <li>• Git / GitHub</li>
-                                </ul>
+                        </CardContent>
+                    </Card>
+                )}
+                {sectionData['技術スタック'] && (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>技術スタック</CardTitle>
+                            <CardDescription>主に使用している技術</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {(() => {
+                                    // ### 単位でコンテンツを分割
+                                    const sections = sectionData['技術スタック'].split('### ').filter((s) => s.trim());
+                                    return sections.map((section, index) => {
+                                        const lines = section.split('\n');
+                                        const title = lines[0].trim();
+                                        const content = lines.slice(1).join('\n').trim();
+                                        return (
+                                            <div key={index}>
+                                                <h3 className="font-semibold mb-2 text-foreground">{title}</h3>
+                                                <div className="prose prose-sm max-w-none dark:prose-invert">
+                                                    <ReactMarkdown
+                                                        remarkPlugins={[remarkGfm]}
+                                                        components={{
+                                                            ul: ({ children }) => (
+                                                                <ul className="space-y-1 text-muted-foreground list-none pl-0">
+                                                                    {children}
+                                                                </ul>
+                                                            ),
+                                                            li: ({ children }) => <li className="pl-0">• {children}</li>,
+                                                        }}
+                                                    >
+                                                        {content}
+                                                    </ReactMarkdown>
+                                                </div>
+                                            </div>
+                                        );
+                                    });
+                                })()}
                             </div>
-                            <div>
-                                <h3 className="font-semibold mb-2">データベース</h3>
-                                <ul className="space-y-1 text-muted-foreground">
-                                    <li>• PostgreSQL</li>
-                                    <li>• DynamoDB</li>
-                                    <li>• Redis</li>
-                                </ul>
+                        </CardContent>
+                    </Card>
+                )}
+                {sectionData['経歴'] && (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>経歴</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="prose prose-sm max-w-none dark:prose-invert">
+                                <ReactMarkdown
+                                    remarkPlugins={[remarkGfm]}
+                                    components={{
+                                        h3: ({ children }) => (
+                                            <h3 className="font-semibold text-foreground mb-1">{children}</h3>
+                                        ),
+                                        p: ({ children }) => (
+                                            <p className="text-muted-foreground mb-4">{children}</p>
+                                        ),
+                                    }}
+                                >
+                                    {sectionData['経歴']}
+                                </ReactMarkdown>
                             </div>
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader>
-                        <CardTitle>経歴</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
-                            <div className="border-l-2 border-primary pl-4">
-                                <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-1">
-                                    <span className="font-semibold text-foreground">2020年 - 現在</span>
-                                </div>
-                                <p className="text-muted-foreground">
-                                    フルスタックエンジニアとしてWebアプリケーション開発に従事
-                                </p>
-                            </div>
-                            <div className="border-l-2 border-primary pl-4">
-                                <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-1">
-                                    <span className="font-semibold text-foreground">2018年 - 2020年</span>
-                                </div>
-                                <p className="text-muted-foreground">
-                                    バックエンド開発とAPI設計を担当
-                                </p>
-                            </div>
-                            <div className="border-l-2 border-primary pl-4">
-                                <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-1">
-                                    <span className="font-semibold text-foreground">2015年 - 2018年</span>
-                                </div>
-                                <p className="text-muted-foreground">
-                                    フロントエンド開発からキャリアをスタート
-                                </p>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
+                        </CardContent>
+                    </Card>
+                )}
                 <Card>
                     <CardHeader>
                         <CardTitle>リンク</CardTitle>
@@ -119,14 +145,13 @@ const Profile = () => {
                     <CardContent>
                         <div className="flex flex-wrap gap-4">
                             <a
-                                href="https://github.com/onc-limb"
+                                href={data.github}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-primary hover:underline"
                             >
                                 GitHub
                             </a>
-                            {/* 必要に応じて他のリンクを追加 */}
                         </div>
                     </CardContent>
                 </Card>
