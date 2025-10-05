@@ -3,7 +3,7 @@ import KnowledgeList from '@/components/knowledgeList';
 export default function Top() {
     return (
         <>
-            <section className="w-full py-6 md:py-12 lg:py-18">
+            <section className="w-full py-4 md:py-8 lg:py-12">
                 <div className="container px-4 md:px-6">
                     <div className="flex flex-col items-center justify-center space-y-4 text-center">
                         <div className="space-y-4">
@@ -18,7 +18,7 @@ export default function Top() {
                     </div>
                 </div>
             </section>
-            <section className="w-full py-12 md:py-24 bg-gray-100 dark:bg-gray-800">
+            <section className="w-full py-8 md:py-8 bg-gray-100 dark:bg-gray-800">
                 <div className="container px-4 md:px-6">
                     <div className="flex flex-col items-center justify-center space-y-4 text-center">
                         <div className="space-y-2">
@@ -33,7 +33,7 @@ export default function Top() {
                     <KnowledgeList />
                 </div>
             </section>
-            <section className="w-full py-12 md:py-24">
+            <section className="w-full py-8 md:py-8">
                 <div className="container px-4 md:px-6">
                     <div className="flex flex-col items-center justify-center space-y-4 text-center">
                         <div className="space-y-2">
