@@ -139,6 +139,14 @@
 - カスタム CSS は最小限に留める
 - ダークモード対応を考慮する
 
+### ビルド・デプロイ
+
+- **ビルドコマンド**: `yarn build` または `wrangler pages deploy` でビルド
+- **デプロイ先**: Cloudflare Pages
+- **デプロイツール**: Wrangler CLI を使用
+- `wrangler.jsonc` に Cloudflare 関連の設定が記載されている
+- `open-next.config.ts` で Cloudflare Workers 向けの Next.js 設定を管理
+
 ### コード品質管理
 
 - ESLint ルールに従ったコードを書く
