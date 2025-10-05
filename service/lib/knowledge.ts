@@ -27,7 +27,11 @@ export const getKnowledgeMetadata = async (): Promise<KnowledgeMetadata> => {
     const repo = 'onc-limb/knowledge-hub';
     const apiUrl = `https://api.github.com/repos/${repo}/contents/knowledges/meta.json`;
     try {
-        const res = await fetch(apiUrl);
+        const res = await fetch(apiUrl, {
+            headers: {
+                'User-Agent': 'onc-limb-homepage',
+            },
+        });
         if (!res.ok) {
             throw new Error(`GitHub API responded with status: ${res.status}`);
         }
@@ -40,51 +44,47 @@ export const getKnowledgeMetadata = async (): Promise<KnowledgeMetadata> => {
         return {
             categories: [
                 {
-                    category: "ai",
+                    category: 'ai',
                     point: 7,
                     subCategories: [
                         {
-                            category: "機械学習",
+                            category: '機械学習',
                             point: 7,
                             names: [
-                                "LightningCLIとは.md",
-                                "Lightningのモジュール.md",
-                                "MLOpsの流れ.md"
-                            ]
-                        }
-                    ]
+                                'LightningCLIとは.md',
+                                'Lightningのモジュール.md',
+                                'MLOpsの流れ.md',
+                            ],
+                        },
+                    ],
                 },
                 {
-                    category: "aws",
+                    category: 'aws',
                     point: 4,
                     subCategories: [
                         {
-                            category: "sagemaker",
+                            category: 'sagemaker',
                             point: 3,
                             names: [
-                                "ProcessingJobとTrainingJobの違い.md",
-                                "SageMaker DataWrangler.md"
-                            ]
-                        }
-                    ]
+                                'ProcessingJobとTrainingJobの違い.md',
+                                'SageMaker DataWrangler.md',
+                            ],
+                        },
+                    ],
                 },
                 {
-                    category: "css",
+                    category: 'css',
                     point: 1,
-                    names: [
-                        "tailwindのimport.md"
-                    ]
+                    names: ['tailwindのimport.md'],
                 },
                 {
-                    category: "python",
+                    category: 'python',
                     point: 1,
-                    names: [
-                        "Logging.md"
-                    ]
-                }
+                    names: ['Logging.md'],
+                },
             ],
             totalFiles: 7,
-            lastUpdated: new Date().toISOString()
+            lastUpdated: new Date().toISOString(),
         };
     }
 };
@@ -93,29 +93,51 @@ export const getKnowledges = async () => {
     return metadata;
 };
 // Helper function to get file path from category and filename
-export const getKnowledgeFilePath = (category: string, subcategory: string | null, filename: string): string => {
+export const getKnowledgeFilePath = (
+    category: string,
+    subcategory: string | null,
+    filename: string,
+): string => {
     if (subcategory) {
         return `knowledges/${category}/${subcategory}/${filename}`;
     } else {
         return `knowledges/${category}/${filename}`;
     }
 };
-export const getKnowledge = async (slug: string) => {
+type KnowledgeContent = {
+    title: string;
+    content: string;
+};
+export const getKnowledge = async (slug: string): Promise<KnowledgeContent> => {
     const repo = 'onc-limb/knowledge-hub';
     // The slug might contain directory separators, so we need to handle it properly
     const filePath = slug.includes('/') ? slug : `knowledges/${slug}`;
     const apiUrl = `https://api.github.com/repos/${repo}/contents/${filePath}.md`;
     try {
-        const res = await fetch(apiUrl);
+        const res = await fetch(apiUrl, {
+            headers: {
+                'User-Agent': 'onc-limb-homepage',
+            },
+        });
         if (!res.ok) {
             throw new Error(`GitHub API responded with status: ${res.status}`);
         }
         const json = await res.json();
         const knowledge = Buffer.from(json.content, 'base64').toString('utf-8');
-        const { content } = matter(knowledge);
-        return content;
+        const { data, content } = matter(knowledge);
+        const filename = slug.split('/').pop() || '';
+        const titleFromFilename = filename.endsWith('.md')
+            ? filename.slice(0, -3)
+            : filename;
+        return {
+            title: data.title || titleFromFilename || 'タイトルなし',
+            content,
+        };
     } catch (error) {
         console.error(`Failed to fetch knowledge file "${slug}":`, error);
-        return `# エラー\n\nファイル "${slug}" の取得に失敗しました。\n\nネットワーク接続を確認してください。`;
+        return {
+            title: 'エラー',
+            content: `# エラー\n\nファイル "${slug}" の取得に失敗しました。\n\nネットワーク接続を確認してください。`,
+        };
     }
 };

@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
-const MAIN_TITLE = '技術登攀録';
+const MAIN_TITLE = 'onclimb';
 const Header = () => {
     const [isVisible, setIsVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
@@ -48,27 +48,27 @@ const Header = () => {
         <header className={`sticky top-0 z-50 w-full transition-transform duration-300 ${
             isVisible ? 'translate-y-0' : 'md:translate-y-0 -translate-y-full'
         }`}>
-            <div className="flex items-center justify-between bg-neutral-700">
+            <div className="flex items-center justify-between bg-neutral-800 shadow-lg">
                 <Link
                     href="/"
-                    className="flex space-x-2 sm:space-x-4 mx-4 sm:mx-8 my-2 bg-neutral-900 rounded-full border-neutral-400 border-4 p-2 sm:p-3"
+                    className="flex items-center gap-3 mx-4 sm:mx-8 my-3 px-4 py-2 bg-neutral-200 rounded-lg shadow-[4px_4px_8px_rgba(0,0,0,0.3),inset_-2px_-2px_4px_rgba(0,0,0,0.1)] hover:shadow-[6px_6px_12px_rgba(0,0,0,0.4),inset_-2px_-2px_4px_rgba(0,0,0,0.15)] transition-all duration-300"
                 >
                     <Image
                         src={Logo}
-                        alt="main-logo"
-                        width={50}
-                        style={{ objectFit: 'contain' }}
-                        className="ml-2 sm:ml-4"
+                        alt="onclimb logo"
+                        width={40}
+                        height={40}
+                        style={{ objectFit: 'cover' }}
+                        className="rounded-md shadow-sm"
                     />
-                    <h1 className="flex items-center uppercase text-white font-serif text-2xl sm:text-4xl italic">
+                    <h1 className="text-neutral-900 font-bold text-xl sm:text-2xl tracking-wide">
                         {MAIN_TITLE}
                     </h1>
                 </Link>
                 {/* Desktop Navigation */}
                 <div className="hidden md:flex space-x-4 mx-8">
-                    <HeaderButton href="/">トップ</HeaderButton>
-                    <HeaderButton href="/articles">記事一覧</HeaderButton>
                     <HeaderButton href="/knowledges">ナレッジベース</HeaderButton>
+                    <HeaderButton href="/articles">記事一覧</HeaderButton>
                     <HeaderButton href="/profile">プロフィール</HeaderButton>
                 </div>
                 {/* Mobile Navigation - Hamburger Menu */}
@@ -82,18 +82,13 @@ const Header = () => {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-48">
                             <DropdownMenuItem asChild>
-                                <Link href="/" className="w-full cursor-pointer">
-                                    トップ
+                                <Link href="/knowledges" className="w-full cursor-pointer">
+                                    ナレッジベース
                                 </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem asChild>
                                 <Link href="/articles" className="w-full cursor-pointer">
                                     記事一覧
-                                </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem asChild>
-                                <Link href="/knowledges" className="w-full cursor-pointer">
-                                    ナレッジベース
                                 </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem asChild>

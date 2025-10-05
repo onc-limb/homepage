@@ -2,19 +2,21 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Link from 'next/link';
 import { getArticle } from '@/lib/article';
-const ArticleDetail = async ({ params }: { params: { title: string } }) => {
-    const decodedTitle = decodeURIComponent(params.title);
+import { Button } from '@/components/ui/button';
+const ArticleDetail = async ({ params }: { params: Promise<{ title: string }> }) => {
+    const { title } = await params;
+    const decodedTitle = decodeURIComponent(title);
     const article = await getArticle(decodedTitle);
     return (
         <>
-            <Link
-                href={`/articles`}
-                className="mx-auto bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
-                prefetch={false}
-            >
-                一覧へ
-            </Link>
-            <article className="w-full py-12 md:py-24 lg:py-32">
+            <div className="container px-4 md:px-6 lg:max-w-4xl pt-6">
+                <Button asChild variant="outline" className="mb-6">
+                    <Link href="/articles" prefetch={false}>
+                        一覧へ
+                    </Link>
+                </Button>
+            </div>
+            <article className="w-full pb-12 md:pb-24 lg:pb-32">
                 <div className="container px-4 md:px-6 lg:max-w-4xl">
                     <div className="space-y-6">
                         <div className="space-y-2">
