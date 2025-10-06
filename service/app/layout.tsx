@@ -19,6 +19,12 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="ja">
+            <head>
+                <script
+                    async 
+                    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2116109734269102"
+                    crossOrigin="anonymous"/>
+            </head>
             <body
                 className={cn(
                     'min-h-screen bg-background font-sans antialiased flex flex-col h-screen',
