@@ -1,5 +1,6 @@
 import matter from 'gray-matter';
-import { profileMarkdown } from './profileData';
+// @ts-expect-error raw-loader returns string
+import profileMarkdown from '../docs/profile.md';
 export type ProfileMeta = {
     name: string;
     title: string;
