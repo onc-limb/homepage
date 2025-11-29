@@ -1,0 +1,24 @@
+# 依存関係
+node_modules/
+
+# 環境変数
+.env
+.env.local
+.env.*.local
+
+# ビルド出力
+dist/
+
+# ログ
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# エディタ
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# TypeScript
+*.tsbuildinfo

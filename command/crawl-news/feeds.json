@@ -1,0 +1,271 @@
+{
+  "feeds": [
+    {
+      "name": "React",
+      "url": "https://github.com/facebook/react/releases.atom",
+      "category": "frontend",
+      "description": "ReactのGitHubリリース情報"
+    },
+    {
+      "name": "TypeScript",
+      "url": "https://github.com/microsoft/TypeScript/releases.atom",
+      "category": "frontend",
+      "description": "TypeScriptのGitHubリリース情報"
+    },
+    {
+      "name": "Node.js",
+      "url": "https://github.com/nodejs/node/releases.atom",
+      "category": "backend",
+      "description": "Node.jsのGitHubリリース情報"
+    },
+    {
+      "name": "Next.js",
+      "url": "https://github.com/vercel/next.js/releases.atom",
+      "category": "frontend",
+      "description": "Next.jsのGitHubリリース情報"
+    },
+    {
+      "name": "Next.js Blog",
+      "url": "https://nextjs.org/feed.xml",
+      "type": "blog",
+      "category": "frontend",
+      "description": "Next.js公式ブログ（新機能、アップデート情報）"
+    },
+    {
+      "name": "NestJS",
+      "url": "https://github.com/nestjs/nest/releases.atom",
+      "category": "backend",
+      "description": "NestJSのGitHubリリース情報"
+    },
+    {
+      "name": "SolidJS",
+      "url": "https://github.com/solidjs/solid/releases.atom",
+      "category": "frontend",
+      "description": "SolidJSのGitHubリリース情報"
+    },
+    {
+      "name": "SolidStart",
+      "url": "https://github.com/solidjs/solid-start/releases.atom",
+      "category": "frontend",
+      "description": "SolidStartのGitHubリリース情報"
+    },
+    {
+      "name": "Prisma",
+      "url": "https://github.com/prisma/prisma/releases.atom",
+      "category": "backend",
+      "description": "PrismaのGitHubリリース情報"
+    },
+    {
+      "name": "Fastify",
+      "url": "https://github.com/fastify/fastify/releases.atom",
+      "category": "backend",
+      "description": "FastifyのGitHubリリース情報"
+    },
+    {
+      "name": "TypeScript Blog",
+      "url": "https://devblogs.microsoft.com/typescript/feed/",
+      "type": "blog",
+      "category": "frontend",
+      "description": "Microsoft TypeScript公式ブログ"
+    },
+    {
+      "name": "JavaScript Weekly",
+      "url": "https://javascriptweekly.com/rss",
+      "type": "newsletter",
+      "category": "frontend",
+      "description": "JavaScript関連の週刊ニュースレター"
+    },
+    {
+      "name": "ECMAScript Daily",
+      "url": "https://ecmascript-daily.github.io/atom.xml",
+      "type": "blog",
+      "category": "frontend",
+      "description": "ECMAScript/JavaScript仕様の最新情報"
+    },
+    {
+      "name": "React Blog",
+      "url": "https://react.dev/rss.xml",
+      "type": "blog",
+      "category": "frontend",
+      "description": "React公式ブログ"
+    },
+    {
+      "name": "Vercel Blog",
+      "url": "https://vercel.com/atom",
+      "type": "blog",
+      "category": "frontend",
+      "description": "Vercel公式ブログ（Next.js、Edge Functions等）"
+    },
+    {
+      "name": "Node.js Blog",
+      "url": "https://nodejs.org/en/feed/blog.xml",
+      "type": "blog",
+      "category": "backend",
+      "description": "Node.js公式ブログ"
+    },
+    {
+      "name": "Hono Releases",
+      "url": "https://github.com/honojs/hono/releases.atom",
+      "category": "backend",
+      "description": "HonoのGitHubリリース情報（軽量Webフレームワーク）"
+    },
+    {
+      "name": "Express.js Releases",
+      "url": "https://github.com/expressjs/express/releases.atom",
+      "category": "backend",
+      "description": "Express.jsのGitHubリリース情報"
+    },
+    {
+      "name": "Go Blog",
+      "url": "https://go.dev/blog/feed.atom",
+      "type": "blog",
+      "category": "backend",
+      "description": "Go言語公式ブログ"
+    },
+    {
+      "name": "Go Weekly",
+      "url": "https://golangweekly.com/rss",
+      "type": "newsletter",
+      "category": "backend",
+      "description": "Go言語の週刊ニュースレター"
+    },
+    {
+      "name": "Echo Releases",
+      "url": "https://github.com/labstack/echo/releases.atom",
+      "category": "backend",
+      "description": "Echo（Go Webフレームワーク）のGitHubリリース情報"
+    },
+    {
+      "name": "Gin Releases",
+      "url": "https://github.com/gin-gonic/gin/releases.atom",
+      "category": "backend",
+      "description": "Gin（Go Webフレームワーク）のGitHubリリース情報"
+    },
+    {
+      "name": "AWS News Blog",
+      "url": "https://aws.amazon.com/blogs/aws/feed/",
+      "type": "blog",
+      "category": "infrastructure",
+      "description": "AWS公式ニュースブログ（新サービス、アップデート）"
+    },
+    {
+      "name": "AWS Architecture Blog",
+      "url": "https://aws.amazon.com/blogs/architecture/feed/",
+      "type": "blog",
+      "category": "infrastructure",
+      "description": "AWSアーキテクチャブログ（設計パターン、ベストプラクティス）"
+    },
+    {
+      "name": "AWS What's New",
+      "url": "https://aws.amazon.com/about-aws/whats-new/recent/feed/",
+      "type": "news",
+      "category": "infrastructure",
+      "description": "AWSの新機能・サービスアップデート一覧"
+    },
+    {
+      "name": "GCP Release Notes",
+      "url": "https://cloud.google.com/feeds/gcp-release-notes.xml",
+      "type": "news",
+      "category": "infrastructure",
+      "description": "Google Cloudのリリースノート"
+    },
+    {
+      "name": "HashiCorp Blog",
+      "url": "https://www.hashicorp.com/blog/feed.xml",
+      "type": "blog",
+      "category": "infrastructure",
+      "description": "HashiCorp公式ブログ（Terraform、Vault等）"
+    },
+    {
+      "name": "Terraform Releases",
+      "url": "https://github.com/hashicorp/terraform/releases.atom",
+      "category": "infrastructure",
+      "description": "TerraformのGitHubリリース情報"
+    },
+    {
+      "name": "OpenAI Blog",
+      "url": "https://openai.com/blog/rss.xml",
+      "type": "blog",
+      "category": "ai",
+      "description": "OpenAI公式ブログ（GPT、ChatGPT等）"
+    },
+    {
+      "name": "Google AI Blog",
+      "url": "https://blog.google/technology/ai/rss/",
+      "type": "blog",
+      "category": "ai",
+      "description": "Google AI公式ブログ（Gemini等）"
+    },
+    {
+      "name": "Hugging Face Blog",
+      "url": "https://huggingface.co/blog/feed.xml",
+      "type": "blog",
+      "category": "ai",
+      "description": "Hugging Face公式ブログ（機械学習モデル、Transformers）"
+    },
+    {
+      "name": "LangChain Blog",
+      "url": "https://blog.langchain.dev/rss/",
+      "type": "blog",
+      "category": "ai",
+      "description": "LangChain公式ブログ（LLMアプリケーション開発）"
+    },
+    {
+      "name": "Hacker News Best",
+      "url": "https://hnrss.org/best",
+      "type": "aggregator",
+      "category": "general",
+      "description": "Hacker Newsの人気記事"
+    },
+    {
+      "name": "Dev.to",
+      "url": "https://dev.to/feed",
+      "type": "aggregator",
+      "category": "general",
+      "description": "Dev.toのトレンド記事"
+    },
+    {
+      "name": "Zenn",
+      "url": "https://zenn.dev/feed",
+      "type": "aggregator",
+      "category": "general",
+      "description": "Zennのトレンド記事"
+    },
+    {
+      "name": "Qiita",
+      "url": "https://qiita.com/popular-items/feed",
+      "type": "aggregator",
+      "category": "general",
+      "description": "Qiitaの人気記事"
+    },
+    {
+      "name": "Publickey",
+      "url": "https://www.publickey1.jp/atom.xml",
+      "type": "blog",
+      "category": "general",
+      "description": "Publickey（日本のIT技術ニュースサイト）"
+    },
+    {
+      "name": "InfoQ Japan",
+      "url": "https://feed.infoq.com/jp",
+      "type": "news",
+      "category": "general",
+      "requiresUserAgent": true,
+      "description": "InfoQ日本語版（ソフトウェア開発ニュース）"
+    },
+    {
+      "name": "web.dev",
+      "url": "https://web.dev/feed.xml",
+      "type": "blog",
+      "category": "frontend",
+      "description": "Google公式Web開発ブログ（Web標準、パフォーマンス）"
+    },
+    {
+      "name": "The Pragmatic Engineer",
+      "url": "https://newsletter.pragmaticengineer.com/feed",
+      "type": "newsletter",
+      "category": "general",
+      "description": "エンジニアリング組織、アーキテクチャ、キャリア"
+    }
+  ]
+}
