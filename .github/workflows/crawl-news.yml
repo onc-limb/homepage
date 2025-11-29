@@ -1,0 +1,53 @@
+name: Crawl News
+
+on:
+  schedule:
+    # 日本時間 08:00 = UTC 23:00 (前日)
+    - cron: '0 23 * * *'
+  workflow_dispatch: # 手動実行も可能
+
+jobs:
+  crawl-news:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        working-directory: command/crawl-news
+        run: pnpm install --frozen-lockfile
+
+      - name: Run crawl-news
+        working-directory: command/crawl-news
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: pnpm run crawl
+
+      - name: Check for changes
+        id: git-check
+        run: |
+          git add -A
+          if git diff --staged --quiet; then
+            echo "changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push changes
+        if: steps.git-check.outputs.changes == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git commit -m "chore: add crawled news $(date +%Y-%m-%d)"
+          git push origin main
