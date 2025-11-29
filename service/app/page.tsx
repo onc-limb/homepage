@@ -23,6 +23,26 @@ export default function Top() {
                     <div className="flex flex-col items-center justify-center space-y-4 text-center">
                         <div className="space-y-2">
                             <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
+                                技術ニュース
+                            </h2>
+                            <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                                毎日自動収集される技術ニュースのAI要約
+                            </p>
+                        </div>
+                        <Link
+                            className="inline-flex h-10 items-center justify-center rounded-md bg-gray-900 px-8 text-sm text-gray-50 shadow hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
+                            href="/news"
+                        >
+                            ニュースを見る
+                        </Link>
+                    </div>
+                </div>
+            </section>
+            <section className="w-full py-8 md:py-8">
+                <div className="container px-4 md:px-6">
+                    <div className="flex flex-col items-center justify-center space-y-4 text-center">
+                        <div className="space-y-2">
+                            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
                                 ナレッジベース
                             </h2>
                             <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
@@ -33,7 +53,7 @@ export default function Top() {
                     <KnowledgeList />
                 </div>
             </section>
-            <section className="w-full py-8 md:py-8">
+            <section className="w-full py-8 md:py-8 bg-gray-100 dark:bg-gray-800">
                 <div className="container px-4 md:px-6">
                     <div className="flex flex-col items-center justify-center space-y-4 text-center">
                         <div className="space-y-2">
