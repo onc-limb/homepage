@@ -31,7 +31,16 @@ const NewsDetail = async ({ params }: NewsDetailProps) => {
             <article className="w-full pb-12 md:pb-24 lg:pb-32">
                 <div className="container px-4 md:px-6 lg:max-w-4xl">
                     <div className="markdown prose prose-lg dark:prose-invert prose-readable max-w-none">
-                        <Markdown remarkPlugins={[remarkGfm]}>
+                        <Markdown
+                            remarkPlugins={[remarkGfm]}
+                            components={{
+                                a: ({ href, children }) => (
+                                    <a href={href} target="_blank" rel="noopener noreferrer">
+                                        {children}
+                                    </a>
+                                ),
+                            }}
+                        >
                             {news.content}
                         </Markdown>
                     </div>
