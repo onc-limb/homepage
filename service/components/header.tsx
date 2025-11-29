@@ -48,58 +48,58 @@ const Header = () => {
         <header className={`sticky top-0 z-50 w-full transition-transform duration-300 ${
             isVisible ? 'translate-y-0' : 'md:translate-y-0 -translate-y-full'
         }`}>
-            <div className="flex items-center justify-between bg-neutral-800 shadow-lg">
+            <div className="flex items-center justify-between bg-background/95 backdrop-blur-sm border-b border-border/50">
                 <Link
                     href="/"
-                    className="flex items-center gap-3 mx-4 sm:mx-8 my-3 px-4 py-2 bg-neutral-200 rounded-lg shadow-[4px_4px_8px_rgba(0,0,0,0.3),inset_-2px_-2px_4px_rgba(0,0,0,0.1)] hover:shadow-[6px_6px_12px_rgba(0,0,0,0.4),inset_-2px_-2px_4px_rgba(0,0,0,0.15)] transition-all duration-300"
+                    className="flex items-center gap-3 mx-4 sm:mx-8 my-4 group"
                 >
                     <Image
                         src={Logo}
                         alt="onclimb logo"
-                        width={40}
-                        height={40}
+                        width={36}
+                        height={36}
                         style={{ objectFit: 'cover' }}
-                        className="rounded-md shadow-sm"
+                        className="rounded-sm opacity-90 group-hover:opacity-100 transition-opacity"
                     />
-                    <h1 className="text-neutral-900 font-bold text-xl sm:text-2xl tracking-wide">
+                    <h1 className="text-foreground font-medium text-lg sm:text-xl tracking-wide-elegant">
                         {MAIN_TITLE}
                     </h1>
                 </Link>
                 {/* Desktop Navigation */}
-                <div className="hidden md:flex space-x-4 mx-8">
-                    <HeaderButton href="/news">ニュース</HeaderButton>
-                    <HeaderButton href="/knowledges">ナレッジベース</HeaderButton>
-                    <HeaderButton href="/articles">記事一覧</HeaderButton>
-                    <HeaderButton href="/profile">プロフィール</HeaderButton>
+                <div className="hidden md:flex items-center space-x-1 mx-8">
+                    <HeaderButton href="/news">News</HeaderButton>
+                    <HeaderButton href="/knowledges">Knowledge</HeaderButton>
+                    <HeaderButton href="/articles">Articles</HeaderButton>
+                    <HeaderButton href="/profile">Profile</HeaderButton>
                 </div>
                 {/* Mobile Navigation - Hamburger Menu */}
                 <div className="md:hidden mx-4">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="text-white">
-                                <Menu className="h-6 w-6" />
+                            <Button variant="ghost" size="icon" className="text-foreground hover:bg-accent">
+                                <Menu className="h-5 w-5" />
                                 <span className="sr-only">メニューを開く</span>
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-48">
+                        <DropdownMenuContent align="end" className="w-48 bg-card border-border">
                             <DropdownMenuItem asChild>
-                                <Link href="/news" className="w-full cursor-pointer">
-                                    ニュース
+                                <Link href="/news" className="w-full cursor-pointer text-foreground">
+                                    News
                                 </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem asChild>
-                                <Link href="/knowledges" className="w-full cursor-pointer">
-                                    ナレッジベース
+                                <Link href="/knowledges" className="w-full cursor-pointer text-foreground">
+                                    Knowledge
                                 </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem asChild>
-                                <Link href="/articles" className="w-full cursor-pointer">
-                                    記事一覧
+                                <Link href="/articles" className="w-full cursor-pointer text-foreground">
+                                    Articles
                                 </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem asChild>
-                                <Link href="/profile" className="w-full cursor-pointer">
-                                    プロフィール
+                                <Link href="/profile" className="w-full cursor-pointer text-foreground">
+                                    Profile
                                 </Link>
                             </DropdownMenuItem>
                         </DropdownMenuContent>

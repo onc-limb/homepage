@@ -35,23 +35,23 @@ const Profile = async () => {
     };
     const sectionData = parseSections();
     return (
-        <div className="container mx-auto px-4 py-8 max-w-4xl">
-            <div className="mb-8 text-center">
-                <Avatar className="w-32 h-32 mx-auto mb-4">
+        <div className="container mx-auto px-4 py-16 max-w-4xl">
+            <div className="mb-12 text-center">
+                <Avatar className="w-28 h-28 mx-auto mb-6 border border-border/50">
                     <AvatarImage src={data.avatar} alt={data.name} />
-                    <AvatarFallback>OC</AvatarFallback>
+                    <AvatarFallback className="bg-card text-foreground">OC</AvatarFallback>
                 </Avatar>
-                <h1 className="text-4xl font-bold mb-2">{data.name}</h1>
-                <p className="text-xl text-muted-foreground">{data.title}</p>
+                <h1 className="text-4xl font-light tracking-elegant mb-3 text-foreground">{data.name}</h1>
+                <p className="text-lg text-muted-foreground tracking-elegant">{data.title}</p>
             </div>
             <div className="space-y-6">
                 {sectionData['自己紹介'] && (
                     <Card>
                         <CardHeader>
-                            <CardTitle>自己紹介</CardTitle>
+                            <CardTitle className="text-lg font-light tracking-elegant">自己紹介</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-muted-foreground leading-relaxed prose prose-sm max-w-none">
+                            <div className="text-muted-foreground leading-relaxed prose prose-sm prose-invert max-w-none">
                                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                     {sectionData['自己紹介']}
                                 </ReactMarkdown>
@@ -62,10 +62,10 @@ const Profile = async () => {
                 {sectionData['関心分野'] && (
                     <Card>
                         <CardHeader>
-                            <CardTitle>関心分野</CardTitle>
+                            <CardTitle className="text-lg font-light tracking-elegant">関心分野</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-muted-foreground prose prose-sm max-w-none">
+                            <div className="text-muted-foreground prose prose-sm prose-invert max-w-none">
                                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                     {sectionData['関心分野']}
                                 </ReactMarkdown>
@@ -76,11 +76,11 @@ const Profile = async () => {
                 {sectionData['技術スタック'] && (
                     <Card>
                         <CardHeader>
-                            <CardTitle>技術スタック</CardTitle>
-                            <CardDescription>主に使用している技術</CardDescription>
+                            <CardTitle className="text-lg font-light tracking-elegant">技術スタック</CardTitle>
+                            <CardDescription className="text-muted-foreground/70 tracking-elegant">主に使用している技術</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {(() => {
                                     // ### 単位でコンテンツを分割
                                     const sections = sectionData['技術スタック'].split('### ').filter((s) => s.trim());
@@ -90,8 +90,8 @@ const Profile = async () => {
                                         const content = lines.slice(1).join('\n').trim();
                                         return (
                                             <div key={index}>
-                                                <h3 className="font-semibold mb-2 text-foreground">{title}</h3>
-                                                <div className="prose prose-sm max-w-none dark:prose-invert">
+                                                <h3 className="font-medium mb-2 text-foreground tracking-elegant">{title}</h3>
+                                                <div className="prose prose-sm max-w-none prose-invert">
                                                     <ReactMarkdown
                                                         remarkPlugins={[remarkGfm]}
                                                         components={{
@@ -100,7 +100,7 @@ const Profile = async () => {
                                                                     {children}
                                                                 </ul>
                                                             ),
-                                                            li: ({ children }) => <li className="pl-0">• {children}</li>,
+                                                            li: ({ children }) => <li className="pl-0 text-muted-foreground">• {children}</li>,
                                                         }}
                                                     >
                                                         {content}
@@ -117,15 +117,15 @@ const Profile = async () => {
                 {sectionData['経歴'] && (
                     <Card>
                         <CardHeader>
-                            <CardTitle>経歴</CardTitle>
+                            <CardTitle className="text-lg font-light tracking-elegant">経歴</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="prose prose-sm max-w-none dark:prose-invert">
+                            <div className="prose prose-sm max-w-none prose-invert">
                                 <ReactMarkdown
                                     remarkPlugins={[remarkGfm]}
                                     components={{
                                         h3: ({ children }) => (
-                                            <h3 className="font-semibold text-foreground mb-1">{children}</h3>
+                                            <h3 className="font-medium text-foreground mb-1 tracking-elegant">{children}</h3>
                                         ),
                                         p: ({ children }) => (
                                             <p className="text-muted-foreground mb-4">{children}</p>
@@ -140,7 +140,7 @@ const Profile = async () => {
                 )}
                 <Card>
                     <CardHeader>
-                        <CardTitle>リンク</CardTitle>
+                        <CardTitle className="text-lg font-light tracking-elegant">リンク</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="flex flex-wrap gap-4">
@@ -148,7 +148,7 @@ const Profile = async () => {
                                 href={data.github}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-primary hover:underline"
+                                className="text-muted-foreground hover:text-foreground transition-colors tracking-elegant border-b border-border/50 hover:border-foreground pb-0.5"
                             >
                                 GitHub
                             </a>

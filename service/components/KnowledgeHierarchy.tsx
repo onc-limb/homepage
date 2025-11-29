@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ChevronDown, ChevronRight, Folder, File } from 'lucide-react';
+import { ChevronDown, ChevronRight } from 'lucide-react';
 import { getKnowledges, getKnowledgeFilePath, Category, SubCategory } from '@/lib/knowledge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 interface SubCategoryItemProps {
@@ -11,22 +11,21 @@ interface SubCategoryItemProps {
 function SubCategoryItem({ subcategory, categoryName }: SubCategoryItemProps) {
     const [isExpanded, setIsExpanded] = useState(false);
     return (
-        <div className="ml-4 sm:ml-6 border-l-2 border-neutral-200 pl-3 sm:pl-4 mt-2">
+        <div className="ml-4 sm:ml-6 border-l border-border/30 pl-3 sm:pl-4 mt-2">
             <button
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="flex items-center gap-2 w-full text-left p-2 sm:p-3 bg-neutral-50 hover:bg-neutral-100 rounded-md transition-colors group"
+                className="flex items-center gap-2 w-full text-left p-2 sm:p-3 bg-card/30 hover:bg-accent/40 transition-colors duration-200 group"
             >
                 {isExpanded ? (
-                    <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5 text-neutral-600 shrink-0" />
+                    <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground shrink-0" />
                 ) : (
-                    <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-neutral-600 shrink-0" />
+                    <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground shrink-0" />
                 )}
-                <Folder className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600 shrink-0" />
-                <span className="font-medium text-sm sm:text-base text-neutral-700 flex-1 truncate">
+                <span className="font-light text-sm sm:text-base text-foreground flex-1 truncate tracking-elegant">
                     {subcategory.category}
                 </span>
-                <span className="text-xs sm:text-sm text-neutral-500 bg-neutral-200 px-2 py-1 rounded-full shrink-0">
-                    {subcategory.point} pt
+                <span className="text-xs sm:text-sm text-muted-foreground/70 shrink-0 tracking-elegant">
+                    {subcategory.point}
                 </span>
             </button>
             {isExpanded && (
@@ -43,10 +42,9 @@ function SubCategoryItem({ subcategory, categoryName }: SubCategoryItemProps) {
                             <Link
                                 key={filename}
                                 href={`/knowledges/${encodedPath}`}
-                                className="flex items-center gap-2 px-2 sm:px-3 py-2 sm:py-2.5 text-xs sm:text-sm text-neutral-700 bg-white hover:bg-neutral-50 rounded border-l-4 border-blue-400 transition-colors group"
+                                className="flex items-center gap-2 px-2 sm:px-3 py-2 sm:py-2.5 text-xs sm:text-sm text-muted-foreground bg-card/50 hover:bg-accent/50 border-l border-border/50 hover:border-foreground/30 transition-all duration-200 group tracking-elegant"
                             >
-                                <File className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600 shrink-0" />
-                                <span className="flex-1 break-words group-hover:text-blue-600">
+                                <span className="flex-1 break-words group-hover:text-foreground">
                                     {displayName}
                                 </span>
                             </Link>
@@ -68,26 +66,25 @@ function CategoryItem({ category }: CategoryItemProps) {
     return (
         <Card className="overflow-hidden">
             <CardHeader
-                className={`${hasContent ? 'cursor-pointer' : ''} hover:bg-neutral-50 transition-colors`}
+                className={`${hasContent ? 'cursor-pointer' : ''} hover:bg-accent/30 transition-colors duration-200`}
                 onClick={() => hasContent && setIsExpanded(!isExpanded)}
             >
                 <div className="flex items-center gap-3">
                     {hasContent && (
                         <div className="shrink-0">
                             {isExpanded ? (
-                                <ChevronDown className="w-5 h-5 sm:w-6 sm:h-6 text-neutral-600" />
+                                <ChevronDown className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground" />
                             ) : (
-                                <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-neutral-600" />
+                                <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground" />
                             )}
                         </div>
                     )}
-                    <Folder className="w-6 h-6 sm:w-7 sm:h-7 text-emerald-600 shrink-0" />
-                    <CardTitle className="text-lg sm:text-xl flex-1 truncate">
+                    <CardTitle className="text-lg sm:text-xl flex-1 truncate font-light tracking-elegant">
                         {category.category}
                     </CardTitle>
                     <div className="flex items-center gap-2 shrink-0">
-                        <span className="text-sm sm:text-base text-neutral-600 bg-neutral-100 px-3 py-1 rounded-full font-medium">
-                            {category.point} pt
+                        <span className="text-sm sm:text-base text-muted-foreground tracking-elegant">
+                            {category.point}
                         </span>
                     </div>
                 </div>
@@ -112,10 +109,9 @@ function CategoryItem({ category }: CategoryItemProps) {
                                         <Link
                                             key={filename}
                                             href={`/knowledges/${encodedPath}`}
-                                            className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base text-neutral-700 bg-neutral-50 hover:bg-neutral-100 rounded-md border-l-4 border-emerald-400 transition-colors group"
+                                            className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base text-muted-foreground bg-card/50 hover:bg-accent/50 border-l border-border/50 hover:border-foreground/30 transition-all duration-200 group tracking-elegant"
                                         >
-                                            <File className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 shrink-0" />
-                                            <span className="flex-1 break-words group-hover:text-emerald-600">
+                                            <span className="flex-1 break-words group-hover:text-foreground">
                                                 {displayName}
                                             </span>
                                         </Link>
@@ -165,8 +161,8 @@ export default function KnowledgeHierarchy() {
         return (
             <div className="flex items-center justify-center py-12">
                 <div className="text-center">
-                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-neutral-900"></div>
-                    <p className="mt-4 text-neutral-600">Loading...</p>
+                    <div className="inline-block animate-spin rounded-full h-6 w-6 border-b border-foreground"></div>
+                    <p className="mt-4 text-muted-foreground tracking-elegant">Loading...</p>
                 </div>
             </div>
         );
@@ -175,21 +171,21 @@ export default function KnowledgeHierarchy() {
         return (
             <div className="flex items-center justify-center py-12">
                 <div className="text-center">
-                    <p className="text-neutral-600">データの取得に失敗しました</p>
+                    <p className="text-muted-foreground tracking-elegant">データの取得に失敗しました</p>
                 </div>
             </div>
         );
     }
     return (
         <div className="w-full mt-8 sm:mt-12">
-            <div className="mb-6 sm:mb-8 p-4 bg-neutral-100 rounded-lg">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-sm text-neutral-600">
-                    <span className="font-medium">
-                        📚 総ファイル数: <span className="text-neutral-900">{metadata.totalFiles}</span>
+            <div className="mb-6 sm:mb-8 p-4 border border-border/30 bg-card/20">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-sm text-muted-foreground tracking-elegant">
+                    <span>
+                        Total Files: <span className="text-foreground">{metadata.totalFiles}</span>
                     </span>
-                    <span className="font-medium">
-                        🕒 最終更新:{' '}
-                        <span className="text-neutral-900">
+                    <span>
+                        Updated:{' '}
+                        <span className="text-foreground">
                             {new Date(metadata.lastUpdated).toLocaleDateString('ja-JP', {
                                 year: 'numeric',
                                 month: 'long',
