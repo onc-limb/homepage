@@ -51,7 +51,7 @@ const Profile = async () => {
                             <CardTitle className="text-lg font-light tracking-elegant">自己紹介</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-muted-foreground leading-relaxed prose prose-sm prose-invert max-w-none">
+                            <div className="leading-relaxed prose prose-sm prose-invert prose-readable max-w-none">
                                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                     {sectionData['自己紹介']}
                                 </ReactMarkdown>
@@ -65,7 +65,7 @@ const Profile = async () => {
                             <CardTitle className="text-lg font-light tracking-elegant">関心分野</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-muted-foreground prose prose-sm prose-invert max-w-none">
+                            <div className="prose prose-sm prose-invert prose-readable max-w-none">
                                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                     {sectionData['関心分野']}
                                 </ReactMarkdown>

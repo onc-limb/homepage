@@ -4,34 +4,34 @@
 
 @layer base {
     :root {
-        /* Dark Elegant Theme - ダークモードをデフォルトに */
-        --background: 0 0% 5%;           /* #0C0C0C */
-        --foreground: 0 0% 90%;          /* #E5E5E5 */
+        /* Dark Elegant Theme - 青みがかったダークカラー */
+        --background: 220 20% 6%;        /* #0D0F14 深い青みの黒 */
+        --foreground: 220 10% 90%;       /* #E3E5E8 少し青みのある白 */
 
-        --card: 0 0% 8%;                 /* #141414 */
-        --card-foreground: 0 0% 90%;
+        --card: 220 18% 9%;              /* #12151B */
+        --card-foreground: 220 10% 90%;
 
-        --popover: 0 0% 8%;
-        --popover-foreground: 0 0% 90%;
+        --popover: 220 18% 9%;
+        --popover-foreground: 220 10% 90%;
 
-        --primary: 0 0% 90%;
-        --primary-foreground: 0 0% 5%;
+        --primary: 220 10% 90%;
+        --primary-foreground: 220 20% 6%;
 
-        --secondary: 0 0% 12%;           /* #1F1F1F */
-        --secondary-foreground: 0 0% 90%;
+        --secondary: 220 15% 13%;        /* #1A1D24 */
+        --secondary-foreground: 220 10% 90%;
 
-        --muted: 0 0% 12%;
-        --muted-foreground: 0 0% 55%;    /* #8C8C8C */
+        --muted: 220 15% 13%;
+        --muted-foreground: 220 10% 55%; /* #7D8594 */
 
-        --accent: 0 0% 15%;              /* #262626 */
-        --accent-foreground: 0 0% 90%;
+        --accent: 220 15% 16%;           /* #22262F */
+        --accent-foreground: 220 10% 90%;
 
         --destructive: 0 62.8% 30.6%;
-        --destructive-foreground: 0 0% 90%;
+        --destructive-foreground: 220 10% 90%;
 
-        --border: 0 0% 15%;              /* #262626 */
-        --input: 0 0% 15%;
-        --ring: 0 0% 60%;
+        --border: 220 15% 18%;           /* #282D38 */
+        --input: 220 15% 18%;
+        --ring: 220 15% 60%;
 
         --radius: 0.375rem;
     }
@@ -76,5 +76,95 @@
     }
     .tracking-wide-elegant {
         letter-spacing: 0.1em;
+    }
+}
+
+/* ダークテーマ用のproseスタイル強化 */
+@layer components {
+    .prose-readable {
+        /* 本文テキストの可読性向上 */
+        --tw-prose-body: #D4D4D4;           /* より明るいグレー */
+        --tw-prose-headings: #F5F5F5;       /* 見出しは白に近く */
+        --tw-prose-lead: #BFBFBF;
+        --tw-prose-links: #E5E5E5;
+        --tw-prose-bold: #F0F0F0;
+        --tw-prose-counters: #A3A3A3;
+        --tw-prose-bullets: #737373;
+        --tw-prose-hr: #404040;
+        --tw-prose-quotes: #D4D4D4;
+        --tw-prose-quote-borders: #525252;
+        --tw-prose-captions: #A3A3A3;
+        --tw-prose-code: #F0F0F0;
+        --tw-prose-pre-code: #E5E5E5;
+        --tw-prose-pre-bg: #171717;
+        --tw-prose-th-borders: #525252;
+        --tw-prose-td-borders: #404040;
+    }
+
+    .prose-readable p {
+        line-height: 1.85;
+        margin-bottom: 1.5em;
+    }
+
+    .prose-readable h1,
+    .prose-readable h2,
+    .prose-readable h3,
+    .prose-readable h4 {
+        color: var(--tw-prose-headings);
+        margin-top: 2em;
+        margin-bottom: 0.75em;
+    }
+
+    .prose-readable li {
+        line-height: 1.75;
+        margin-bottom: 0.5em;
+    }
+
+    .prose-readable a {
+        color: #A5B4FC;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+    }
+
+    .prose-readable a:hover {
+        color: #C7D2FE;
+    }
+
+    .prose-readable code {
+        background-color: #262626;
+        padding: 0.2em 0.4em;
+        border-radius: 0.25rem;
+        font-size: 0.9em;
+    }
+
+    .prose-readable pre {
+        background-color: #171717;
+        border: 1px solid #333;
+        border-radius: 0.5rem;
+    }
+
+    .prose-readable blockquote {
+        border-left-color: #525252;
+        background-color: rgba(255, 255, 255, 0.02);
+        padding: 0.5em 1em;
+        border-radius: 0 0.25rem 0.25rem 0;
+    }
+
+    .prose-readable strong {
+        color: var(--tw-prose-bold);
+    }
+
+    .prose-readable table {
+        border-collapse: collapse;
+    }
+
+    .prose-readable th,
+    .prose-readable td {
+        border: 1px solid #404040;
+        padding: 0.75em 1em;
+    }
+
+    .prose-readable th {
+        background-color: #1F1F1F;
     }
 }

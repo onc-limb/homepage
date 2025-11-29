@@ -24,8 +24,8 @@ export default async function KnowledgeDetail({ params }: { params: Promise<{ sl
                                 {knowledge.title}
                             </h1>
                         </div>
-                        <hr className="my-4 border-t border-gray-200 w-full" />
-                        <div className="markdown prose prose-lg dark:prose-invert">
+                        <hr className="my-4 border-t border-border w-full" />
+                        <div className="markdown prose prose-lg dark:prose-invert prose-readable max-w-none">
                             <Markdown remarkPlugins={[remarkGfm]}>{knowledge.content}</Markdown>
                         </div>
                     </div>

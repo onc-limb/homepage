@@ -30,7 +30,7 @@ const NewsDetail = async ({ params }: NewsDetailProps) => {
             </div>
             <article className="w-full pb-12 md:pb-24 lg:pb-32">
                 <div className="container px-4 md:px-6 lg:max-w-4xl">
-                    <div className="markdown prose prose-lg dark:prose-invert max-w-none">
+                    <div className="markdown prose prose-lg dark:prose-invert prose-readable max-w-none">
                         <Markdown remarkPlugins={[remarkGfm]}>
                             {news.content}
                         </Markdown>
