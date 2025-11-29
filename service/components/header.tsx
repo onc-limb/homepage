@@ -67,6 +67,7 @@ const Header = () => {
                 </Link>
                 {/* Desktop Navigation */}
                 <div className="hidden md:flex space-x-4 mx-8">
+                    <HeaderButton href="/news">ニュース</HeaderButton>
                     <HeaderButton href="/knowledges">ナレッジベース</HeaderButton>
                     <HeaderButton href="/articles">記事一覧</HeaderButton>
                     <HeaderButton href="/profile">プロフィール</HeaderButton>
@@ -81,6 +82,11 @@ const Header = () => {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-48">
+                            <DropdownMenuItem asChild>
+                                <Link href="/news" className="w-full cursor-pointer">
+                                    ニュース
+                                </Link>
+                            </DropdownMenuItem>
                             <DropdownMenuItem asChild>
                                 <Link href="/knowledges" className="w-full cursor-pointer">
                                     ナレッジベース
