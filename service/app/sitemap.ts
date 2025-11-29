@@ -1,4 +1,5 @@
 import { MetadataRoute } from 'next';
+import { getProjectIds } from '@/lib/portfolio';
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const baseUrl = 'https://onclimb.net';
     // 静的ページ
@@ -39,12 +40,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             changeFrequency: 'monthly',
             priority: 0.7,
         },
-        {
-            url: `${baseUrl}/portfolio/climbing-shoes-library`,
-            lastModified: new Date(),
-            changeFrequency: 'monthly',
-            priority: 0.6,
-        },
     ];
-    return staticPages;
+    // ポートフォリオ詳細ページ
+    const projectIds = getProjectIds();
+    const portfolioPages: MetadataRoute.Sitemap = projectIds.map((id) => ({
+        url: `${baseUrl}/portfolio/${id}`,
+        lastModified: new Date(),
+        changeFrequency: 'monthly' as const,
+        priority: 0.8,
+    }));
+    return [...staticPages, ...portfolioPages];
 }

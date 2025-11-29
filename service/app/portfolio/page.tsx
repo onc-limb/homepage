@@ -1,9 +1,10 @@
 import { projects, type Project } from '@/lib/portfolio';
-import { Github, ExternalLink, FileText } from 'lucide-react';
+import { Github, ExternalLink, FileText, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 function ProjectCard({ project }: { project: Project }) {
+    const hasDetailPage = project.detail !== undefined;
     return (
-        <div className="border border-border/50 bg-card/30 p-6">
+        <div className="border border-border/50 bg-card/30 p-6 group">
             <div className="flex items-start justify-between mb-4">
                 <div>
                     <span className="text-xs text-muted-foreground tracking-elegant uppercase">
@@ -16,11 +17,11 @@ function ProjectCard({ project }: { project: Project }) {
                 <span className="text-xs text-muted-foreground">{project.period}</span>
             </div>
             <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-                {project.longDescription || project.description}
+                {project.description}
             </p>
             {/* Technologies */}
             <div className="flex flex-wrap gap-2 mb-4">
-                {project.technologies.map((tech) => (
+                {project.technologies.slice(0, 5).map((tech) => (
                     <span
                         key={tech}
                         className="text-xs px-2 py-1 bg-accent/50 text-foreground/80 tracking-elegant"
@@ -28,33 +29,30 @@ function ProjectCard({ project }: { project: Project }) {
                         {tech}
                     </span>
                 ))}
+                {project.technologies.length > 5 && (
+                    <span className="text-xs px-2 py-1 text-muted-foreground">
+                        +{project.technologies.length - 5}
+                    </span>
+                )}
             </div>
-            {/* Role */}
-            <div className="mb-4">
-                <span className="text-xs text-muted-foreground">担当: </span>
-                <span className="text-sm text-foreground/80">{project.role}</span>
-            </div>
-            {/* Highlights */}
+            {/* Highlights (簡略化) */}
             {project.highlights.length > 0 && (
-                <div className="mb-4">
-                    <h4 className="text-sm text-muted-foreground mb-2">ハイライト</h4>
-                    <ul className="space-y-1">
-                        {project.highlights.map((highlight, index) => (
-                            <li
-                                key={index}
-                                className="text-sm text-foreground/80 flex items-start gap-2"
-                            >
-                                <span className="text-muted-foreground mt-0.5">•</span>
-                                <span>{highlight}</span>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
+                <ul className="space-y-1 mb-4">
+                    {project.highlights.slice(0, 3).map((highlight, index) => (
+                        <li
+                            key={index}
+                            className="text-sm text-foreground/70 flex items-start gap-2"
+                        >
+                            <span className="text-muted-foreground mt-0.5">•</span>
+                            <span>{highlight}</span>
+                        </li>
+                    ))}
+                </ul>
             )}
             {/* Links */}
-            {project.links && (
-                <div className="flex gap-4 pt-4 border-t border-border/30">
-                    {project.links.github && (
+            <div className="flex items-center justify-between pt-4 border-t border-border/30">
+                <div className="flex gap-4">
+                    {project.links?.github && (
                         <Link
                             href={project.links.github}
                             target="_blank"
@@ -65,7 +63,7 @@ function ProjectCard({ project }: { project: Project }) {
                             <span>GitHub</span>
                         </Link>
                     )}
-                    {project.links.demo && (
+                    {project.links?.demo && (
                         <Link
                             href={project.links.demo}
                             target="_blank"
@@ -76,7 +74,7 @@ function ProjectCard({ project }: { project: Project }) {
                             <span>Demo</span>
                         </Link>
                     )}
-                    {project.links.article && (
+                    {project.links?.article && (
                         <Link
                             href={project.links.article}
                             target="_blank"
@@ -88,7 +86,16 @@ function ProjectCard({ project }: { project: Project }) {
                         </Link>
                     )}
                 </div>
-            )}
+                {hasDetailPage && (
+                    <Link
+                        href={`/portfolio/${project.id}`}
+                        className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <span>詳細を見る</span>
+                        <ArrowRight className="w-4 h-4" />
+                    </Link>
+                )}
+            </div>
         </div>
     );
 }
