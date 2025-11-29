@@ -14,11 +14,11 @@ interface KnowledgeNodeProps {
     onToggle: (categoryName: string) => void;
 }
 // SubCategory component to handle hooks properly
-function SubCategoryNode({ 
-    subcategory, 
-    categoryName 
-}: { 
-    subcategory: SubCategory; 
+function SubCategoryNode({
+    subcategory,
+    categoryName
+}: {
+    subcategory: SubCategory;
     categoryName: string;
 }) {
     const [subExpanded, setSubExpanded] = useState(false);
@@ -48,7 +48,7 @@ function SubCategoryNode({
             </button>
             {subExpanded && (
                 <div className="mt-1 sm:mt-2 space-y-1">
-                    {subcategory.names.map(filename => 
+                    {subcategory.names.map(filename =>
                         renderFileLink(filename, categoryName, subcategory.category)
                     )}
                 </div>
@@ -56,11 +56,11 @@ function SubCategoryNode({
         </div>
     );
 }
-export default function KnowledgeNode({ 
-    category, 
-    maxPoint, 
-    containerWidth, 
-    containerHeight, 
+export default function KnowledgeNode({
+    category,
+    maxPoint,
+    containerWidth,
+    containerHeight,
     position,
     onPositionUpdate,
     isExpanded,
@@ -90,7 +90,7 @@ export default function KnowledgeNode({
         );
     };
     return (
-        <div 
+        <div
             ref={nodeRef}
             className="knowledge-node absolute"
             style={{
@@ -101,8 +101,8 @@ export default function KnowledgeNode({
             {/* Circular Node */}
             <div
                 className={`relative rounded-full border transition-all duration-300 cursor-pointer flex items-center justify-center ${
-                    isExpanded 
-                        ? 'bg-foreground border-foreground scale-110' 
+                    isExpanded
+                        ? 'bg-foreground border-foreground scale-110'
                         : 'bg-transparent border-muted-foreground/50 hover:border-foreground/70 hover:scale-105'
                 }`}
                 style={{
@@ -112,7 +112,7 @@ export default function KnowledgeNode({
                 onClick={handleToggle}
             >
                 <div className={`text-center ${isExpanded ? 'text-background' : 'text-foreground'}`}>
-                    <div 
+                    <div
                         className="font-light leading-none tracking-elegant"
                         style={{ fontSize: `${fontSize}px` }}
                     >
@@ -121,7 +121,7 @@ export default function KnowledgeNode({
                 </div>
             </div>
             {/* Category name always displayed below the circle */}
-            <div 
+            <div
                 className="absolute text-center font-light text-muted-foreground text-sm mt-2 whitespace-nowrap tracking-elegant"
                 style={{
                     left: '50%',
@@ -135,7 +135,7 @@ export default function KnowledgeNode({
             {isExpanded && (() => {
                 // Calculate modal position to stay within container bounds
                 const isMobile = containerWidth < 500;
-                const modalWidth = isMobile 
+                const modalWidth = isMobile
                     ? Math.min(containerWidth - 20, 280) // モバイル: 最大280px、コンテナ幅-20px
                     : 350; // デスクトップ: 350px
                 const modalHeight = isMobile ? 220 : 300;
@@ -155,7 +155,7 @@ export default function KnowledgeNode({
                     topOffset = -(modalHeight + 10); // Show above the node
                 }
                 return (
-                    <div 
+                    <div
                         className={`absolute z-50 bg-card border border-border/50 ${
                             isMobile ? 'p-3' : 'p-4'
                         }`}
@@ -182,7 +182,7 @@ export default function KnowledgeNode({
                             {/* Direct files in category */}
                             {category.names && category.names.length > 0 && (
                                 <div className="space-y-1">
-                                    {category.names.map(filename => 
+                                    {category.names.map(filename =>
                                         renderFileLink(filename, category.category)
                                     )}
                                 </div>
@@ -191,7 +191,7 @@ export default function KnowledgeNode({
                             {category.subCategories && category.subCategories.length > 0 && (
                                 <div className={isMobile ? "space-y-1.5" : "space-y-2"}>
                                     {category.subCategories.map(subcategory => (
-                                        <SubCategoryNode 
+                                        <SubCategoryNode
                                             key={subcategory.category}
                                             subcategory={subcategory}
                                             categoryName={category.category}

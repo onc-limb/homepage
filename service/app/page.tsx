@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import KnowledgeList from '@/components/knowledgeList';
+import KnowledgeList from './_components/KnowledgeList';
 export default function Top() {
     return (
         <main className="flex-1">

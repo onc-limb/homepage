@@ -1,4 +1,4 @@
-import ComingSoon from '@/components/ComingSoon';
+import ComingSoon from './_components/ComingSoon';
 const Portfolio = () => {
     return (
         <div>

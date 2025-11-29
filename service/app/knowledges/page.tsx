@@ -1,4 +1,4 @@
-import KnowledgeHierarchy from '@/components/KnowledgeHierarchy';
+import KnowledgeHierarchy from './_components/KnowledgeHierarchy';
 export default function KnowledgeListPage() {
     return (
         <section className="w-full py-16 md:py-24">

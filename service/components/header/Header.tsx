@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import Logo from '@/public/MainLogo.jpg';
 import Image from 'next/image';
-import HeaderButton from '@/components/HeaderButton';
+import HeaderButton from './HeaderButton';
 import { Menu } from 'lucide-react';
 import {
     DropdownMenu,

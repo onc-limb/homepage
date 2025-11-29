@@ -76,7 +76,7 @@ export default function KnowledgeList() {
         const updateDimensions = () => {
             const viewportWidth = window.innerWidth;
             const isMobile = viewportWidth < 768;
-            const containerWidth = isMobile 
+            const containerWidth = isMobile
                 ? Math.min(viewportWidth - 32, 400) // モバイル: ビューポート幅-32px、最大400px
                 : Math.min(viewportWidth - 100, 1000); // デスクトップ: ビューポート幅-100px、最大1000px
             const containerHeight = isMobile ? 500 : 700;
@@ -118,11 +118,11 @@ export default function KnowledgeList() {
         <div className="mt-12">
             <div className="mb-6 text-center">
                 <p className="text-xs text-muted-foreground/70 tracking-elegant">
-                    Total Files: {metadata.totalFiles} | 
+                    Total Files: {metadata.totalFiles} |
                     Updated: {new Date(metadata.lastUpdated).toLocaleDateString('ja-JP')}
                 </p>
             </div>
-            <div 
+            <div
                 className="relative mx-auto border border-border/30 bg-card/20 overflow-hidden"
                 style={{
                     width: `${containerDimensions.width}px`,
