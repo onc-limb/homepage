@@ -148,10 +148,10 @@ const Profile = async () => {
                                 <CardContent className="flex items-center justify-between p-6">
                                     <div>
                                         <h3 className="text-lg font-light tracking-elegant text-foreground">
-                                            リンク
+                                            Social
                                         </h3>
                                         <p className="text-sm text-muted-foreground mt-1">
-                                            GitHub, Zenn, X など各プラットフォームへのリンク
+                                            GitHub, Zenn, X など各プラットフォーム
                                         </p>
                                     </div>
                                     <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />

@@ -5,7 +5,37 @@ import {
     levelLabels,
     type Skill,
     type SkillCategory,
+    type ListItem,
 } from '@/lib/skills';
+// 再帰的にリストアイテムをレンダリングするコンポーネント
+function NestedListItem({ item, depth = 0 }: { item: ListItem; depth?: number }) {
+    const hasChildren = item.children.length > 0;
+    return (
+        <li className="text-sm text-foreground/80">
+            <div className="flex items-start gap-2">
+                <span className="text-muted-foreground mt-1">•</span>
+                <span>{item.text}</span>
+            </div>
+            {hasChildren && (
+                <ul className="ml-4 mt-1 space-y-1">
+                    {item.children.map((child, index) => (
+                        <NestedListItem key={index} item={child} depth={depth + 1} />
+                    ))}
+                </ul>
+            )}
+        </li>
+    );
+}
+// ListItem配列をレンダリングするコンポーネント
+function NestedList({ items }: { items: ListItem[] }) {
+    return (
+        <ul className="space-y-1">
+            {items.map((item, index) => (
+                <NestedListItem key={index} item={item} />
+            ))}
+        </ul>
+    );
+}
 function SkillCard({ skill }: { skill: Skill }) {
     const levelInfo = levelLabels[skill.level];
     return (
@@ -24,17 +54,7 @@ function SkillCard({ skill }: { skill: Skill }) {
                     <h4 className="text-sm text-muted-foreground mb-2 tracking-elegant">
                         やったこと
                     </h4>
-                    <ul className="space-y-1">
-                        {skill.experience.map((exp, index) => (
-                            <li
-                                key={index}
-                                className="text-sm text-foreground/80 flex items-start gap-2"
-                            >
-                                <span className="text-muted-foreground mt-1">•</span>
-                                <span>{exp}</span>
-                            </li>
-                        ))}
-                    </ul>
+                    <NestedList items={skill.experience} />
                 </div>
             )}
             {skill.knowledge.length > 0 && (
@@ -42,17 +62,7 @@ function SkillCard({ skill }: { skill: Skill }) {
                     <h4 className="text-sm text-muted-foreground mb-2 tracking-elegant">
                         知っていること
                     </h4>
-                    <ul className="space-y-1">
-                        {skill.knowledge.map((know, index) => (
-                            <li
-                                key={index}
-                                className="text-sm text-foreground/80 flex items-start gap-2"
-                            >
-                                <span className="text-muted-foreground mt-1">•</span>
-                                <span>{know}</span>
-                            </li>
-                        ))}
-                    </ul>
+                    <NestedList items={skill.knowledge} />
                 </div>
             )}
             {skill.relatedTech.length > 0 && (

@@ -48,8 +48,8 @@ export interface SkillMeta {
     level: SkillLevel;
 }
 export interface Skill extends SkillMeta {
-    experience: string[];    // やったこと（実績）
-    knowledge: string[];     // 知っていること（知識）
+    experience: ListItem[];    // やったこと（実績）
+    knowledge: ListItem[];     // 知っていること（知識）
     relatedTech: string[];   // 関連技術
     relatedBooks: string[];  // 関連書籍
 }
@@ -79,15 +79,73 @@ export const categoryOrder: SkillCategory[] = [
     'cs-protocol',
     'ai-ml',
 ];
-// Markdown から経験・知識を抽出するヘルパー関数
-function extractListItems(content: string, sectionTitle: string): string[] {
+// ネストされたリストアイテムを表す型
+export interface ListItem {
+    text: string;
+    children: ListItem[];
+}
+// Markdown から経験・知識を抽出するヘルパー関数（階層構造対応）
+function extractListItems(content: string, sectionTitle: string): ListItem[] {
+    const regex = new RegExp(`## ${sectionTitle}\\s*\\n([\\s\\S]*?)(?=\\n## |$)`, 'i');
+    const match = content.match(regex);
+    if (!match) return [];
+    const sectionContent = match[1];
+    const lines = sectionContent.split('\n');
+    const result: ListItem[] = [];
+    // サブセクション（### で始まる）とリストアイテムを解析
+    let currentSubsection: ListItem | null = null;
+    const stack: { item: ListItem; indent: number }[] = [];
+    for (const line of lines) {
+        // サブセクション（### xxx）
+        const subsectionMatch = line.match(/^###\s+(.+)$/);
+        if (subsectionMatch) {
+            currentSubsection = { text: subsectionMatch[1], children: [] };
+            result.push(currentSubsection);
+            stack.length = 0; // スタックをリセット
+            continue;
+        }
+        // リストアイテム（- で始まる行、インデント考慮）
+        const listMatch = line.match(/^(\s*)-\s+(.+)$/);
+        if (listMatch) {
+            const indent = listMatch[1].length;
+            const text = listMatch[2];
+            const newItem: ListItem = { text, children: [] };
+            // インデントが0の場合はトップレベル
+            if (indent === 0) {
+                if (currentSubsection) {
+                    currentSubsection.children.push(newItem);
+                } else {
+                    result.push(newItem);
+                }
+                stack.length = 0;
+                stack.push({ item: newItem, indent });
+            } else {
+                // インデントがある場合は親を探す
+                while (stack.length > 0 && stack[stack.length - 1].indent >= indent) {
+                    stack.pop();
+                }
+                if (stack.length > 0) {
+                    stack[stack.length - 1].item.children.push(newItem);
+                } else if (currentSubsection) {
+                    currentSubsection.children.push(newItem);
+                } else {
+                    result.push(newItem);
+                }
+                stack.push({ item: newItem, indent });
+            }
+        }
+    }
+    return result;
+}
+// フラットなリストアイテムを抽出する関数（関連技術・関連書籍用）
+function extractFlatListItems(content: string, sectionTitle: string): string[] {
     const regex = new RegExp(`## ${sectionTitle}\\s*\\n([\\s\\S]*?)(?=\\n## |$)`, 'i');
     const match = content.match(regex);
     if (!match) return [];
     const items = match[1]
         .split('\n')
         .filter((line) => line.trim().startsWith('-'))
-        .map((line) => line.replace(/^-\s*/, '').trim())
+        .map((line) => line.replace(/^\s*-\s*/, '').trim())
         .filter((item) => item.length > 0);
     return items;
 }
@@ -118,8 +176,8 @@ function parseSkillMarkdown(rawContent: string): Skill {
         level: meta.level,
         experience: extractListItems(content, 'やったこと'),
         knowledge: extractListItems(content, '知っていること'),
-        relatedTech: extractListItems(content, '関連技術'),
-        relatedBooks: extractListItems(content, '関連書籍'),
+        relatedTech: extractFlatListItems(content, '関連技術'),
+        relatedBooks: extractFlatListItems(content, '関連書籍'),
     };
 }
 // すべてのスキルを取得
