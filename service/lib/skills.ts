@@ -94,20 +94,20 @@ function extractListItems(content: string, sectionTitle: string): string[] {
 // すべてのスキル Markdown
 const skillMarkdowns: string[] = [
     typescriptMd,
-    pythonMd,
+    // pythonMd,
     javascriptMd,
-    reactMd,
-    nextjsMd,
-    tailwindcssMd,
-    awsMd,
-    cloudflareMd,
-    dockerMd,
-    gitGithubMd,
-    cleanArchitectureMd,
-    restApiMd,
-    graphqlMd,
-    httpHttpsMd,
-    llmGptMd,
+    // reactMd,
+    // nextjsMd,
+    // tailwindcssMd,
+    // awsMd,
+    // cloudflareMd,
+    // dockerMd,
+    // gitGithubMd,
+    // cleanArchitectureMd,
+    // restApiMd,
+    // graphqlMd,
+    // httpHttpsMd,
+    // llmGptMd,
 ];
 function parseSkillMarkdown(rawContent: string): Skill {
     const { data, content } = matter(rawContent);

@@ -5,23 +5,32 @@ level: production
 ---
 
 ## やったこと
+### 業務
+- フレームワークを利用したAPIサーバー実装(NestJS, Express, Fastify)
+- フロントエンドの不具合対応(API通信周り)
+- DDDに基づくドメインモデルの型定義
+- ジェネリクスを利用したユーティリティクラスの作成
+- async/awaitを用いた非同期処理の実装
 
-- Next.js でのWebアプリケーション開発
-- 型安全なAPI設計と実装
+### 個人
+- フレームワークを利用したWebフロントエンド実装(Next.js, SolidStart)
 
 ## 知っていること
 
-- ジェネリクス、ユーティリティ型の活用
-- 型ガード、discriminated union
+- 基本文法
+- 型システムの基本
+- ジェネリクス
+- 型ガード(isXxx)
+- satisfies 演算子
+- Discriminated Union
+- keyof / typeof
 
 ## 関連技術
 
 - JavaScript
+- NestJS
+- Fastify
+- Express.js
 - React
 - Next.js
-- ESLint
-- Prettier
-
-## 関連書籍
-
-- プログラミングTypeScript（オライリー）
+- SolidJS
