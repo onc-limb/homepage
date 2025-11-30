@@ -18,7 +18,6 @@
     ├── .eslintrc.json          # ESLintルール
     ├── .gitignore              # サービス固有のGit除外設定
     ├── .prettierrc             # Prettierフォーマット設定
-    ├── .yarnrc.yml             # Yarn設定
     ├── README.md               # サービス説明
     ├── app/                    # Next.js App Router
     │   ├── articles/           # 記事関連ページ
@@ -66,7 +65,7 @@
     ├── tailwind.config.js      # Tailwind CSS設定
     ├── tailwind.config.ts      # Tailwind CSS設定（TypeScript）
     ├── tsconfig.json           # TypeScript設定
-    └── yarn.lock               # Yarn依存関係ロックファイル
+    └── pnpm-lock.yaml          # pnpm依存関係ロックファイル
 ```
 
 ## 使用技術
@@ -102,7 +101,7 @@
 
 - **ESLint**: `8` - コード品質チェック
 - **Prettier**: `3.2.5` - コードフォーマッター
-- **Yarn**: `4.4.0` - パッケージマネージャー（Corepack 使用）
+- **pnpm**: `9.15.0` - パッケージマネージャー
 
 ## 使用するツール
 
@@ -141,7 +140,10 @@
 
 ### ビルド・デプロイ
 
-- **ビルドコマンド**: `yarn build` または `wrangler pages deploy` でビルド
+- **重要**: ビルド・開発コマンドは必ず `service/` ディレクトリ内で実行する
+- **開発サーバー起動**: `cd service && pnpm dev`
+- **ビルドコマンド**: `cd service && pnpm build`
+- **デプロイコマンド**: `cd service && pnpm deploy`
 - **デプロイ先**: Cloudflare Pages
 - **デプロイツール**: Wrangler CLI を使用
 - `wrangler.jsonc` に Cloudflare 関連の設定が記載されている
@@ -158,6 +160,6 @@
 
 - **空行ルール**: 複数の空行は禁止（`no-multiple-empty-lines`）- 空行は最大 1 行まで
 - **インデント**: React JSX は 4 スペースインデント、JSX プロパティは 6 スペースインデント
-- **自動修正**: コード編集後は必ず `npx eslint . --fix` で自動修正を実行する
-- **Lint チェック**: 作業完了前に `npm run lint` でエラーがないことを確認する
+- **自動修正**: コード編集後は必ず `cd service && pnpm eslint . --fix` で自動修正を実行する
+- **Lint チェック**: 作業完了前に `cd service && pnpm lint` でエラーがないことを確認する
 - **コード生成時の注意**: 新しいコンポーネントやファイル作成時は、既存ファイルのフォーマットパターンに従う

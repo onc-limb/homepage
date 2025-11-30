@@ -53,16 +53,5 @@
         "typescript": "^5.7.0",
         "wrangler": "^4.42.0"
     },
-    "packageManager": "yarn@4.9.4",
-    "dependenciesMeta": {
-        "@types/react@18.3.3": {
-            "unplugged": true
-        },
-        "@types/react-dom@18.3.0": {
-            "unplugged": true
-        },
-        "typescript@5.5.4": {
-            "unplugged": true
-        }
-    }
+    "packageManager": "pnpm@9.15.0"
 }
