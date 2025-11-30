@@ -1,15 +1,16 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Github, ExternalLink, FileText, ArrowLeft, Server, Code, Layers } from 'lucide-react';
-import { getProjectById, getProjectIds, type Project } from '@/lib/portfolio';
+import { getProjectById, getProjectIds, type Project, type ArchitectureComponent as ArchitectureComponentType } from '@/lib/portfolio';
 // 静的パスを生成
 export function generateStaticParams() {
     const ids = getProjectIds();
     return ids.map((id) => ({ id }));
 }
 // メタデータを生成
-export function generateMetadata({ params }: { params: { id: string } }) {
-    const project = getProjectById(params.id);
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
+    const project = getProjectById(id);
     if (!project) {
         return { title: 'Project Not Found' };
     }
@@ -28,12 +29,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
         </section>
     );
 }
-interface ArchitectureComponentProps {
-    name: string;
-    description: string;
-    technologies: string[];
-}
-function ArchitectureComponent({ component }: { component: ArchitectureComponentProps }) {
+function ArchitectureComponent({ component }: { component: ArchitectureComponentType }) {
     return (
         <div className="border border-border/50 bg-card/30 p-4">
             <h4 className="text-base font-medium text-foreground tracking-elegant mb-2">
@@ -53,8 +49,9 @@ function ArchitectureComponent({ component }: { component: ArchitectureComponent
         </div>
     );
 }
-export default function ProjectDetailPage({ params }: { params: { id: string } }) {
-    const project = getProjectById(params.id);
+export default async function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
+    const project = getProjectById(id);
     if (!project || !project.detail) {
         notFound();
     }

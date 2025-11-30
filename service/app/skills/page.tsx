@@ -1,5 +1,5 @@
 import {
-    skills,
+    getSkillsByCategory,
     categoryLabels,
     categoryOrder,
     levelLabels,
@@ -81,13 +81,7 @@ function SkillCategorySection({
 }
 export default function SkillsPage() {
     // カテゴリごとにスキルをグループ化
-    const skillsByCategory = categoryOrder.reduce(
-        (acc, category) => {
-            acc[category] = skills.filter((skill) => skill.category === category);
-            return acc;
-        },
-        {} as Record<SkillCategory, Skill[]>
-    );
+    const skillsByCategory = getSkillsByCategory();
     return (
         <main className="flex-1">
             {/* Hero Section */}

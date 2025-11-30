@@ -1,4 +1,4 @@
-import { projects, type Project } from '@/lib/portfolio';
+import { getProjects, type Project } from '@/lib/portfolio';
 import { Github, ExternalLink, FileText, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 function ProjectCard({ project }: { project: Project }) {
@@ -100,6 +100,7 @@ function ProjectCard({ project }: { project: Project }) {
     );
 }
 const Portfolio = () => {
+    const projects = getProjects();
     const personalProjects = projects.filter((p) => p.category === 'personal');
     const workProjects = projects.filter((p) => p.category === 'work');
     return (
