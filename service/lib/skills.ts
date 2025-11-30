@@ -1,4 +1,5 @@
 import matter from 'gray-matter';
+import { extractFlatListItems } from './markdown-utils';
 // @ts-expect-error raw-loader returns string
 import typescriptMd from '../docs/skills/typescript.md';
 // @ts-expect-error raw-loader returns string
@@ -136,18 +137,6 @@ function extractListItems(content: string, sectionTitle: string): ListItem[] {
         }
     }
     return result;
-}
-// フラットなリストアイテムを抽出する関数（関連技術・関連書籍用）
-function extractFlatListItems(content: string, sectionTitle: string): string[] {
-    const regex = new RegExp(`## ${sectionTitle}\\s*\\n([\\s\\S]*?)(?=\\n## |$)`, 'i');
-    const match = content.match(regex);
-    if (!match) return [];
-    const items = match[1]
-        .split('\n')
-        .filter((line) => line.trim().startsWith('-'))
-        .map((line) => line.replace(/^\s*-\s*/, '').trim())
-        .filter((item) => item.length > 0);
-    return items;
 }
 // すべてのスキル Markdown
 const skillMarkdowns: string[] = [

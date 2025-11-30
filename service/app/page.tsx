@@ -7,6 +7,7 @@ import {
     AnimatedNavCard,
     FadeInSection,
 } from '@/components/animations';
+import { NAV_ITEMS } from '@/lib/constants';
 const highlights = [
     {
         icon: <Server className="w-5 h-5" />,
@@ -22,33 +23,6 @@ const highlights = [
         icon: <Wrench className="w-5 h-5" />,
         title: 'Frontend & Infra',
         description: 'React / Next.js / AWS / Docker',
-    },
-];
-const navItems = [
-    {
-        href: '/profile',
-        label: 'Profile',
-        description: '経歴・価値観',
-    },
-    {
-        href: '/skills',
-        label: 'Skills',
-        description: '技術スタック',
-    },
-    {
-        href: '/portfolio',
-        label: 'Portfolio',
-        description: '制作実績',
-    },
-    {
-        href: '/news',
-        label: 'News',
-        description: '技術ニュース',
-    },
-    {
-        href: '/social',
-        label: 'Social',
-        description: '各種リンク',
     },
 ];
 export default function Top() {
@@ -113,7 +87,7 @@ export default function Top() {
                         </h2>
                     </FadeInSection>
                     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 max-w-4xl mx-auto">
-                        {navItems.map((item, index) => (
+                        {NAV_ITEMS.map((item, index) => (
                             <AnimatedNavCard
                                 key={item.href}
                                 item={item}

@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
+import { NAV_ITEMS } from '@/lib/constants';
 const MAIN_TITLE = 'onclimb';
 const Header = () => {
     const [isVisible, setIsVisible] = useState(true);
@@ -66,11 +67,11 @@ const Header = () => {
                 </Link>
                 {/* Desktop Navigation */}
                 <div className="hidden md:flex items-center space-x-1 mx-8">
-                    <HeaderButton href="/profile">Profile</HeaderButton>
-                    <HeaderButton href="/skills">Skills</HeaderButton>
-                    <HeaderButton href="/portfolio">Portfolio</HeaderButton>
-                    <HeaderButton href="/news">News</HeaderButton>
-                    <HeaderButton href="/social">Social</HeaderButton>
+                    {NAV_ITEMS.map((item) => (
+                        <HeaderButton key={item.href} href={item.href}>
+                            {item.label}
+                        </HeaderButton>
+                    ))}
                 </div>
                 {/* Mobile Navigation - Hamburger Menu */}
                 <div className="md:hidden mx-4">
@@ -82,31 +83,13 @@ const Header = () => {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-48 bg-card border-border">
-                            <DropdownMenuItem asChild>
-                                <Link href="/profile" className="w-full cursor-pointer text-foreground">
-                                    Profile
-                                </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem asChild>
-                                <Link href="/skills" className="w-full cursor-pointer text-foreground">
-                                    Skills
-                                </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem asChild>
-                                <Link href="/portfolio" className="w-full cursor-pointer text-foreground">
-                                    Portfolio
-                                </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem asChild>
-                                <Link href="/news" className="w-full cursor-pointer text-foreground">
-                                    News
-                                </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem asChild>
-                                <Link href="/social" className="w-full cursor-pointer text-foreground">
-                                    Social
-                                </Link>
-                            </DropdownMenuItem>
+                            {NAV_ITEMS.map((item) => (
+                                <DropdownMenuItem key={item.href} asChild>
+                                    <Link href={item.href} className="w-full cursor-pointer text-foreground">
+                                        {item.label}
+                                    </Link>
+                                </DropdownMenuItem>
+                            ))}
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
