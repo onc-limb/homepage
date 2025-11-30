@@ -45,9 +45,8 @@ const Header = () => {
         }
     }, [lastScrollY]);
     return (
-        <header className={`sticky top-0 z-50 w-full transition-transform duration-300 ${
-            isVisible ? 'translate-y-0' : 'md:translate-y-0 -translate-y-full'
-        }`}>
+        <header className={`sticky top-0 z-50 w-full transition-transform duration-300 ${isVisible ? 'translate-y-0' : 'md:translate-y-0 -translate-y-full'
+            }`}>
             <div className="flex items-center justify-between bg-background/95 backdrop-blur-sm border-b border-border/50">
                 <Link
                     href="/"
@@ -67,10 +66,11 @@ const Header = () => {
                 </Link>
                 {/* Desktop Navigation */}
                 <div className="hidden md:flex items-center space-x-1 mx-8">
-                    <HeaderButton href="/news">News</HeaderButton>
-                    <HeaderButton href="/knowledges">Knowledge</HeaderButton>
-                    <HeaderButton href="/articles">Articles</HeaderButton>
                     <HeaderButton href="/profile">Profile</HeaderButton>
+                    <HeaderButton href="/skills">Skills</HeaderButton>
+                    <HeaderButton href="/portfolio">Portfolio</HeaderButton>
+                    <HeaderButton href="/news">News</HeaderButton>
+                    <HeaderButton href="/social">Social</HeaderButton>
                 </div>
                 {/* Mobile Navigation - Hamburger Menu */}
                 <div className="md:hidden mx-4">
@@ -83,23 +83,28 @@ const Header = () => {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-48 bg-card border-border">
                             <DropdownMenuItem asChild>
+                                <Link href="/profile" className="w-full cursor-pointer text-foreground">
+                                    Profile
+                                </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <Link href="/skills" className="w-full cursor-pointer text-foreground">
+                                    Skills
+                                </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <Link href="/portfolio" className="w-full cursor-pointer text-foreground">
+                                    Portfolio
+                                </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
                                 <Link href="/news" className="w-full cursor-pointer text-foreground">
                                     News
                                 </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem asChild>
-                                <Link href="/knowledges" className="w-full cursor-pointer text-foreground">
-                                    Knowledge
-                                </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem asChild>
-                                <Link href="/articles" className="w-full cursor-pointer text-foreground">
-                                    Articles
-                                </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem asChild>
-                                <Link href="/profile" className="w-full cursor-pointer text-foreground">
-                                    Profile
+                                <Link href="/social" className="w-full cursor-pointer text-foreground">
+                                    Social
                                 </Link>
                             </DropdownMenuItem>
                         </DropdownMenuContent>
