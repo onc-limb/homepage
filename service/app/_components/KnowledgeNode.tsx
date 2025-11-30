@@ -14,11 +14,11 @@ interface KnowledgeNodeProps {
     onToggle: (categoryName: string) => void;
 }
 // SubCategory component to handle hooks properly
-function SubCategoryNode({ 
-    subcategory, 
-    categoryName 
-}: { 
-    subcategory: SubCategory; 
+function SubCategoryNode({
+    subcategory,
+    categoryName
+}: {
+    subcategory: SubCategory;
     categoryName: string;
 }) {
     const [subExpanded, setSubExpanded] = useState(false);
@@ -30,25 +30,25 @@ function SubCategoryNode({
             <Link
                 key={filename}
                 href={`/knowledges/${encodedPath}`}
-                className="block px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm bg-neutral-50 hover:bg-neutral-100 rounded border-l-2 sm:border-l-4 border-neutral-400 transition-colors break-words"
+                className="block px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm bg-card/50 hover:bg-accent/50 border-l border-border/50 hover:border-foreground/30 transition-all duration-200 break-words text-muted-foreground hover:text-foreground tracking-elegant"
             >
-                📄 {displayName}
+                {displayName}
             </Link>
         );
     };
     return (
-        <div className="ml-2 sm:ml-4 border-l-2 border-neutral-200 pl-2 sm:pl-4">
+        <div className="ml-2 sm:ml-4 border-l border-border/30 pl-2 sm:pl-4">
             <button
                 onClick={() => setSubExpanded(!subExpanded)}
-                className="flex items-center gap-1 sm:gap-2 w-full text-left p-1.5 sm:p-2 bg-neutral-50 hover:bg-neutral-100 rounded transition-colors"
+                className="flex items-center gap-1 sm:gap-2 w-full text-left p-1.5 sm:p-2 bg-card/30 hover:bg-accent/40 transition-colors duration-200"
             >
-                {subExpanded ? <ChevronDown size={14} className="sm:w-4 sm:h-4" /> : <ChevronRight size={14} className="sm:w-4 sm:h-4" />}
-                <span className="font-medium text-sm sm:text-base truncate">📁 {subcategory.category}</span>
-                <span className="text-xs sm:text-sm text-neutral-600 shrink-0">({subcategory.point} points)</span>
+                {subExpanded ? <ChevronDown size={14} className="sm:w-4 sm:h-4 text-muted-foreground" /> : <ChevronRight size={14} className="sm:w-4 sm:h-4 text-muted-foreground" />}
+                <span className="font-light text-sm sm:text-base truncate text-foreground tracking-elegant">{subcategory.category}</span>
+                <span className="text-xs sm:text-sm text-muted-foreground/70 shrink-0">({subcategory.point})</span>
             </button>
             {subExpanded && (
                 <div className="mt-1 sm:mt-2 space-y-1">
-                    {subcategory.names.map(filename => 
+                    {subcategory.names.map(filename =>
                         renderFileLink(filename, categoryName, subcategory.category)
                     )}
                 </div>
@@ -56,11 +56,11 @@ function SubCategoryNode({
         </div>
     );
 }
-export default function KnowledgeNode({ 
-    category, 
-    maxPoint, 
-    containerWidth, 
-    containerHeight, 
+export default function KnowledgeNode({
+    category,
+    maxPoint,
+    containerWidth,
+    containerHeight,
     position,
     onPositionUpdate,
     isExpanded,
@@ -83,14 +83,14 @@ export default function KnowledgeNode({
             <Link
                 key={filename}
                 href={`/knowledges/${encodedPath}`}
-                className="block px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm bg-neutral-50 hover:bg-neutral-100 rounded border-l-2 sm:border-l-4 border-neutral-400 transition-colors break-words"
+                className="block px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm bg-card/50 hover:bg-accent/50 border-l border-border/50 hover:border-foreground/30 transition-all duration-200 break-words text-muted-foreground hover:text-foreground tracking-elegant"
             >
-                📄 {displayName}
+                {displayName}
             </Link>
         );
     };
     return (
-        <div 
+        <div
             ref={nodeRef}
             className="knowledge-node absolute"
             style={{
@@ -100,10 +100,10 @@ export default function KnowledgeNode({
         >
             {/* Circular Node */}
             <div
-                className={`relative rounded-full border-3 transition-all duration-300 cursor-pointer flex items-center justify-center shadow-lg ${
-                    isExpanded 
-                        ? 'bg-red-800 border-red-900 shadow-2xl scale-110' 
-                        : 'bg-gradient-to-br from-neutral-500 to-neutral-700 border-neutral-600 hover:shadow-xl hover:scale-105'
+                className={`relative rounded-full border transition-all duration-300 cursor-pointer flex items-center justify-center ${
+                    isExpanded
+                        ? 'bg-foreground border-foreground scale-110'
+                        : 'bg-transparent border-muted-foreground/50 hover:border-foreground/70 hover:scale-105'
                 }`}
                 style={{
                     width: `${circleSize}px`,
@@ -111,9 +111,9 @@ export default function KnowledgeNode({
                 }}
                 onClick={handleToggle}
             >
-                <div className="text-center text-white">
-                    <div 
-                        className="font-bold leading-none"
+                <div className={`text-center ${isExpanded ? 'text-background' : 'text-foreground'}`}>
+                    <div
+                        className="font-light leading-none tracking-elegant"
                         style={{ fontSize: `${fontSize}px` }}
                     >
                         {category.point}
@@ -121,8 +121,8 @@ export default function KnowledgeNode({
                 </div>
             </div>
             {/* Category name always displayed below the circle */}
-            <div 
-                className="absolute text-center font-semibold text-neutral-700 text-sm mt-2 whitespace-nowrap"
+            <div
+                className="absolute text-center font-light text-muted-foreground text-sm mt-2 whitespace-nowrap tracking-elegant"
                 style={{
                     left: '50%',
                     transform: 'translateX(-50%)',
@@ -135,7 +135,7 @@ export default function KnowledgeNode({
             {isExpanded && (() => {
                 // Calculate modal position to stay within container bounds
                 const isMobile = containerWidth < 500;
-                const modalWidth = isMobile 
+                const modalWidth = isMobile
                     ? Math.min(containerWidth - 20, 280) // モバイル: 最大280px、コンテナ幅-20px
                     : 350; // デスクトップ: 350px
                 const modalHeight = isMobile ? 220 : 300;
@@ -155,8 +155,8 @@ export default function KnowledgeNode({
                     topOffset = -(modalHeight + 10); // Show above the node
                 }
                 return (
-                    <div 
-                        className={`absolute z-50 bg-white rounded-lg shadow-2xl border border-neutral-300 ${
+                    <div
+                        className={`absolute z-50 bg-card border border-border/50 ${
                             isMobile ? 'p-3' : 'p-4'
                         }`}
                         style={{
@@ -167,10 +167,10 @@ export default function KnowledgeNode({
                         }}
                     >
                         <div className={isMobile ? "mb-2" : "mb-3"}>
-                            <h3 className={`font-bold text-neutral-800 ${
+                            <h3 className={`font-light text-foreground tracking-elegant ${
                                 isMobile ? "text-base" : "text-lg"
                             }`}>{category.category}</h3>
-                            <span className={`text-neutral-600 bg-neutral-100 px-2 py-1 rounded ${
+                            <span className={`text-muted-foreground/70 tracking-elegant ${
                                 isMobile ? "text-xs" : "text-sm"
                             }`}>
                                 {category.point} points
@@ -182,7 +182,7 @@ export default function KnowledgeNode({
                             {/* Direct files in category */}
                             {category.names && category.names.length > 0 && (
                                 <div className="space-y-1">
-                                    {category.names.map(filename => 
+                                    {category.names.map(filename =>
                                         renderFileLink(filename, category.category)
                                     )}
                                 </div>
@@ -191,7 +191,7 @@ export default function KnowledgeNode({
                             {category.subCategories && category.subCategories.length > 0 && (
                                 <div className={isMobile ? "space-y-1.5" : "space-y-2"}>
                                     {category.subCategories.map(subcategory => (
-                                        <SubCategoryNode 
+                                        <SubCategoryNode
                                             key={subcategory.category}
                                             subcategory={subcategory}
                                             categoryName={category.category}

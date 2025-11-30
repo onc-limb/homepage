@@ -1,17 +1,17 @@
-import ArticleList from '@/components/articleList';
+import ArticleList from './_components/ArticleList';
 export default function ArticleListPage() {
     return (
-        <section className="w-full py-12 md:py-24">
-            <div className="container px-4 md:px-6">
-                <div className="flex flex-col items-center justify-center space-y-4 text-center">
-                    <div className="space-y-2">
-                        <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                            記事一覧
-                        </h2>
-                        <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                            普段使用する技術を少しだけ深く、少しだけ広く理解できるような記事
-                        </p>
-                    </div>
+        <section className="w-full py-16 md:py-24">
+            <div className="container px-4 md:px-6 mx-auto">
+                <div className="flex flex-col items-center justify-center space-y-6 text-center">
+                    <span className="text-xs tracking-wide-elegant text-muted-foreground uppercase">Deep Dive</span>
+                    <h2 className="text-4xl font-light tracking-elegant sm:text-5xl text-foreground">
+                        記事一覧
+                    </h2>
+                    <div className="w-16 h-px bg-border/70" />
+                    <p className="max-w-[600px] text-muted-foreground text-sm md:text-base font-light tracking-elegant">
+                        普段使用する技術を少しだけ深く、少しだけ広く理解できるような記事
+                    </p>
                 </div>
                 <ArticleList />
             </div>

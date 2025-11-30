@@ -4,21 +4,21 @@ import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/ca
 export default function NewsListPage() {
     const newsList = getNewsDates();
     return (
-        <section className="w-full py-12 md:py-24">
-            <div className="container px-4 md:px-6">
-                <div className="flex flex-col items-center justify-center space-y-4 text-center">
-                    <div className="space-y-2">
-                        <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                            技術ニュース
-                        </h2>
-                        <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                            毎日自動収集される技術ニュースのAI要約
-                        </p>
-                    </div>
+        <section className="w-full py-16 md:py-24">
+            <div className="container px-4 md:px-6 mx-auto">
+                <div className="flex flex-col items-center justify-center space-y-6 text-center">
+                    <span className="text-xs tracking-wide-elegant text-muted-foreground uppercase">Daily Updates</span>
+                    <h2 className="text-4xl font-light tracking-elegant sm:text-5xl text-foreground">
+                        技術ニュース
+                    </h2>
+                    <div className="w-16 h-px bg-border/70" />
+                    <p className="max-w-[600px] text-muted-foreground text-sm md:text-base font-light tracking-elegant">
+                        毎日自動収集される技術ニュースのAI要約
+                    </p>
                 </div>
                 <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                     {newsList.length === 0 ? (
-                        <p className="col-span-full text-center text-muted-foreground">
+                        <p className="col-span-full text-center text-muted-foreground tracking-elegant">
                             ニュースはまだありません
                         </p>
                     ) : (
@@ -28,12 +28,12 @@ export default function NewsListPage() {
                                 href={`/news/${news.date}`}
                                 prefetch={false}
                             >
-                                <Card className="h-full transition-colors hover:bg-muted/50">
+                                <Card className="h-full">
                                     <CardHeader>
-                                        <CardTitle className="text-xl">
+                                        <CardTitle className="text-lg font-light tracking-elegant">
                                             {news.date}
                                         </CardTitle>
-                                        <CardDescription>
+                                        <CardDescription className="text-muted-foreground/70 tracking-elegant">
                                             技術ニュース
                                         </CardDescription>
                                     </CardHeader>

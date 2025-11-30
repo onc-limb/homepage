@@ -76,7 +76,7 @@ export default function KnowledgeList() {
         const updateDimensions = () => {
             const viewportWidth = window.innerWidth;
             const isMobile = viewportWidth < 768;
-            const containerWidth = isMobile 
+            const containerWidth = isMobile
                 ? Math.min(viewportWidth - 32, 400) // モバイル: ビューポート幅-32px、最大400px
                 : Math.min(viewportWidth - 100, 1000); // デスクトップ: ビューポート幅-100px、最大1000px
             const containerHeight = isMobile ? 500 : 700;
@@ -107,19 +107,23 @@ export default function KnowledgeList() {
         setExpandedNode(prev => prev === categoryName ? null : categoryName);
     };
     if (!metadata) {
-        return <div>Loading...</div>;
+        return (
+            <div className="flex items-center justify-center py-12">
+                <div className="text-muted-foreground tracking-elegant">Loading...</div>
+            </div>
+        );
     }
     const maxPoint = Math.max(...metadata.categories.map((cat: Category) => cat.point));
     return (
         <div className="mt-12">
             <div className="mb-6 text-center">
-                <p className="text-sm text-muted-foreground">
-                    総ファイル数: {metadata.totalFiles} | 
-                    最終更新: {new Date(metadata.lastUpdated).toLocaleDateString('ja-JP')}
+                <p className="text-xs text-muted-foreground/70 tracking-elegant">
+                    Total Files: {metadata.totalFiles} |
+                    Updated: {new Date(metadata.lastUpdated).toLocaleDateString('ja-JP')}
                 </p>
             </div>
-            <div 
-                className="relative mx-auto border-2 border-neutral-300 rounded-lg bg-neutral-50 overflow-hidden"
+            <div
+                className="relative mx-auto border border-border/30 bg-card/20 overflow-hidden"
                 style={{
                     width: `${containerDimensions.width}px`,
                     height: `${containerDimensions.height}px`,

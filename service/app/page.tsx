@@ -1,78 +1,86 @@
 import Link from 'next/link';
-import KnowledgeList from '@/components/knowledgeList';
+import KnowledgeList from './_components/KnowledgeList';
 export default function Top() {
     return (
-        <>
-            <section className="w-full py-4 md:py-8 lg:py-12">
-                <div className="container px-4 md:px-6">
-                    <div className="flex flex-col items-center justify-center space-y-4 text-center">
-                        <div className="space-y-4">
-                            <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
-                                onclimb
-                            </h1>
-                            <p className="max-w-[800px] text-gray-500 md:text-xl dark:text-gray-400">
-                                エンジニアとしての成長記録<br/>
-                                ナレッジベースや技術記事を通じて、学んだことや経験を共有します
-                            </p>
-                        </div>
+        <main className="flex-1">
+            {/* Hero Section */}
+            <section className="w-full py-16 md:py-24 lg:py-32">
+                <div className="container px-4 md:px-6 mx-auto">
+                    <div className="flex flex-col items-center justify-center space-y-6 text-center">
+                        <h1 className="text-5xl font-light tracking-wide-elegant sm:text-6xl xl:text-7xl text-foreground">
+                            onclimb
+                        </h1>
+                        <div className="w-16 h-px bg-border/70 my-4" />
+                        <p className="max-w-[600px] text-muted-foreground text-lg md:text-xl font-light tracking-elegant leading-relaxed">
+                            エンジニアとしての成長記録
+                        </p>
+                        <p className="max-w-[700px] text-muted-foreground/70 text-sm md:text-base font-light tracking-elegant">
+                            ナレッジベースや技術記事を通じて、学んだことや経験を共有します
+                        </p>
                     </div>
                 </div>
             </section>
-            <section className="w-full py-8 md:py-8 bg-gray-100 dark:bg-gray-800">
-                <div className="container px-4 md:px-6">
-                    <div className="flex flex-col items-center justify-center space-y-4 text-center">
-                        <div className="space-y-2">
-                            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
-                                技術ニュース
-                            </h2>
-                            <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                                毎日自動収集される技術ニュースのAI要約
-                            </p>
-                        </div>
+            {/* Divider */}
+            <div className="w-full border-t border-border/30" />
+            {/* News Section */}
+            <section className="w-full py-16 md:py-20 bg-card/30">
+                <div className="container px-4 md:px-6 mx-auto">
+                    <div className="flex flex-col items-center justify-center space-y-6 text-center">
+                        <span className="text-xs tracking-wide-elegant text-muted-foreground uppercase">Daily Updates</span>
+                        <h2 className="text-3xl font-light tracking-elegant sm:text-4xl text-foreground">
+                            技術ニュース
+                        </h2>
+                        <p className="max-w-[600px] text-muted-foreground text-sm md:text-base font-light tracking-elegant">
+                            毎日自動収集される技術ニュースのAI要約
+                        </p>
                         <Link
-                            className="inline-flex h-10 items-center justify-center rounded-md bg-gray-900 px-8 text-sm text-gray-50 shadow hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
+                            className="mt-4 inline-flex h-11 items-center justify-center border border-border/50 bg-transparent px-8 text-sm text-foreground tracking-elegant hover:bg-accent hover:border-border transition-all duration-200"
                             href="/news"
                         >
-                            ニュースを見る
+                            View News →
                         </Link>
                     </div>
                 </div>
             </section>
-            <section className="w-full py-8 md:py-8">
-                <div className="container px-4 md:px-6">
-                    <div className="flex flex-col items-center justify-center space-y-4 text-center">
-                        <div className="space-y-2">
-                            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
-                                ナレッジベース
-                            </h2>
-                            <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                                学んだ知識、得た経験を乱雑に記録する
-                            </p>
-                        </div>
+            {/* Divider */}
+            <div className="w-full border-t border-border/30" />
+            {/* Knowledge Section */}
+            <section className="w-full py-16 md:py-20">
+                <div className="container px-4 md:px-6 mx-auto">
+                    <div className="flex flex-col items-center justify-center space-y-6 text-center">
+                        <span className="text-xs tracking-wide-elegant text-muted-foreground uppercase">Collection</span>
+                        <h2 className="text-3xl font-light tracking-elegant sm:text-4xl text-foreground">
+                            ナレッジベース
+                        </h2>
+                        <p className="max-w-[600px] text-muted-foreground text-sm md:text-base font-light tracking-elegant">
+                            学んだ知識、得た経験を乱雑に記録する
+                        </p>
                     </div>
                     <KnowledgeList />
                 </div>
             </section>
-            <section className="w-full py-8 md:py-8 bg-gray-100 dark:bg-gray-800">
-                <div className="container px-4 md:px-6">
-                    <div className="flex flex-col items-center justify-center space-y-4 text-center">
-                        <div className="space-y-2">
-                            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
-                                技術記事
-                            </h2>
-                            <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                                技術的な深掘りと実践的な知見を共有します
-                            </p>
-                        </div>
+            {/* Divider */}
+            <div className="w-full border-t border-border/30" />
+            {/* Articles Section */}
+            <section className="w-full py-16 md:py-20 bg-card/30">
+                <div className="container px-4 md:px-6 mx-auto">
+                    <div className="flex flex-col items-center justify-center space-y-6 text-center">
+                        <span className="text-xs tracking-wide-elegant text-muted-foreground uppercase">Deep Dive</span>
+                        <h2 className="text-3xl font-light tracking-elegant sm:text-4xl text-foreground">
+                            技術記事
+                        </h2>
+                        <p className="max-w-[600px] text-muted-foreground text-sm md:text-base font-light tracking-elegant">
+                            技術的な深掘りと実践的な知見を共有します
+                        </p>
                         <Link
-                            className="inline-flex h-10 items-center justify-center rounded-md bg-gray-900 px-8 text-sm text-gray-50 shadow hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
+                            className="mt-4 inline-flex h-11 items-center justify-center border border-border/50 bg-transparent px-8 text-sm text-foreground tracking-elegant hover:bg-accent hover:border-border transition-all duration-200"
                             href="/articles"
                         >
-                            記事一覧を見る
+                            View Articles →
                         </Link>
                     </div>
                 </div>
             </section>
-        </>
+        </main>
     );
 }
