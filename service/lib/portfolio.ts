@@ -1,4 +1,5 @@
 import matter from 'gray-matter';
+import { extractFlatListItems, extractSection } from './markdown-utils';
 // @ts-expect-error raw-loader returns string
 import portfolioSiteMd from '../docs/portfolio/portfolio-site.md';
 export interface ProjectLinks {
@@ -47,31 +48,6 @@ export interface ProjectDetail {
 }
 export interface Project extends ProjectMeta {
     detail?: ProjectDetail;
-}
-// Markdown からセクション内容を抽出するヘルパー関数
-function extractSection(content: string, sectionTitle: string): string | undefined {
-    const regex = new RegExp(`## ${sectionTitle}\\s*\\n([\\s\\S]*?)(?=\\n## |$)`, 'i');
-    const match = content.match(regex);
-    if (!match) return undefined;
-    // サブセクションを除く本文のみを取得
-    const text = match[1]
-        .split('\n')
-        .filter((line) => !line.startsWith('###'))
-        .join('\n')
-        .trim();
-    return text || undefined;
-}
-// Markdown からリストを抽出するヘルパー関数
-function extractListItems(content: string, sectionTitle: string): string[] {
-    const regex = new RegExp(`## ${sectionTitle}\\s*\\n([\\s\\S]*?)(?=\\n## |$)`, 'i');
-    const match = content.match(regex);
-    if (!match) return [];
-    const items = match[1]
-        .split('\n')
-        .filter((line) => line.trim().startsWith('-'))
-        .map((line) => line.replace(/^-\s*/, '').trim())
-        .filter((item) => item.length > 0);
-    return items;
 }
 // アーキテクチャコンポーネントを抽出するヘルパー関数
 function extractArchitectureComponents(content: string): ArchitectureComponent[] {
@@ -150,8 +126,8 @@ function parsePortfolioMarkdown(rawContent: string): Project {
             : undefined,
         technicalPoints: extractTechnicalPoints(content),
         challenges: extractChallenges(content),
-        results: extractListItems(content, '成果・学び'),
-        futureWork: extractListItems(content, '今後の展望'),
+        results: extractFlatListItems(content, '成果・学び'),
+        futureWork: extractFlatListItems(content, '今後の展望'),
     };
     // 詳細が空でないかチェック
     const hasDetail = Object.values(detail).some((v) =>
