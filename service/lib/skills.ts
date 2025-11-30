@@ -48,8 +48,10 @@ export interface SkillMeta {
     level: SkillLevel;
 }
 export interface Skill extends SkillMeta {
-    experience: string[];   // やったこと（実績）
-    knowledge: string[];    // 知っていること（知識）
+    experience: string[];    // やったこと（実績）
+    knowledge: string[];     // 知っていること（知識）
+    relatedTech: string[];   // 関連技術
+    relatedBooks: string[];  // 関連書籍
 }
 export const categoryLabels: Record<SkillCategory, string> = {
     language: 'プログラミング言語',
@@ -116,6 +118,8 @@ function parseSkillMarkdown(rawContent: string): Skill {
         level: meta.level,
         experience: extractListItems(content, 'やったこと'),
         knowledge: extractListItems(content, '知っていること'),
+        relatedTech: extractListItems(content, '関連技術'),
+        relatedBooks: extractListItems(content, '関連書籍'),
     };
 }
 // すべてのスキルを取得

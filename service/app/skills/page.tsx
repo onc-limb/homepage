@@ -38,7 +38,7 @@ function SkillCard({ skill }: { skill: Skill }) {
                 </div>
             )}
             {skill.knowledge.length > 0 && (
-                <div>
+                <div className="mb-4">
                     <h4 className="text-sm text-muted-foreground mb-2 tracking-elegant">
                         知っていること
                     </h4>
@@ -50,6 +50,41 @@ function SkillCard({ skill }: { skill: Skill }) {
                             >
                                 <span className="text-muted-foreground mt-1">•</span>
                                 <span>{know}</span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+            {skill.relatedTech.length > 0 && (
+                <div className="mb-4">
+                    <h4 className="text-sm text-muted-foreground mb-2 tracking-elegant">
+                        関連技術
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                        {skill.relatedTech.map((tech, index) => (
+                            <span
+                                key={index}
+                                className="text-xs px-2 py-1 bg-muted/50 text-foreground/70 rounded"
+                            >
+                                {tech}
+                            </span>
+                        ))}
+                    </div>
+                </div>
+            )}
+            {skill.relatedBooks.length > 0 && (
+                <div>
+                    <h4 className="text-sm text-muted-foreground mb-2 tracking-elegant">
+                        📚 関連書籍
+                    </h4>
+                    <ul className="space-y-1">
+                        {skill.relatedBooks.map((book, index) => (
+                            <li
+                                key={index}
+                                className="text-sm text-foreground/80 flex items-start gap-2"
+                            >
+                                <span className="text-muted-foreground mt-1">•</span>
+                                <span>{book}</span>
                             </li>
                         ))}
                     </ul>
