@@ -80,33 +80,17 @@ const Profile = async () => {
                                 </CardContent>
                             </Card>
                         )}
-                        {sectionData['大切にしていること'] && (
+                        {sectionData['エンジニアとしての今'] && (
                             <Card className="border-border/50 bg-card/30">
                                 <CardHeader>
                                     <CardTitle className="text-lg font-light tracking-elegant">
-                                        大切にしていること
+                                        エンジニアとしての今
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     <div className="prose prose-sm prose-invert prose-readable max-w-none">
                                         <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                            {sectionData['大切にしていること']}
-                                        </ReactMarkdown>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        )}
-                        {sectionData['強み'] && (
-                            <Card className="border-border/50 bg-card/30">
-                                <CardHeader>
-                                    <CardTitle className="text-lg font-light tracking-elegant">
-                                        強み
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="prose prose-sm prose-invert prose-readable max-w-none">
-                                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                            {sectionData['強み']}
+                                            {sectionData['エンジニアとしての今']}
                                         </ReactMarkdown>
                                     </div>
                                 </CardContent>
