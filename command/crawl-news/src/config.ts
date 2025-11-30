@@ -36,10 +36,19 @@ export async function loadConfig(): Promise<Config> {
 }
 
 /**
+ * 日本時間（JST）の日付を YYYY-MM-DD 形式で取得する
+ */
+function getJSTDateString(): string {
+  const now = new Date();
+  const jstDate = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+  return jstDate.toISOString().split("T")[0];
+}
+
+/**
  * マークダウン出力用のディレクトリを作成する
  */
 export async function ensureOutputDirectory(): Promise<OutputDirInfo> {
-  const date = new Date().toISOString().split("T")[0];
+  const date = getJSTDateString();
   const outputDir = path.join(SERVICE_DIR, "docs", "crawl-news");
   try {
     await fs.access(outputDir);
