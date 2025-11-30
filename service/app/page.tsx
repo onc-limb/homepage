@@ -1,20 +1,27 @@
 import Link from 'next/link';
-import { Code, Server, Cloud, ArrowRight } from 'lucide-react';
+import { Server, Layers, Wrench, ArrowRight } from 'lucide-react';
+import {
+    GeometricBackground,
+    HeroContent,
+    AnimatedSkillCard,
+    AnimatedNavCard,
+    FadeInSection,
+} from '@/components/animations';
 const highlights = [
-    {
-        icon: <Code className="w-5 h-5" />,
-        title: 'Frontend',
-        description: 'React / Next.js / TypeScript',
-    },
     {
         icon: <Server className="w-5 h-5" />,
         title: 'Backend',
-        description: 'Python / Node.js / REST API',
+        description: 'TypeScript / NestJS / REST API / GraphQL / PostgreSQL / Python',
     },
     {
-        icon: <Cloud className="w-5 h-5" />,
-        title: 'Infrastructure',
-        description: 'AWS / Cloudflare / Docker',
+        icon: <Layers className="w-5 h-5" />,
+        title: 'Architecture',
+        description: 'Clean Architecture / DDD / Microservices',
+    },
+    {
+        icon: <Wrench className="w-5 h-5" />,
+        title: 'Frontend & Infra',
+        description: 'React / Next.js / AWS / Docker',
     },
 ];
 const navItems = [
@@ -48,22 +55,21 @@ export default function Top() {
     return (
         <main className="flex-1">
             {/* Hero Section */}
-            <section className="w-full py-20 md:py-28 lg:py-36">
-                <div className="container px-4 md:px-6 mx-auto">
-                    <div className="flex flex-col items-center justify-center space-y-8 text-center">
-                        <span className="text-xs tracking-wide-elegant text-muted-foreground uppercase">
-                            Fullstack Engineer
-                        </span>
-                        <h1 className="text-5xl font-light tracking-wide-elegant sm:text-6xl xl:text-7xl text-foreground">
-                            onclimb
-                        </h1>
-                        <div className="w-16 h-px bg-border/70 my-4" />
-                        <p className="max-w-[700px] text-muted-foreground text-lg md:text-xl font-light tracking-elegant leading-relaxed">
-                            フロントエンドからバックエンド、インフラまで
-                            <br className="hidden sm:block" />
-                            一貫した開発でプロダクトを形にします
-                        </p>
-                    </div>
+            <section className="relative w-full py-20 md:py-28 lg:py-36 overflow-hidden">
+                {/* 幾何学背景アニメーション */}
+                <GeometricBackground />
+                <div className="container px-4 md:px-6 mx-auto relative z-10">
+                    <HeroContent
+                        subtitle="Fullstack Engineer"
+                        title="onclimb"
+                        description={
+                            <>
+                                フロントエンドからバックエンド、インフラまで
+                                <br className="hidden sm:block" />
+                                一貫した開発でプロダクトを形にします
+                            </>
+                        }
+                    />
                 </div>
             </section>
             {/* Divider */}
@@ -72,22 +78,17 @@ export default function Top() {
             <section className="w-full py-16 md:py-20 bg-card/30">
                 <div className="container px-4 md:px-6 mx-auto">
                     <div className="grid gap-8 md:grid-cols-3 max-w-4xl mx-auto">
-                        {highlights.map((item) => (
-                            <div
+                        {highlights.map((item, index) => (
+                            <AnimatedSkillCard
                                 key={item.title}
-                                className="flex flex-col items-center text-center space-y-3"
-                            >
-                                <div className="text-muted-foreground">{item.icon}</div>
-                                <h3 className="text-lg font-medium text-foreground tracking-elegant">
-                                    {item.title}
-                                </h3>
-                                <p className="text-sm text-muted-foreground tracking-elegant">
-                                    {item.description}
-                                </p>
-                            </div>
+                                icon={item.icon}
+                                title={item.title}
+                                description={item.description}
+                                index={index}
+                            />
                         ))}
                     </div>
-                    <div className="flex justify-center mt-10">
+                    <FadeInSection className="flex justify-center mt-10" delay={0.3}>
                         <Link
                             href="/skills"
                             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground tracking-elegant transition-colors"
@@ -95,7 +96,7 @@ export default function Top() {
                             View all skills
                             <ArrowRight className="w-4 h-4" />
                         </Link>
-                    </div>
+                    </FadeInSection>
                 </div>
             </section>
             {/* Divider */}
@@ -103,33 +104,21 @@ export default function Top() {
             {/* Navigation Section */}
             <section className="w-full py-16 md:py-20">
                 <div className="container px-4 md:px-6 mx-auto">
-                    <div className="flex flex-col items-center justify-center space-y-6 text-center mb-12">
+                    <FadeInSection className="flex flex-col items-center justify-center space-y-6 text-center mb-12">
                         <span className="text-xs tracking-wide-elegant text-muted-foreground uppercase">
                             Explore
                         </span>
                         <h2 className="text-3xl font-light tracking-elegant sm:text-4xl text-foreground">
                             Contents
                         </h2>
-                    </div>
+                    </FadeInSection>
                     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 max-w-4xl mx-auto">
-                        {navItems.map((item) => (
-                            <Link
+                        {navItems.map((item, index) => (
+                            <AnimatedNavCard
                                 key={item.href}
-                                href={item.href}
-                                className="group p-6 border border-border/50 bg-card/30 hover:bg-card/50 hover:border-border transition-all duration-200"
-                            >
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <h3 className="text-lg font-medium text-foreground tracking-elegant mb-1">
-                                            {item.label}
-                                        </h3>
-                                        <p className="text-sm text-muted-foreground tracking-elegant">
-                                            {item.description}
-                                        </p>
-                                    </div>
-                                    <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
-                                </div>
-                            </Link>
+                                item={item}
+                                index={index}
+                            />
                         ))}
                     </div>
                 </div>
@@ -139,7 +128,7 @@ export default function Top() {
             {/* News Section */}
             <section className="w-full py-16 md:py-20 bg-card/30">
                 <div className="container px-4 md:px-6 mx-auto">
-                    <div className="flex flex-col items-center justify-center space-y-6 text-center">
+                    <FadeInSection className="flex flex-col items-center justify-center space-y-6 text-center">
                         <span className="text-xs tracking-wide-elegant text-muted-foreground uppercase">
                             Daily Updates
                         </span>
@@ -155,7 +144,7 @@ export default function Top() {
                         >
                             View News →
                         </Link>
-                    </div>
+                    </FadeInSection>
                 </div>
             </section>
         </main>
