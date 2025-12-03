@@ -57,6 +57,8 @@ export interface Article {
   link: string;
   source: string;
   summary: string;
+  /** 要約なし（タイトルとリンクのみ）かどうか */
+  summaryOnly?: boolean;
 }
 
 /**
