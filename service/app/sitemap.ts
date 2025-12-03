@@ -1,10 +1,8 @@
 import { MetadataRoute } from 'next';
 import { getProjectIds } from '@/lib/portfolio';
 import { getAllNewsDates } from '@/lib/news';
-
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const baseUrl = 'https://onclimb.net';
-
     // 静的ページ
     const staticPages: MetadataRoute.Sitemap = [
         {
@@ -44,7 +42,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             priority: 0.7,
         },
     ];
-
     // ポートフォリオ詳細ページ
     const projectIds = getProjectIds();
     const portfolioPages: MetadataRoute.Sitemap = projectIds.map((id) => ({
@@ -53,7 +50,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         changeFrequency: 'monthly' as const,
         priority: 0.8,
     }));
-
     // ニュース日付別ページ
     const newsDates = getAllNewsDates();
     const newsPages: MetadataRoute.Sitemap = newsDates.map((date) => ({
@@ -62,6 +58,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         changeFrequency: 'never' as const,
         priority: 0.6,
     }));
-
     return [...staticPages, ...portfolioPages, ...newsPages];
 }
