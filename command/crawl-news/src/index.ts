@@ -5,6 +5,7 @@ import {
   fetchAllFeeds,
   summarizeAllArticles,
   convertToProcessResult,
+  MAX_SUMMARY_COUNT,
 } from "./processor.js";
 
 /**
@@ -53,14 +54,23 @@ async function main(): Promise<void> {
   }
 
   // フェーズ2: 全記事を並列で要約（セマフォで同時実行数を制限）
-  console.log(`📝 ${allPendingArticles.length}件の記事を並列要約中...\n`);
+  const summaryCount = Math.min(allPendingArticles.length, MAX_SUMMARY_COUNT);
+  const titleOnlyCount = Math.max(0, allPendingArticles.length - MAX_SUMMARY_COUNT);
+
+  console.log(`📝 ${summaryCount}件の記事を要約中...`);
+  if (titleOnlyCount > 0) {
+    console.log(`   (残り${titleOnlyCount}件はタイトルとリンクのみ)`);
+  }
+  console.log("");
+
   const startSummary = Date.now();
 
   let completedCount = 0;
-  const allArticles = await summarizeAllArticles(allPendingArticles, (title) => {
+  const allArticles = await summarizeAllArticles(allPendingArticles, (title, isSummary) => {
     completedCount++;
+    const prefix = isSummary ? "📝" : "📌";
     console.log(
-      `   [${completedCount}/${allPendingArticles.length}] ${title.slice(0, 50)}...`
+      `   ${prefix} [${completedCount}/${allPendingArticles.length}] ${title.slice(0, 50)}...`
     );
   });
 

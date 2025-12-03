@@ -10,6 +10,9 @@ import { isContentFeedType } from "./types.js";
 import { fetchFeed, isWithinOneDay, isStableRelease } from "./feed.js";
 import { summarizeWithRateLimit } from "./summarizer.js";
 
+/** 1日あたりの最大要約件数 */
+export const MAX_SUMMARY_COUNT = 50;
+
 /**
  * フィードを取得してフィルタリングする（要約なし）
  */
@@ -84,20 +87,49 @@ async function summarizeArticle(pending: PendingArticle): Promise<Article> {
 }
 
 /**
+ * タイトルとリンクのみの記事を作成する（要約なし）
+ */
+function createTitleOnlyArticle(pending: PendingArticle): Article {
+  return {
+    title: pending.title,
+    link: pending.link,
+    source: pending.source,
+    summary: "",
+    summaryOnly: true,
+  };
+}
+
+/**
  * 複数の記事を並列で要約する（セマフォで同時実行数を制限）
+ * 最大件数を超えた記事はタイトルとリンクのみにする
  */
 export async function summarizeAllArticles(
   pendingArticles: PendingArticle[],
-  onProgress?: (title: string) => void
+  onProgress?: (title: string, isSummary: boolean) => void
 ): Promise<Article[]> {
-  const promises = pendingArticles.map(async (pending) => {
+  // 要約対象とタイトルのみ対象を分ける
+  const toSummarize = pendingArticles.slice(0, MAX_SUMMARY_COUNT);
+  const titleOnly = pendingArticles.slice(MAX_SUMMARY_COUNT);
+
+  // 要約対象を並列処理
+  const summaryPromises = toSummarize.map(async (pending) => {
     if (onProgress) {
-      onProgress(pending.title);
+      onProgress(pending.title, true);
     }
     return summarizeArticle(pending);
   });
 
-  return Promise.all(promises);
+  const summarizedArticles = await Promise.all(summaryPromises);
+
+  // タイトルのみの記事を作成
+  const titleOnlyArticles = titleOnly.map((pending) => {
+    if (onProgress) {
+      onProgress(pending.title, false);
+    }
+    return createTitleOnlyArticle(pending);
+  });
+
+  return [...summarizedArticles, ...titleOnlyArticles];
 }
 
 /**

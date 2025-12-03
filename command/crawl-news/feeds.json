@@ -156,13 +156,6 @@
       "description": "AWSアーキテクチャブログ（設計パターン、ベストプラクティス）"
     },
     {
-      "name": "AWS What's New",
-      "url": "https://aws.amazon.com/about-aws/whats-new/recent/feed/",
-      "type": "news",
-      "category": "infrastructure",
-      "description": "AWSの新機能・サービスアップデート一覧"
-    },
-    {
       "name": "GCP Release Notes",
       "url": "https://cloud.google.com/feeds/gcp-release-notes.xml",
       "type": "news",

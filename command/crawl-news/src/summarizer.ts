@@ -60,6 +60,9 @@ export class Semaphore {
 // グローバルセマフォ（Gemini API の同時実行数を制限）
 const summarySemaphore = new Semaphore(5);
 
+// 使用するモデル
+const GEMINI_MODEL = "gemini-2.5-flash-lite";
+
 /**
  * Gemini APIを使用して記事を要約する
  */
@@ -83,14 +86,13 @@ ${content || "内容が取得できませんでした"}
 
   try {
     const response = await getGenAI().models.generateContent({
-      model: "gemini-2.5-flash",
+      model: GEMINI_MODEL,
       contents: prompt,
     });
 
     return response.text || "要約を生成できませんでした";
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     console.error(`   ⚠️ 要約エラー: ${errorMessage}`);
     return "要約の生成に失敗しました";
   }
