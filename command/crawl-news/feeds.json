@@ -1,12 +1,6 @@
 {
   "feeds": [
     {
-      "name": "React",
-      "url": "https://github.com/facebook/react/releases.atom",
-      "category": "frontend",
-      "description": "ReactのGitHubリリース情報"
-    },
-    {
       "name": "TypeScript",
       "url": "https://github.com/microsoft/TypeScript/releases.atom",
       "category": "frontend",
@@ -17,12 +11,6 @@
       "url": "https://github.com/nodejs/node/releases.atom",
       "category": "backend",
       "description": "Node.jsのGitHubリリース情報"
-    },
-    {
-      "name": "Next.js",
-      "url": "https://github.com/vercel/next.js/releases.atom",
-      "category": "frontend",
-      "description": "Next.jsのGitHubリリース情報"
     },
     {
       "name": "Next.js Blog",
