@@ -63,13 +63,13 @@ export default function SocialPage() {
             <section className="w-full py-16 md:py-24">
                 <div className="container px-4 md:px-6 mx-auto">
                     <div className="flex flex-col items-center justify-center space-y-6 text-center">
-                        <span className="text-xs tracking-wide-elegant text-muted-foreground uppercase">
+                        <span className="text-xs tracking-wide-elegant text-turquoise-600 uppercase">
                             Connect
                         </span>
                         <h1 className="text-4xl font-light tracking-wide-elegant sm:text-5xl text-foreground">
                             Social
                         </h1>
-                        <div className="w-16 h-px bg-border/70 my-4" />
+                        <div className="w-16 h-px bg-turquoise-400/60 my-4" />
                         <p className="max-w-[600px] text-muted-foreground text-base md:text-lg font-light tracking-elegant">
                             各プラットフォームでの活動
                         </p>
@@ -77,7 +77,7 @@ export default function SocialPage() {
                 </div>
             </section>
             {/* Divider */}
-            <div className="w-full border-t border-border/30" />
+            <div className="w-full border-t border-turquoise-200/50" />
             {/* Social Links Section */}
             <section className="w-full py-16 md:py-20">
                 <div className="container px-4 md:px-6 mx-auto max-w-3xl">
@@ -90,8 +90,8 @@ export default function SocialPage() {
                                 rel="noopener noreferrer"
                                 className="group"
                             >
-                                <div className="flex items-center gap-6 p-6 border border-border/50 bg-card/30 hover:bg-card/50 hover:border-border transition-all duration-200">
-                                    <div className="flex-shrink-0 text-muted-foreground group-hover:text-foreground transition-colors">
+                                <div className="flex items-center gap-6 p-6 border border-turquoise-200/60 bg-white/70 hover:bg-turquoise-50/50 hover:border-turquoise-300/80 rounded-lg shadow-card hover:shadow-soft transition-all duration-200">
+                                    <div className="flex-shrink-0 text-turquoise-500 group-hover:text-turquoise-600 transition-colors">
                                         {link.icon}
                                     </div>
                                     <div className="flex-1 min-w-0">
