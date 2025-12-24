@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import Logo from '@/public/MainLogo.jpg';
+import Logo from '@/public/MainLogo.png';
 import Image from 'next/image';
 import HeaderButton from './HeaderButton';
 import { Menu } from 'lucide-react';

@@ -61,7 +61,7 @@
     ├── package.json            # 依存関係とスクリプト
     ├── postcss.config.js       # PostCSS設定
     ├── public/                 # 静的ファイル
-    │   └── MainLogo.jpg        # メインロゴ
+    │   └── MainLogo.png        # メインロゴ
     ├── tailwind.config.js      # Tailwind CSS設定
     ├── tailwind.config.ts      # Tailwind CSS設定（TypeScript）
     ├── tsconfig.json           # TypeScript設定
