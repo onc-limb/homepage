@@ -1,7 +1,7 @@
 ---
 name: onclimb(おんりむ)
 title: 「動く理由を知り、使う人を想う」フルスタックエンジニア
-avatar: /MainLogo.jpg
+avatar: /MainLogo.png
 github: https://github.com/onc-limb
 ---
 
