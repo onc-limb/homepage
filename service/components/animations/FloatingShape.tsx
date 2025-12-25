@@ -67,9 +67,20 @@ export default function FloatingShape({
     duration,
     delay = 0,
 }: FloatingShapeProps) {
+    // 水彩風カラーパレット（ターコイズ〜テラコッタ）
+    const watercolorColors = [
+        'text-turquoise-400/20',
+        'text-turquoise-500/15',
+        'text-turquoise-300/25',
+        'text-terracotta-400/15',
+        'text-terracotta-300/20',
+    ];
+    // 位置に基づいて色を決定（一貫性を保つため）
+    const colorIndex = Math.abs(Math.floor(initialX * initialY)) % watercolorColors.length;
+    const colorClass = watercolorColors[colorIndex];
     return (
         <motion.div
-            className="absolute text-muted-foreground/10 pointer-events-none"
+            className={`absolute ${colorClass} pointer-events-none`}
             style={{
                 left: `${initialX}%`,
                 top: `${initialY}%`,

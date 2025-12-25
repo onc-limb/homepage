@@ -54,7 +54,7 @@ export default function HeroContent({ subtitle, title, description }: HeroConten
                 {title}
             </motion.h1>
             <motion.div
-                className="w-16 h-px bg-border/70 my-4"
+                className="w-16 h-px bg-turquoise-400/60 my-4"
                 variants={lineVariants}
             />
             <motion.p

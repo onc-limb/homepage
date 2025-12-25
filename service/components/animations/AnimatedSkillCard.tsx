@@ -25,7 +25,7 @@ export default function AnimatedSkillCard({
                 ease: 'easeOut',
             }}
         >
-            <div className="text-muted-foreground">{icon}</div>
+            <div className="text-turquoise-500">{icon}</div>
             <h3 className="text-lg font-medium text-foreground tracking-elegant">
                 {title}
             </h3>

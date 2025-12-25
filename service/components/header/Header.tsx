@@ -48,7 +48,7 @@ const Header = () => {
     return (
         <header className={`sticky top-0 z-50 w-full transition-transform duration-300 ${isVisible ? 'translate-y-0' : 'md:translate-y-0 -translate-y-full'
             }`}>
-            <div className="flex items-center justify-between bg-background/95 backdrop-blur-sm border-b border-border/50">
+            <div className="flex items-center justify-between bg-background/98 backdrop-blur-md border-b border-turquoise-200/50 shadow-sm">
                 <Link
                     href="/"
                     className="flex items-center gap-3 mx-4 sm:mx-8 my-4 group"

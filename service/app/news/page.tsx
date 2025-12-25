@@ -7,11 +7,11 @@ export default function NewsListPage() {
         <section className="w-full py-16 md:py-24">
             <div className="container px-4 md:px-6 mx-auto">
                 <div className="flex flex-col items-center justify-center space-y-6 text-center">
-                    <span className="text-xs tracking-wide-elegant text-muted-foreground uppercase">Daily Updates</span>
+                    <span className="text-xs tracking-wide-elegant text-turquoise-600 uppercase">Daily Updates</span>
                     <h2 className="text-4xl font-light tracking-elegant sm:text-5xl text-foreground">
                         技術ニュース
                     </h2>
-                    <div className="w-16 h-px bg-border/70" />
+                    <div className="w-16 h-px bg-turquoise-400/60" />
                     <p className="max-w-[600px] text-muted-foreground text-sm md:text-base font-light tracking-elegant">
                         毎日自動収集される技術ニュースのAI要約
                     </p>
