@@ -30,7 +30,7 @@ export default function AnimatedNavCard({ item, index }: AnimatedNavCardProps) {
         >
             <Link
                 href={item.href}
-                className="group block p-6 border border-border/50 bg-card/30 hover:bg-card/50 hover:border-border transition-colors duration-200"
+                className="group block p-6 border border-turquoise-200/60 bg-white/60 hover:bg-turquoise-50/50 hover:border-turquoise-300/80 rounded-lg transition-all duration-200 shadow-card hover:shadow-soft"
             >
                 <div className="flex items-center justify-between">
                     <div>
@@ -41,7 +41,7 @@ export default function AnimatedNavCard({ item, index }: AnimatedNavCardProps) {
                             {item.description}
                         </p>
                     </div>
-                    <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                    <ArrowRight className="w-4 h-4 text-turquoise-400 group-hover:text-turquoise-600 transition-colors" />
                 </div>
             </Link>
         </motion.div>

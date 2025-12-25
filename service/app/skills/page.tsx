@@ -74,7 +74,7 @@ function SkillCard({ skill }: { skill: Skill }) {
                         {skill.relatedTech.map((tech, index) => (
                             <span
                                 key={index}
-                                className="text-xs px-2 py-1 bg-muted/50 text-foreground/70 rounded"
+                                className="text-xs px-2 py-1 bg-turquoise-100 text-turquoise-700 rounded"
                             >
                                 {tech}
                             </span>
@@ -113,7 +113,7 @@ function SkillCategorySection({
     if (skills.length === 0) return null;
     return (
         <div className="mb-12">
-            <h2 className="text-xl font-light tracking-elegant text-foreground mb-6 pb-2 border-b border-border/30">
+            <h2 className="text-xl font-light tracking-elegant text-foreground mb-6 pb-2 border-b border-turquoise-300/50">
                 {categoryLabels[category]}
             </h2>
             <div className="grid gap-4 md:grid-cols-2">
@@ -133,13 +133,13 @@ export default function SkillsPage() {
             <section className="w-full py-16 md:py-24">
                 <div className="container px-4 md:px-6 mx-auto">
                     <div className="flex flex-col items-center justify-center space-y-6 text-center">
-                        <span className="text-xs tracking-wide-elegant text-muted-foreground uppercase">
+                        <span className="text-xs tracking-wide-elegant text-turquoise-600 uppercase">
                             Tech Stack
                         </span>
                         <h1 className="text-4xl font-light tracking-wide-elegant sm:text-5xl text-foreground">
                             Skills
                         </h1>
-                        <div className="w-16 h-px bg-border/70 my-4" />
+                        <div className="w-16 h-px bg-turquoise-400/60 my-4" />
                         <p className="max-w-[600px] text-muted-foreground text-base md:text-lg font-light tracking-elegant">
                             使用・学習中の技術スタックと経験
                         </p>
@@ -147,7 +147,7 @@ export default function SkillsPage() {
                 </div>
             </section>
             {/* Divider */}
-            <div className="w-full border-t border-border/30" />
+            <div className="w-full border-t border-turquoise-200/50" />
             {/* Legend Section */}
             <section className="w-full py-8 bg-card/30">
                 <div className="container px-4 md:px-6 mx-auto max-w-5xl">

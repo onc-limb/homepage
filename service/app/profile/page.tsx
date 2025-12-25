@@ -42,37 +42,37 @@ const Profile = async () => {
             <section className="w-full py-16 md:py-24">
                 <div className="container px-4 md:px-6 mx-auto">
                     <div className="flex flex-col items-center justify-center space-y-6 text-center">
-                        <Avatar className="w-28 h-28 border border-border/50">
+                        <Avatar className="w-28 h-28 border-2 border-turquoise-300/60 shadow-soft">
                             <AvatarImage src={data.avatar} alt={data.name} />
-                            <AvatarFallback className="bg-card text-foreground">OC</AvatarFallback>
+                            <AvatarFallback className="bg-turquoise-50 text-turquoise-600">OC</AvatarFallback>
                         </Avatar>
                         <div>
-                            <span className="text-xs tracking-wide-elegant text-muted-foreground uppercase">
+                            <span className="text-xs tracking-wide-elegant text-turquoise-600 uppercase">
                                 {data.title}
                             </span>
                             <h1 className="text-4xl font-light tracking-wide-elegant sm:text-5xl text-foreground mt-2">
                                 {data.name}
                             </h1>
                         </div>
-                        <div className="w-16 h-px bg-border/70 my-4" />
+                        <div className="w-16 h-px bg-turquoise-400/60 my-4" />
                     </div>
                 </div>
             </section>
             {/* Divider */}
-            <div className="w-full border-t border-border/30" />
+            <div className="w-full border-t border-turquoise-200/50" />
             {/* Content Section */}
             <section className="w-full py-16 md:py-20">
                 <div className="container px-4 md:px-6 mx-auto max-w-3xl">
                     <div className="space-y-8">
                         {sectionData['自己紹介'] && (
-                            <Card className="border-border/50 bg-card/30">
+                            <Card>
                                 <CardHeader>
                                     <CardTitle className="text-lg font-light tracking-elegant">
                                         自己紹介
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="leading-relaxed prose prose-sm prose-invert prose-readable max-w-none">
+                                    <div className="leading-relaxed prose prose-sm prose-readable max-w-none">
                                         <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                             {sectionData['自己紹介']}
                                         </ReactMarkdown>
@@ -81,14 +81,14 @@ const Profile = async () => {
                             </Card>
                         )}
                         {sectionData['エンジニアとしての今'] && (
-                            <Card className="border-border/50 bg-card/30">
+                            <Card>
                                 <CardHeader>
                                     <CardTitle className="text-lg font-light tracking-elegant">
                                         エンジニアとしての今
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="prose prose-sm prose-invert prose-readable max-w-none">
+                                    <div className="prose prose-sm prose-readable max-w-none">
                                         <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                             {sectionData['エンジニアとしての今']}
                                         </ReactMarkdown>
@@ -97,14 +97,14 @@ const Profile = async () => {
                             </Card>
                         )}
                         {sectionData['経歴'] && (
-                            <Card className="border-border/50 bg-card/30">
+                            <Card>
                                 <CardHeader>
                                     <CardTitle className="text-lg font-light tracking-elegant">
                                         経歴
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="prose prose-sm max-w-none prose-invert">
+                                    <div className="prose prose-sm max-w-none">
                                         <ReactMarkdown
                                             remarkPlugins={[remarkGfm]}
                                             components={{
@@ -128,7 +128,7 @@ const Profile = async () => {
                         )}
                         {/* Skills Link Card */}
                         <Link href="/skills" className="block group">
-                            <Card className="border-border/50 bg-card/30 hover:bg-card/50 hover:border-border transition-all duration-200">
+                            <Card>
                                 <CardContent className="flex items-center justify-between p-6">
                                     <div>
                                         <h3 className="text-lg font-light tracking-elegant text-foreground">
@@ -138,13 +138,13 @@ const Profile = async () => {
                                             使用・学習中の技術スタックと経験の詳細
                                         </p>
                                     </div>
-                                    <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
+                                    <ArrowRight className="w-5 h-5 text-turquoise-500 group-hover:text-turquoise-600 transition-colors" />
                                 </CardContent>
                             </Card>
                         </Link>
                         {/* Social Link Card */}
                         <Link href="/social" className="block group">
-                            <Card className="border-border/50 bg-card/30 hover:bg-card/50 hover:border-border transition-all duration-200">
+                            <Card>
                                 <CardContent className="flex items-center justify-between p-6">
                                     <div>
                                         <h3 className="text-lg font-light tracking-elegant text-foreground">
@@ -154,7 +154,7 @@ const Profile = async () => {
                                             GitHub, Zenn, X など各プラットフォーム
                                         </p>
                                     </div>
-                                    <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
+                                    <ArrowRight className="w-5 h-5 text-turquoise-500 group-hover:text-turquoise-600 transition-colors" />
                                 </CardContent>
                             </Card>
                         </Link>

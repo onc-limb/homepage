@@ -34,7 +34,7 @@ export default function Top() {
                 <GeometricBackground />
                 <div className="container px-4 md:px-6 mx-auto relative z-10">
                     <HeroContent
-                        subtitle="Fullstack Engineer"
+                        subtitle="Fullstack Engineer / Architect"
                         title="onclimb"
                         description={
                             <>
@@ -47,9 +47,9 @@ export default function Top() {
                 </div>
             </section>
             {/* Divider */}
-            <div className="w-full border-t border-border/30" />
+            <div className="w-full border-t border-turquoise-200/50" />
             {/* Skills Highlight Section */}
-            <section className="w-full py-16 md:py-20 bg-card/30">
+            <section className="w-full py-16 md:py-20 bg-gradient-to-b from-turquoise-50/30 to-background">
                 <div className="container px-4 md:px-6 mx-auto">
                     <div className="grid gap-8 md:grid-cols-3 max-w-4xl mx-auto">
                         {highlights.map((item, index) => (
@@ -74,12 +74,12 @@ export default function Top() {
                 </div>
             </section>
             {/* Divider */}
-            <div className="w-full border-t border-border/30" />
+            <div className="w-full border-t border-turquoise-200/50" />
             {/* Navigation Section */}
             <section className="w-full py-16 md:py-20">
                 <div className="container px-4 md:px-6 mx-auto">
                     <FadeInSection className="flex flex-col items-center justify-center space-y-6 text-center mb-12">
-                        <span className="text-xs tracking-wide-elegant text-muted-foreground uppercase">
+                        <span className="text-xs tracking-wide-elegant text-turquoise-600 uppercase">
                             Explore
                         </span>
                         <h2 className="text-3xl font-light tracking-elegant sm:text-4xl text-foreground">
@@ -98,12 +98,12 @@ export default function Top() {
                 </div>
             </section>
             {/* Divider */}
-            <div className="w-full border-t border-border/30" />
+            <div className="w-full border-t border-turquoise-200/50" />
             {/* News Section */}
-            <section className="w-full py-16 md:py-20 bg-card/30">
+            <section className="w-full py-16 md:py-20 bg-gradient-to-b from-turquoise-50/30 to-background">
                 <div className="container px-4 md:px-6 mx-auto">
                     <FadeInSection className="flex flex-col items-center justify-center space-y-6 text-center">
-                        <span className="text-xs tracking-wide-elegant text-muted-foreground uppercase">
+                        <span className="text-xs tracking-wide-elegant text-turquoise-600 uppercase">
                             Daily Updates
                         </span>
                         <h2 className="text-3xl font-light tracking-elegant sm:text-4xl text-foreground">
@@ -113,7 +113,7 @@ export default function Top() {
                             毎日自動収集される技術ニュースのAI要約
                         </p>
                         <Link
-                            className="mt-4 inline-flex h-11 items-center justify-center border border-border/50 bg-transparent px-8 text-sm text-foreground tracking-elegant hover:bg-accent hover:border-border transition-all duration-200"
+                            className="mt-4 inline-flex h-11 items-center justify-center bg-turquoise-500 hover:bg-turquoise-600 px-8 text-sm text-white tracking-elegant rounded-md transition-all duration-200 shadow-soft"
                             href="/news"
                         >
                             View News →
