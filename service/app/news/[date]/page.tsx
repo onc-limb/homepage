@@ -1,23 +1,23 @@
-import Markdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import Link from 'next/link';
-import { notFound } from 'next/navigation';
-import { getNewsContent, getAllNewsDates } from '@/lib/news';
-import { Button } from '@/components/ui/button';
+import Markdown from "react-markdown"
+import remarkGfm from "remark-gfm"
+import Link from "next/link"
+import { notFound } from "next/navigation"
+import { getNewsContent, getAllNewsDates } from "@/lib/news"
+import { Button } from "@/components/ui/button"
 interface NewsDetailProps {
-    params: Promise<{ date: string }>;
+    params: Promise<{ date: string }>
 }
 export async function generateStaticParams() {
-    const dates = getAllNewsDates();
+    const dates = getAllNewsDates()
     return dates.map((date) => ({
         date,
-    }));
+    }))
 }
 const NewsDetail = async ({ params }: NewsDetailProps) => {
-    const { date } = await params;
-    const news = getNewsContent(date);
+    const { date } = await params
+    const news = getNewsContent(date)
     if (!news) {
-        notFound();
+        notFound()
     }
     return (
         <>
@@ -35,7 +35,11 @@ const NewsDetail = async ({ params }: NewsDetailProps) => {
                             remarkPlugins={[remarkGfm]}
                             components={{
                                 a: ({ href, children }) => (
-                                    <a href={href} target="_blank" rel="noopener noreferrer">
+                                    <a
+                                        href={href}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
                                         {children}
                                     </a>
                                 ),
@@ -47,6 +51,6 @@ const NewsDetail = async ({ params }: NewsDetailProps) => {
                 </div>
             </article>
         </>
-    );
-};
-export default NewsDetail;
+    )
+}
+export default NewsDetail

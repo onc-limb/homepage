@@ -1,30 +1,30 @@
-import Link from 'next/link';
-import { Server, Layers, Wrench, ArrowRight } from 'lucide-react';
+import Link from "next/link"
+import { Server, Layers, Wrench, ArrowRight } from "lucide-react"
 import {
     GeometricBackground,
     HeroContent,
     AnimatedSkillCard,
     AnimatedNavCard,
     FadeInSection,
-} from '@/components/animations';
-import { NAV_ITEMS } from '@/lib/constants';
+} from "@/components/animations"
+import { NAV_ITEMS } from "@/lib/constants"
 const highlights = [
     {
         icon: <Server className="w-5 h-5" />,
-        title: 'Backend',
-        description: 'TypeScript / NestJS / REST API / GraphQL / PostgreSQL / Python',
+        title: "Backend",
+        description: "TypeScript / NestJS / REST API / GraphQL / PostgreSQL / Python",
     },
     {
         icon: <Layers className="w-5 h-5" />,
-        title: 'Architecture',
-        description: 'Clean Architecture / DDD / Microservices',
+        title: "Architecture",
+        description: "Clean Architecture / DDD / Microservices",
     },
     {
         icon: <Wrench className="w-5 h-5" />,
-        title: 'Frontend & Infra',
-        description: 'React / Next.js / AWS / Docker',
+        title: "Frontend & Infra",
+        description: "React / Next.js / AWS / Docker",
     },
-];
+]
 export default function Top() {
     return (
         <main className="flex-1">
@@ -88,11 +88,7 @@ export default function Top() {
                     </FadeInSection>
                     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 max-w-4xl mx-auto">
                         {NAV_ITEMS.map((item, index) => (
-                            <AnimatedNavCard
-                                key={item.href}
-                                item={item}
-                                index={index}
-                            />
+                            <AnimatedNavCard key={item.href} item={item} index={index} />
                         ))}
                     </div>
                 </div>
@@ -122,5 +118,5 @@ export default function Top() {
                 </div>
             </section>
         </main>
-    );
+    )
 }

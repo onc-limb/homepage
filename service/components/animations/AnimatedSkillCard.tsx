@@ -1,11 +1,11 @@
-'use client';
-import { motion } from 'motion/react';
-import { ReactNode } from 'react';
+"use client"
+import { motion } from "motion/react"
+import { ReactNode } from "react"
 interface AnimatedSkillCardProps {
-    icon: ReactNode;
-    title: string;
-    description: string;
-    index: number;
+    icon: ReactNode
+    title: string
+    description: string
+    index: number
 }
 export default function AnimatedSkillCard({
     icon,
@@ -18,11 +18,11 @@ export default function AnimatedSkillCard({
             className="flex flex-col items-center text-center space-y-3"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-30px' }}
+            viewport={{ once: true, margin: "-30px" }}
             transition={{
                 duration: 0.5,
                 delay: index * 0.1,
-                ease: 'easeOut',
+                ease: "easeOut",
             }}
         >
             <div className="text-turquoise-500">{icon}</div>
@@ -33,5 +33,5 @@ export default function AnimatedSkillCard({
                 {description}
             </p>
         </motion.div>
-    );
+    )
 }

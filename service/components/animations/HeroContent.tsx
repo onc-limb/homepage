@@ -1,6 +1,6 @@
-'use client';
-import { motion, Variants } from 'motion/react';
-import { ReactNode } from 'react';
+"use client"
+import { motion, Variants } from "motion/react"
+import { ReactNode } from "react"
 // アニメーションバリアント
 const containerVariants: Variants = {
     hidden: { opacity: 1 },
@@ -11,7 +11,7 @@ const containerVariants: Variants = {
             delayChildren: 0.1,
         },
     },
-};
+}
 const itemVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -19,7 +19,7 @@ const itemVariants: Variants = {
         y: 0,
         transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] },
     },
-};
+}
 const lineVariants: Variants = {
     hidden: { scaleX: 0, opacity: 0 },
     visible: {
@@ -27,11 +27,11 @@ const lineVariants: Variants = {
         opacity: 1,
         transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] },
     },
-};
+}
 interface HeroContentProps {
-    subtitle: string;
-    title: string;
-    description: ReactNode;
+    subtitle: string
+    title: string
+    description: ReactNode
 }
 export default function HeroContent({ subtitle, title, description }: HeroContentProps) {
     return (
@@ -64,5 +64,5 @@ export default function HeroContent({ subtitle, title, description }: HeroConten
                 {description}
             </motion.p>
         </motion.div>
-    );
+    )
 }

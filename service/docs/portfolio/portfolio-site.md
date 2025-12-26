@@ -4,20 +4,20 @@ title: ポートフォリオサイト
 description: Next.js と Tailwind CSS で構築した個人ポートフォリオサイト
 longDescription: フルスタックエンジニアとしての技術力をアピールするためのポートフォリオサイト。毎日の技術ニュースをAIで要約する機能も搭載。
 technologies:
-  - Next.js
-  - TypeScript
-  - Tailwind CSS
-  - Cloudflare Pages
-  - OpenAI API
+    - Next.js
+    - TypeScript
+    - Tailwind CSS
+    - Cloudflare Pages
+    - OpenAI API
 role: 設計・開発・運用
 period: 2024年〜
 highlights:
-  - App Router を使った SSG/ISR の実装
-  - Cloudflare Pages へのデプロイ
-  - 技術ニュースのAI要約機能
+    - App Router を使った SSG/ISR の実装
+    - Cloudflare Pages へのデプロイ
+    - 技術ニュースのAI要約機能
 category: personal
 links:
-  github: https://github.com/onc-limb/homepage
+    github: https://github.com/onc-limb/homepage
 ---
 
 ## 概要

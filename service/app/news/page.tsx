@@ -1,13 +1,15 @@
-import Link from 'next/link';
-import { getNewsDates } from '@/lib/news';
-import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import Link from "next/link"
+import { getNewsDates } from "@/lib/news"
+import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 export default function NewsListPage() {
-    const newsList = getNewsDates();
+    const newsList = getNewsDates()
     return (
         <section className="w-full py-16 md:py-24">
             <div className="container px-4 md:px-6 mx-auto">
                 <div className="flex flex-col items-center justify-center space-y-6 text-center">
-                    <span className="text-xs tracking-wide-elegant text-turquoise-600 uppercase">Daily Updates</span>
+                    <span className="text-xs tracking-wide-elegant text-turquoise-600 uppercase">
+                        Daily Updates
+                    </span>
                     <h2 className="text-4xl font-light tracking-elegant sm:text-5xl text-foreground">
                         技術ニュース
                     </h2>
@@ -44,5 +46,5 @@ export default function NewsListPage() {
                 </div>
             </div>
         </section>
-    );
+    )
 }

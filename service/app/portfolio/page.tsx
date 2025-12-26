@@ -1,14 +1,14 @@
-import { getProjects, type Project } from '@/lib/portfolio';
-import { Github, ExternalLink, FileText, ArrowRight } from 'lucide-react';
-import Link from 'next/link';
+import { getProjects, type Project } from "@/lib/portfolio"
+import { Github, ExternalLink, FileText, ArrowRight } from "lucide-react"
+import Link from "next/link"
 function ProjectCard({ project }: { project: Project }) {
-    const hasDetailPage = project.detail !== undefined;
+    const hasDetailPage = project.detail !== undefined
     return (
         <div className="border border-turquoise-200/60 bg-white/70 p-6 group rounded-lg shadow-card hover:shadow-soft transition-all duration-200">
             <div className="flex items-start justify-between mb-4">
                 <div>
                     <span className="text-xs text-muted-foreground tracking-elegant uppercase">
-                        {project.category === 'personal' ? 'Personal' : 'Work'}
+                        {project.category === "personal" ? "Personal" : "Work"}
                     </span>
                     <h3 className="text-xl font-medium text-foreground tracking-elegant mt-1">
                         {project.title}
@@ -97,12 +97,12 @@ function ProjectCard({ project }: { project: Project }) {
                 )}
             </div>
         </div>
-    );
+    )
 }
 const Portfolio = () => {
-    const projects = getProjects();
-    const personalProjects = projects.filter((p) => p.category === 'personal');
-    const workProjects = projects.filter((p) => p.category === 'work');
+    const projects = getProjects()
+    const personalProjects = projects.filter((p) => p.category === "personal")
+    const workProjects = projects.filter((p) => p.category === "work")
     return (
         <main className="flex-1">
             {/* Hero Section */}
@@ -164,6 +164,6 @@ const Portfolio = () => {
                 </div>
             </section>
         </main>
-    );
-};
-export default Portfolio;
+    )
+}
+export default Portfolio
