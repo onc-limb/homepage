@@ -6,41 +6,55 @@
     :root {
         /* Watercolor Theme - 水彩ヤモリロゴに合わせた柔らかいテーマ */
         /* 読みやすさ最優先のライトテーマ */
-        --background: 195 30% 98%;       /* #F8FBFC 淡い水色がかった白 */
-        --foreground: 200 20% 20%;       /* #2A3640 読みやすいダークグレー */
+        --background: 195 30% 98%;
+        /* #F8FBFC 淡い水色がかった白 */
+        --foreground: 200 20% 20%;
+        /* #2A3640 読みやすいダークグレー */
 
-        --card: 195 25% 97%;             /* #F5F9FA カードは少し薄い水色 */
+        --card: 195 25% 97%;
+        /* #F5F9FA カードは少し薄い水色 */
         --card-foreground: 200 20% 20%;
 
         --popover: 0 0% 100%;
         --popover-foreground: 200 20% 20%;
 
-        --primary: 185 60% 40%;          /* #299E9E ターコイズ - ロゴのメインカラー */
+        --primary: 185 60% 40%;
+        /* #299E9E ターコイズ - ロゴのメインカラー */
         --primary-foreground: 0 0% 100%;
 
-        --secondary: 195 20% 93%;        /* #E8EFF2 淡いグレーブルー */
+        --secondary: 195 20% 93%;
+        /* #E8EFF2 淡いグレーブルー */
         --secondary-foreground: 200 20% 25%;
 
-        --muted: 195 15% 92%;            /* #E5EBED */
-        --muted-foreground: 200 10% 45%; /* #6B7680 十分なコントラスト */
+        --muted: 195 15% 92%;
+        /* #E5EBED */
+        --muted-foreground: 200 10% 45%;
+        /* #6B7680 十分なコントラスト */
 
-        --accent: 20 50% 55%;            /* #C87746 テラコッタオレンジ - アクセント */
+        --accent: 20 50% 55%;
+        /* #C87746 テラコッタオレンジ - アクセント */
         --accent-foreground: 0 0% 100%;
 
         --destructive: 0 65% 50%;
         --destructive-foreground: 0 0% 100%;
 
-        --border: 195 20% 88%;           /* #D9E4E8 */
+        --border: 195 20% 88%;
+        /* #D9E4E8 */
         --input: 195 20% 88%;
-        --ring: 185 60% 40%;             /* ターコイズ */
+        --ring: 185 60% 40%;
+        /* ターコイズ */
 
         --radius: 0.5rem;
 
         /* カスタムカラー変数 */
-        --turquoise: 185 60% 40%;        /* メインターコイズ */
-        --turquoise-light: 185 50% 85%;  /* 薄いターコイズ */
-        --terracotta: 20 50% 55%;        /* テラコッタオレンジ */
-        --watercolor-blue: 195 45% 75%;  /* 水彩ブルー */
+        --turquoise: 185 60% 40%;
+        /* メインターコイズ */
+        --turquoise-light: 185 50% 85%;
+        /* 薄いターコイズ */
+        --terracotta: 20 50% 55%;
+        /* テラコッタオレンジ */
+        --watercolor-blue: 195 45% 75%;
+        /* 水彩ブルー */
     }
 }
 
@@ -48,60 +62,78 @@
     * {
         @apply border-border;
     }
+
     body {
         @apply bg-background text-foreground antialiased;
     }
+
     /* 水彩テーマ用タイポグラフィ - 読みやすさ重視 */
-    h1, h2, h3, h4, h5, h6 {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
         @apply tracking-tight font-semibold;
-        color: hsl(200, 25%, 18%); /* やや濃いめで視認性確保 */
+        color: hsl(200, 25%, 18%);
+        /* やや濃いめで視認性確保 */
     }
+
     /* リンクのスタイル - ターコイズベース */
     a {
         @apply transition-colors duration-200;
     }
+
     /* 本文テキストの読みやすさ向上 */
-    p, li {
+    p,
+    li {
         line-height: 1.8;
     }
 }
 
 @layer utilities {
+
     /* 細いボーダーライン */
     .border-subtle {
         border-color: rgba(0, 100, 120, 0.1);
     }
+
     /* ホバー時の背景変化 */
     .hover-lift {
         @apply transition-all duration-300;
     }
+
     .hover-lift:hover {
         @apply bg-secondary/50;
     }
+
     /* セクション区切り線 */
     .section-divider {
         @apply border-t border-border;
     }
+
     /* テキストのレタースペーシング */
     .tracking-elegant {
         letter-spacing: 0.03em;
     }
+
     .tracking-wide-elegant {
         letter-spacing: 0.08em;
     }
+
     /* 水彩風グラデーション背景 */
     .watercolor-gradient {
-        background: linear-gradient(
-            135deg,
-            hsl(195, 30%, 98%) 0%,
-            hsl(185, 40%, 95%) 50%,
-            hsl(195, 30%, 98%) 100%
-        );
+        background: linear-gradient(135deg,
+                hsl(195, 30%, 98%) 0%,
+                hsl(185, 40%, 95%) 50%,
+                hsl(195, 30%, 98%) 100%);
     }
+
     /* ターコイズアクセント */
     .accent-turquoise {
         color: hsl(185, 60%, 35%);
     }
+
     /* テラコッタアクセント */
     .accent-terracotta {
         color: hsl(20, 50%, 50%);
@@ -112,16 +144,21 @@
 @layer components {
     .prose-readable {
         /* 本文テキストの可読性向上 */
-        --tw-prose-body: #2A3640;           /* 本文は十分に濃いグレー */
-        --tw-prose-headings: #1E2A33;       /* 見出しはさらに濃く */
+        --tw-prose-body: #2A3640;
+        /* 本文は十分に濃いグレー */
+        --tw-prose-headings: #1E2A33;
+        /* 見出しはさらに濃く */
         --tw-prose-lead: #3D4D5A;
-        --tw-prose-links: #299E9E;          /* ターコイズリンク */
+        --tw-prose-links: #299E9E;
+        /* ターコイズリンク */
         --tw-prose-bold: #1E2A33;
         --tw-prose-counters: #5A6A75;
-        --tw-prose-bullets: #299E9E;        /* ターコイズ */
+        --tw-prose-bullets: #299E9E;
+        /* ターコイズ */
         --tw-prose-hr: #D9E4E8;
         --tw-prose-quotes: #3D4D5A;
-        --tw-prose-quote-borders: #299E9E;  /* ターコイズ */
+        --tw-prose-quote-borders: #299E9E;
+        /* ターコイズ */
         --tw-prose-captions: #5A6A75;
         --tw-prose-code: #1E2A33;
         --tw-prose-pre-code: #2A3640;
