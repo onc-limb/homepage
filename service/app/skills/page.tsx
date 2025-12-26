@@ -6,10 +6,10 @@ import {
     type Skill,
     type SkillCategory,
     type ListItem,
-} from '@/lib/skills';
+} from "@/lib/skills"
 // 再帰的にリストアイテムをレンダリングするコンポーネント
 function NestedListItem({ item, depth = 0 }: { item: ListItem; depth?: number }) {
-    const hasChildren = item.children.length > 0;
+    const hasChildren = item.children.length > 0
     return (
         <li className="text-sm text-foreground/80">
             <div className="flex items-start gap-2">
@@ -24,7 +24,7 @@ function NestedListItem({ item, depth = 0 }: { item: ListItem; depth?: number })
                 </ul>
             )}
         </li>
-    );
+    )
 }
 // ListItem配列をレンダリングするコンポーネント
 function NestedList({ items }: { items: ListItem[] }) {
@@ -34,10 +34,10 @@ function NestedList({ items }: { items: ListItem[] }) {
                 <NestedListItem key={index} item={item} />
             ))}
         </ul>
-    );
+    )
 }
 function SkillCard({ skill }: { skill: Skill }) {
-    const levelInfo = levelLabels[skill.level];
+    const levelInfo = levelLabels[skill.level]
     return (
         <div className="border border-border/50 bg-card/30 p-6">
             <div className="flex items-center gap-3 mb-4">
@@ -45,9 +45,7 @@ function SkillCard({ skill }: { skill: Skill }) {
                 <h3 className="text-lg font-medium text-foreground tracking-elegant">
                     {skill.name}
                 </h3>
-                <span className={`text-xs ${levelInfo.color}`}>
-                    {levelInfo.label}
-                </span>
+                <span className={`text-xs ${levelInfo.color}`}>{levelInfo.label}</span>
             </div>
             {skill.experience.length > 0 && (
                 <div className="mb-4">
@@ -101,16 +99,16 @@ function SkillCard({ skill }: { skill: Skill }) {
                 </div>
             )}
         </div>
-    );
+    )
 }
 function SkillCategorySection({
     category,
     skills,
 }: {
-    category: SkillCategory;
-    skills: Skill[];
+    category: SkillCategory
+    skills: Skill[]
 }) {
-    if (skills.length === 0) return null;
+    if (skills.length === 0) return null
     return (
         <div className="mb-12">
             <h2 className="text-xl font-light tracking-elegant text-foreground mb-6 pb-2 border-b border-turquoise-300/50">
@@ -122,11 +120,11 @@ function SkillCategorySection({
                 ))}
             </div>
         </div>
-    );
+    )
 }
 export default function SkillsPage() {
     // カテゴリごとにスキルをグループ化
-    const skillsByCategory = getSkillsByCategory();
+    const skillsByCategory = getSkillsByCategory()
     return (
         <main className="flex-1">
             {/* Hero Section */}
@@ -155,7 +153,9 @@ export default function SkillsPage() {
                         {Object.entries(levelLabels).map(([key, value]) => (
                             <div key={key} className="flex items-center gap-2">
                                 <span>{value.icon}</span>
-                                <span className="text-muted-foreground">{value.label}</span>
+                                <span className="text-muted-foreground">
+                                    {value.label}
+                                </span>
                             </div>
                         ))}
                     </div>
@@ -176,5 +176,5 @@ export default function SkillsPage() {
                 </div>
             </section>
         </main>
-    );
+    )
 }

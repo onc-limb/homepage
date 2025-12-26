@@ -1,23 +1,36 @@
-import { notFound } from 'next/navigation';
-import Link from 'next/link';
-import { Github, ExternalLink, FileText, ArrowLeft, Server, Code, Layers } from 'lucide-react';
-import { getProjectById, getProjectIds, type Project, type ArchitectureComponent as ArchitectureComponentType } from '@/lib/portfolio';
+import { notFound } from "next/navigation"
+import Link from "next/link"
+import {
+    Github,
+    ExternalLink,
+    FileText,
+    ArrowLeft,
+    Server,
+    Code,
+    Layers,
+} from "lucide-react"
+import {
+    getProjectById,
+    getProjectIds,
+    type Project,
+    type ArchitectureComponent as ArchitectureComponentType,
+} from "@/lib/portfolio"
 // 静的パスを生成
 export function generateStaticParams() {
-    const ids = getProjectIds();
-    return ids.map((id) => ({ id }));
+    const ids = getProjectIds()
+    return ids.map((id) => ({ id }))
 }
 // メタデータを生成
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
-    const { id } = await params;
-    const project = getProjectById(id);
+    const { id } = await params
+    const project = getProjectById(id)
     if (!project) {
-        return { title: 'Project Not Found' };
+        return { title: "Project Not Found" }
     }
     return {
         title: `${project.title} | Portfolio`,
         description: project.description,
-    };
+    }
 }
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
     return (
@@ -27,7 +40,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
             </h2>
             {children}
         </section>
-    );
+    )
 }
 function ArchitectureComponent({ component }: { component: ArchitectureComponentType }) {
     return (
@@ -47,15 +60,19 @@ function ArchitectureComponent({ component }: { component: ArchitectureComponent
                 ))}
             </div>
         </div>
-    );
+    )
 }
-export default async function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
-    const { id } = await params;
-    const project = getProjectById(id);
+export default async function ProjectDetailPage({
+    params,
+}: {
+    params: Promise<{ id: string }>
+}) {
+    const { id } = await params
+    const project = getProjectById(id)
     if (!project || !project.detail) {
-        notFound();
+        notFound()
     }
-    const { detail } = project;
+    const { detail } = project
     return (
         <main className="flex-1">
             {/* Hero Section */}
@@ -71,7 +88,9 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                             <span>Portfolio に戻る</span>
                         </Link>
                         <span className="text-xs tracking-wide-elegant text-muted-foreground uppercase">
-                            {project.category === 'personal' ? 'Personal Project' : 'Work Experience'}
+                            {project.category === "personal"
+                                ? "Personal Project"
+                                : "Work Experience"}
                         </span>
                         <h1 className="text-4xl font-light tracking-wide-elegant sm:text-5xl text-foreground">
                             {project.title}
@@ -83,11 +102,15 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                         {/* Meta Info */}
                         <div className="flex flex-wrap justify-center gap-6 text-sm text-muted-foreground mt-4">
                             <div>
-                                <span className="text-xs uppercase tracking-wide">期間</span>
+                                <span className="text-xs uppercase tracking-wide">
+                                    期間
+                                </span>
                                 <p className="text-foreground">{project.period}</p>
                             </div>
                             <div>
-                                <span className="text-xs uppercase tracking-wide">担当</span>
+                                <span className="text-xs uppercase tracking-wide">
+                                    担当
+                                </span>
                                 <p className="text-foreground">{project.role}</p>
                             </div>
                         </div>
@@ -173,13 +196,19 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                                 <p className="text-muted-foreground leading-relaxed">
                                     {detail.architecture.description}
                                 </p>
-                                {detail.architecture.components && detail.architecture.components.length > 0 && (
-                                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                                        {detail.architecture.components.map((component, index) => (
-                                            <ArchitectureComponent key={index} component={component} />
-                                        ))}
-                                    </div>
-                                )}
+                                {detail.architecture.components &&
+                                    detail.architecture.components.length > 0 && (
+                                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                                            {detail.architecture.components.map(
+                                                (component, index) => (
+                                                    <ArchitectureComponent
+                                                        key={index}
+                                                        component={component}
+                                                    />
+                                                )
+                                            )}
+                                        </div>
+                                    )}
                             </div>
                         </Section>
                     )}
@@ -188,7 +217,10 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                         <Section title="技術的な工夫">
                             <div className="space-y-6">
                                 {detail.technicalPoints.map((point, index) => (
-                                    <div key={index} className="border-l-2 border-border/50 pl-4">
+                                    <div
+                                        key={index}
+                                        className="border-l-2 border-border/50 pl-4"
+                                    >
                                         <h3 className="text-base font-medium text-foreground tracking-elegant mb-2">
                                             {point.title}
                                         </h3>
@@ -205,18 +237,25 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                         <Section title="課題と解決策">
                             <div className="space-y-6">
                                 {detail.challenges.map((challenge, index) => (
-                                    <div key={index} className="border border-border/50 bg-card/30 p-4">
+                                    <div
+                                        key={index}
+                                        className="border border-border/50 bg-card/30 p-4"
+                                    >
                                         <div className="mb-3">
                                             <span className="text-xs text-muted-foreground uppercase tracking-wide">
                                                 課題
                                             </span>
-                                            <p className="text-foreground mt-1">{challenge.problem}</p>
+                                            <p className="text-foreground mt-1">
+                                                {challenge.problem}
+                                            </p>
                                         </div>
                                         <div>
                                             <span className="text-xs text-muted-foreground uppercase tracking-wide">
                                                 解決策
                                             </span>
-                                            <p className="text-foreground/80 mt-1">{challenge.solution}</p>
+                                            <p className="text-foreground/80 mt-1">
+                                                {challenge.solution}
+                                            </p>
                                         </div>
                                     </div>
                                 ))}
@@ -268,5 +307,5 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                 </div>
             </section>
         </main>
-    );
+    )
 }

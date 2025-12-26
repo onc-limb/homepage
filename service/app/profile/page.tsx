@@ -1,41 +1,41 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { getProfile } from '@/lib/profile';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { getProfile } from "@/lib/profile"
+import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
+import Link from "next/link"
+import { ArrowRight } from "lucide-react"
 const Profile = async () => {
-    const profile = await getProfile();
-    const { data, content } = profile;
+    const profile = await getProfile()
+    const { data, content } = profile
     // Markdownコンテンツをセクションごとに分割(## レベルのみ)
     const parseSections = () => {
-        const result: { [key: string]: string } = {};
-        const lines = content.split('\n');
-        let currentSection = '';
-        let currentContent: string[] = [];
+        const result: { [key: string]: string } = {}
+        const lines = content.split("\n")
+        let currentSection = ""
+        let currentContent: string[] = []
         lines.forEach((line) => {
             // ## で始まる行はセクションタイトル
-            if (line.startsWith('## ')) {
+            if (line.startsWith("## ")) {
                 // 前のセクションを保存
                 if (currentSection) {
-                    result[currentSection] = currentContent.join('\n').trim();
+                    result[currentSection] = currentContent.join("\n").trim()
                 }
                 // 新しいセクション開始
-                currentSection = line.replace('## ', '').trim();
-                currentContent = [];
+                currentSection = line.replace("## ", "").trim()
+                currentContent = []
             } else if (currentSection) {
                 // セクション内のコンテンツを追加
-                currentContent.push(line);
+                currentContent.push(line)
             }
-        });
+        })
         // 最後のセクションを保存
         if (currentSection) {
-            result[currentSection] = currentContent.join('\n').trim();
+            result[currentSection] = currentContent.join("\n").trim()
         }
-        return result;
-    };
-    const sectionData = parseSections();
+        return result
+    }
+    const sectionData = parseSections()
     return (
         <main className="flex-1">
             {/* Hero Section */}
@@ -44,7 +44,9 @@ const Profile = async () => {
                     <div className="flex flex-col items-center justify-center space-y-6 text-center">
                         <Avatar className="w-28 h-28 border-2 border-turquoise-300/60 shadow-soft">
                             <AvatarImage src={data.avatar} alt={data.name} />
-                            <AvatarFallback className="bg-turquoise-50 text-turquoise-600">OC</AvatarFallback>
+                            <AvatarFallback className="bg-turquoise-50 text-turquoise-600">
+                                OC
+                            </AvatarFallback>
                         </Avatar>
                         <div>
                             <span className="text-xs tracking-wide-elegant text-turquoise-600 uppercase">
@@ -64,7 +66,7 @@ const Profile = async () => {
             <section className="w-full py-16 md:py-20">
                 <div className="container px-4 md:px-6 mx-auto max-w-3xl">
                     <div className="space-y-8">
-                        {sectionData['自己紹介'] && (
+                        {sectionData["自己紹介"] && (
                             <Card>
                                 <CardHeader>
                                     <CardTitle className="text-lg font-light tracking-elegant">
@@ -74,13 +76,13 @@ const Profile = async () => {
                                 <CardContent>
                                     <div className="leading-relaxed prose prose-sm prose-readable max-w-none">
                                         <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                            {sectionData['自己紹介']}
+                                            {sectionData["自己紹介"]}
                                         </ReactMarkdown>
                                     </div>
                                 </CardContent>
                             </Card>
                         )}
-                        {sectionData['エンジニアとしての今'] && (
+                        {sectionData["エンジニアとしての今"] && (
                             <Card>
                                 <CardHeader>
                                     <CardTitle className="text-lg font-light tracking-elegant">
@@ -90,13 +92,13 @@ const Profile = async () => {
                                 <CardContent>
                                     <div className="prose prose-sm prose-readable max-w-none">
                                         <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                            {sectionData['エンジニアとしての今']}
+                                            {sectionData["エンジニアとしての今"]}
                                         </ReactMarkdown>
                                     </div>
                                 </CardContent>
                             </Card>
                         )}
-                        {sectionData['経歴'] && (
+                        {sectionData["経歴"] && (
                             <Card>
                                 <CardHeader>
                                     <CardTitle className="text-lg font-light tracking-elegant">
@@ -120,7 +122,7 @@ const Profile = async () => {
                                                 ),
                                             }}
                                         >
-                                            {sectionData['経歴']}
+                                            {sectionData["経歴"]}
                                         </ReactMarkdown>
                                     </div>
                                 </CardContent>
@@ -162,6 +164,6 @@ const Profile = async () => {
                 </div>
             </section>
         </main>
-    );
-};
-export default Profile;
+    )
+}
+export default Profile

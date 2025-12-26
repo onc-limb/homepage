@@ -92,7 +92,6 @@
 }
 
 @layer utilities {
-
     /* 細いボーダーライン */
     .border-subtle {
         border-color: rgba(0, 100, 120, 0.1);
@@ -123,10 +122,12 @@
 
     /* 水彩風グラデーション背景 */
     .watercolor-gradient {
-        background: linear-gradient(135deg,
-                hsl(195, 30%, 98%) 0%,
-                hsl(185, 40%, 95%) 50%,
-                hsl(195, 30%, 98%) 100%);
+        background: linear-gradient(
+            135deg,
+            hsl(195, 30%, 98%) 0%,
+            hsl(185, 40%, 95%) 50%,
+            hsl(195, 30%, 98%) 100%
+        );
     }
 
     /* ターコイズアクセント */
@@ -144,27 +145,27 @@
 @layer components {
     .prose-readable {
         /* 本文テキストの可読性向上 */
-        --tw-prose-body: #2A3640;
+        --tw-prose-body: #2a3640;
         /* 本文は十分に濃いグレー */
-        --tw-prose-headings: #1E2A33;
+        --tw-prose-headings: #1e2a33;
         /* 見出しはさらに濃く */
-        --tw-prose-lead: #3D4D5A;
-        --tw-prose-links: #299E9E;
+        --tw-prose-lead: #3d4d5a;
+        --tw-prose-links: #299e9e;
         /* ターコイズリンク */
-        --tw-prose-bold: #1E2A33;
-        --tw-prose-counters: #5A6A75;
-        --tw-prose-bullets: #299E9E;
+        --tw-prose-bold: #1e2a33;
+        --tw-prose-counters: #5a6a75;
+        --tw-prose-bullets: #299e9e;
         /* ターコイズ */
-        --tw-prose-hr: #D9E4E8;
-        --tw-prose-quotes: #3D4D5A;
-        --tw-prose-quote-borders: #299E9E;
+        --tw-prose-hr: #d9e4e8;
+        --tw-prose-quotes: #3d4d5a;
+        --tw-prose-quote-borders: #299e9e;
         /* ターコイズ */
-        --tw-prose-captions: #5A6A75;
-        --tw-prose-code: #1E2A33;
-        --tw-prose-pre-code: #2A3640;
-        --tw-prose-pre-bg: #F0F5F7;
-        --tw-prose-th-borders: #D9E4E8;
-        --tw-prose-td-borders: #E5EBED;
+        --tw-prose-captions: #5a6a75;
+        --tw-prose-code: #1e2a33;
+        --tw-prose-pre-code: #2a3640;
+        --tw-prose-pre-bg: #f0f5f7;
+        --tw-prose-th-borders: #d9e4e8;
+        --tw-prose-td-borders: #e5ebed;
     }
 
     .prose-readable p {
@@ -198,21 +199,21 @@
     }
 
     .prose-readable code {
-        background-color: #E8EFF2;
+        background-color: #e8eff2;
         padding: 0.2em 0.4em;
         border-radius: 0.25rem;
         font-size: 0.9em;
-        color: #1E2A33;
+        color: #1e2a33;
     }
 
     .prose-readable pre {
-        background-color: #F0F5F7;
-        border: 1px solid #D9E4E8;
+        background-color: #f0f5f7;
+        border: 1px solid #d9e4e8;
         border-radius: 0.5rem;
     }
 
     .prose-readable blockquote {
-        border-left-color: #299E9E;
+        border-left-color: #299e9e;
         background-color: rgba(41, 158, 158, 0.05);
         padding: 0.5em 1em;
         border-radius: 0 0.25rem 0.25rem 0;
@@ -228,11 +229,11 @@
 
     .prose-readable th,
     .prose-readable td {
-        border: 1px solid #D9E4E8;
+        border: 1px solid #d9e4e8;
         padding: 0.75em 1em;
     }
 
     .prose-readable th {
-        background-color: #E8EFF2;
+        background-color: #e8eff2;
     }
 }

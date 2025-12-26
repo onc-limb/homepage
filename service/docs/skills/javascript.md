@@ -7,6 +7,7 @@ level: production
 ## やったこと
 
 ### 業務
+
 - Express + Pug でのフロントエンドバリデーション実装
 - DOM 操作によるフォームバリデーション
 - async/await を用いた非同期処理の実装

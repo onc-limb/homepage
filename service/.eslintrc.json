@@ -8,7 +8,12 @@
         "import/namespace": "off",
         "import/default": "off",
         "import/export": "error",
-        "no-multiple-empty-lines": ["error", { "max": 0 }],
+        "no-multiple-empty-lines": [
+            "error",
+            {
+                "max": 1
+            }
+        ],
         "react/jsx-indent": ["error", 4],
         "react/jsx-indent-props": ["error", 4]
     }
