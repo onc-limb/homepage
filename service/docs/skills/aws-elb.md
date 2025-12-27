@@ -1,6 +1,6 @@
 ---
 name: AWS-ELB
-category: aws
+category: networking
 level: production
 ---
 

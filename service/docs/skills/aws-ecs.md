@@ -1,6 +1,6 @@
 ---
 name: AWS-ECS
-category: aws
+category: compute
 level: production
 ---
 

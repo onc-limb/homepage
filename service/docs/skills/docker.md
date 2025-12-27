@@ -1,6 +1,6 @@
 ---
 name: Docker
-category: infrastructure
+category: container
 level: production
 ---
 

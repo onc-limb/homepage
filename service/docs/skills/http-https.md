@@ -1,6 +1,6 @@
 ---
 name: HTTP/HTTPS
-category: cs-protocol
+category: networking
 level: basic
 ---
 

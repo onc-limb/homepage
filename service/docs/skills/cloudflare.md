@@ -1,6 +1,6 @@
 ---
 name: Cloudflare
-category: infrastructure
+category: compute
 level: basic
 ---
 

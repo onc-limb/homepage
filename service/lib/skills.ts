@@ -47,7 +47,6 @@ export type SkillCategory =
     | "architecture" // アーキテクチャ
     | "methodology" // 開発手法・プロセス
     | "api" // API
-    | "cs-protocol" // CS・プロトコル・低レイヤー
     | "ai-ml" // AI・機械学習
     | "devops-sre" // DevOps・SRE
     | "testing" // テスト・品質保証
@@ -83,7 +82,6 @@ export const categoryLabels: Record<SkillCategory, string> = {
     architecture: "アーキテクチャ",
     methodology: "開発手法・プロセス",
     api: "API",
-    "cs-protocol": "CS・プロトコル・低レイヤー",
     "ai-ml": "AI・機械学習",
     "devops-sre": "DevOps・SRE",
     testing: "テスト・品質保証",
@@ -114,7 +112,6 @@ export const categoryOrder: SkillCategory[] = [
     "architecture",
     "methodology",
     "api",
-    "cs-protocol",
     "ai-ml",
     "devops-sre",
     "testing",
