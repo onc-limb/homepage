@@ -13,7 +13,9 @@ import nextjsMd from "../docs/skills/nextjs.md"
 // @ts-expect-error raw-loader returns string
 import tailwindcssMd from "../docs/skills/tailwindcss.md"
 // @ts-expect-error raw-loader returns string
-import awsMd from "../docs/skills/aws.md"
+import awsEcsMd from "../docs/skills/aws-ecs.md"
+// @ts-expect-error raw-loader returns string
+import awsElbMd from "../docs/skills/aws-elb.md"
 // @ts-expect-error raw-loader returns string
 import cloudflareMd from "../docs/skills/cloudflare.md"
 // @ts-expect-error raw-loader returns string
@@ -33,12 +35,24 @@ import llmGptMd from "../docs/skills/llm-gpt.md"
 export type SkillCategory =
     | "language" // プログラミング言語
     | "framework" // フレームワーク・ライブラリ
-    | "infrastructure" // インフラ・クラウドプラットフォーム・サービス
+    | "markup-style" // マークアップ・スタイル
+    | "compute" // コンピューティング
+    | "networking" // ネットワーキング
+    | "storage" // ストレージ
+    | "database" // データベース
+    | "integration" // 統合サービス
+    | "IaC" // インフラ構成管理・IaC
+    | "container" // コンテナ・オーケストレーション
     | "tools" // ツール・SaaS
     | "architecture" // アーキテクチャ
+    | "methodology" // 開発手法・プロセス
     | "api" // API
     | "cs-protocol" // CS・プロトコル・低レイヤー
     | "ai-ml" // AI・機械学習
+    | "devops-sre" // DevOps・SRE
+    | "testing" // テスト・品質保証
+    | "security" // セキュリティ
+    | "auth" // 認証・認可
 export type SkillLevel =
     | "production" // 🟢 実務で使える
     | "basic" // 🟡 基礎は理解
@@ -57,12 +71,24 @@ export interface Skill extends SkillMeta {
 export const categoryLabels: Record<SkillCategory, string> = {
     language: "プログラミング言語",
     framework: "フレームワーク・ライブラリ",
-    infrastructure: "インフラ・クラウドプラットフォーム・サービス",
+    "markup-style": "マークアップ・スタイル",
+    compute: "コンピューティング",
+    networking: "ネットワーキング",
+    storage: "ストレージ",
+    database: "データベース",
+    integration: "統合サービス",
+    IaC: "インフラ構成管理・IaC",
+    container: "コンテナ・オーケストレーション",
     tools: "ツール・SaaS",
     architecture: "アーキテクチャ",
+    methodology: "開発手法・プロセス",
     api: "API",
     "cs-protocol": "CS・プロトコル・低レイヤー",
     "ai-ml": "AI・機械学習",
+    "devops-sre": "DevOps・SRE",
+    testing: "テスト・品質保証",
+    security: "セキュリティ",
+    auth: "認証・認可",
 }
 export const levelLabels: Record<
     SkillLevel,
@@ -76,12 +102,24 @@ export const levelLabels: Record<
 export const categoryOrder: SkillCategory[] = [
     "language",
     "framework",
-    "infrastructure",
+    "markup-style",
+    "compute",
+    "networking",
+    "storage",
+    "database",
+    "integration",
+    "IaC",
+    "container",
     "tools",
     "architecture",
+    "methodology",
     "api",
     "cs-protocol",
     "ai-ml",
+    "devops-sre",
+    "testing",
+    "security",
+    "auth",
 ]
 // ネストされたリストアイテムを表す型
 export interface ListItem {
@@ -144,20 +182,21 @@ function extractListItems(content: string, sectionTitle: string): ListItem[] {
 // すべてのスキル Markdown
 const skillMarkdowns: string[] = [
     typescriptMd,
-    // pythonMd,
+    pythonMd,
     javascriptMd,
-    // reactMd,
-    // nextjsMd,
-    // tailwindcssMd,
-    // awsMd,
-    // cloudflareMd,
-    // dockerMd,
-    // gitGithubMd,
-    // cleanArchitectureMd,
-    // restApiMd,
-    // graphqlMd,
-    // httpHttpsMd,
-    // llmGptMd,
+    reactMd,
+    nextjsMd,
+    tailwindcssMd,
+    awsEcsMd,
+    awsElbMd,
+    cloudflareMd,
+    dockerMd,
+    gitGithubMd,
+    cleanArchitectureMd,
+    restApiMd,
+    graphqlMd,
+    httpHttpsMd,
+    llmGptMd,
 ]
 function parseSkillMarkdown(rawContent: string): Skill {
     const { data, content } = matter(rawContent)

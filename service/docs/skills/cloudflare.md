@@ -1,15 +1,13 @@
 ---
 name: Cloudflare
 category: infrastructure
-level: production
+level: basic
 ---
 
 ## やったこと
 
 - Cloudflare Pages でのデプロイ
-- Workers でのエッジ処理
 
 ## 知っていること
 
-- CDN設定
-- DNS管理
+- 記載中

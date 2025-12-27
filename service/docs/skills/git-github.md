@@ -6,10 +6,8 @@ level: production
 
 ## やったこと
 
-- チーム開発でのバージョン管理
-- GitHub Actions でのCI/CD構築
+- 記載中
 
 ## 知っていること
 
-- ブランチ戦略（Git Flow, GitHub Flow）
-- コードレビュー
+- 記載中

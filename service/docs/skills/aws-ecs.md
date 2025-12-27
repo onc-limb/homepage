@@ -1,6 +1,6 @@
 ---
-name: Next.js
-category: framework
+name: AWS-ECS
+category: aws
 level: production
 ---
 

@@ -1,15 +1,13 @@
 ---
 name: Tailwind CSS
 category: framework
-level: production
+level: basic
 ---
 
 ## やったこと
 
-- レスポンシブデザインの実装
-- デザインシステムの構築
+- 記載中
 
 ## 知っていること
 
-- ユーティリティファーストCSS
-- カスタムテーマ設定
+- 記載中

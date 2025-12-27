@@ -6,9 +6,8 @@ level: production
 
 ## やったこと
 
-- RESTful API の設計・実装
+- 記載中
 
 ## 知っていること
 
-- OpenAPI / Swagger
-- HTTPメソッドとステータスコード
+- 記載中

@@ -1,6 +1,6 @@
 ---
-name: Next.js
-category: framework
+name: AWS-ELB
+category: aws
 level: production
 ---
 

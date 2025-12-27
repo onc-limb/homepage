@@ -6,11 +6,8 @@ level: production
 
 ## やったこと
 
-- SPAの設計・開発
-- コンポーネント設計
+- 記載中
 
 ## 知っていること
 
-- Hooks API
-- Context API
-- パフォーマンス最適化
+- 記載中

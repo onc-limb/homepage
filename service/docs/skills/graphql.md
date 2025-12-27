@@ -6,9 +6,8 @@ level: basic
 
 ## やったこと
 
-- GraphQL クライアントの実装
+- 記載中
 
 ## 知っていること
 
-- Query, Mutation, Subscription
-- スキーマ設計
+- 記載中

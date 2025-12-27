@@ -6,10 +6,8 @@ level: production
 
 ## やったこと
 
-- OpenAI API を使ったアプリケーション開発
-- プロンプトエンジニアリング
+- 記載中
 
 ## 知っていること
 
-- トークン、コンテキストウィンドウ
-- RAG（Retrieval-Augmented Generation）
+- 記載中
