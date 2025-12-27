@@ -1,37 +1,37 @@
 import matter from "gray-matter"
 import { extractFlatListItems } from "./markdown-utils"
 // @ts-expect-error raw-loader returns string
-import typescriptMd from "../docs/skills/typescript.md"
+import typescriptMd from "../docs/skills/language/typescript.md"
 // @ts-expect-error raw-loader returns string
-import pythonMd from "../docs/skills/python.md"
+import pythonMd from "../docs/skills/language/python.md"
 // @ts-expect-error raw-loader returns string
-import javascriptMd from "../docs/skills/javascript.md"
+import javascriptMd from "../docs/skills/language/javascript.md"
 // @ts-expect-error raw-loader returns string
-import reactMd from "../docs/skills/react.md"
+import reactMd from "../docs/skills/framework/react.md"
 // @ts-expect-error raw-loader returns string
-import nextjsMd from "../docs/skills/nextjs.md"
+import nextjsMd from "../docs/skills/framework/nextjs.md"
 // @ts-expect-error raw-loader returns string
-import tailwindcssMd from "../docs/skills/tailwindcss.md"
+import tailwindcssMd from "../docs/skills/framework/tailwindcss.md"
 // @ts-expect-error raw-loader returns string
-import awsEcsMd from "../docs/skills/aws-ecs.md"
+import awsEcsMd from "../docs/skills/compute/aws-ecs.md"
 // @ts-expect-error raw-loader returns string
-import awsElbMd from "../docs/skills/aws-elb.md"
+import awsElbMd from "../docs/skills/networking/aws-elb.md"
 // @ts-expect-error raw-loader returns string
-import cloudflareMd from "../docs/skills/cloudflare.md"
+import cloudflareMd from "../docs/skills/compute/cloudflare.md"
 // @ts-expect-error raw-loader returns string
-import dockerMd from "../docs/skills/docker.md"
+import dockerMd from "../docs/skills/container/docker.md"
 // @ts-expect-error raw-loader returns string
-import gitGithubMd from "../docs/skills/git-github.md"
+import gitGithubMd from "../docs/skills/tools/git-github.md"
 // @ts-expect-error raw-loader returns string
-import cleanArchitectureMd from "../docs/skills/clean-architecture.md"
+import cleanArchitectureMd from "../docs/skills/architecture/clean-architecture.md"
 // @ts-expect-error raw-loader returns string
-import restApiMd from "../docs/skills/rest-api.md"
+import restApiMd from "../docs/skills/api/rest-api.md"
 // @ts-expect-error raw-loader returns string
-import graphqlMd from "../docs/skills/graphql.md"
+import graphqlMd from "../docs/skills/api/graphql.md"
 // @ts-expect-error raw-loader returns string
-import httpHttpsMd from "../docs/skills/http-https.md"
+import httpHttpsMd from "../docs/skills/networking/http-https.md"
 // @ts-expect-error raw-loader returns string
-import llmGptMd from "../docs/skills/llm.md"
+import llmGptMd from "../docs/skills/ai-ml/llm.md"
 export type SkillCategory =
     | "language" // プログラミング言語
     | "framework" // フレームワーク・ライブラリ
