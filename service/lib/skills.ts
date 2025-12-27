@@ -31,7 +31,7 @@ import graphqlMd from "../docs/skills/graphql.md"
 // @ts-expect-error raw-loader returns string
 import httpHttpsMd from "../docs/skills/http-https.md"
 // @ts-expect-error raw-loader returns string
-import llmGptMd from "../docs/skills/llm-gpt.md"
+import llmGptMd from "../docs/skills/llm.md"
 export type SkillCategory =
     | "language" // プログラミング言語
     | "framework" // フレームワーク・ライブラリ

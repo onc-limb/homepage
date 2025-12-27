@@ -1,5 +1,5 @@
 ---
-name: LLM / GPT
+name: LLM
 category: ai-ml
 level: production
 ---
