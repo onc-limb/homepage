@@ -4,7 +4,7 @@ category: language
 level: production
 ---
 
-## やったこと
+## 経験
 
 ### 業務
 
@@ -18,7 +18,7 @@ level: production
 
 - フレームワークを利用したWebフロントエンド実装(Next.js, SolidStart)
 
-## 知っていること
+## 知識
 
 - 基本文法
 - JavaScriptへのトランスパイル

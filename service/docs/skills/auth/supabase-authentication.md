@@ -1,6 +1,6 @@
 ---
-name: SolidJS
-category: framework
+name: Supabase Authentication
+category: auth
 level: learning
 ---
 

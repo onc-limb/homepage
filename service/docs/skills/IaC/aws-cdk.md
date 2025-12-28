@@ -1,7 +1,7 @@
 ---
-name: React
-category: framework
-level: production
+name: AWS CDK
+category: IaC
+level: learning
 ---
 
 ## 経験

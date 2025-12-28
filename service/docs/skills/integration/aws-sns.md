@@ -1,7 +1,7 @@
 ---
-name: React
-category: framework
-level: production
+name: AWS SNS
+category: integration
+level: learning
 ---
 
 ## 経験

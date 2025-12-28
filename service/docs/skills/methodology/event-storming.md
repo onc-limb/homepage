@@ -1,6 +1,6 @@
 ---
-name: SolidJS
-category: framework
+name: Event Storming
+category: methodology
 level: learning
 ---
 

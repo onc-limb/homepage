@@ -1,6 +1,6 @@
 ---
-name: SolidJS
-category: framework
+name: AWS CloudWatch
+category: devops-sre
 level: learning
 ---
 

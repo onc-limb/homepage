@@ -4,7 +4,7 @@ category: language
 level: production
 ---
 
-## やったこと
+## 経験
 
 ### 業務
 
@@ -16,7 +16,7 @@ level: production
 - ES Modules (import/export) の利用
 - try/catch によるエラーハンドリング
 
-## 知っていること
+## 知識
 
 - ES6+ 構文（アロー関数、分割代入、スプレッド構文、テンプレートリテラル）
 - Promise、async/await の仕組み

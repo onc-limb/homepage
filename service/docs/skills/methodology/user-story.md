@@ -1,7 +1,7 @@
 ---
-name: React
-category: framework
-level: production
+name: User Story
+category: methodology
+level: learning
 ---
 
 ## 経験

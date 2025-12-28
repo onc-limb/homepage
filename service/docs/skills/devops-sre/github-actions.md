@@ -1,6 +1,6 @@
 ---
-name: SolidJS
-category: framework
+name: GitHub Actions
+category: devops-sre
 level: learning
 ---
 

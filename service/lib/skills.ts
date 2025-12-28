@@ -32,6 +32,54 @@ import graphqlMd from "../docs/skills/api/graphql.md"
 import httpHttpsMd from "../docs/skills/networking/http-https.md"
 // @ts-expect-error raw-loader returns string
 import llmGptMd from "../docs/skills/ai-ml/llm.md"
+// @ts-expect-error raw-loader returns string
+import postgresqlMd from "../docs/skills/database/postgresql.md"
+// @ts-expect-error raw-loader returns string
+import prismaMd from "../docs/skills/database/prisma.md"
+// @ts-expect-error raw-loader returns string
+import gormMd from "../docs/skills/database/gorm.md"
+// @ts-expect-error raw-loader returns string
+import awsS3Md from "../docs/skills/storage/aws-s3.md"
+// @ts-expect-error raw-loader returns string
+import r2Md from "../docs/skills/storage/r2.md"
+// @ts-expect-error raw-loader returns string
+import minioMd from "../docs/skills/storage/minio.md"
+// @ts-expect-error raw-loader returns string
+import bigqueryMd from "../docs/skills/storage/bigquery.md"
+// @ts-expect-error raw-loader returns string
+import html5Md from "../docs/skills/markup-style/html5.md"
+// @ts-expect-error raw-loader returns string
+import awsSnsMd from "../docs/skills/integration/aws-sns.md"
+// @ts-expect-error raw-loader returns string
+import awsSqsMd from "../docs/skills/integration/aws-sqs.md"
+// @ts-expect-error raw-loader returns string
+import awsEventbridgeMd from "../docs/skills/integration/aws-eventbridge.md"
+// @ts-expect-error raw-loader returns string
+import awsStepfunctionsMd from "../docs/skills/integration/aws-stepfunctions.md"
+// @ts-expect-error raw-loader returns string
+import terraformMd from "../docs/skills/IaC/terraform.md"
+// @ts-expect-error raw-loader returns string
+import awsCdkMd from "../docs/skills/IaC/aws-cdk.md"
+// @ts-expect-error raw-loader returns string
+import scrumMd from "../docs/skills/methodology/scrum.md"
+// @ts-expect-error raw-loader returns string
+import userStoryMd from "../docs/skills/methodology/user-story.md"
+// @ts-expect-error raw-loader returns string
+import eventStormingMd from "../docs/skills/methodology/event-storming.md"
+// @ts-expect-error raw-loader returns string
+import awsSagemakerMd from "../docs/skills/ai-ml/aws-sagemaker.md"
+// @ts-expect-error raw-loader returns string
+import githubActionsMd from "../docs/skills/devops-sre/github-actions.md"
+// @ts-expect-error raw-loader returns string
+import awsCloudwatchMd from "../docs/skills/devops-sre/aws-cloudwatch.md"
+// @ts-expect-error raw-loader returns string
+import jestMd from "../docs/skills/testing/jest.md"
+// @ts-expect-error raw-loader returns string
+import playwrightMd from "../docs/skills/testing/playwright.md"
+// @ts-expect-error raw-loader returns string
+import firebaseAuthMd from "../docs/skills/auth/firebase-authentication.md"
+// @ts-expect-error raw-loader returns string
+import supabaseAuthMd from "../docs/skills/auth/supabase-authentication.md"
 export type SkillCategory =
     | "language" // プログラミング言語
     | "framework" // フレームワーク・ライブラリ
@@ -194,6 +242,30 @@ const skillMarkdowns: string[] = [
     graphqlMd,
     httpHttpsMd,
     llmGptMd,
+    postgresqlMd,
+    prismaMd,
+    gormMd,
+    awsS3Md,
+    r2Md,
+    minioMd,
+    bigqueryMd,
+    html5Md,
+    awsSnsMd,
+    awsSqsMd,
+    awsEventbridgeMd,
+    awsStepfunctionsMd,
+    terraformMd,
+    awsCdkMd,
+    scrumMd,
+    userStoryMd,
+    eventStormingMd,
+    awsSagemakerMd,
+    githubActionsMd,
+    awsCloudwatchMd,
+    jestMd,
+    playwrightMd,
+    firebaseAuthMd,
+    supabaseAuthMd,
 ]
 function parseSkillMarkdown(rawContent: string): Skill {
     const { data, content } = matter(rawContent)
@@ -202,8 +274,8 @@ function parseSkillMarkdown(rawContent: string): Skill {
         name: meta.name,
         category: meta.category,
         level: meta.level,
-        experience: extractListItems(content, "やったこと"),
-        knowledge: extractListItems(content, "知っていること"),
+        experience: extractListItems(content, "経験"),
+        knowledge: extractListItems(content, "知識"),
         relatedTech: extractFlatListItems(content, "関連技術"),
         relatedBooks: extractFlatListItems(content, "関連書籍"),
     }

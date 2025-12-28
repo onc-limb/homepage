@@ -4,10 +4,10 @@ category: compute
 level: basic
 ---
 
-## やったこと
+## 経験
 
 - Cloudflare Pages でのデプロイ
 
-## 知っていること
+## 知識
 
 - 記載中

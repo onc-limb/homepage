@@ -1,7 +1,7 @@
 ---
-name: React
-category: framework
-level: production
+name: PostgreSQL
+category: database
+level: learning
 ---
 
 ## 経験

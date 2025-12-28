@@ -1,6 +1,6 @@
 ---
-name: SolidJS
-category: framework
+name: Firebase Authentication
+category: auth
 level: learning
 ---
 

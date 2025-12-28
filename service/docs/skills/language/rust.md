@@ -4,10 +4,10 @@ category: language
 level: learning
 ---
 
-## やったこと
+## 経験
 
 - 記載中
 
-## 知っていること
+## 知識
 
 - 記載中

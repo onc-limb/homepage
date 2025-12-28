@@ -1,6 +1,6 @@
 ---
-name: SolidJS
-category: framework
+name: AWS EventBridge
+category: integration
 level: learning
 ---
 

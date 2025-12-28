@@ -1,7 +1,7 @@
 ---
-name: React
-category: framework
-level: production
+name: AWS SageMaker
+category: ai-ml
+level: learning
 ---
 
 ## 経験

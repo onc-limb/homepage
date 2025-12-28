@@ -1,7 +1,7 @@
 ---
-name: React
-category: framework
-level: production
+name: BigQuery
+category: storage
+level: learning
 ---
 
 ## 経験

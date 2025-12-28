@@ -1,7 +1,7 @@
 ---
-name: React
-category: framework
-level: production
+name: Scrum
+category: methodology
+level: learning
 ---
 
 ## 経験

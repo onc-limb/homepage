@@ -1,7 +1,7 @@
 ---
-name: React
-category: framework
-level: production
+name: Playwright
+category: testing
+level: learning
 ---
 
 ## 経験

@@ -1,7 +1,7 @@
 ---
-name: React
-category: framework
-level: production
+name: Jest
+category: testing
+level: learning
 ---
 
 ## 経験

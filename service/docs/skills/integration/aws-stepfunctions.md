@@ -1,6 +1,6 @@
 ---
-name: SolidJS
-category: framework
+name: AWS Step Functions
+category: integration
 level: learning
 ---
 
