@@ -1,7 +1,7 @@
 ---
 name: JWT
 category: auth
-level: 1
+level: 4
 publish: false
 ---
 

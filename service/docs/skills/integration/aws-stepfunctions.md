@@ -1,7 +1,7 @@
 ---
 name: AWS Step Functions
 category: integration
-level: 1
+level: 3
 publish: false
 ---
 

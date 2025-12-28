@@ -1,7 +1,7 @@
 ---
 name: BigQuery
 category: storage
-level: 1
+level: 3
 publish: false
 ---
 

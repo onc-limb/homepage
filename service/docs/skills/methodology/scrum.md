@@ -1,7 +1,7 @@
 ---
 name: Scrum
 category: methodology
-level: 1
+level: 3
 publish: false
 ---
 

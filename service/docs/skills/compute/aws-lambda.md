@@ -1,7 +1,7 @@
 ---
 name: AWS Lambda
 category: compute
-level: 1
+level: 4
 publish: false
 ---
 

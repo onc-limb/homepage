@@ -1,7 +1,7 @@
 ---
 name: Go
 category: language
-level: 4
+level: 3
 publish: false
 ---
 

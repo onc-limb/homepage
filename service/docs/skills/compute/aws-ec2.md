@@ -1,7 +1,7 @@
 ---
 name: AWS EC2
 category: compute
-level: 1
+level: 3
 publish: false
 ---
 

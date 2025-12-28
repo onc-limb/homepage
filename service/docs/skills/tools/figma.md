@@ -1,7 +1,7 @@
 ---
 name: Figma
 category: tools
-level: 1
+level: 3
 publish: false
 ---
 

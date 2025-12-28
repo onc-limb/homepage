@@ -1,7 +1,7 @@
 ---
 name: Supabase Authentication
 category: auth
-level: 1
+level: 2
 publish: false
 ---
 

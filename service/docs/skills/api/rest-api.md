@@ -1,7 +1,7 @@
 ---
 name: REST API
 category: api
-level: 4
+level: 3
 publish: false
 ---
 

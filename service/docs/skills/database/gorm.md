@@ -1,7 +1,7 @@
 ---
 name: GORM
 category: database
-level: 1
+level: 2
 publish: false
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: PostgreSQL
 category: database
-level: 1
+level: 4
 publish: false
 ---
 

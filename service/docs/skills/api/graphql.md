@@ -1,7 +1,7 @@
 ---
 name: GraphQL
 category: api
-level: 2
+level: 4
 publish: false
 ---
 

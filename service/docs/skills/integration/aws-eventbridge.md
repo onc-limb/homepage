@@ -1,7 +1,7 @@
 ---
 name: AWS EventBridge
 category: integration
-level: 1
+level: 4
 publish: false
 ---
 

@@ -21,8 +21,6 @@ import cloudflareMd from "../docs/skills/compute/cloudflare.md"
 // @ts-expect-error raw-loader returns string
 import dockerMd from "../docs/skills/container/docker.md"
 // @ts-expect-error raw-loader returns string
-import cleanArchitectureMd from "../docs/skills/architecture/clean-architecture.md"
-// @ts-expect-error raw-loader returns string
 import restApiMd from "../docs/skills/api/rest-api.md"
 // @ts-expect-error raw-loader returns string
 import graphqlMd from "../docs/skills/api/graphql.md"
@@ -146,7 +144,6 @@ export type SkillCategory =
     | "IaC" // インフラ構成管理・IaC
     | "container" // コンテナ・オーケストレーション
     | "tools" // ツール・SaaS
-    | "architecture" // アーキテクチャ
     | "methodology" // 開発手法・プロセス
     | "api" // API
     | "ai-ml" // AI・機械学習
@@ -179,7 +176,6 @@ export const categoryLabels: Record<SkillCategory, string> = {
     IaC: "インフラ構成管理・IaC",
     container: "コンテナ・オーケストレーション",
     tools: "ツール・SaaS",
-    architecture: "アーキテクチャ",
     methodology: "開発手法・プロセス",
     api: "API",
     "ai-ml": "AI・機械学習",
@@ -193,9 +189,9 @@ export const levelLabels: Record<
     { label: string; color: string; icon: string }
 > = {
     1: { label: "学習中", color: "text-yellow-500", icon: "🟡" },
-    2: { label: "基礎理解", color: "text-orange-500", icon: "🟠" },
-    3: { label: "個人利用", color: "text-red-500", icon: "🔴" },
-    4: { label: "実務利用", color: "text-blue-500", icon: "🔵" },
+    2: { label: "個人利用", color: "text-orange-500", icon: "🟠" },
+    3: { label: "実務経験あり", color: "text-red-500", icon: "🔴" },
+    4: { label: "実務継続利用", color: "text-blue-500", icon: "🔵" },
     5: { label: "専門", color: "text-green-500", icon: "🟢" },
 }
 // カテゴリの表示順序
@@ -211,7 +207,6 @@ export const categoryOrder: SkillCategory[] = [
     "IaC",
     "container",
     "tools",
-    "architecture",
     "methodology",
     "api",
     "ai-ml",
@@ -290,7 +285,6 @@ const skillMarkdowns: string[] = [
     awsElbMd,
     cloudflareMd,
     dockerMd,
-    cleanArchitectureMd,
     restApiMd,
     graphqlMd,
     httpHttpsMd,

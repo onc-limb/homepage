@@ -1,7 +1,7 @@
 ---
 name: Prisma
 category: database
-level: 1
+level: 3
 publish: false
 ---
 

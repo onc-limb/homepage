@@ -1,7 +1,7 @@
 ---
 name: Event Storming
 category: methodology
-level: 1
+level: 2
 publish: false
 ---
 

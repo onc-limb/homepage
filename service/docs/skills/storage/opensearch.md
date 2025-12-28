@@ -1,7 +1,7 @@
 ---
 name: OpenSearch
 category: storage
-level: 1
+level: 4
 publish: false
 ---
 

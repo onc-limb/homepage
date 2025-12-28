@@ -1,7 +1,7 @@
 ---
 name: GitHub Actions
 category: devops-sre
-level: 1
+level: 5
 publish: false
 ---
 

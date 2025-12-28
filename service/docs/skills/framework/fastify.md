@@ -1,7 +1,7 @@
 ---
 name: Fastify
 category: framework
-level: 2
+level: 3
 publish: false
 ---
 

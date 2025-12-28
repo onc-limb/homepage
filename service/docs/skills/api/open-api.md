@@ -1,7 +1,7 @@
 ---
 name: OpenAPI
 category: api
-level: 1
+level: 3
 publish: false
 ---
 

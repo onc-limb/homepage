@@ -1,7 +1,7 @@
 ---
 name: AWS S3
 category: storage
-level: 1
+level: 4
 publish: false
 ---
 

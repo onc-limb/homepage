@@ -1,7 +1,7 @@
 ---
 name: Cloud Run
 category: compute
-level: 1
+level: 2
 publish: false
 ---
 

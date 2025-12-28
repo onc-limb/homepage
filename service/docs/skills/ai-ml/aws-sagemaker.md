@@ -1,7 +1,7 @@
 ---
 name: AWS SageMaker
 category: ai-ml
-level: 1
+level: 4
 publish: false
 ---
 

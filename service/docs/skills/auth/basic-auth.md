@@ -1,7 +1,7 @@
 ---
 name: Basic Auth
 category: auth
-level: 1
+level: 3
 publish: false
 ---
 
