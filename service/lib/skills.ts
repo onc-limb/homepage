@@ -100,10 +100,7 @@ export type SkillCategory =
     | "testing" // テスト・品質保証
     | "security" // セキュリティ
     | "auth" // 認証・認可
-export type SkillLevel =
-    | "production" // 🟢 実務で使える
-    | "basic" // 🟡 基礎は理解
-    | "learning" // 🔵 学習中
+export type SkillLevel = 1 | 2 | 3 | 4 | 5
 export interface SkillMeta {
     name: string
     category: SkillCategory
@@ -140,9 +137,11 @@ export const levelLabels: Record<
     SkillLevel,
     { label: string; color: string; icon: string }
 > = {
-    production: { label: "実務で使える", color: "text-green-500", icon: "🟢" },
-    basic: { label: "基礎は理解", color: "text-yellow-500", icon: "🟡" },
-    learning: { label: "学習中", color: "text-blue-500", icon: "🔵" },
+    1: { label: "学習中", color: "text-yellow-500", icon: "🟡" },
+    2: { label: "基礎理解", color: "text-orange-500", icon: "🟠" },
+    3: { label: "個人利用", color: "text-red-500", icon: "🔴" },
+    4: { label: "実務利用", color: "text-blue-500", icon: "🔵" },
+    5: { label: "専門", color: "text-green-500", icon: "🟢" },
 }
 // カテゴリの表示順序
 export const categoryOrder: SkillCategory[] = [

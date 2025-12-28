@@ -1,7 +1,7 @@
 ---
 name: Cloudflare
 category: compute
-level: basic
+level: 2
 ---
 
 ## 経験

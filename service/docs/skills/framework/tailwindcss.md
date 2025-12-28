@@ -1,7 +1,7 @@
 ---
 name: Tailwind CSS
 category: framework
-level: basic
+level: 2
 ---
 
 ## 経験

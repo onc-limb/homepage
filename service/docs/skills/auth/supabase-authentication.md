@@ -1,7 +1,7 @@
 ---
 name: Supabase Authentication
 category: auth
-level: learning
+level: 1
 ---
 
 ## 経験

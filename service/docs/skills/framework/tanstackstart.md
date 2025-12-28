@@ -1,7 +1,7 @@
 ---
 name: TanStack Start
 category: framework
-level: learning
+level: 1
 ---
 
 ## 経験

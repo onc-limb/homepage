@@ -1,7 +1,7 @@
 ---
 name: AWS SNS
 category: integration
-level: learning
+level: 1
 ---
 
 ## 経験

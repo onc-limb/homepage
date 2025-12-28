@@ -1,7 +1,7 @@
 ---
 name: AWS CloudWatch
 category: devops-sre
-level: learning
+level: 1
 ---
 
 ## 経験

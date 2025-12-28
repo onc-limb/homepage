@@ -1,7 +1,7 @@
 ---
 name: HTML5
 category: markup-style
-level: learning
+level: 1
 ---
 
 ## 経験

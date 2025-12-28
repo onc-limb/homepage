@@ -1,7 +1,7 @@
 ---
 name: GraphQL
 category: api
-level: basic
+level: 2
 ---
 
 ## 経験

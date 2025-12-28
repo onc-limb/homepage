@@ -1,7 +1,7 @@
 ---
 name: AWS S3
 category: storage
-level: learning
+level: 1
 ---
 
 ## 経験

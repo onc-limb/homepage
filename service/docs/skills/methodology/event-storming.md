@@ -1,7 +1,7 @@
 ---
 name: Event Storming
 category: methodology
-level: learning
+level: 1
 ---
 
 ## 経験

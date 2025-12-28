@@ -1,7 +1,7 @@
 ---
 name: User Story
 category: methodology
-level: learning
+level: 1
 ---
 
 ## 経験

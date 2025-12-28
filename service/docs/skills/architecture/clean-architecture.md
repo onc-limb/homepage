@@ -1,7 +1,7 @@
 ---
 name: クリーンアーキテクチャ
 category: architecture
-level: basic
+level: 2
 ---
 
 ## 経験

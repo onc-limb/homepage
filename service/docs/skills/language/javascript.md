@@ -1,7 +1,7 @@
 ---
 name: JavaScript
 category: language
-level: production
+level: 4
 ---
 
 ## 経験

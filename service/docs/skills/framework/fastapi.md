@@ -1,7 +1,7 @@
 ---
 name: FastAPI
 category: framework
-level: basic
+level: 2
 ---
 
 ## 経験

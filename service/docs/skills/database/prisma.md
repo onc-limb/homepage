@@ -1,7 +1,7 @@
 ---
 name: Prisma
 category: database
-level: learning
+level: 1
 ---
 
 ## 経験

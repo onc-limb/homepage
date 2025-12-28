@@ -1,7 +1,7 @@
 ---
 name: AWS Step Functions
 category: integration
-level: learning
+level: 1
 ---
 
 ## 経験

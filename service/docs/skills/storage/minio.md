@@ -1,7 +1,7 @@
 ---
 name: MinIO
 category: storage
-level: learning
+level: 1
 ---
 
 ## 経験

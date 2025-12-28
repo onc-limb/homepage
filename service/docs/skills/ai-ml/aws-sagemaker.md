@@ -1,7 +1,7 @@
 ---
 name: AWS SageMaker
 category: ai-ml
-level: learning
+level: 1
 ---
 
 ## 経験

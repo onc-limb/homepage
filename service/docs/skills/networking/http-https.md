@@ -1,7 +1,7 @@
 ---
 name: HTTP/HTTPS
 category: networking
-level: basic
+level: 2
 ---
 
 ## 経験

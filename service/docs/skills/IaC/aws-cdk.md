@@ -1,7 +1,7 @@
 ---
 name: AWS CDK
 category: IaC
-level: learning
+level: 1
 ---
 
 ## 経験

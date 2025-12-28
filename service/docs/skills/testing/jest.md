@@ -1,7 +1,7 @@
 ---
 name: Jest
 category: testing
-level: learning
+level: 1
 ---
 
 ## 経験

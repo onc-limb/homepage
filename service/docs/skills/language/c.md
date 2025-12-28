@@ -1,7 +1,7 @@
 ---
 name: C言語
 category: language
-level: basic
+level: 2
 ---
 
 ## 経験

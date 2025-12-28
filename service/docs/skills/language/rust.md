@@ -1,7 +1,7 @@
 ---
 name: Rust
 category: language
-level: learning
+level: 1
 ---
 
 ## 経験

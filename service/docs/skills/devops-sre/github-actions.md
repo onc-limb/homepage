@@ -1,7 +1,7 @@
 ---
 name: GitHub Actions
 category: devops-sre
-level: learning
+level: 1
 ---
 
 ## 経験
