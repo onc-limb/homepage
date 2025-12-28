@@ -1,137 +1,16 @@
 import matter from "gray-matter"
 import { extractFlatListItems } from "./markdown-utils"
-// @ts-expect-error raw-loader returns string
-import typescriptMd from "../docs/skills/language/typescript.md"
-// @ts-expect-error raw-loader returns string
-import pythonMd from "../docs/skills/language/python.md"
-// @ts-expect-error raw-loader returns string
-import javascriptMd from "../docs/skills/language/javascript.md"
-// @ts-expect-error raw-loader returns string
-import reactMd from "../docs/skills/framework/react.md"
-// @ts-expect-error raw-loader returns string
-import nextjsMd from "../docs/skills/framework/nextjs.md"
-// @ts-expect-error raw-loader returns string
-import tailwindcssMd from "../docs/skills/framework/tailwindcss.md"
-// @ts-expect-error raw-loader returns string
-import awsEcsMd from "../docs/skills/compute/aws-ecs.md"
-// @ts-expect-error raw-loader returns string
-import awsElbMd from "../docs/skills/networking/aws-elb.md"
-// @ts-expect-error raw-loader returns string
-import cloudflareMd from "../docs/skills/compute/cloudflare.md"
-// @ts-expect-error raw-loader returns string
-import dockerMd from "../docs/skills/container/docker.md"
-// @ts-expect-error raw-loader returns string
-import restApiMd from "../docs/skills/api/rest-api.md"
-// @ts-expect-error raw-loader returns string
-import graphqlMd from "../docs/skills/api/graphql.md"
-// @ts-expect-error raw-loader returns string
-import httpHttpsMd from "../docs/skills/networking/http-https.md"
-// @ts-expect-error raw-loader returns string
-import llmGptMd from "../docs/skills/ai-ml/llm.md"
-// @ts-expect-error raw-loader returns string
-import postgresqlMd from "../docs/skills/database/postgresql.md"
-// @ts-expect-error raw-loader returns string
-import prismaMd from "../docs/skills/database/prisma.md"
-// @ts-expect-error raw-loader returns string
-import gormMd from "../docs/skills/database/gorm.md"
-// @ts-expect-error raw-loader returns string
-import awsS3Md from "../docs/skills/storage/aws-s3.md"
-// @ts-expect-error raw-loader returns string
-import r2Md from "../docs/skills/storage/r2.md"
-// @ts-expect-error raw-loader returns string
-import minioMd from "../docs/skills/storage/minio.md"
-// @ts-expect-error raw-loader returns string
-import bigqueryMd from "../docs/skills/storage/bigquery.md"
-// @ts-expect-error raw-loader returns string
-import html5Md from "../docs/skills/markup-style/html5.md"
-// @ts-expect-error raw-loader returns string
-import awsSnsMd from "../docs/skills/integration/aws-sns.md"
-// @ts-expect-error raw-loader returns string
-import awsSqsMd from "../docs/skills/integration/aws-sqs.md"
-// @ts-expect-error raw-loader returns string
-import awsEventbridgeMd from "../docs/skills/integration/aws-eventbridge.md"
-// @ts-expect-error raw-loader returns string
-import awsStepfunctionsMd from "../docs/skills/integration/aws-stepfunctions.md"
-// @ts-expect-error raw-loader returns string
-import terraformMd from "../docs/skills/IaC/terraform.md"
-// @ts-expect-error raw-loader returns string
-import awsCdkMd from "../docs/skills/IaC/aws-cdk.md"
-// @ts-expect-error raw-loader returns string
-import scrumMd from "../docs/skills/methodology/scrum.md"
-// @ts-expect-error raw-loader returns string
-import userStoryMd from "../docs/skills/methodology/user-story.md"
-// @ts-expect-error raw-loader returns string
-import eventStormingMd from "../docs/skills/methodology/event-storming.md"
-// @ts-expect-error raw-loader returns string
-import awsSagemakerMd from "../docs/skills/ai-ml/aws-sagemaker.md"
-// @ts-expect-error raw-loader returns string
-import githubActionsMd from "../docs/skills/devops-sre/github-actions.md"
-// @ts-expect-error raw-loader returns string
-import awsCloudwatchMd from "../docs/skills/devops-sre/aws-cloudwatch.md"
-// @ts-expect-error raw-loader returns string
-import jestMd from "../docs/skills/testing/jest.md"
-// @ts-expect-error raw-loader returns string
-import playwrightMd from "../docs/skills/testing/playwright.md"
-// @ts-expect-error raw-loader returns string
-import firebaseAuthMd from "../docs/skills/auth/firebase-authentication.md"
-// @ts-expect-error raw-loader returns string
-import supabaseAuthMd from "../docs/skills/auth/supabase-authentication.md"
-// @ts-expect-error raw-loader returns string
-import googleAdkMd from "../docs/skills/ai-ml/google-adk.md"
-// @ts-expect-error raw-loader returns string
-import pytorchMd from "../docs/skills/ai-ml/pytorch.md"
-// @ts-expect-error raw-loader returns string
-import langfuseMd from "../docs/skills/ai-ml/langfuse.md"
-// @ts-expect-error raw-loader returns string
-import opencvMd from "../docs/skills/ai-ml/opencv.md"
-// @ts-expect-error raw-loader returns string
-import mlflowMd from "../docs/skills/ai-ml/mlflow.md"
-// @ts-expect-error raw-loader returns string
-import githubCopilotMd from "../docs/skills/ai-ml/github-copilot.md"
-// @ts-expect-error raw-loader returns string
-import claudeCodeMd from "../docs/skills/ai-ml/claude-code.md"
-// @ts-expect-error raw-loader returns string
-import openApiMd from "../docs/skills/api/open-api.md"
-// @ts-expect-error raw-loader returns string
-import apolloMd from "../docs/skills/api/apollo.md"
-// @ts-expect-error raw-loader returns string
-import webSocketMd from "../docs/skills/api/web-socket.md"
-// @ts-expect-error raw-loader returns string
-import grpcMd from "../docs/skills/api/grpc.md"
-// @ts-expect-error raw-loader returns string
-import basicAuthMd from "../docs/skills/auth/basic-auth.md"
-// @ts-expect-error raw-loader returns string
-import jwtMd from "../docs/skills/auth/jwt.md"
-// @ts-expect-error raw-loader returns string
-import vercelMd from "../docs/skills/compute/vercel.md"
-// @ts-expect-error raw-loader returns string
-import awsEc2Md from "../docs/skills/compute/aws-ec2.md"
-// @ts-expect-error raw-loader returns string
-import cloudRunMd from "../docs/skills/compute/cloud-run.md"
-// @ts-expect-error raw-loader returns string
-import awsLambdaMd from "../docs/skills/compute/aws-lambda.md"
-// @ts-expect-error raw-loader returns string
-import awsBatchMd from "../docs/skills/compute/aws-batch.md"
-// @ts-expect-error raw-loader returns string
-import awsEcrMd from "../docs/skills/container/aws-ecr.md"
-// @ts-expect-error raw-loader returns string
-import datadogMd from "../docs/skills/devops-sre/datadog.md"
-// @ts-expect-error raw-loader returns string
-import amazonVpcMd from "../docs/skills/networking/amazon-vpc.md"
-// @ts-expect-error raw-loader returns string
-import amazonRoute53Md from "../docs/skills/networking/amazon-route53.md"
-// @ts-expect-error raw-loader returns string
-import amazonCloudfrontMd from "../docs/skills/networking/amazon-cloudfront.md"
-// @ts-expect-error raw-loader returns string
-import opensearchMd from "../docs/skills/storage/opensearch.md"
-// @ts-expect-error raw-loader returns string
-import asanaMd from "../docs/skills/tools/asana.md"
-// @ts-expect-error raw-loader returns string
-import sendgridMd from "../docs/skills/tools/sendgrid.md"
-// @ts-expect-error raw-loader returns string
-import figmaMd from "../docs/skills/tools/figma.md"
-// @ts-expect-error raw-loader returns string
-import slackMd from "../docs/skills/tools/slack.md"
+
+// docs/skills配下のすべての.mdファイルを動的にimport
+// @ts-expect-error require.context is webpack specific
+const requireContext = require.context("../docs/skills", true, /\.md$/)
+const skillMarkdowns: string[] = requireContext
+    .keys()
+    .map((key: string) => {
+        const mdModule = requireContext(key)
+        // raw-loaderはデフォルトエクスポートとして文字列を返す
+        return typeof mdModule === "string" ? mdModule : mdModule.default || mdModule
+    })
 export type SkillCategory =
     | "language" // プログラミング言語
     | "framework" // フレームワーク・ライブラリ
@@ -273,75 +152,7 @@ function extractListItems(content: string, sectionTitle: string): ListItem[] {
     }
     return result
 }
-// すべてのスキル Markdown
-const skillMarkdowns: string[] = [
-    typescriptMd,
-    pythonMd,
-    javascriptMd,
-    reactMd,
-    nextjsMd,
-    tailwindcssMd,
-    awsEcsMd,
-    awsElbMd,
-    cloudflareMd,
-    dockerMd,
-    restApiMd,
-    graphqlMd,
-    httpHttpsMd,
-    llmGptMd,
-    postgresqlMd,
-    prismaMd,
-    gormMd,
-    awsS3Md,
-    r2Md,
-    minioMd,
-    bigqueryMd,
-    html5Md,
-    awsSnsMd,
-    awsSqsMd,
-    awsEventbridgeMd,
-    awsStepfunctionsMd,
-    terraformMd,
-    awsCdkMd,
-    scrumMd,
-    userStoryMd,
-    eventStormingMd,
-    awsSagemakerMd,
-    githubActionsMd,
-    awsCloudwatchMd,
-    jestMd,
-    playwrightMd,
-    firebaseAuthMd,
-    supabaseAuthMd,
-    googleAdkMd,
-    pytorchMd,
-    langfuseMd,
-    opencvMd,
-    mlflowMd,
-    githubCopilotMd,
-    claudeCodeMd,
-    openApiMd,
-    apolloMd,
-    webSocketMd,
-    grpcMd,
-    basicAuthMd,
-    jwtMd,
-    vercelMd,
-    awsEc2Md,
-    cloudRunMd,
-    awsLambdaMd,
-    awsBatchMd,
-    awsEcrMd,
-    datadogMd,
-    amazonVpcMd,
-    amazonRoute53Md,
-    amazonCloudfrontMd,
-    opensearchMd,
-    asanaMd,
-    sendgridMd,
-    figmaMd,
-    slackMd,
-]
+
 function parseSkillMarkdown(rawContent: string): Skill {
     const { data, content } = matter(rawContent)
     const meta = data as SkillMeta
@@ -358,7 +169,17 @@ function parseSkillMarkdown(rawContent: string): Skill {
 }
 // すべてのスキルを取得
 export function getSkills(): Skill[] {
-    return skillMarkdowns.map(parseSkillMarkdown).filter((skill) => skill.publish)
+    const allSkills = skillMarkdowns.map(parseSkillMarkdown).filter((skill) => skill.publish)
+    
+    // スキル名でユニーク化
+    // Note: Webpackの require.context() がビルド時に Server/Client 両方のバンドルで評価され、
+    // skillMarkdowns 配列に同じファイルが複数回含まれる場合があるため、
+    // スキル名をキーとして重複を除去する
+    const uniqueSkills = Array.from(
+        new Map(allSkills.map((skill) => [skill.name, skill])).values()
+    )
+    
+    return uniqueSkills
 }
 // カテゴリ別にグループ化されたスキルを取得
 export function getSkillsByCategory(): Record<SkillCategory, Skill[]> {
