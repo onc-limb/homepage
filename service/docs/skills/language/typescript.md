@@ -1,7 +1,8 @@
 ---
 name: TypeScript
 category: language
-level: 4
+level: 5
+publish: true
 ---
 
 ## 経験

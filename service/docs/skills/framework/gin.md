@@ -2,6 +2,7 @@
 name: Gin
 category: framework
 level: 4
+publish: false
 ---
 
 ## 経験

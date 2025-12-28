@@ -2,6 +2,7 @@
 name: C言語
 category: language
 level: 2
+publish: false
 ---
 
 ## 経験

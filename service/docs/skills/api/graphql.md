@@ -2,6 +2,7 @@
 name: GraphQL
 category: api
 level: 2
+publish: false
 ---
 
 ## 経験

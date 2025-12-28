@@ -2,6 +2,7 @@
 name: GORM
 category: database
 level: 1
+publish: false
 ---
 
 ## 経験

@@ -2,6 +2,7 @@
 name: GitHub Actions
 category: devops-sre
 level: 1
+publish: false
 ---
 
 ## 経験

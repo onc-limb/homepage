@@ -2,6 +2,7 @@
 name: Fastify
 category: framework
 level: 2
+publish: false
 ---
 
 ## 経験

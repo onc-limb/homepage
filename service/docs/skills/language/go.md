@@ -2,6 +2,7 @@
 name: Go
 category: language
 level: 4
+publish: false
 ---
 
 ## 経験

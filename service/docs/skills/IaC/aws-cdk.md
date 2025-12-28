@@ -2,6 +2,7 @@
 name: AWS CDK
 category: IaC
 level: 1
+publish: false
 ---
 
 ## 経験

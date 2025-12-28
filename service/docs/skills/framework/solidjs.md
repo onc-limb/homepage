@@ -2,6 +2,7 @@
 name: SolidJS
 category: framework
 level: 1
+publish: false
 ---
 
 ## 経験

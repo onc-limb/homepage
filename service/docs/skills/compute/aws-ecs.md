@@ -2,6 +2,7 @@
 name: AWS-ECS
 category: compute
 level: 4
+publish: false
 ---
 
 ## 経験

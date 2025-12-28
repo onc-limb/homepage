@@ -2,6 +2,7 @@
 name: AWS SNS
 category: integration
 level: 1
+publish: false
 ---
 
 ## 経験

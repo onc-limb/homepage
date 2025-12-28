@@ -1,7 +1,8 @@
 ---
-name: Git / GitHub
-category: tools
-level: 4
+name: PyTorch
+category: ai-ml
+level: 1
+publish: false
 ---
 
 ## 経験

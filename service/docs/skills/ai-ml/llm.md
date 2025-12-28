@@ -2,6 +2,7 @@
 name: LLM
 category: ai-ml
 level: 4
+publish: false
 ---
 
 ## 経験

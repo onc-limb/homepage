@@ -2,6 +2,7 @@
 name: AWS-ELB
 category: networking
 level: 4
+publish: false
 ---
 
 ## 経験

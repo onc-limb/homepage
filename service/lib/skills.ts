@@ -21,8 +21,6 @@ import cloudflareMd from "../docs/skills/compute/cloudflare.md"
 // @ts-expect-error raw-loader returns string
 import dockerMd from "../docs/skills/container/docker.md"
 // @ts-expect-error raw-loader returns string
-import gitGithubMd from "../docs/skills/tools/git-github.md"
-// @ts-expect-error raw-loader returns string
 import cleanArchitectureMd from "../docs/skills/architecture/clean-architecture.md"
 // @ts-expect-error raw-loader returns string
 import restApiMd from "../docs/skills/api/rest-api.md"
@@ -80,6 +78,62 @@ import playwrightMd from "../docs/skills/testing/playwright.md"
 import firebaseAuthMd from "../docs/skills/auth/firebase-authentication.md"
 // @ts-expect-error raw-loader returns string
 import supabaseAuthMd from "../docs/skills/auth/supabase-authentication.md"
+// @ts-expect-error raw-loader returns string
+import googleAdkMd from "../docs/skills/ai-ml/google-adk.md"
+// @ts-expect-error raw-loader returns string
+import pytorchMd from "../docs/skills/ai-ml/pytorch.md"
+// @ts-expect-error raw-loader returns string
+import langfuseMd from "../docs/skills/ai-ml/langfuse.md"
+// @ts-expect-error raw-loader returns string
+import opencvMd from "../docs/skills/ai-ml/opencv.md"
+// @ts-expect-error raw-loader returns string
+import mlflowMd from "../docs/skills/ai-ml/mlflow.md"
+// @ts-expect-error raw-loader returns string
+import githubCopilotMd from "../docs/skills/ai-ml/github-copilot.md"
+// @ts-expect-error raw-loader returns string
+import claudeCodeMd from "../docs/skills/ai-ml/claude-code.md"
+// @ts-expect-error raw-loader returns string
+import openApiMd from "../docs/skills/api/open-api.md"
+// @ts-expect-error raw-loader returns string
+import apolloMd from "../docs/skills/api/apollo.md"
+// @ts-expect-error raw-loader returns string
+import webSocketMd from "../docs/skills/api/web-socket.md"
+// @ts-expect-error raw-loader returns string
+import grpcMd from "../docs/skills/api/grpc.md"
+// @ts-expect-error raw-loader returns string
+import basicAuthMd from "../docs/skills/auth/basic-auth.md"
+// @ts-expect-error raw-loader returns string
+import jwtMd from "../docs/skills/auth/jwt.md"
+// @ts-expect-error raw-loader returns string
+import vercelMd from "../docs/skills/compute/vercel.md"
+// @ts-expect-error raw-loader returns string
+import awsEc2Md from "../docs/skills/compute/aws-ec2.md"
+// @ts-expect-error raw-loader returns string
+import cloudRunMd from "../docs/skills/compute/cloud-run.md"
+// @ts-expect-error raw-loader returns string
+import awsLambdaMd from "../docs/skills/compute/aws-lambda.md"
+// @ts-expect-error raw-loader returns string
+import awsBatchMd from "../docs/skills/compute/aws-batch.md"
+// @ts-expect-error raw-loader returns string
+import awsEcrMd from "../docs/skills/container/aws-ecr.md"
+// @ts-expect-error raw-loader returns string
+import datadogMd from "../docs/skills/devops-sre/datadog.md"
+// @ts-expect-error raw-loader returns string
+import amazonVpcMd from "../docs/skills/networking/amazon-vpc.md"
+// @ts-expect-error raw-loader returns string
+import amazonRoute53Md from "../docs/skills/networking/amazon-route53.md"
+// @ts-expect-error raw-loader returns string
+import amazonCloudfrontMd from "../docs/skills/networking/amazon-cloudfront.md"
+// @ts-expect-error raw-loader returns string
+import opensearchMd from "../docs/skills/storage/opensearch.md"
+// @ts-expect-error raw-loader returns string
+import asanaMd from "../docs/skills/tools/asana.md"
+// @ts-expect-error raw-loader returns string
+import sendgridMd from "../docs/skills/tools/sendgrid.md"
+// @ts-expect-error raw-loader returns string
+import figmaMd from "../docs/skills/tools/figma.md"
+// @ts-expect-error raw-loader returns string
+import slackMd from "../docs/skills/tools/slack.md"
 export type SkillCategory =
     | "language" // プログラミング言語
     | "framework" // フレームワーク・ライブラリ
@@ -105,6 +159,7 @@ export interface SkillMeta {
     name: string
     category: SkillCategory
     level: SkillLevel
+    publish: boolean
 }
 export interface Skill extends SkillMeta {
     experience: ListItem[] // やったこと（実績）
@@ -235,7 +290,6 @@ const skillMarkdowns: string[] = [
     awsElbMd,
     cloudflareMd,
     dockerMd,
-    gitGithubMd,
     cleanArchitectureMd,
     restApiMd,
     graphqlMd,
@@ -265,6 +319,34 @@ const skillMarkdowns: string[] = [
     playwrightMd,
     firebaseAuthMd,
     supabaseAuthMd,
+    googleAdkMd,
+    pytorchMd,
+    langfuseMd,
+    opencvMd,
+    mlflowMd,
+    githubCopilotMd,
+    claudeCodeMd,
+    openApiMd,
+    apolloMd,
+    webSocketMd,
+    grpcMd,
+    basicAuthMd,
+    jwtMd,
+    vercelMd,
+    awsEc2Md,
+    cloudRunMd,
+    awsLambdaMd,
+    awsBatchMd,
+    awsEcrMd,
+    datadogMd,
+    amazonVpcMd,
+    amazonRoute53Md,
+    amazonCloudfrontMd,
+    opensearchMd,
+    asanaMd,
+    sendgridMd,
+    figmaMd,
+    slackMd,
 ]
 function parseSkillMarkdown(rawContent: string): Skill {
     const { data, content } = matter(rawContent)
@@ -273,6 +355,7 @@ function parseSkillMarkdown(rawContent: string): Skill {
         name: meta.name,
         category: meta.category,
         level: meta.level,
+        publish: meta.publish,
         experience: extractListItems(content, "経験"),
         knowledge: extractListItems(content, "知識"),
         relatedTech: extractFlatListItems(content, "関連技術"),
@@ -281,7 +364,7 @@ function parseSkillMarkdown(rawContent: string): Skill {
 }
 // すべてのスキルを取得
 export function getSkills(): Skill[] {
-    return skillMarkdowns.map(parseSkillMarkdown)
+    return skillMarkdowns.map(parseSkillMarkdown).filter((skill) => skill.publish)
 }
 // カテゴリ別にグループ化されたスキルを取得
 export function getSkillsByCategory(): Record<SkillCategory, Skill[]> {

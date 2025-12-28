@@ -2,6 +2,7 @@
 name: BigQuery
 category: storage
 level: 1
+publish: false
 ---
 
 ## 経験

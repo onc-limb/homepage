@@ -2,6 +2,7 @@
 name: AWS S3
 category: storage
 level: 1
+publish: false
 ---
 
 ## 経験
