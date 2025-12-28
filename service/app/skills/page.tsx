@@ -50,7 +50,7 @@ function SkillCard({ skill }: { skill: Skill }) {
             {skill.experience.length > 0 && (
                 <div className="mb-4">
                     <h4 className="text-sm text-muted-foreground mb-2 tracking-elegant">
-                        やったこと
+                        経験
                     </h4>
                     <NestedList items={skill.experience} />
                 </div>
@@ -58,7 +58,7 @@ function SkillCard({ skill }: { skill: Skill }) {
             {skill.knowledge.length > 0 && (
                 <div className="mb-4">
                     <h4 className="text-sm text-muted-foreground mb-2 tracking-elegant">
-                        知っていること
+                        知識
                     </h4>
                     <NestedList items={skill.knowledge} />
                 </div>

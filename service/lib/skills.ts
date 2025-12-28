@@ -1,52 +1,41 @@
 import matter from "gray-matter"
 import { extractFlatListItems } from "./markdown-utils"
-// @ts-expect-error raw-loader returns string
-import typescriptMd from "../docs/skills/typescript.md"
-// @ts-expect-error raw-loader returns string
-import pythonMd from "../docs/skills/python.md"
-// @ts-expect-error raw-loader returns string
-import javascriptMd from "../docs/skills/javascript.md"
-// @ts-expect-error raw-loader returns string
-import reactMd from "../docs/skills/react.md"
-// @ts-expect-error raw-loader returns string
-import nextjsMd from "../docs/skills/nextjs.md"
-// @ts-expect-error raw-loader returns string
-import tailwindcssMd from "../docs/skills/tailwindcss.md"
-// @ts-expect-error raw-loader returns string
-import awsMd from "../docs/skills/aws.md"
-// @ts-expect-error raw-loader returns string
-import cloudflareMd from "../docs/skills/cloudflare.md"
-// @ts-expect-error raw-loader returns string
-import dockerMd from "../docs/skills/docker.md"
-// @ts-expect-error raw-loader returns string
-import gitGithubMd from "../docs/skills/git-github.md"
-// @ts-expect-error raw-loader returns string
-import cleanArchitectureMd from "../docs/skills/clean-architecture.md"
-// @ts-expect-error raw-loader returns string
-import restApiMd from "../docs/skills/rest-api.md"
-// @ts-expect-error raw-loader returns string
-import graphqlMd from "../docs/skills/graphql.md"
-// @ts-expect-error raw-loader returns string
-import httpHttpsMd from "../docs/skills/http-https.md"
-// @ts-expect-error raw-loader returns string
-import llmGptMd from "../docs/skills/llm-gpt.md"
+
+// docs/skills配下のすべての.mdファイルを動的にimport
+// @ts-expect-error require.context is webpack specific
+const requireContext = require.context("../docs/skills", true, /\.md$/)
+const skillMarkdowns: string[] = requireContext
+    .keys()
+    .map((key: string) => {
+        const mdModule = requireContext(key)
+        // raw-loaderはデフォルトエクスポートとして文字列を返す
+        return typeof mdModule === "string" ? mdModule : mdModule.default || mdModule
+    })
 export type SkillCategory =
     | "language" // プログラミング言語
     | "framework" // フレームワーク・ライブラリ
-    | "infrastructure" // インフラ・クラウドプラットフォーム・サービス
+    | "markup-style" // マークアップ・スタイル
+    | "compute" // コンピューティング
+    | "networking" // ネットワーキング
+    | "storage" // ストレージ
+    | "database" // データベース
+    | "integration" // 統合サービス
+    | "IaC" // インフラ構成管理・IaC
+    | "container" // コンテナ・オーケストレーション
     | "tools" // ツール・SaaS
-    | "architecture" // アーキテクチャ
+    | "methodology" // 開発手法・プロセス
     | "api" // API
-    | "cs-protocol" // CS・プロトコル・低レイヤー
     | "ai-ml" // AI・機械学習
-export type SkillLevel =
-    | "production" // 🟢 実務で使える
-    | "basic" // 🟡 基礎は理解
-    | "learning" // 🔵 学習中
+    | "devops-sre" // DevOps・SRE
+    | "testing" // テスト・品質保証
+    | "security" // セキュリティ
+    | "auth" // 認証・認可
+export type SkillLevel = 1 | 2 | 3 | 4 | 5
 export interface SkillMeta {
     name: string
     category: SkillCategory
     level: SkillLevel
+    publish: boolean
 }
 export interface Skill extends SkillMeta {
     experience: ListItem[] // やったこと（実績）
@@ -57,31 +46,53 @@ export interface Skill extends SkillMeta {
 export const categoryLabels: Record<SkillCategory, string> = {
     language: "プログラミング言語",
     framework: "フレームワーク・ライブラリ",
-    infrastructure: "インフラ・クラウドプラットフォーム・サービス",
+    "markup-style": "マークアップ・スタイル",
+    compute: "コンピューティング",
+    networking: "ネットワーキング",
+    storage: "ストレージ",
+    database: "データベース",
+    integration: "統合サービス",
+    IaC: "インフラ構成管理・IaC",
+    container: "コンテナ・オーケストレーション",
     tools: "ツール・SaaS",
-    architecture: "アーキテクチャ",
+    methodology: "開発手法・プロセス",
     api: "API",
-    "cs-protocol": "CS・プロトコル・低レイヤー",
     "ai-ml": "AI・機械学習",
+    "devops-sre": "DevOps・SRE",
+    testing: "テスト・品質保証",
+    security: "セキュリティ",
+    auth: "認証・認可",
 }
 export const levelLabels: Record<
     SkillLevel,
     { label: string; color: string; icon: string }
 > = {
-    production: { label: "実務で使える", color: "text-green-500", icon: "🟢" },
-    basic: { label: "基礎は理解", color: "text-yellow-500", icon: "🟡" },
-    learning: { label: "学習中", color: "text-blue-500", icon: "🔵" },
+    1: { label: "学習中", color: "text-yellow-500", icon: "🟡" },
+    2: { label: "個人利用", color: "text-orange-500", icon: "🟠" },
+    3: { label: "実務経験あり", color: "text-red-500", icon: "🔴" },
+    4: { label: "実務継続利用", color: "text-blue-500", icon: "🔵" },
+    5: { label: "専門", color: "text-green-500", icon: "🟢" },
 }
 // カテゴリの表示順序
 export const categoryOrder: SkillCategory[] = [
     "language",
     "framework",
-    "infrastructure",
+    "markup-style",
+    "compute",
+    "networking",
+    "storage",
+    "database",
+    "integration",
+    "IaC",
+    "container",
     "tools",
-    "architecture",
+    "methodology",
     "api",
-    "cs-protocol",
     "ai-ml",
+    "devops-sre",
+    "testing",
+    "security",
+    "auth",
 ]
 // ネストされたリストアイテムを表す型
 export interface ListItem {
@@ -141,24 +152,7 @@ function extractListItems(content: string, sectionTitle: string): ListItem[] {
     }
     return result
 }
-// すべてのスキル Markdown
-const skillMarkdowns: string[] = [
-    typescriptMd,
-    // pythonMd,
-    javascriptMd,
-    // reactMd,
-    // nextjsMd,
-    // tailwindcssMd,
-    // awsMd,
-    // cloudflareMd,
-    // dockerMd,
-    // gitGithubMd,
-    // cleanArchitectureMd,
-    // restApiMd,
-    // graphqlMd,
-    // httpHttpsMd,
-    // llmGptMd,
-]
+
 function parseSkillMarkdown(rawContent: string): Skill {
     const { data, content } = matter(rawContent)
     const meta = data as SkillMeta
@@ -166,15 +160,26 @@ function parseSkillMarkdown(rawContent: string): Skill {
         name: meta.name,
         category: meta.category,
         level: meta.level,
-        experience: extractListItems(content, "やったこと"),
-        knowledge: extractListItems(content, "知っていること"),
+        publish: meta.publish,
+        experience: extractListItems(content, "経験"),
+        knowledge: extractListItems(content, "知識"),
         relatedTech: extractFlatListItems(content, "関連技術"),
         relatedBooks: extractFlatListItems(content, "関連書籍"),
     }
 }
 // すべてのスキルを取得
 export function getSkills(): Skill[] {
-    return skillMarkdowns.map(parseSkillMarkdown)
+    const allSkills = skillMarkdowns.map(parseSkillMarkdown).filter((skill) => skill.publish)
+    
+    // スキル名でユニーク化
+    // Note: Webpackの require.context() がビルド時に Server/Client 両方のバンドルで評価され、
+    // skillMarkdowns 配列に同じファイルが複数回含まれる場合があるため、
+    // スキル名をキーとして重複を除去する
+    const uniqueSkills = Array.from(
+        new Map(allSkills.map((skill) => [skill.name, skill])).values()
+    )
+    
+    return uniqueSkills
 }
 // カテゴリ別にグループ化されたスキルを取得
 export function getSkillsByCategory(): Record<SkillCategory, Skill[]> {
