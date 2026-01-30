@@ -11,6 +11,22 @@ DB接続はこのフェーズでは行わず、モックデータ（JSONファ�
 - データ取得は `lib/books.ts` のユーティリティ関数経由
 - モックデータは `lib/mock/books.json` に配置
 
+## 実装前に読むファイル
+
+実装開始時に以下のファイルを読み、既存パターン・スタイル・利用可能コンポーネントを把握すること。
+
+| ファイル | 目的 |
+|----------|------|
+| `app/portfolio/page.tsx` | カード一覧ページの実装パターン（参考にする元ページ） |
+| `app/skills/page.tsx` | カテゴリ分けされた一覧ページのパターン |
+| `app/layout.tsx` | ルートレイアウト構成（Header/Footer配置） |
+| `lib/constants.ts` | NAV_ITEMS の現在の定義（Books追加位置の確認） |
+| `components/header/Header.tsx` | ナビゲーションの描画方法 |
+| `tailwind.config.ts` | カスタムカラー（turquoise等）・カスタムユーティリティの定義 |
+| `app/globals.css` | カスタムCSSクラス（tracking-elegant等）の定義 |
+| `components.json` | Shadcn UI設定（パスエイリアス・スタイル方針） |
+| `components/ui/` 配下 | 導入済みShadcn UIコンポーネント一覧の確認（Input, Badgeが未導入なら `npx shadcn@latest add` で追加） |
+
 ---
 
 ## 実装ステップ
