@@ -23,23 +23,22 @@ DB接続はこのフェーズでは行わず、モックデータ（JSONファ�
 [
   {
     "id": 1,
-    "title": "リーダブルコード",
-    "author": "Dustin Boswell, Trevor Foucher",
+    "title": "ドメイン駆動設計をはじめよう",
+    "author": "Vlad Khononov",
     "publisher": "オライリージャパン",
-    "publishedYear": 2012,
-    "isbn": "978-4873115658",
-    "officialUrl": "https://www.oreilly.co.jp/books/9784873115658/",
-    "memo": "コードの可読性を意識したい時に読み返す。新人エンジニアへの最初の一冊としておすすめ。",
-    "tags": ["設計", "入門"],
+    "publishedYear": 2024,
+    "isbn": "978-4814400737",
+    "officialUrl": "https://www.oreilly.co.jp/books/9784814400737/",
+    "memo": "DDDの全体像を掴みたい時に読み返す。戦略的設計と戦術的設計の使い分けが整理されていて、実務でドメインモデリングに迷った時の指針になる。",
+    "tags": ["設計", "DDD"],
     "createdAt": "2025-01-01T00:00:00Z",
     "updatedAt": "2025-01-01T00:00:00Z"
   }
 ]
 ```
 
-- 5〜10冊程度のサンプルデータを用意
-- タグは複数パターン（設計、入門、Web、インフラ、言語 など）を含める
-- (要確認) サンプルデータに入れたい具体的な書籍があれば指定してほしい
+- モックデータは上記1冊で作成
+- タグは「設計」「DDD」を付与
 
 ### Step 2: 型定義とデータ取得関数
 
@@ -96,14 +95,13 @@ export function filterBooks(params: {
    - 既存ページと同じ `tracking-wide-elegant` スタイル
 
 2. **検索・フィルタバー**
-   - テキスト検索入力欄
-   - タグフィルタ（チップ形式、複数選択可）
+   - テキスト検索入力欄（Shadcn UI `Input`）
+   - タグフィルタ（Shadcn UI `Badge` をチップとして使用、複数選択可）
    - ソート切り替え（タイトル順 / 出版年順、昇順 / 降順）
-   - (要確認) 検索バーのデザインについて、既存サイトに検索UIがないため新規デザインとなる。Shadcn UIの `Input` + `Badge` コンポーネントを使う想定でよいか
 
 3. **書籍カード一覧**
-   - グリッドレイアウト（`md:grid-cols-2` または `md:grid-cols-3`）
-   - (要確認) カードのレイアウトは横型（画像左・情報右）と縦型（画像上・情報下）のどちらが望ましいか
+   - 縦型カード（画像上・情報下）のグリッドレイアウト
+   - `md:grid-cols-2` または `md:grid-cols-3` で配置（既存portfolioページに近い雰囲気）
 
 4. **BookCard コンポーネント**
    - OGPサムネイル表示エリア（このフェーズではプレースホルダー画像を表示）
@@ -121,12 +119,11 @@ export function filterBooks(params: {
 **変更ファイル:** `lib/constants.ts`
 
 ```typescript
-// NAV_ITEMS に追加
+// NAV_ITEMS に追加（Portfolioの後、Newsの前 = 4番目）
 { href: "/books", label: "Books", description: "読んだ書籍の一覧" }
 ```
 
-- ヘッダーナビゲーションに「Books」リンクを追加
-- (要確認) ナビゲーションの表示順序。現在は Profile, Skills, Portfolio, News, Social の5つ。Booksをどの位置に入れるか（Skillsの後を想定）
+- 表示順: Profile → Skills → Portfolio → **Books** → News → Social
 
 ### Step 5: OGP画像取得のモック
 
@@ -142,7 +139,7 @@ BookCardのサムネイル欄はプレースホルダー（本のアイコンま
 | 新規 | `lib/mock/books.json` | モックデータ |
 | 新規 | `lib/books.ts` | 型定義・データ取得関数 |
 | 新規 | `app/books/page.tsx` | 一覧ページ |
-| 変更 | `lib/constants.ts` | ナビゲーションにBooks追加 |
+| 変更 | `lib/constants.ts` | ナビゲーションにBooks追加（4番目） |
 
 ## 検証方法
 
