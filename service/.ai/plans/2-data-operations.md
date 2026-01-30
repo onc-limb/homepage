@@ -42,13 +42,13 @@ pnpm add -D drizzle-kit
 import { defineConfig } from "drizzle-kit"
 
 export default defineConfig({
-  schema: "./lib/db/schema.ts",
-  out: "./drizzle",
-  dialect: "turso",
-  dbCredentials: {
-    url: process.env.TURSO_DATABASE_URL!,
-    authToken: process.env.TURSO_AUTH_TOKEN!,
-  },
+    schema: "./lib/db/schema.ts",
+    out: "./drizzle",
+    dialect: "turso",
+    dbCredentials: {
+        url: process.env.TURSO_DATABASE_URL!,
+        authToken: process.env.TURSO_AUTH_TOKEN!,
+    },
 })
 ```
 
@@ -65,29 +65,41 @@ export default defineConfig({
 import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core"
 
 export const books = sqliteTable("books", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  title: text("title").notNull(),
-  author: text("author").notNull(),
-  publisher: text("publisher"),
-  publishedYear: integer("published_year"),
-  isbn: text("isbn"),
-  officialUrl: text("official_url"),
-  memo: text("memo"),
-  createdAt: text("created_at").notNull().default(sql`(datetime('now'))`),
-  updatedAt: text("updated_at").notNull().default(sql`(datetime('now'))`),
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    title: text("title").notNull(),
+    author: text("author").notNull(),
+    publisher: text("publisher"),
+    publishedYear: integer("published_year"),
+    isbn: text("isbn"),
+    officialUrl: text("official_url"),
+    memo: text("memo"),
+    createdAt: text("created_at")
+        .notNull()
+        .default(sql`(datetime('now'))`),
+    updatedAt: text("updated_at")
+        .notNull()
+        .default(sql`(datetime('now'))`),
 })
 
 export const tags = sqliteTable("tags", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  name: text("name").notNull().unique(),
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    name: text("name").notNull().unique(),
 })
 
-export const bookTags = sqliteTable("book_tags", {
-  bookId: integer("book_id").notNull().references(() => books.id, { onDelete: "cascade" }),
-  tagId: integer("tag_id").notNull().references(() => tags.id, { onDelete: "cascade" }),
-}, (table) => ({
-  pk: primaryKey({ columns: [table.bookId, table.tagId] }),
-}))
+export const bookTags = sqliteTable(
+    "book_tags",
+    {
+        bookId: integer("book_id")
+            .notNull()
+            .references(() => books.id, { onDelete: "cascade" }),
+        tagId: integer("tag_id")
+            .notNull()
+            .references(() => tags.id, { onDelete: "cascade" }),
+    },
+    (table) => ({
+        pk: primaryKey({ columns: [table.bookId, table.tagId] }),
+    })
+)
 ```
 
 **マイグレーション実行:**
@@ -114,13 +126,13 @@ import NextAuth from "next-auth"
 import GitHub from "next-auth/providers/github"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  providers: [GitHub],
-  callbacks: {
-    signIn({ profile }) {
-      // 許可されたGitHubアカウントのみ
-      return profile?.login === process.env.ALLOWED_GITHUB_ID
+    providers: [GitHub],
+    callbacks: {
+        signIn({ profile }) {
+            // 許可されたGitHubアカウントのみ
+            return profile?.login === process.env.ALLOWED_GITHUB_ID
+        },
     },
-  },
 })
 ```
 
@@ -150,7 +162,7 @@ export const { GET, POST } = handlers
 export { auth as middleware } from "@/lib/auth"
 
 export const config = {
-  matcher: ["/studio/:path*"],
+    matcher: ["/studio/:path*"],
 }
 ```
 
@@ -162,20 +174,20 @@ export const config = {
 **作成ファイル:** `app/api/books/route.ts`
 
 - `GET`: 書籍一覧取得
-  - クエリパラメータ: `q`（全文検索）, `tag`（タグフィルタ）, `sort`（title|publishedYear）, `order`（asc|desc）
-  - JOINでタグ情報を含めて返却
+    - クエリパラメータ: `q`（全文検索）, `tag`（タグフィルタ）, `sort`（title|publishedYear）, `order`（asc|desc）
+    - JOINでタグ情報を含めて返却
 - `POST`: 書籍登録（認証必須）
-  - リクエストボディ: 書籍情報 + tagIds or tagNames
-  - 新規タグ名が含まれる場合はtagsテーブルにも挿入
-  - トランザクションで books + book_tags を一括登録
+    - リクエストボディ: 書籍情報 + tagIds or tagNames
+    - 新規タグ名が含まれる場合はtagsテーブルにも挿入
+    - トランザクションで books + book_tags を一括登録
 
 **作成ファイル:** `app/api/books/[id]/route.ts`
 
 - `GET`: 書籍詳細取得
 - `PUT`: 書籍更新（認証必須）
-  - book_tags を洗い替え（DELETE → INSERT）
+    - book_tags を洗い替え（DELETE → INSERT）
 - `DELETE`: 書籍削除（認証必須）
-  - CASCADE で book_tags も削除
+    - CASCADE で book_tags も削除
 
 **作成ファイル:** `app/api/tags/route.ts`
 
@@ -190,7 +202,7 @@ import { auth } from "@/lib/auth"
 // 各書き込みAPIハンドラ内
 const session = await auth()
 if (!session) {
-  return Response.json({ error: "Unauthorized" }, { status: 401 })
+    return Response.json({ error: "Unauthorized" }, { status: 401 })
 }
 ```
 
@@ -205,20 +217,20 @@ if (!session) {
 
 ## 作成・変更ファイル一覧
 
-| 操作 | ファイル | 内容 |
-|------|----------|------|
-| 新規 | `drizzle.config.ts` | Drizzle Kit設定 |
-| 新規 | `lib/db/index.ts` | DBクライアント |
-| 新規 | `lib/db/schema.ts` | テーブルスキーマ |
-| 新規 | `lib/auth.ts` | NextAuth設定 |
-| 新規 | `middleware.ts` | 認証ガード |
-| 新規 | `app/api/auth/[...nextauth]/route.ts` | NextAuthハンドラ |
-| 新規 | `app/api/books/route.ts` | 書籍一覧・登録API |
-| 新規 | `app/api/books/[id]/route.ts` | 書籍詳細・更新・削除API |
-| 新規 | `app/api/tags/route.ts` | タグ一覧・作成API |
-| 変更 | `lib/books.ts` | モック→DB接続に切り替え |
-| 変更 | `.env.local` | 環境変数追加 |
-| 変更 | `package.json` | 依存パッケージ追加 |
+| 操作 | ファイル                              | 内容                    |
+| ---- | ------------------------------------- | ----------------------- |
+| 新規 | `drizzle.config.ts`                   | Drizzle Kit設定         |
+| 新規 | `lib/db/index.ts`                     | DBクライアント          |
+| 新規 | `lib/db/schema.ts`                    | テーブルスキーマ        |
+| 新規 | `lib/auth.ts`                         | NextAuth設定            |
+| 新規 | `middleware.ts`                       | 認証ガード              |
+| 新規 | `app/api/auth/[...nextauth]/route.ts` | NextAuthハンドラ        |
+| 新規 | `app/api/books/route.ts`              | 書籍一覧・登録API       |
+| 新規 | `app/api/books/[id]/route.ts`         | 書籍詳細・更新・削除API |
+| 新規 | `app/api/tags/route.ts`               | タグ一覧・作成API       |
+| 変更 | `lib/books.ts`                        | モック→DB接続に切り替え |
+| 変更 | `.env.local`                          | 環境変数追加            |
+| 変更 | `package.json`                        | 依存パッケージ追加      |
 
 ## 検証方法
 

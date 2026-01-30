@@ -18,25 +18,25 @@
 
 ### books テーブル
 
-| カラム         | 型              | 説明                                       |
-| -------------- | --------------- | ------------------------------------------ |
-| id             | INTEGER PK      | 自動採番                                   |
-| title          | TEXT NOT NULL    | 書籍タイトル                               |
-| author         | TEXT NOT NULL    | 著者                                       |
-| publisher      | TEXT             | 出版社                                     |
-| published_year | INTEGER          | 出版年                                     |
-| isbn           | TEXT             | ISBN                                       |
-| official_url   | TEXT             | 出版社公式の書籍ページURL                  |
-| memo           | TEXT             | フリーメモ（読み返すタイミング・感想等）   |
-| created_at     | TEXT             | 作成日時 (ISO8601)                         |
-| updated_at     | TEXT             | 更新日時 (ISO8601)                         |
+| カラム         | 型            | 説明                                     |
+| -------------- | ------------- | ---------------------------------------- |
+| id             | INTEGER PK    | 自動採番                                 |
+| title          | TEXT NOT NULL | 書籍タイトル                             |
+| author         | TEXT NOT NULL | 著者                                     |
+| publisher      | TEXT          | 出版社                                   |
+| published_year | INTEGER       | 出版年                                   |
+| isbn           | TEXT          | ISBN                                     |
+| official_url   | TEXT          | 出版社公式の書籍ページURL                |
+| memo           | TEXT          | フリーメモ（読み返すタイミング・感想等） |
+| created_at     | TEXT          | 作成日時 (ISO8601)                       |
+| updated_at     | TEXT          | 更新日時 (ISO8601)                       |
 
 ### tags テーブル
 
-| カラム | 型                  | 説明   |
-| ------ | ------------------- | ------ |
-| id     | INTEGER PK          | 自動採番 |
-| name   | TEXT NOT NULL UNIQUE | タグ名 |
+| カラム | 型                   | 説明     |
+| ------ | -------------------- | -------- |
+| id     | INTEGER PK           | 自動採番 |
+| name   | TEXT NOT NULL UNIQUE | タグ名   |
 
 ### book_tags テーブル（中間テーブル）
 
@@ -53,10 +53,10 @@
 
 - 書籍一覧をカード形式で表示
 - 機能:
-  - タグによるフィルタリング（複数選択可）
-  - フリーテキスト検索（タイトル・著者・メモを対象）
-  - ソート: タイトル順（あいうえお/ABC）、出版年順（新しい順/古い順）
-  - タグ一覧をサイドバーまたは上部にチップ表示
+    - タグによるフィルタリング（複数選択可）
+    - フリーテキスト検索（タイトル・著者・メモを対象）
+    - ソート: タイトル順（あいうえお/ABC）、出版年順（新しい順/古い順）
+    - タグ一覧をサイドバーまたは上部にチップ表示
 - カード表示項目: OGPサムネイル（あれば）、タイトル（公式URLへのリンク）、著者、出版年、タグ、メモ（一部抜粋）
 - 公式URLが設定されている場合、OGP画像（og:image）を取得してサムネイル表示
 - OGP画像が取得できない場合はプレースホルダーを表示
@@ -70,15 +70,15 @@
 
 ## 5. APIエンドポイント (Route Handlers)
 
-| メソッド | パス              | 認証 | 説明                                         |
-| -------- | ----------------- | ---- | -------------------------------------------- |
-| GET      | /api/books        | 不要 | 書籍一覧取得（クエリ: q, tag, sort, order）  |
-| GET      | /api/books/[id]   | 不要 | 書籍詳細取得                                 |
-| POST     | /api/books        | 必要 | 書籍登録                                     |
-| PUT      | /api/books/[id]   | 必要 | 書籍更新                                     |
-| DELETE   | /api/books/[id]   | 必要 | 書籍削除                                     |
-| GET      | /api/tags         | 不要 | タグ一覧取得                                 |
-| POST     | /api/tags         | 必要 | タグ作成                                     |
+| メソッド | パス            | 認証 | 説明                                        |
+| -------- | --------------- | ---- | ------------------------------------------- |
+| GET      | /api/books      | 不要 | 書籍一覧取得（クエリ: q, tag, sort, order） |
+| GET      | /api/books/[id] | 不要 | 書籍詳細取得                                |
+| POST     | /api/books      | 必要 | 書籍登録                                    |
+| PUT      | /api/books/[id] | 必要 | 書籍更新                                    |
+| DELETE   | /api/books/[id] | 必要 | 書籍削除                                    |
+| GET      | /api/tags       | 不要 | タグ一覧取得                                |
+| POST     | /api/tags       | 必要 | タグ作成                                    |
 
 ## 6. 認証・認可
 

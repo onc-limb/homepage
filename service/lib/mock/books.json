@@ -1,0 +1,15 @@
+[
+    {
+        "id": 1,
+        "title": "ドメイン駆動設計をはじめよう",
+        "author": "Vlad Khononov",
+        "publisher": "オライリージャパン",
+        "publishedYear": 2024,
+        "isbn": "978-4814400737",
+        "officialUrl": "https://www.oreilly.co.jp/books/9784814400737/",
+        "memo": "DDDの全体像を掴みたい時に読み返す。戦略的設計と戦術的設計の使い分けが整理されていて、実務でドメインモデリングに迷った時の指針になる。",
+        "tags": ["設計", "DDD"],
+        "createdAt": "2025-01-01T00:00:00Z",
+        "updatedAt": "2025-01-01T00:00:00Z"
+    }
+]
