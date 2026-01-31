@@ -24,23 +24,23 @@ function BookCard({
 }) {
     const [memoExpanded, setMemoExpanded] = useState(false)
     return (
-        <div className="border border-turquoise-200/60 bg-white/70 rounded-lg shadow-card hover:shadow-soft transition-all duration-200 overflow-hidden flex flex-col">
+        <div className="border border-turquoise-200/60 bg-white/70 rounded-lg shadow-card hover:shadow-soft transition-all duration-200 overflow-hidden flex flex-row">
             {/* サムネイル */}
-            <div className="h-40 bg-turquoise-50 flex items-center justify-center border-b border-turquoise-200/40 relative">
+            <div className="w-28 md:w-32 shrink-0 bg-turquoise-50 flex items-center justify-center border-r border-turquoise-200/40 relative">
                 {ogpImage ? (
                     <Image
                         src={ogpImage}
                         alt={book.title}
                         fill
-                        className="object-contain"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        className="object-contain p-2"
+                        sizes="128px"
                     />
                 ) : (
-                    <BookOpen className="w-12 h-12 text-turquoise-300" />
+                    <BookOpen className="w-10 h-10 text-turquoise-300" />
                 )}
             </div>
             {/* 情報 */}
-            <div className="p-5 flex flex-col flex-1">
+            <div className="p-4 flex flex-col flex-1 min-w-0">
                 {/* タイトル */}
                 <h3 className="text-lg font-medium text-foreground tracking-elegant leading-snug mb-1">
                     {book.officialUrl ? (
@@ -199,7 +199,7 @@ export default function BooksContent({
             <section className="w-full py-16 md:py-20">
                 <div className="container px-4 md:px-6 mx-auto max-w-5xl">
                     {books.length > 0 ? (
-                        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                        <div className="grid gap-6 md:grid-cols-2">
                             {books.map((book) => (
                                 <BookCard
                                     key={book.id}
