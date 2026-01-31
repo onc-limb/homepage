@@ -10,16 +10,34 @@ import {
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { BookOpen, ExternalLink, ArrowUpDown } from "lucide-react"
+import Image from "next/image"
 import Link from "next/link"
 import { useSearchParams, useRouter } from "next/navigation"
-import { useCallback, useMemo } from "react"
+import { useCallback, useMemo, useState } from "react"
 
-function BookCard({ book }: { book: Book }) {
+function BookCard({
+    book,
+    ogpImage,
+}: {
+    book: Book
+    ogpImage: string | null
+}) {
+    const [memoExpanded, setMemoExpanded] = useState(false)
     return (
         <div className="border border-turquoise-200/60 bg-white/70 rounded-lg shadow-card hover:shadow-soft transition-all duration-200 overflow-hidden flex flex-col">
-            {/* サムネイルプレースホルダー */}
-            <div className="h-40 bg-turquoise-50 flex items-center justify-center border-b border-turquoise-200/40">
-                <BookOpen className="w-12 h-12 text-turquoise-300" />
+            {/* サムネイル */}
+            <div className="h-40 bg-turquoise-50 flex items-center justify-center border-b border-turquoise-200/40 relative">
+                {ogpImage ? (
+                    <Image
+                        src={ogpImage}
+                        alt={book.title}
+                        fill
+                        className="object-contain"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    />
+                ) : (
+                    <BookOpen className="w-12 h-12 text-turquoise-300" />
+                )}
             </div>
             {/* 情報 */}
             <div className="p-5 flex flex-col flex-1">
@@ -59,16 +77,30 @@ function BookCard({ book }: { book: Book }) {
                 )}
                 {/* メモ */}
                 {book.memo && (
-                    <p className="text-sm text-foreground/70 leading-relaxed line-clamp-3 mt-auto">
-                        {book.memo}
-                    </p>
+                    <div className="mt-auto">
+                        <p
+                            className={`text-sm text-foreground/70 leading-relaxed ${memoExpanded ? "" : "line-clamp-3"}`}
+                        >
+                            {book.memo}
+                        </p>
+                        <button
+                            onClick={() => setMemoExpanded(!memoExpanded)}
+                            className="text-xs text-turquoise-600 hover:text-turquoise-700 mt-1 transition-colors"
+                        >
+                            {memoExpanded ? "閉じる" : "続きを読む"}
+                        </button>
+                    </div>
                 )}
             </div>
         </div>
     )
 }
 
-export default function BooksContent() {
+export default function BooksContent({
+    ogpImages,
+}: {
+    ogpImages: Record<number, string | null>
+}) {
     const searchParams = useSearchParams()
     const router = useRouter()
 
@@ -169,7 +201,11 @@ export default function BooksContent() {
                     {books.length > 0 ? (
                         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                             {books.map((book) => (
-                                <BookCard key={book.id} book={book} />
+                                <BookCard
+                                    key={book.id}
+                                    book={book}
+                                    ogpImage={ogpImages[book.id] ?? null}
+                                />
                             ))}
                         </div>
                     ) : (
