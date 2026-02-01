@@ -1,12 +1,6 @@
 "use client"
 
-import {
-    filterBooks,
-    getBookTags,
-    type Book,
-    type SortKey,
-    type SortOrder,
-} from "@/lib/books"
+import type { Book, SortKey, SortOrder } from "@/lib/types/book"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -14,15 +8,9 @@ import { BookOpen, ExternalLink, ArrowUpDown } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useSearchParams, useRouter } from "next/navigation"
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 
-function BookCard({
-    book,
-    ogpImage,
-}: {
-    book: Book
-    ogpImage: string | null
-}) {
+function BookCard({ book, ogpImage }: { book: Book; ogpImage: string | null }) {
     const [memoExpanded, setMemoExpanded] = useState(false)
     return (
         <div className="border border-turquoise-200/60 bg-white/70 rounded-lg shadow-card hover:shadow-soft transition-all duration-200 overflow-hidden flex flex-row">
@@ -111,20 +99,35 @@ export default function BooksContent({
     const sort = (searchParams.get("sort") as SortKey) ?? "title"
     const order = (searchParams.get("order") as SortOrder) ?? "asc"
 
-    const isRead = tab !== "unread"
+    const [books, setBooks] = useState<Book[]>([])
+    const [allTags, setAllTags] = useState<string[]>([])
 
-    const allTags = useMemo(() => getBookTags(), [])
-    const books = useMemo(
-        () =>
-            filterBooks({
-                q: q || undefined,
-                tag: tag || undefined,
-                sort,
-                order,
-                isRead,
-            }),
-        [q, tag, sort, order, isRead]
-    )
+    // タグ一覧を取得
+    useEffect(() => {
+        fetch("/api/tags")
+            .then((res) => res.json())
+            .then((data: { id: number; name: string }[]) =>
+                setAllTags(data.map((t) => t.name))
+            )
+            .catch(() => setAllTags([]))
+    }, [])
+
+    // 書籍一覧をAPI経由で取得
+    useEffect(() => {
+        const params = new URLSearchParams()
+        params.set("tab", tab)
+        if (q) params.set("q", q)
+        if (tag) params.set("tag", tag)
+        params.set("sort", sort)
+        params.set("order", order)
+
+        fetch(`/api/books?${params.toString()}`)
+            .then((res) => res.json())
+            .then((data: Book[]) => setBooks(data))
+            .catch(() => setBooks([]))
+    }, [tab, q, tag, sort, order])
+
+    const isRead = tab !== "unread"
 
     const updateParam = useCallback(
         (key: string, value: string) => {

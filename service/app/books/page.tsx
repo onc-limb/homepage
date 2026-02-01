@@ -3,13 +3,13 @@ import BooksContent from "./BooksContent"
 import { getBooks } from "@/lib/books"
 import { fetchOgpImage } from "@/lib/ogp"
 
+export const dynamic = "force-dynamic"
+
 async function fetchOgpImages(): Promise<Record<number, string | null>> {
-    const books = getBooks()
+    const books = await getBooks()
     const entries = await Promise.all(
         books.map(async (book) => {
-            const image = book.officialUrl
-                ? await fetchOgpImage(book.officialUrl)
-                : null
+            const image = book.officialUrl ? await fetchOgpImage(book.officialUrl) : null
             return [book.id, image] as const
         })
     )
