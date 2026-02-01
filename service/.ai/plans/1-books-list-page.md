@@ -47,6 +47,7 @@ DB接続はこのフェーズでは行わず、モックデータ（JSONファ�
         "officialUrl": "https://www.oreilly.co.jp/books/9784814400737/",
         "memo": "DDDの全体像を掴みたい時に読み返す。戦略的設計と戦術的設計の使い分けが整理されていて、実務でドメインモデリングに迷った時の指針になる。",
         "tags": ["設計", "DDD"],
+        "isRead": true,
         "createdAt": "2025-01-01T00:00:00Z",
         "updatedAt": "2025-01-01T00:00:00Z"
     }
@@ -55,6 +56,7 @@ DB接続はこのフェーズでは行わず、モックデータ（JSONファ�
 
 - モックデータは上記1冊で作成
 - タグは「設計」「DDD」を付与
+- `isRead`: 既読なら `true`、積読なら `false`
 
 ### Step 2: 型定義とデータ取得関数
 
@@ -72,6 +74,7 @@ export interface Book {
     officialUrl: string | null
     memo: string | null
     tags: string[]
+    isRead: boolean
     createdAt: string
     updatedAt: string
 }
@@ -110,7 +113,14 @@ export function filterBooks(params: {
     - タイトル「Books」と説明文
     - 既存ページと同じ `tracking-wide-elegant` スタイル
 
-2. **検索・フィルタバー**
+2. **既読・積読タブ**
+    - 「既読」「積読」の2タブで切り替え（Shadcn UI `Tabs`）
+    - 既読タブ: `isRead: true` の書籍一覧を表示
+    - 積読タブ: `isRead: false` の書籍一覧を表示
+    - デフォルトは「既読」タブを表示
+    - タブの状態はクエリパラメータ `tab=read|unread` でURL管理
+
+3. **検索・フィルタバー**
     - テキスト検索入力欄（Shadcn UI `Input`）
     - タグフィルタ（Shadcn UI `Badge` をチップとして使用、複数選択可）
     - ソート切り替え（タイトル順 / 出版年順、昇順 / 降順）
@@ -128,7 +138,7 @@ export function filterBooks(params: {
 
 **URL設計（クエリパラメータ）:**
 
-- `/books?q=設計&tag=入門&sort=publishedYear&order=desc`
+- `/books?tab=read&q=設計&tag=入門&sort=publishedYear&order=desc`
 - クエリパラメータで状態管理（URLで共有可能）
 
 ### Step 4: ナビゲーションへの追加

@@ -9,6 +9,7 @@ import {
 } from "@/lib/books"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { BookOpen, ExternalLink, ArrowUpDown } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -104,10 +105,13 @@ export default function BooksContent({
     const searchParams = useSearchParams()
     const router = useRouter()
 
+    const tab = searchParams.get("tab") ?? "read"
     const q = searchParams.get("q") ?? ""
     const tag = searchParams.get("tag") ?? ""
     const sort = (searchParams.get("sort") as SortKey) ?? "title"
     const order = (searchParams.get("order") as SortOrder) ?? "asc"
+
+    const isRead = tab !== "unread"
 
     const allTags = useMemo(() => getBookTags(), [])
     const books = useMemo(
@@ -117,8 +121,9 @@ export default function BooksContent({
                 tag: tag || undefined,
                 sort,
                 order,
+                isRead,
             }),
-        [q, tag, sort, order]
+        [q, tag, sort, order, isRead]
     )
 
     const updateParam = useCallback(
@@ -148,6 +153,20 @@ export default function BooksContent({
 
     return (
         <>
+            {/* タブ切り替え */}
+            <section className="w-full pt-8">
+                <div className="container px-4 md:px-6 mx-auto max-w-5xl">
+                    <Tabs
+                        value={tab}
+                        onValueChange={(value) => updateParam("tab", value)}
+                    >
+                        <TabsList>
+                            <TabsTrigger value="read">書籍一覧</TabsTrigger>
+                            <TabsTrigger value="unread">積読一覧</TabsTrigger>
+                        </TabsList>
+                    </Tabs>
+                </div>
+            </section>
             {/* 検索・フィルタ・ソート */}
             <section className="w-full py-8">
                 <div className="container px-4 md:px-6 mx-auto max-w-5xl">
@@ -211,7 +230,9 @@ export default function BooksContent({
                     ) : (
                         <div className="text-center py-12">
                             <p className="text-muted-foreground">
-                                条件に一致する書籍が見つかりません
+                                {isRead
+                                    ? "条件に一致する書籍が見つかりません"
+                                    : "積読はありません"}
                             </p>
                         </div>
                     )}

@@ -25,7 +25,11 @@ TURSO_DATABASE_URL=libsql://...
 TURSO_AUTH_TOKEN=...
 ```
 
-- (要確認) Tursoのアカウント・CLIは既にセットアップ済みか。未セットアップの場合、手順をガイドする
+- Turso CLI・アカウントは未セットアップ。以下の手順でセットアップを行う:
+    1. `brew install tursodatabase/tap/turso`（macOS）でCLIインストール
+    2. `turso auth signup` でアカウント作成（GitHub連携可）
+    3. `turso auth login` でログイン
+    4. 上記完了後、`turso db create homepage-books` でDB作成
 
 ### Step 2: Drizzle ORM 設定
 
@@ -73,6 +77,7 @@ export const books = sqliteTable("books", {
     isbn: text("isbn"),
     officialUrl: text("official_url"),
     memo: text("memo"),
+    isRead: integer("is_read", { mode: "boolean" }).notNull().default(false),
     createdAt: text("created_at")
         .notNull()
         .default(sql`(datetime('now'))`),
@@ -117,7 +122,7 @@ pnpm drizzle-kit push
 pnpm add next-auth@beta @auth/drizzle-adapter
 ```
 
-- (要確認) NextAuth v5 (Auth.js) は Cloudflare Workers 上での動作にEdgeランタイム対応が必要。`@auth/core` のEdge対応状況を確認する必要がある。もし制約がある場合、Node.jsランタイムのAPI RouteでNextAuthを動かし、middlewareではセッションcookieの存在チェックのみ行う構成に切り替える
+- デプロイ先はCloudflare Pages。NextAuth v5 (Auth.js) はEdgeランタイムでの制約があるため、NextAuthのAPIルート（`/api/auth/[...nextauth]`）はNode.js互換ランタイムで動作させ、`middleware.ts` ではセッションcookieの存在チェックのみ行う構成とする
 
 **作成ファイル:** `lib/auth.ts`
 
@@ -130,6 +135,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     callbacks: {
         signIn({ profile }) {
             // 許可されたGitHubアカウントのみ
+            // 許可: onc-limb
             return profile?.login === process.env.ALLOWED_GITHUB_ID
         },
     },
@@ -142,10 +148,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 AUTH_SECRET=...
 AUTH_GITHUB_ID=...
 AUTH_GITHUB_SECRET=...
-ALLOWED_GITHUB_ID=satoshi-onga
+ALLOWED_GITHUB_ID=onc-limb
 ```
 
-- (要確認) GitHubのユーザー名（login）が `satoshi-onga` で合っているか
+- GitHubユーザー名は `onc-limb` を使用する
 
 **作成ファイル:** `app/api/auth/[...nextauth]/route.ts`
 
@@ -174,7 +180,7 @@ export const config = {
 **作成ファイル:** `app/api/books/route.ts`
 
 - `GET`: 書籍一覧取得
-    - クエリパラメータ: `q`（全文検索）, `tag`（タグフィルタ）, `sort`（title|publishedYear）, `order`（asc|desc）
+    - クエリパラメータ: `tab`（read|unread）, `q`（全文検索）, `tag`（タグフィルタ）, `sort`（title|publishedYear）, `order`（asc|desc）
     - JOINでタグ情報を含めて返却
 - `POST`: 書籍登録（認証必須）
     - リクエストボディ: 書籍情報 + tagIds or tagNames

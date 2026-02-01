@@ -10,6 +10,7 @@ export interface Book {
     officialUrl: string | null
     memo: string | null
     tags: string[]
+    isRead: boolean
     createdAt: string
     updatedAt: string
 }
@@ -37,8 +38,14 @@ export function filterBooks(params: {
     tag?: string
     sort?: SortKey
     order?: SortOrder
+    isRead?: boolean
 }): Book[] {
     let books = getBooks()
+
+    // 既読/積読フィルタ
+    if (params.isRead !== undefined) {
+        books = books.filter((book) => book.isRead === params.isRead)
+    }
 
     // テキスト検索（タイトル・著者・メモを部分一致）
     if (params.q) {
