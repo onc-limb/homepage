@@ -1,5 +1,4 @@
-import Footer from "@/components/footer"
-import Header from "@/components/header"
+import SiteShell from "@/components/SiteShell"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
@@ -32,9 +31,7 @@ export default function RootLayout({
                     inter.variable
                 )}
             >
-                <Header />
-                {children}
-                <Footer />
+                <SiteShell>{children}</SiteShell>
             </body>
         </html>
     )

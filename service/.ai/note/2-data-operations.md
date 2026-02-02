@@ -9,6 +9,7 @@ Turso環境変数が未設定の場合、ビルドエラーを回避するため
 ### 2. middleware.tsのcookieチェック方式
 
 計画書の通りEdge環境制約のため、NextAuthのフルmiddleware（`export { auth as middleware }`）ではなく、セッションcookieの存在チェックのみで実装した。チェック対象のcookie名は：
+
 - `authjs.session-token`（HTTP環境）
 - `__Secure-authjs.session-token`（HTTPS環境）
 
@@ -17,6 +18,7 @@ NextAuth v5 beta.30のデフォルトcookie名に基づいている。バージ�
 ### 3. BooksContent.tsxのAPI経由フェッチへの切り替え
 
 クライアントコンポーネント（`BooksContent.tsx`）は`lib/books.ts`のDB直接クエリを呼べないため（DBモジュールがサーバー専用）、`/api/books`と`/api/tags`へのfetchに切り替えた。これにより：
+
 - フィルタ/検索のたびにAPIリクエストが発生する（元はクライアントサイドの同期処理だった）
 - 型定義を`lib/types/book.ts`に分離し、クライアント・サーバー双方から安全にimportできるようにした
 
@@ -27,6 +29,7 @@ NextAuth v5 beta.30のデフォルトcookie名に基づいている。バージ�
 ### 5. API books GETのフィルタ・ソート実装
 
 計画書のGET APIクエリパラメータ仕様に従い、以下をアプリケーション層で実装した：
+
 - `tab`（read/unread）: `isRead`フラグによるフィルタ
 - `q`: title, author, memoの部分一致（大文字小文字無視）
 - `tag`: タグ名完全一致フィルタ
@@ -37,6 +40,7 @@ SQLレベルのWHERE句やORDER BYではなく、全件取得後にJavaScriptで
 ### 6. タグのupsert方式（POST /api/books, PUT /api/books/[id]）
 
 書籍登録・更新時のタグ処理は、`tagNames`（文字列配列）をリクエストボディで受け取り：
+
 1. `INSERT ... ON CONFLICT DO NOTHING`で既存タグを重複エラーなく処理
 2. 直後にSELECTでタグIDを取得
 3. book_tagsに関連付け
