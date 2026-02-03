@@ -10,15 +10,21 @@ import Link from "next/link"
 import { useSearchParams, useRouter } from "next/navigation"
 import { useCallback, useEffect, useRef, useState } from "react"
 
-function BookCard({ book }: { book: Book }) {
+function BookCard({
+    book,
+    ogpImage,
+}: {
+    book: Book
+    ogpImage: string | null
+}) {
     const [memoExpanded, setMemoExpanded] = useState(false)
     return (
         <div className="border border-turquoise-200/60 bg-white/70 rounded-lg shadow-card hover:shadow-soft transition-all duration-200 overflow-hidden flex flex-row">
             {/* サムネイル */}
             <div className="w-28 md:w-32 shrink-0 bg-turquoise-50 flex items-center justify-center border-r border-turquoise-200/40 relative">
-                {book.ogpImageUrl ? (
+                {ogpImage ? (
                     <Image
-                        src={book.ogpImageUrl}
+                        src={ogpImage}
                         alt={book.title}
                         fill
                         className="object-contain p-2"
@@ -90,9 +96,11 @@ function useDebounce(value: string, delay: number): string {
 export default function BooksContent({
     initialBooks,
     allTags,
+    initialOgpImages,
 }: {
     initialBooks: Book[]
     allTags: string[]
+    initialOgpImages: Record<number, string | null>
 }) {
     const searchParams = useSearchParams()
     const router = useRouter()
@@ -230,7 +238,11 @@ export default function BooksContent({
                     {books.length > 0 ? (
                         <div className="grid gap-6 md:grid-cols-2">
                             {books.map((book) => (
-                                <BookCard key={book.id} book={book} />
+                                <BookCard
+                                    key={book.id}
+                                    book={book}
+                                    ogpImage={initialOgpImages[book.id] ?? null}
+                                />
                             ))}
                         </div>
                     ) : (

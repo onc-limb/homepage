@@ -127,15 +127,6 @@ export async function syncBookTags(
     )
 }
 
-// ---------- OGP ----------
-
-export async function updateOgpImageUrl(
-    bookId: number,
-    ogpImageUrl: string | null,
-): Promise<void> {
-    await db.update(books).set({ ogpImageUrl }).where(eq(books.id, bookId))
-}
-
 // ---------- Internal ----------
 
 async function fetchBookTags(

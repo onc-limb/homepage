@@ -3,9 +3,8 @@ import { db } from "@/lib/db"
 import { books } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { auth } from "@/lib/auth"
-import { getBookById, syncBookTags, updateOgpImageUrl } from "@/lib/books"
+import { getBookById, syncBookTags } from "@/lib/books"
 import { bookFormSchema } from "@/lib/validations/book"
-import { fetchOgpImage } from "@/lib/ogp"
 
 export async function GET(
     _request: NextRequest,
@@ -70,15 +69,6 @@ export async function PUT(
 
     if (!result) {
         return Response.json({ error: "Not found" }, { status: 404 })
-    }
-
-    // OGP画像を非同期で再取得
-    if (result.officialUrl) {
-        fetchOgpImage(result.officialUrl).then((url) =>
-            updateOgpImageUrl(result.id, url),
-        )
-    } else {
-        updateOgpImageUrl(result.id, null)
     }
 
     return Response.json(result)

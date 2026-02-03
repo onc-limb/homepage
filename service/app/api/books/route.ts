@@ -2,9 +2,8 @@ import { NextRequest } from "next/server"
 import { db } from "@/lib/db"
 import { books } from "@/lib/db/schema"
 import { auth } from "@/lib/auth"
-import { getBooks, syncBookTags, updateOgpImageUrl } from "@/lib/books"
+import { getBooks, syncBookTags } from "@/lib/books"
 import { bookFormSchema } from "@/lib/validations/book"
-import { fetchOgpImage } from "@/lib/ogp"
 import type { SortKey, SortOrder } from "@/lib/types/book"
 
 export async function GET(request: NextRequest) {
@@ -62,13 +61,6 @@ export async function POST(request: NextRequest) {
 
         return newBook
     })
-
-    // OGP画像を非同期で取得・保存
-    if (result.officialUrl) {
-        fetchOgpImage(result.officialUrl).then((url) =>
-            updateOgpImageUrl(result.id, url),
-        )
-    }
 
     return Response.json(result, { status: 201 })
 }

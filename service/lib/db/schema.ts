@@ -9,7 +9,6 @@ export const books = sqliteTable("books", {
     publishedYear: integer("published_year"),
     isbn: text("isbn"),
     officialUrl: text("official_url"),
-    ogpImageUrl: text("ogp_image_url"),
     memo: text("memo"),
     isRead: integer("is_read", { mode: "boolean" }).notNull().default(false),
     createdAt: text("created_at")
