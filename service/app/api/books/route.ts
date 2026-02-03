@@ -1,74 +1,26 @@
 import { NextRequest } from "next/server"
 import { db } from "@/lib/db"
-import { books, tags, bookTags } from "@/lib/db/schema"
-import { eq, like, or, asc, desc, sql } from "drizzle-orm"
+import { books } from "@/lib/db/schema"
 import { auth } from "@/lib/auth"
+import { getBooks, syncBookTags, updateOgpImageUrl } from "@/lib/books"
+import { bookFormSchema } from "@/lib/validations/book"
+import { fetchOgpImage } from "@/lib/ogp"
+import type { SortKey, SortOrder } from "@/lib/types/book"
 
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const tab = searchParams.get("tab")
     const q = searchParams.get("q")
     const tag = searchParams.get("tag")
-    const sort = searchParams.get("sort") ?? "title"
-    const order = searchParams.get("order") ?? "asc"
+    const sort = (searchParams.get("sort") as SortKey) ?? "title"
+    const order = (searchParams.get("order") as SortOrder) ?? "asc"
 
-    const allBooks = await db.query.books.findMany({
-        with: {},
-    })
-
-    // book_tagsとtagsをJOINして各書籍のタグを取得
-    const allBookTags = await db
-        .select({
-            bookId: bookTags.bookId,
-            tagName: tags.name,
-        })
-        .from(bookTags)
-        .innerJoin(tags, eq(bookTags.tagId, tags.id))
-
-    const tagsByBookId = new Map<number, string[]>()
-    for (const bt of allBookTags) {
-        const existing = tagsByBookId.get(bt.bookId) ?? []
-        existing.push(bt.tagName)
-        tagsByBookId.set(bt.bookId, existing)
-    }
-
-    let result = allBooks.map((book) => ({
-        ...book,
-        tags: tagsByBookId.get(book.id) ?? [],
-    }))
-
-    // 既読/積読フィルタ
-    if (tab === "read") {
-        result = result.filter((b) => b.isRead)
-    } else if (tab === "unread") {
-        result = result.filter((b) => !b.isRead)
-    }
-
-    // テキスト検索
-    if (q) {
-        const query = q.toLowerCase()
-        result = result.filter(
-            (b) =>
-                b.title.toLowerCase().includes(query) ||
-                b.author.toLowerCase().includes(query) ||
-                (b.memo && b.memo.toLowerCase().includes(query))
-        )
-    }
-
-    // タグフィルタ
-    if (tag) {
-        result = result.filter((b) => b.tags.includes(tag))
-    }
-
-    // ソート
-    result.sort((a, b) => {
-        let cmp = 0
-        if (sort === "title") {
-            cmp = a.title.localeCompare(b.title, "ja")
-        } else if (sort === "publishedYear") {
-            cmp = (a.publishedYear ?? 0) - (b.publishedYear ?? 0)
-        }
-        return order === "desc" ? -cmp : cmp
+    const result = await getBooks({
+        isRead: tab === "read" ? true : tab === "unread" ? false : undefined,
+        query: q || undefined,
+        tag: tag || undefined,
+        sort,
+        order,
     })
 
     return Response.json(result)
@@ -81,48 +33,42 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { tagNames, ...bookData } = body as {
-        title: string
-        author: string
-        publisher?: string
-        publishedYear?: number
-        isbn?: string
-        officialUrl?: string
-        memo?: string
-        isRead?: boolean
-        tagNames?: string[]
+    const parsed = bookFormSchema.safeParse(body)
+    if (!parsed.success) {
+        return Response.json(
+            { error: "Validation failed", details: parsed.error.flatten() },
+            { status: 400 },
+        )
     }
+
+    const { tagNames, ...data } = parsed.data
 
     const result = await db.transaction(async (tx) => {
         const [newBook] = await tx
             .insert(books)
             .values({
-                title: bookData.title,
-                author: bookData.author,
-                publisher: bookData.publisher ?? null,
-                publishedYear: bookData.publishedYear ?? null,
-                isbn: bookData.isbn ?? null,
-                officialUrl: bookData.officialUrl ?? null,
-                memo: bookData.memo ?? null,
-                isRead: bookData.isRead ?? false,
+                title: data.title,
+                author: data.author,
+                publisher: data.publisher || null,
+                publishedYear: data.publishedYear ?? null,
+                isbn: data.isbn || null,
+                officialUrl: data.officialUrl || null,
+                memo: data.memo || null,
+                isRead: data.isRead ?? false,
             })
             .returning()
 
-        if (tagNames && tagNames.length > 0) {
-            for (const name of tagNames) {
-                // upsertでタグを取得or作成
-                await tx.insert(tags).values({ name }).onConflictDoNothing()
-                const [tag] = await tx
-                    .select()
-                    .from(tags)
-                    .where(eq(tags.name, name))
-                    .limit(1)
-                await tx.insert(bookTags).values({ bookId: newBook.id, tagId: tag.id })
-            }
-        }
+        await syncBookTags(tx, newBook.id, tagNames)
 
         return newBook
     })
+
+    // OGP画像を非同期で取得・保存
+    if (result.officialUrl) {
+        fetchOgpImage(result.officialUrl).then((url) =>
+            updateOgpImageUrl(result.id, url),
+        )
+    }
 
     return Response.json(result, { status: 201 })
 }

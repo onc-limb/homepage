@@ -6,6 +6,7 @@ export interface Book {
     publishedYear: number | null
     isbn: string | null
     officialUrl: string | null
+    ogpImageUrl: string | null
     memo: string | null
     tags: string[]
     isRead: boolean

@@ -8,17 +8,17 @@ import { BookOpen, ExternalLink, ArrowUpDown } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useSearchParams, useRouter } from "next/navigation"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 
-function BookCard({ book, ogpImage }: { book: Book; ogpImage: string | null }) {
+function BookCard({ book }: { book: Book }) {
     const [memoExpanded, setMemoExpanded] = useState(false)
     return (
         <div className="border border-turquoise-200/60 bg-white/70 rounded-lg shadow-card hover:shadow-soft transition-all duration-200 overflow-hidden flex flex-row">
             {/* サムネイル */}
             <div className="w-28 md:w-32 shrink-0 bg-turquoise-50 flex items-center justify-center border-r border-turquoise-200/40 relative">
-                {ogpImage ? (
+                {book.ogpImageUrl ? (
                     <Image
-                        src={ogpImage}
+                        src={book.ogpImageUrl}
                         alt={book.title}
                         fill
                         className="object-contain p-2"
@@ -30,7 +30,6 @@ function BookCard({ book, ogpImage }: { book: Book; ogpImage: string | null }) {
             </div>
             {/* 情報 */}
             <div className="p-4 flex flex-col flex-1 min-w-0">
-                {/* タイトル */}
                 <h3 className="text-lg font-medium text-foreground tracking-elegant leading-snug mb-1">
                     {book.officialUrl ? (
                         <Link
@@ -46,25 +45,19 @@ function BookCard({ book, ogpImage }: { book: Book; ogpImage: string | null }) {
                         book.title
                     )}
                 </h3>
-                {/* 著者・出版年 */}
                 <p className="text-sm text-muted-foreground mb-3">
                     {book.author}
                     {book.publishedYear && ` (${book.publishedYear})`}
                 </p>
-                {/* タグ */}
                 {book.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1.5 mb-3">
                         {book.tags.map((tag) => (
-                            <span
-                                key={tag}
-                                className="text-xs px-2 py-0.5 bg-turquoise-100 text-turquoise-700 rounded"
-                            >
+                            <Badge key={tag} variant="secondary">
                                 {tag}
-                            </span>
+                            </Badge>
                         ))}
                     </div>
                 )}
-                {/* メモ */}
                 {book.memo && (
                     <div className="mt-auto">
                         <p
@@ -85,10 +78,21 @@ function BookCard({ book, ogpImage }: { book: Book; ogpImage: string | null }) {
     )
 }
 
+function useDebounce(value: string, delay: number): string {
+    const [debounced, setDebounced] = useState(value)
+    useEffect(() => {
+        const timer = setTimeout(() => setDebounced(value), delay)
+        return () => clearTimeout(timer)
+    }, [value, delay])
+    return debounced
+}
+
 export default function BooksContent({
-    ogpImages,
+    initialBooks,
+    allTags,
 }: {
-    ogpImages: Record<number, string | null>
+    initialBooks: Book[]
+    allTags: string[]
 }) {
     const searchParams = useSearchParams()
     const router = useRouter()
@@ -99,33 +103,9 @@ export default function BooksContent({
     const sort = (searchParams.get("sort") as SortKey) ?? "title"
     const order = (searchParams.get("order") as SortOrder) ?? "asc"
 
-    const [books, setBooks] = useState<Book[]>([])
-    const [allTags, setAllTags] = useState<string[]>([])
-
-    // タグ一覧を取得
-    useEffect(() => {
-        fetch("/api/tags")
-            .then((res) => res.json())
-            .then((data: { id: number; name: string }[]) =>
-                setAllTags(data.map((t) => t.name))
-            )
-            .catch(() => setAllTags([]))
-    }, [])
-
-    // 書籍一覧をAPI経由で取得
-    useEffect(() => {
-        const params = new URLSearchParams()
-        params.set("tab", tab)
-        if (q) params.set("q", q)
-        if (tag) params.set("tag", tag)
-        params.set("sort", sort)
-        params.set("order", order)
-
-        fetch(`/api/books?${params.toString()}`)
-            .then((res) => res.json())
-            .then((data: Book[]) => setBooks(data))
-            .catch(() => setBooks([]))
-    }, [tab, q, tag, sort, order])
+    const [books, setBooks] = useState<Book[]>(initialBooks)
+    const [searchInput, setSearchInput] = useState(q)
+    const debouncedQuery = useDebounce(searchInput, 300)
 
     const isRead = tab !== "unread"
 
@@ -139,8 +119,37 @@ export default function BooksContent({
             }
             router.push(`/books?${params.toString()}`, { scroll: false })
         },
-        [searchParams, router]
+        [searchParams, router],
     )
+
+    // 初回レンダリングかどうかを追跡
+    const isInitialRender = useRef(true)
+
+    // debounceされた検索クエリをURLに反映
+    useEffect(() => {
+        if (isInitialRender.current) return
+        updateParam("q", debouncedQuery)
+    }, [debouncedQuery, updateParam])
+
+    // フィルタ変更時にAPIで書籍を再取得
+    useEffect(() => {
+        if (isInitialRender.current) {
+            isInitialRender.current = false
+            return
+        }
+
+        const params = new URLSearchParams()
+        params.set("tab", tab)
+        if (q) params.set("q", q)
+        if (tag) params.set("tag", tag)
+        params.set("sort", sort)
+        params.set("order", order)
+
+        fetch(`/api/books?${params.toString()}`)
+            .then((res) => res.json())
+            .then((data: Book[]) => setBooks(data))
+            .catch(() => setBooks([]))
+    }, [tab, q, tag, sort, order])
 
     const toggleSort = useCallback(() => {
         const params = new URLSearchParams(searchParams.toString())
@@ -174,12 +183,11 @@ export default function BooksContent({
             <section className="w-full py-8">
                 <div className="container px-4 md:px-6 mx-auto max-w-5xl">
                     <div className="flex flex-col gap-4">
-                        {/* 検索 + ソート */}
                         <div className="flex gap-3 items-center">
                             <Input
                                 placeholder="タイトル・著者・メモで検索..."
-                                value={q}
-                                onChange={(e) => updateParam("q", e.target.value)}
+                                value={searchInput}
+                                onChange={(e) => setSearchInput(e.target.value)}
                                 className="flex-1"
                             />
                             <button
@@ -190,7 +198,6 @@ export default function BooksContent({
                                 {sort === "title" ? "タイトル順" : "出版年順"}
                             </button>
                         </div>
-                        {/* タグフィルタ */}
                         {allTags.length > 0 && (
                             <div className="flex flex-wrap gap-2">
                                 <Badge
@@ -223,11 +230,7 @@ export default function BooksContent({
                     {books.length > 0 ? (
                         <div className="grid gap-6 md:grid-cols-2">
                             {books.map((book) => (
-                                <BookCard
-                                    key={book.id}
-                                    book={book}
-                                    ogpImage={ogpImages[book.id] ?? null}
-                                />
+                                <BookCard key={book.id} book={book} />
                             ))}
                         </div>
                     ) : (

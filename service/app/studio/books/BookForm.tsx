@@ -16,6 +16,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { Checkbox } from "@/components/ui/checkbox"
 import { TagInput } from "./TagInput"
 
 const CURRENT_YEAR = new Date().getFullYear()
@@ -176,12 +177,12 @@ export function BookForm({ defaultValues, bookId, availableTags }: BookFormProps
             </div>
 
             <div className="flex items-center gap-2">
-                <input
-                    type="checkbox"
+                <Checkbox
                     id="isRead"
                     checked={isRead}
-                    onChange={(e) => setValue("isRead", e.target.checked)}
-                    className="h-4 w-4 rounded border-slate-300"
+                    onCheckedChange={(checked) =>
+                        setValue("isRead", checked === true)
+                    }
                 />
                 <Label htmlFor="isRead" className="cursor-pointer">
                     既読

@@ -1,39 +1,29 @@
 import { NextRequest } from "next/server"
 import { db } from "@/lib/db"
-import { books, tags, bookTags } from "@/lib/db/schema"
+import { books } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { auth } from "@/lib/auth"
+import { getBookById, syncBookTags, updateOgpImageUrl } from "@/lib/books"
+import { bookFormSchema } from "@/lib/validations/book"
+import { fetchOgpImage } from "@/lib/ogp"
 
 export async function GET(
     _request: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
+    { params }: { params: Promise<{ id: string }> },
 ) {
     const { id } = await params
-    const bookId = Number(id)
-
-    const book = await db.query.books.findFirst({
-        where: eq(books.id, bookId),
-    })
+    const book = await getBookById(Number(id))
 
     if (!book) {
         return Response.json({ error: "Not found" }, { status: 404 })
     }
 
-    const bookTagRows = await db
-        .select({ tagName: tags.name })
-        .from(bookTags)
-        .innerJoin(tags, eq(bookTags.tagId, tags.id))
-        .where(eq(bookTags.bookId, bookId))
-
-    return Response.json({
-        ...book,
-        tags: bookTagRows.map((t) => t.tagName),
-    })
+    return Response.json(book)
 }
 
 export async function PUT(
     request: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
+    { params }: { params: Promise<{ id: string }> },
 ) {
     const session = await auth()
     if (!session) {
@@ -43,46 +33,37 @@ export async function PUT(
     const { id } = await params
     const bookId = Number(id)
     const body = await request.json()
-    const { tagNames, ...bookData } = body as {
-        title?: string
-        author?: string
-        publisher?: string
-        publishedYear?: number
-        isbn?: string
-        officialUrl?: string
-        memo?: string
-        isRead?: boolean
-        tagNames?: string[]
+
+    const parsed = bookFormSchema.safeParse(body)
+    if (!parsed.success) {
+        return Response.json(
+            { error: "Validation failed", details: parsed.error.flatten() },
+            { status: 400 },
+        )
     }
+
+    const { tagNames, ...data } = parsed.data
 
     const result = await db.transaction(async (tx) => {
         const [updated] = await tx
             .update(books)
             .set({
-                ...bookData,
+                title: data.title,
+                author: data.author,
+                publisher: data.publisher || null,
+                publishedYear: data.publishedYear ?? null,
+                isbn: data.isbn || null,
+                officialUrl: data.officialUrl || null,
+                memo: data.memo || null,
+                isRead: data.isRead ?? false,
                 updatedAt: new Date().toISOString(),
             })
             .where(eq(books.id, bookId))
             .returning()
 
-        if (!updated) {
-            return null
-        }
+        if (!updated) return null
 
-        if (tagNames !== undefined) {
-            // 洗い替え: DELETE → INSERT
-            await tx.delete(bookTags).where(eq(bookTags.bookId, bookId))
-
-            for (const name of tagNames) {
-                await tx.insert(tags).values({ name }).onConflictDoNothing()
-                const [tag] = await tx
-                    .select()
-                    .from(tags)
-                    .where(eq(tags.name, name))
-                    .limit(1)
-                await tx.insert(bookTags).values({ bookId: updated.id, tagId: tag.id })
-            }
-        }
+        await syncBookTags(tx, bookId, tagNames)
 
         return updated
     })
@@ -91,12 +72,21 @@ export async function PUT(
         return Response.json({ error: "Not found" }, { status: 404 })
     }
 
+    // OGP画像を非同期で再取得
+    if (result.officialUrl) {
+        fetchOgpImage(result.officialUrl).then((url) =>
+            updateOgpImageUrl(result.id, url),
+        )
+    } else {
+        updateOgpImageUrl(result.id, null)
+    }
+
     return Response.json(result)
 }
 
 export async function DELETE(
     _request: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
+    { params }: { params: Promise<{ id: string }> },
 ) {
     const session = await auth()
     if (!session) {
@@ -106,7 +96,10 @@ export async function DELETE(
     const { id } = await params
     const bookId = Number(id)
 
-    const [deleted] = await db.delete(books).where(eq(books.id, bookId)).returning()
+    const [deleted] = await db
+        .delete(books)
+        .where(eq(books.id, bookId))
+        .returning()
 
     if (!deleted) {
         return Response.json({ error: "Not found" }, { status: 404 })
