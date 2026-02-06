@@ -4,13 +4,11 @@ import { extractFlatListItems } from "./markdown-utils"
 // docs/skills配下のすべての.mdファイルを動的にimport
 // @ts-expect-error require.context is webpack specific
 const requireContext = require.context("../docs/skills", true, /\.md$/)
-const skillMarkdowns: string[] = requireContext
-    .keys()
-    .map((key: string) => {
-        const mdModule = requireContext(key)
-        // raw-loaderはデフォルトエクスポートとして文字列を返す
-        return typeof mdModule === "string" ? mdModule : mdModule.default || mdModule
-    })
+const skillMarkdowns: string[] = requireContext.keys().map((key: string) => {
+    const mdModule = requireContext(key)
+    // raw-loaderはデフォルトエクスポートとして文字列を返す
+    return typeof mdModule === "string" ? mdModule : mdModule.default || mdModule
+})
 export type SkillCategory =
     | "language" // プログラミング言語
     | "framework" // フレームワーク・ライブラリ
@@ -169,8 +167,10 @@ function parseSkillMarkdown(rawContent: string): Skill {
 }
 // すべてのスキルを取得
 export function getSkills(): Skill[] {
-    const allSkills = skillMarkdowns.map(parseSkillMarkdown).filter((skill) => skill.publish)
-    
+    const allSkills = skillMarkdowns
+        .map(parseSkillMarkdown)
+        .filter((skill) => skill.publish)
+
     // スキル名でユニーク化
     // Note: Webpackの require.context() がビルド時に Server/Client 両方のバンドルで評価され、
     // skillMarkdowns 配列に同じファイルが複数回含まれる場合があるため、
@@ -178,7 +178,7 @@ export function getSkills(): Skill[] {
     const uniqueSkills = Array.from(
         new Map(allSkills.map((skill) => [skill.name, skill])).values()
     )
-    
+
     return uniqueSkills
 }
 // カテゴリ別にグループ化されたスキルを取得

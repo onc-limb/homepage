@@ -26,6 +26,11 @@ export const NAV_ITEMS: NavItem[] = [
         description: "制作実績",
     },
     {
+        href: "/books",
+        label: "Books",
+        description: "読んだ書籍の一覧",
+    },
+    {
         href: "/news",
         label: "News",
         description: "技術ニュース",
