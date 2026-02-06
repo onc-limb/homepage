@@ -2,14 +2,14 @@ import { sqliteTable, text, integer, primaryKey } from "drizzle-orm/sqlite-core"
 import { sql } from "drizzle-orm"
 
 export const books = sqliteTable("books", {
-    id: integer("id").primaryKey({ autoIncrement: true }),
-    title: text("title").notNull(),
-    author: text("author").notNull(),
-    publisher: text("publisher"),
+    id: integer().primaryKey({ autoIncrement: true }),
+    title: text().notNull(),
+    author: text().notNull(),
+    publisher: text(),
     publishedYear: integer("published_year"),
-    isbn: text("isbn"),
+    isbn: text(),
     officialUrl: text("official_url"),
-    memo: text("memo"),
+    memo: text(),
     isRead: integer("is_read", { mode: "boolean" }).notNull().default(false),
     createdAt: text("created_at")
         .notNull()
@@ -20,8 +20,8 @@ export const books = sqliteTable("books", {
 })
 
 export const tags = sqliteTable("tags", {
-    id: integer("id").primaryKey({ autoIncrement: true }),
-    name: text("name").notNull().unique(),
+    id: integer().primaryKey({ autoIncrement: true }),
+    name: text().notNull().unique(),
 })
 
 export const bookTags = sqliteTable(
@@ -34,7 +34,7 @@ export const bookTags = sqliteTable(
             .notNull()
             .references(() => tags.id, { onDelete: "cascade" }),
     },
-    (table) => ({
-        pk: primaryKey({ columns: [table.bookId, table.tagId] }),
-    })
+    (table) => [
+        primaryKey({ columns: [table.bookId, table.tagId] }),
+    ]
 )
