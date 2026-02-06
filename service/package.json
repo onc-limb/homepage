@@ -10,7 +10,9 @@
         "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
         "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
         "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
-        "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
+        "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
+        "db:push": "drizzle-kit push",
+        "db:seed": "tsx --env-file=.env.local scripts/seed.ts"
     },
     "dependencies": {
         "@auth/drizzle-adapter": "^1.11.1",
