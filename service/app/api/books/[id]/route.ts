@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm"
 import { auth } from "@/lib/auth"
 import { getBookById, syncBookTags } from "@/lib/books"
 import { bookFormSchema } from "@/lib/validations/book"
+import { fetchOgpImage } from "@/lib/ogp"
 
 export async function GET(
     _request: NextRequest,
@@ -43,6 +44,10 @@ export async function PUT(
 
     const { tagNames, ...data } = parsed.data
 
+    const ogpImage = data.officialUrl
+        ? await fetchOgpImage(data.officialUrl)
+        : null
+
     const result = await db.transaction(async (tx) => {
         const [updated] = await tx
             .update(books)
@@ -53,6 +58,7 @@ export async function PUT(
                 publishedYear: data.publishedYear ?? null,
                 isbn: data.isbn || null,
                 officialUrl: data.officialUrl || null,
+                ogpImage,
                 memo: data.memo || null,
                 isRead: data.isRead ?? false,
                 updatedAt: new Date().toISOString(),
