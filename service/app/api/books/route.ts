@@ -4,6 +4,7 @@ import { books } from "@/lib/db/schema"
 import { auth } from "@/lib/auth"
 import { getBooks, syncBookTags } from "@/lib/books"
 import { bookFormSchema } from "@/lib/validations/book"
+import { fetchOgpImage } from "@/lib/ogp"
 import type { SortKey, SortOrder } from "@/lib/types/book"
 
 export async function GET(request: NextRequest) {
@@ -42,6 +43,10 @@ export async function POST(request: NextRequest) {
 
     const { tagNames, ...data } = parsed.data
 
+    const ogpImage = data.officialUrl
+        ? await fetchOgpImage(data.officialUrl)
+        : null
+
     const result = await db.transaction(async (tx) => {
         const [newBook] = await tx
             .insert(books)
@@ -52,6 +57,7 @@ export async function POST(request: NextRequest) {
                 publishedYear: data.publishedYear ?? null,
                 isbn: data.isbn || null,
                 officialUrl: data.officialUrl || null,
+                ogpImage,
                 memo: data.memo || null,
                 isRead: data.isRead ?? false,
             })
