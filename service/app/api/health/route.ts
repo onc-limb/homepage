@@ -31,9 +31,34 @@ export async function GET(request: NextRequest) {
         diagnostics.errorMessage = err.message
         diagnostics.errorName = err.name
         diagnostics.errorCode = err.code
+        diagnostics.errorStack = err.stack
         diagnostics.errorCause = err.cause
             ? String(err.cause)
             : undefined
+    }
+
+    // Also test raw fetch to Turso to isolate the issue
+    if (url) {
+        try {
+            const httpUrl = url.replace("libsql://", "https://")
+            const resp = await fetch(`${httpUrl}/v2/pipeline`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
+                body: JSON.stringify({
+                    requests: [
+                        { type: "execute", stmt: { sql: "SELECT 1" } },
+                        { type: "close" },
+                    ],
+                }),
+            })
+            diagnostics.rawFetchStatus = resp.status
+            diagnostics.rawFetchBody = await resp.text()
+        } catch (e: unknown) {
+            diagnostics.rawFetchError = (e as Error).message
+        }
     }
 
     return Response.json(diagnostics)
