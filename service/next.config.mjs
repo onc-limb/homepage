@@ -31,7 +31,7 @@ const nextConfig = {
         if (process.env.NODE_ENV === 'production') {
             config.resolve.alias = {
                 ...config.resolve.alias,
-                '@libsql/client$': false,
+                '@libsql/client$': '@libsql/client/web',
             };
         }
 
