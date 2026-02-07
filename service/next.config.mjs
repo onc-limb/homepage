@@ -1,3 +1,8 @@
+import { fileURLToPath } from 'url';
+import { resolve, dirname } from 'path';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     outputFileTracingIncludes: {
@@ -32,6 +37,7 @@ const nextConfig = {
             config.resolve.alias = {
                 ...config.resolve.alias,
                 '@libsql/client$': '@libsql/client/web',
+                'cross-fetch': resolve(__dirname, 'lib/cross-fetch-shim.js'),
             };
         }
 
