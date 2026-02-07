@@ -1,17 +1,20 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    experimental: {
-        outputFileTracingIncludes: {
-            '/*': [
-                './node_modules/.pnpm/@libsql+isomorphic-ws@*/node_modules/@libsql/isomorphic-ws/web.mjs',
-                './node_modules/.pnpm/@libsql+isomorphic-ws@*/node_modules/@libsql/isomorphic-ws/web.cjs',
-            ],
-        },
+    outputFileTracingIncludes: {
+        '/*': [
+            './node_modules/.pnpm/@libsql+isomorphic-ws@*/node_modules/@libsql/isomorphic-ws/web.mjs',
+            './node_modules/.pnpm/@libsql+isomorphic-ws@*/node_modules/@libsql/isomorphic-ws/web.cjs',
+        ],
     },
     images: {
+        unoptimized: true,
         remotePatterns: [
             {
                 protocol: "https",
+                hostname: "**",
+            },
+            {
+                protocol: "http",
                 hostname: "**",
             },
         ],

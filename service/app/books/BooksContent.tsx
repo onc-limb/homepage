@@ -96,11 +96,9 @@ function useDebounce(value: string, delay: number): string {
 export default function BooksContent({
     initialBooks,
     allTags,
-    initialOgpImages,
 }: {
     initialBooks: Book[]
     allTags: string[]
-    initialOgpImages: Record<number, string | null>
 }) {
     const searchParams = useSearchParams()
     const router = useRouter()
@@ -241,7 +239,7 @@ export default function BooksContent({
                                 <BookCard
                                     key={book.id}
                                     book={book}
-                                    ogpImage={initialOgpImages[book.id] ?? null}
+                                    ogpImage={book.ogpImage}
                                 />
                             ))}
                         </div>

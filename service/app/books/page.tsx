@@ -1,32 +1,14 @@
 import { Suspense } from "react"
 import BooksContent from "./BooksContent"
 import { getBooks, getBookTags } from "@/lib/books"
-import { fetchOgpImage } from "@/lib/ogp"
 
-export const dynamic = "force-dynamic"
-
-async function fetchOgpImages(
-    books: { id: number; officialUrl: string | null }[],
-): Promise<Record<number, string | null>> {
-    const entries = await Promise.all(
-        books.map(async (book) => {
-            const image = book.officialUrl
-                ? await fetchOgpImage(book.officialUrl)
-                : null
-            return [book.id, image] as const
-        }),
-    )
-    return Object.fromEntries(entries)
-}
+export const revalidate = 60
 
 export default async function BooksPage() {
-    const [initialBooks, allTags, allBooks] = await Promise.all([
+    const [initialBooks, allTags] = await Promise.all([
         getBooks({ isRead: true, sort: "title", order: "asc" }),
         getBookTags(),
-        getBooks(), // 全書籍（OGP画像取得用）
     ])
-
-    const ogpImages = await fetchOgpImages(allBooks)
 
     return (
         <main className="flex-1">
@@ -53,7 +35,6 @@ export default async function BooksPage() {
                 <BooksContent
                     initialBooks={initialBooks}
                     allTags={allTags}
-                    initialOgpImages={ogpImages}
                 />
             </Suspense>
         </main>
