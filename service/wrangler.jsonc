@@ -3,6 +3,7 @@
     "name": "onc-limb",
     "compatibility_date": "2025-10-01",
     "compatibility_flags": ["nodejs_compat"],
+    "minify": true,
     "build": {
         "command": "opennextjs-cloudflare build"
     },
