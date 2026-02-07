@@ -11,5 +11,11 @@
     "assets": {
         "directory": ".open-next/assets",
         "binding": "ASSETS"
-    }
+    },
+    "observability": {
+        "logs": {
+            "enabled": false,
+            "invocation_logs": true
+        }
+    } 
 }
