@@ -19,7 +19,7 @@ function createDb(): Database {
         throw new Error("TURSO_DATABASE_URL is required in production")
     }
 
-    return drizzle(createClient({ url, authToken: authToken || undefined }), { schema })
+    return drizzle(createClient({ url, authToken: authToken || undefined, fetch: globalThis.fetch }), { schema })
 }
 
 // ビルド時のモジュール評価で createDb() が実行されないよう遅延初期化
