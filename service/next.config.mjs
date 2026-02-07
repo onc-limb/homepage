@@ -1,8 +1,3 @@
-import { fileURLToPath } from 'url';
-import { resolve, dirname } from 'path';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     outputFileTracingIncludes: {
@@ -29,17 +24,6 @@ const nextConfig = {
             test: /\.md$/,
             use: 'raw-loader',
         });
-
-        // 本番ビルドでは @libsql/client (Node.js版) をバンドルから除外
-        // ローカル開発時のみ require() で読み込まれる
-        // $ 付きで完全一致のみマッチし、@libsql/client/web には影響しない
-        if (process.env.NODE_ENV === 'production') {
-            config.resolve.alias = {
-                ...config.resolve.alias,
-                '@libsql/client$': '@libsql/client/web',
-                'cross-fetch': resolve(__dirname, 'lib/cross-fetch-shim.js'),
-            };
-        }
 
         return config;
     },
