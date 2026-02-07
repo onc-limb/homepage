@@ -25,6 +25,16 @@ const nextConfig = {
             use: 'raw-loader',
         });
 
+        // 本番ビルドでは @libsql/client (Node.js版) をバンドルから除外
+        // ローカル開発時のみ require() で読み込まれる
+        // $ 付きで完全一致のみマッチし、@libsql/client/web には影響しない
+        if (process.env.NODE_ENV === 'production') {
+            config.resolve.alias = {
+                ...config.resolve.alias,
+                '@libsql/client$': false,
+            };
+        }
+
         return config;
     },
 };

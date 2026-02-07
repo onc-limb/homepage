@@ -2,7 +2,7 @@ import { Suspense } from "react"
 import BooksContent from "./BooksContent"
 import { getBooks, getBookTags } from "@/lib/books"
 
-export const dynamic = "force-dynamic"
+export const revalidate = 60
 
 export default async function BooksPage() {
     const [initialBooks, allTags] = await Promise.all([
