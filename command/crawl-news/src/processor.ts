@@ -49,6 +49,7 @@ export async function fetchAndFilterFeed(
     link: item.link || "",
     content: item.contentSnippet || item.content || "",
     source: feedConfig.name,
+    publishedAt: item.isoDate || item.pubDate || new Date().toISOString(),
   }));
 
   return {
@@ -83,6 +84,7 @@ async function summarizeArticle(pending: PendingArticle): Promise<Article> {
     link: pending.link,
     source: pending.source,
     summary,
+    publishedAt: pending.publishedAt,
   };
 }
 
@@ -95,6 +97,7 @@ function createTitleOnlyArticle(pending: PendingArticle): Article {
     link: pending.link,
     source: pending.source,
     summary: "",
+    publishedAt: pending.publishedAt,
     summaryOnly: true,
   };
 }

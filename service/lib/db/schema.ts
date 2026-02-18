@@ -39,3 +39,17 @@ export const bookTags = sqliteTable(
         primaryKey({ columns: [table.bookId, table.tagId] }),
     ]
 )
+
+export const news = sqliteTable("news", {
+    id: integer().primaryKey({ autoIncrement: true }),
+    title: text().notNull(),
+    source: text().notNull(),
+    url: text().notNull().unique(),
+    summary: text(),
+    publishedAt: text("published_at").notNull(),
+    crawledAt: text("crawled_at")
+        .notNull()
+        .default(sql`(datetime('now'))`),
+    isPublished: integer("is_published", { mode: "boolean" }).notNull().default(true),
+    crawlDate: text("crawl_date").notNull(),
+})

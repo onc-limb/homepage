@@ -1,12 +1,22 @@
 import type { Article, ProcessResult, PendingArticle } from "./types.js";
-import { loadConfig, ensureOutputDirectory } from "./config.js";
-import { saveAllArticlesAsMarkdown } from "./markdown.js";
+import { loadConfig } from "./config.js";
+import { db, news } from "./db.js";
+import { sql } from "drizzle-orm";
 import {
   fetchAllFeeds,
   summarizeAllArticles,
   convertToProcessResult,
   MAX_SUMMARY_COUNT,
 } from "./processor.js";
+
+/**
+ * 日本時間（JST）の日付を YYYY-MM-DD 形式で取得する
+ */
+function getJSTDateString(): string {
+  const now = new Date();
+  const jstDate = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+  return jstDate.toISOString().split("T")[0];
+}
 
 /**
  * メイン処理
@@ -18,9 +28,15 @@ async function main(): Promise<void> {
   const config = await loadConfig();
   console.log(`📋 ${config.feeds.length}件のフィードを取得します\n`);
 
-  // 出力ディレクトリを作成
-  const { outputDir, date } = await ensureOutputDirectory();
-  console.log(`📁 出力先: service/docs/crawl-news/${date}.md\n`);
+  const crawlDate = getJSTDateString();
+
+  // DB メンテナンス: 3ヶ月以上前のレコードを削除
+  await db.run(sql`DELETE FROM news WHERE crawl_date < date('now', '-3 months')`);
+  console.log("🗑️ 3ヶ月以上前のレコードを削除しました\n");
+
+  // DB メンテナンス: 31日以上前のレコードの isPublished を false に更新
+  await db.run(sql`UPDATE news SET is_published = 0 WHERE crawl_date < date('now', '-31 days') AND is_published = 1`);
+  console.log("📅 31日以上前のレコードを非公開にしました\n");
 
   // フェーズ1: 全フィードを並列で取得
   console.log("📡 フィードを並列取得中...\n");
@@ -92,10 +108,24 @@ async function main(): Promise<void> {
     }
   }
 
-  // すべての記事を1つのファイルに保存
+  // 記事をDBに保存
   if (allArticles.length > 0) {
-    const fileName = await saveAllArticlesAsMarkdown(outputDir, date, allArticles);
-    console.log(`📄 ${fileName} に保存しました`);
+    let insertedCount = 0;
+    for (const article of allArticles) {
+      const result = await db.insert(news).values({
+        title: article.title,
+        source: article.source,
+        url: article.link,
+        summary: article.summary || null,
+        publishedAt: article.publishedAt,
+        crawlDate,
+        isPublished: true,
+      }).onConflictDoNothing();
+      if (result.rowsAffected > 0) {
+        insertedCount++;
+      }
+    }
+    console.log(`💾 ${insertedCount}件の記事をDBに保存しました（${allArticles.length - insertedCount}件は重複のためスキップ）`);
   }
 
   // 結果をステータス別に分類
@@ -108,11 +138,10 @@ async function main(): Promise<void> {
   console.log("\n");
   console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
   console.log(
-    `📊 結果: ${saved.length}サイトから ${allArticles.length}件の記事を保存`
+    `📊 結果: ${saved.length}サイトから ${allArticles.length}件の記事を処理`
   );
   console.log(`   (スキップ ${skipped.length}件 / 失敗 ${failed.length}件)`);
   console.log(`⏱️ 総処理時間: ${totalTime}秒`);
-  console.log(`📁 出力先: service/docs/crawl-news/${date}.md`);
   console.log("✨ 完了しました！");
 }
 

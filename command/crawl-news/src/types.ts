@@ -57,6 +57,8 @@ export interface Article {
   link: string;
   source: string;
   summary: string;
+  /** RSSフィードの公開日時（ISO文字列） */
+  publishedAt: string;
   /** 要約なし（タイトルとリンクのみ）かどうか */
   summaryOnly?: boolean;
 }
@@ -73,14 +75,6 @@ export interface ProcessResult {
 }
 
 /**
- * 出力ディレクトリ情報
- */
-export interface OutputDirInfo {
-  outputDir: string;
-  date: string;
-}
-
-/**
  * 要約待ちの記事データ（要約前）
  */
 export interface PendingArticle {
@@ -88,6 +82,8 @@ export interface PendingArticle {
   link: string;
   content: string;
   source: string;
+  /** RSSフィードの公開日時（ISO文字列） */
+  publishedAt: string;
 }
 
 /**

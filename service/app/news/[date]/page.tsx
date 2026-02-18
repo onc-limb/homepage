@@ -1,22 +1,24 @@
-import Markdown from "react-markdown"
-import remarkGfm from "remark-gfm"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { getNewsContent, getAllNewsDates } from "@/lib/news"
+import { getNewsByDate, getAllNewsDates } from "@/lib/news"
 import { Button } from "@/components/ui/button"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+
+export const revalidate = 36000
+
 interface NewsDetailProps {
     params: Promise<{ date: string }>
 }
 export async function generateStaticParams() {
-    const dates = getAllNewsDates()
+    const dates = await getAllNewsDates()
     return dates.map((date) => ({
         date,
     }))
 }
 const NewsDetail = async ({ params }: NewsDetailProps) => {
     const { date } = await params
-    const news = getNewsContent(date)
-    if (!news) {
+    const articles = await getNewsByDate(date)
+    if (articles.length === 0) {
         notFound()
     }
     return (
@@ -28,28 +30,40 @@ const NewsDetail = async ({ params }: NewsDetailProps) => {
                     </Link>
                 </Button>
             </div>
-            <article className="w-full pb-12 md:pb-24 lg:pb-32">
+            <section className="w-full pb-12 md:pb-24 lg:pb-32">
                 <div className="container px-4 md:px-6 lg:max-w-4xl">
-                    <div className="markdown prose prose-lg dark:prose-invert prose-readable max-w-none">
-                        <Markdown
-                            remarkPlugins={[remarkGfm]}
-                            components={{
-                                a: ({ href, children }) => (
+                    <h2 className="text-3xl font-light tracking-elegant sm:text-4xl text-foreground mb-8">
+                        {date}
+                    </h2>
+                    <div className="grid gap-4">
+                        {articles.map((article) => (
+                            <Card key={article.url}>
+                                <CardHeader>
+                                    <CardTitle className="text-lg font-light tracking-elegant">
+                                        {article.title}
+                                    </CardTitle>
+                                    <CardDescription className="text-muted-foreground/70 tracking-elegant">
+                                        {article.source}
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="text-sm text-muted-foreground font-light tracking-elegant mb-4">
+                                        {article.summary ?? "要約なし"}
+                                    </p>
                                     <a
-                                        href={href}
+                                        href={article.url}
                                         target="_blank"
                                         rel="noopener noreferrer"
+                                        className="text-sm text-turquoise-600 hover:underline tracking-elegant"
                                     >
-                                        {children}
+                                        元記事を読む →
                                     </a>
-                                ),
-                            }}
-                        >
-                            {news.content}
-                        </Markdown>
+                                </CardContent>
+                            </Card>
+                        ))}
                     </div>
                 </div>
-            </article>
+            </section>
         </>
     )
 }
