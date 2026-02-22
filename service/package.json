@@ -38,7 +38,7 @@
         "gray-matter": "^4.0.3",
         "lucide-react": "^0.544.0",
         "motion": "^12.23.26",
-        "next": "^15.5.9",
+        "next": "^15.5.10",
         "next-auth": "5.0.0-beta.30",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
@@ -73,6 +73,8 @@
     "pnpm": {
         "overrides": {
             "minimatch@>=10.0.0": ">=10.2.1"
+            "qs": ">=6.14.2"
+            "fast-xml-parser": ">=5.3.6"
         }
     }
 }
