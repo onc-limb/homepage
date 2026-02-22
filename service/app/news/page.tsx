@@ -1,8 +1,11 @@
 import Link from "next/link"
 import { getNewsDates } from "@/lib/news"
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-export default function NewsListPage() {
-    const newsList = getNewsDates()
+
+export const revalidate = 36000
+
+export default async function NewsListPage() {
+    const newsList = await getNewsDates()
     return (
         <section className="w-full py-16 md:py-24">
             <div className="container px-4 md:px-6 mx-auto">
@@ -36,7 +39,7 @@ export default function NewsListPage() {
                                             {news.date}
                                         </CardTitle>
                                         <CardDescription className="text-muted-foreground/70 tracking-elegant">
-                                            技術ニュース
+                                            {news.count}件の記事
                                         </CardDescription>
                                     </CardHeader>
                                 </Card>

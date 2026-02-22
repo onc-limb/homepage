@@ -4,3 +4,4 @@ back/tmp/
 
 sample/
 dynamodb-local-storage/
+.ol-soldiers/

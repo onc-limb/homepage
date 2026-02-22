@@ -7,7 +7,7 @@ on:
   workflow_dispatch: # 手動実行も可能
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   crawl-news:
@@ -35,22 +35,6 @@ jobs:
         working-directory: command/crawl-news
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
         run: pnpm run crawl
-
-      - name: Check for changes
-        id: git-check
-        run: |
-          git add -A
-          if git diff --staged --quiet; then
-            echo "changes=false" >> $GITHUB_OUTPUT
-          else
-            echo "changes=true" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Commit and push changes
-        if: steps.git-check.outputs.changes == 'true'
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git commit -m "chore: add crawled news $(date +%Y-%m-%d)"
-          git push origin main
