@@ -22,7 +22,7 @@ const nextConfig = {
     webpack: (config) => {
         config.module.rules.push({
             test: /\.md$/,
-            use: 'raw-loader',
+            type: 'asset/source',
         });
 
         // 本番ビルドでは @libsql/client (Node.js版) をバンドルから除外
