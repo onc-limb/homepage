@@ -51,7 +51,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.8,
     }))
     // ニュース日付別ページ
-    const newsDates = getAllNewsDates()
+    const newsDates = await getAllNewsDates()
     const newsPages: MetadataRoute.Sitemap = newsDates.map((date) => ({
         url: `${baseUrl}/news/${date}`,
         lastModified: new Date(date),
