@@ -199,13 +199,6 @@
       "description": "Hacker Newsの人気記事"
     },
     {
-      "name": "Dev.to",
-      "url": "https://dev.to/feed",
-      "type": "aggregator",
-      "category": "general",
-      "description": "Dev.toのトレンド記事"
-    },
-    {
       "name": "Zenn",
       "url": "https://zenn.dev/feed",
       "type": "aggregator",
@@ -247,6 +240,27 @@
       "type": "newsletter",
       "category": "general",
       "description": "エンジニアリング組織、アーキテクチャ、キャリア"
+    },
+    {
+      "name": "JVN",
+      "url": "https://jvn.jp/rss/jvn.rdf",
+      "type": "news",
+      "category": "security",
+      "description": "Japan Vulnerability Notes（脆弱性対策情報）"
+    },
+    {
+      "name": "Security NEXT",
+      "url": "https://www.security-next.com/feed",
+      "type": "news",
+      "category": "security",
+      "description": "セキュリティに関する最新ニュース"
+    },
+    {
+      "name": "Google Online Security Blog",
+      "url": "https://security.googleblog.com/feeds/posts/default",
+      "type": "blog",
+      "category": "security",
+      "description": "Googleセキュリティチームによるセキュリティ分析・対策情報"
     }
   ]
 }
