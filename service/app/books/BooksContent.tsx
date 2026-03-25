@@ -9,6 +9,8 @@ import Image from "next/image"
 import Link from "next/link"
 import { useSearchParams, useRouter } from "next/navigation"
 import { useCallback, useEffect, useRef, useState } from "react"
+import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 
 function BookCard({
     book,
@@ -66,11 +68,13 @@ function BookCard({
                 )}
                 {book.memo && (
                     <div className="mt-auto">
-                        <p
-                            className={`text-sm text-foreground/70 leading-relaxed ${memoExpanded ? "" : "line-clamp-3"}`}
+                        <div
+                            className={`text-sm text-foreground/70 leading-relaxed prose prose-sm prose-readable max-w-none ${memoExpanded ? "" : "line-clamp-3"}`}
                         >
-                            {book.memo}
-                        </p>
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                {book.memo}
+                            </ReactMarkdown>
+                        </div>
                         <button
                             onClick={() => setMemoExpanded(!memoExpanded)}
                             className="text-xs text-turquoise-600 hover:text-turquoise-700 mt-1 transition-colors"
