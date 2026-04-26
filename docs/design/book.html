@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Books — onclimb</title>
+<link rel="stylesheet" href="shared/tokens.css" />
+<link rel="stylesheet" href="shared/shell.css" />
+<style>
+.page-hero { padding: 80px 0 30px; }
+.page-hero__inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+.page-hero__crumb { font-family: var(--font-mono); font-size: 12px; color: var(--fg-dim); letter-spacing: 0.16em; margin-bottom: 18px; display:flex; gap:6px; }
+.page-hero__crumb b { color: var(--accent); font-weight: 500; }
+.page-hero__top { display: flex; justify-content: space-between; align-items: end; flex-wrap: wrap; gap: 24px; margin-bottom: 16px; }
+.page-hero h1 { font-size: clamp(40px, 5.6vw, 64px); font-weight: 600; letter-spacing: -0.03em; line-height: 1.05; }
+.page-hero__lead { font-size: 17px; color: var(--fg); line-height: 1.7; max-width: 640px; }
+
+.view-toggle {
+  display: inline-flex;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 999px;
+  background: var(--bg-elev);
+  padding: 4px;
+  font-family: var(--font-mono);
+}
+.view-toggle button {
+  padding: 8px 18px;
+  font-size: 12px;
+  border-radius: 999px;
+  color: var(--fg-muted);
+  background: transparent;
+  letter-spacing: 0.06em;
+  display: inline-flex; align-items: center; gap: 6px;
+  transition: all 200ms;
+}
+.view-toggle button.is-active { background: var(--accent); color: white; }
+
+.book-stage { max-width: 1200px; margin: 30px auto 60px; padding: 0 24px; }
+
+/* ---------- Graph view ---------- */
+.graph-wrap {
+  position: relative;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(circle at 30% 30%, var(--accent-soft), transparent 50%),
+    radial-gradient(circle at 70% 70%, color-mix(in oklch, var(--cyan), transparent 80%), transparent 60%),
+    var(--surface);
+  overflow: hidden;
+  height: 640px;
+}
+.graph-wrap.is-hidden { display: none; }
+.graph-wrap svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+/* Connections layer */
+.graph-edge { stroke: var(--hairline-strong); stroke-width: 1; opacity: 0.6; transition: stroke 200ms, opacity 200ms; }
+.graph-edge.is-hi { stroke: var(--accent); opacity: 1; stroke-width: 1.5; }
+.graph-edge-glow { stroke: var(--accent); stroke-width: 4; opacity: 0; transition: opacity 200ms; filter: blur(4px); }
+.graph-edge-glow.is-hi { opacity: 0.5; }
+
+/* Nodes */
+.gnode {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  user-select: none;
+  transition: transform 250ms var(--ease-out);
+}
+.gnode__dot {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 2px solid var(--accent);
+  position: relative;
+  transition: all 200ms;
+  box-shadow: 0 0 0 0 var(--accent);
+}
+.gnode__dot::before {
+  content: ""; position: absolute; inset: -8px;
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  opacity: 0.3;
+  animation: pulseRing 3s infinite ease-out;
+}
+@keyframes pulseRing {
+  0%   { transform: scale(0.6); opacity: 0.5; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+.gnode--cluster .gnode__dot {
+  width: 22px; height: 22px;
+  background: var(--accent);
+  border-color: var(--bg);
+}
+.gnode--read .gnode__dot { background: var(--accent); }
+.gnode--reading .gnode__dot { background: var(--amber); border-color: var(--amber); }
+.gnode--reading .gnode__dot::before { border-color: var(--amber); }
+.gnode--queue .gnode__dot { background: transparent; }
+.gnode__lbl {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  white-space: nowrap;
+  color: var(--fg-muted);
+  background: var(--bg);
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px solid var(--hairline);
+  pointer-events: none;
+  transition: color 200ms;
+}
+.gnode--cluster .gnode__lbl {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.gnode:hover { transform: translate(-50%, -50%) scale(1.4); z-index: 10; }
+.gnode:hover .gnode__lbl { color: var(--fg-strong); border-color: var(--accent); }
+.gnode.is-active { transform: translate(-50%, -50%) scale(1.5); z-index: 11; }
+.gnode.is-active .gnode__dot { box-shadow: 0 0 0 4px var(--accent-soft); }
+.gnode.is-faded { opacity: 0.18; }
+
+/* Side detail panel */
+.detail {
+  position: absolute;
+  top: 16px; right: 16px;
+  width: 340px;
+  background: var(--bg-elev);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-lg);
+  padding: 22px 22px 20px;
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-strong);
+  font-size: 13.5px;
+  display: none;
+  z-index: 20;
+}
+.detail.is-open { display: block; animation: slideIn 250ms var(--ease-out); }
+@keyframes slideIn { from { opacity: 0; transform: translateX(8px); } to { opacity: 1; transform: translateX(0); } }
+.detail__close { position: absolute; top: 12px; right: 12px; width: 24px; height: 24px; border-radius: 50%; background: transparent; color: var(--fg-muted); }
+.detail__close:hover { background: var(--bg-elev-2); color: var(--fg); }
+.detail__cat { font-family: var(--font-mono); font-size: 10px; color: var(--accent); letter-spacing: 0.16em; margin-bottom: 6px; }
+.detail__title { font-size: 17px; font-weight: 600; line-height: 1.35; margin-bottom: 4px; }
+.detail__author { color: var(--fg-muted); font-size: 12px; margin-bottom: 14px; }
+.detail__status { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 11px; padding: 3px 9px; border-radius: 999px; margin-bottom: 14px; }
+.detail__status--read { background: var(--accent-soft); color: var(--accent); }
+.detail__status--reading { background: color-mix(in oklch, var(--amber), transparent 80%); color: var(--amber); }
+.detail__status--queue { background: var(--bg-elev-2); color: var(--fg-muted); }
+.detail__notes { color: var(--fg); line-height: 1.7; margin-bottom: 14px; padding: 10px 12px; border-left: 2px solid var(--accent); background: var(--accent-soft); border-radius: 0 6px 6px 0; }
+.detail__related { font-family: var(--font-mono); font-size: 11px; color: var(--fg-dim); letter-spacing: 0.1em; margin-bottom: 6px; }
+.detail__related-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.detail__related-list span { font-family: var(--font-mono); font-size: 11px; padding: 3px 8px; border: 1px solid var(--hairline-strong); border-radius: 4px; color: var(--fg); }
+
+/* Graph legend */
+.graph-legend {
+  position: absolute;
+  bottom: 16px; left: 16px;
+  display: flex; gap: 18px;
+  background: var(--bg-elev);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+.graph-legend__item { display: flex; align-items: center; gap: 6px; color: var(--fg-muted); }
+.graph-legend__dot { width: 8px; height: 8px; border-radius: 50%; border: 2px solid var(--accent); }
+.graph-legend__dot.read { background: var(--accent); }
+.graph-legend__dot.reading { background: var(--amber); border-color: var(--amber); }
+.graph-legend__dot.queue { background: transparent; }
+
+.graph-help {
+  position: absolute;
+  top: 16px; left: 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--fg-dim);
+  background: var(--bg-elev);
+  backdrop-filter: blur(8px);
+  padding: 8px 14px;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  letter-spacing: 0.06em;
+}
+
+/* ---------- List view ---------- */
+.list-wrap.is-hidden { display: none; }
+.list-cluster { margin-bottom: 36px; }
+.list-cluster__head {
+  display: flex; align-items: baseline; gap: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--hairline);
+  margin-bottom: 14px;
+}
+.list-cluster__num { font-family: var(--font-mono); font-size: 12px; color: var(--accent); letter-spacing: 0.18em; }
+.list-cluster__name { font-size: 20px; font-weight: 600; }
+.list-cluster__count { margin-left: auto; font-family: var(--font-mono); font-size: 11px; color: var(--fg-dim); letter-spacing: 0.16em; }
+
+.list-grid { display: grid; gap: 12px; grid-template-columns: 1fr; }
+@media (min-width: 720px) { .list-grid { grid-template-columns: 1fr 1fr; } }
+.bcard {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  gap: 16px;
+  align-items: start;
+  padding: 16px 18px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  background: var(--bg-elev);
+  transition: all 200ms;
+}
+.bcard:hover { border-color: var(--accent); transform: translateX(4px); }
+.bcard__cover {
+  aspect-ratio: 2/3;
+  background: linear-gradient(135deg, var(--accent), var(--violet));
+  border-radius: 4px;
+  position: relative;
+  display: grid; place-items: center;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: rgba(255,255,255,0.85);
+  text-align: center;
+  padding: 4px;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+  box-shadow: 2px 2px 0 var(--hairline-strong);
+}
+.bcard__cover[data-tone="cyan"] { background: linear-gradient(135deg, var(--cyan), var(--accent)); }
+.bcard__cover[data-tone="indigo"] { background: linear-gradient(135deg, var(--indigo), var(--violet)); }
+.bcard__cover[data-tone="rose"] { background: linear-gradient(135deg, var(--rose), var(--amber)); }
+.bcard__cover[data-tone="dark"] { background: linear-gradient(135deg, #0F172A, var(--accent)); }
+.bcard__title { font-size: 14px; font-weight: 600; line-height: 1.4; margin-bottom: 4px; }
+.bcard__author { font-size: 11.5px; color: var(--fg-dim); margin-bottom: 8px; font-family: var(--font-mono); }
+.bcard__status { font-family: var(--font-mono); font-size: 10px; padding: 2px 6px; border-radius: 3px; display: inline-block; }
+.bcard__status--read { background: var(--accent-soft); color: var(--accent); }
+.bcard__status--reading { background: color-mix(in oklch, var(--amber), transparent 80%); color: var(--amber); }
+.bcard__status--queue { background: var(--bg-elev-2); color: var(--fg-muted); }
+</style>
+</head>
+<body data-page="book">
+<main class="page">
+
+<section class="page-hero">
+  <div class="page-hero__inner">
+    <div class="page-hero__crumb" data-reveal><span>onclimb</span><span>/</span><b>books</b></div>
+    <div class="page-hero__top">
+      <div>
+        <h1 data-reveal data-reveal-delay="80">読んだ・読んでる・<br/>読みたい本のグラフ。</h1>
+        <p class="page-hero__lead" data-reveal data-reveal-delay="160" style="margin-top:18px">技術書を中心とした個人ライブラリ。本同士のつながりをグラフで眺め、深掘りはノートで。</p>
+      </div>
+      <div class="view-toggle" data-reveal data-reveal-delay="240">
+        <button data-view="graph" class="is-active">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M7.5 7.5l3.5 9M16.5 7.5L13 16.5"/></svg>
+          GRAPH
+        </button>
+        <button data-view="list">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+          LIST
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="book-stage">
+  <!-- GRAPH view -->
+  <div class="graph-wrap" id="graph-view">
+    <svg id="edges"></svg>
+    <div id="nodes"></div>
+    <div class="graph-help">click node to focus · drag to explore</div>
+    <div class="graph-legend">
+      <div class="graph-legend__item"><span class="graph-legend__dot read"></span>read</div>
+      <div class="graph-legend__item"><span class="graph-legend__dot reading"></span>reading</div>
+      <div class="graph-legend__item"><span class="graph-legend__dot queue"></span>queue</div>
+    </div>
+    <div class="detail" id="detail">
+      <button class="detail__close" id="detail-close">✕</button>
+      <div class="detail__cat" id="d-cat"></div>
+      <div class="detail__title" id="d-title"></div>
+      <div class="detail__author" id="d-author"></div>
+      <span class="detail__status" id="d-status"></span>
+      <div class="detail__notes" id="d-notes"></div>
+      <div class="detail__related">RELATED</div>
+      <div class="detail__related-list" id="d-related"></div>
+    </div>
+  </div>
+
+  <!-- LIST view -->
+  <div class="list-wrap is-hidden" id="list-view"></div>
+</section>
+
+</main>
+
+<script src="shared/shell.js"></script>
+<script>
+// Clusters and books data
+const CLUSTERS = [
+  { id: 'arch', label: 'Architecture', x: 25, y: 30 },
+  { id: 'low',  label: 'Low-level',    x: 75, y: 25 },
+  { id: 'web',  label: 'Web',          x: 30, y: 70 },
+  { id: 'craft',label: 'Craft',        x: 70, y: 72 },
+];
+
+const BOOKS = [
+  // architecture
+  { id:'ddd',     cluster:'arch', x:18, y:22, title:'エリック・エヴァンスのドメイン駆動設計', author:'Eric Evans', status:'read',   notes:'境界づけられたコンテキストの考え方が今でも芯として効いている。', related:['cln','soft'] },
+  { id:'cln',     cluster:'arch', x:32, y:28, title:'Clean Architecture',                       author:'Robert C. Martin', status:'read', notes:'依存関係の方向性を最初に決める。設計判断の基準として何度も読み返す。', related:['ddd','soft'] },
+  { id:'soft',    cluster:'arch', x:25, y:42, title:'ソフトウェアアーキテクチャの基礎',         author:'Mark Richards', status:'reading', notes:'特性ベースで設計を語る視点が新鮮。アーキテクトとしての判断軸の言語化に役立つ。', related:['ddd','cln','dist'] },
+  { id:'dist',    cluster:'arch', x:38, y:18, title:'データ指向アプリケーションデザイン',       author:'Martin Kleppmann', status:'read', notes:'分散システムの教科書。現実のシステムを語るときの共通言語になる一冊。', related:['soft','tcp'] },
+  // low-level
+  { id:'n2t',     cluster:'low',  x:72, y:18, title:'コンピュータシステムの理論と実装',       author:'Nisan & Schocken', status:'read', notes:'NANDから始める"全部自作"。低レイヤーの怖さがなくなった。', related:['cs','os'] },
+  { id:'cs',      cluster:'low',  x:82, y:24, title:'プロセッサを支える技術',                   author:'Hisa Ando', status:'read', notes:'CPUの中で何が起きているかを知ると、性能を読む解像度が変わる。', related:['n2t','os'] },
+  { id:'os',      cluster:'low',  x:75, y:38, title:'OSの仕組み',                              author:'Andrew Tanenbaum', status:'reading', notes:'カーネルとユーザ空間、スケジューラ、メモリ。', related:['n2t','tcp','cs'] },
+  { id:'tcp',     cluster:'low',  x:62, y:30, title:'マスタリングTCP/IP — 入門編',             author:'竹下隆史 ほか', status:'read', notes:'プロトコルスタックを下から眺め直す習慣が、Web開発の理解にも効く。', related:['os','dist','http'] },
+  // web
+  { id:'http',    cluster:'web',  x:28, y:62, title:'Webを支える技術',                         author:'山本陽平', status:'read', notes:'HTTP/REST/URI を腹落ちさせる。何度読んでも発見がある。', related:['tcp','realweb'] },
+  { id:'realweb', cluster:'web',  x:36, y:74, title:'Real World HTTP',                          author:'渋川よしき', status:'read', notes:'HTTP の現代的な姿。HTTP/2,3 やセキュリティの章が実務的。', related:['http','sec'] },
+  { id:'sec',     cluster:'web',  x:22, y:76, title:'体系的に学ぶ 安全なWebアプリケーションの作り方', author:'徳丸浩', status:'read', notes:'通称「徳丸本」。Web を作るなら一度は通る道。', related:['realweb','http'] },
+  { id:'sql',     cluster:'web',  x:30, y:82, title:'SQLパフォーマンス詳解',                    author:'Markus Winand', status:'queue', notes:'インデックス設計を本気で学び直す予定。', related:['dist','realweb'] },
+  // craft
+  { id:'reads',   cluster:'craft',x:72, y:65, title:'リーダブルコード',                         author:'Boswell, Foucher', status:'read', notes:'読みやすいコードの最小公倍数。新人にもベテランにもおすすめ。', related:['ref','tdd'] },
+  { id:'ref',     cluster:'craft',x:80, y:74, title:'リファクタリング 第2版',                   author:'Martin Fowler', status:'read', notes:'「臭い」を共有言語にする。コードを語るときの語彙が増える。', related:['reads','tdd','growing'] },
+  { id:'tdd',     cluster:'craft',x:64, y:78, title:'テスト駆動開発',                           author:'Kent Beck', status:'read', notes:'Red→Green→Refactor の小さなリズムが体に染みつく一冊。', related:['ref','reads'] },
+  { id:'growing', cluster:'craft',x:78, y:60, title:'実践テスト駆動開発',                       author:'Steve Freeman', status:'reading', notes:'モックの正しい使い方と、テスタブルな設計。', related:['tdd','ref'] },
+  { id:'pragm',   cluster:'craft',x:68, y:54, title:'達人プログラマー',                         author:'David Thomas', status:'queue', notes:'再読待ち。', related:['reads','ref'] },
+];
+
+// Edges: cluster center to book + book-related
+const CENTER_OF = {};
+CLUSTERS.forEach(c => CENTER_OF[c.id] = c);
+
+const COLORS = { read: 'var(--accent)', reading: 'var(--amber)', queue: 'transparent' };
+
+function buildGraph() {
+  const nodesEl = document.getElementById('nodes');
+  const edges = document.getElementById('edges');
+  const W = 1200, H = 640;
+  edges.setAttribute('viewBox', `0 0 100 100`);
+  edges.setAttribute('preserveAspectRatio', 'none');
+
+  // edges
+  let edgesHtml = '';
+  // cluster to book
+  BOOKS.forEach(b => {
+    const c = CENTER_OF[b.cluster];
+    edgesHtml += `<line class="graph-edge-glow" x1="${c.x}" y1="${c.y}" x2="${b.x}" y2="${b.y}" data-from="cluster-${c.id}" data-to="${b.id}"/>`;
+    edgesHtml += `<line class="graph-edge" x1="${c.x}" y1="${c.y}" x2="${b.x}" y2="${b.y}" data-from="cluster-${c.id}" data-to="${b.id}" stroke-dasharray="0.5 0.5"/>`;
+  });
+  // related book to book
+  BOOKS.forEach(b => {
+    (b.related||[]).forEach(rid => {
+      if (b.id < rid) { // dedupe
+        const r = BOOKS.find(x=>x.id===rid); if (!r) return;
+        edgesHtml += `<line class="graph-edge-glow" x1="${b.x}" y1="${b.y}" x2="${r.x}" y2="${r.y}" data-from="${b.id}" data-to="${r.id}"/>`;
+        edgesHtml += `<line class="graph-edge" x1="${b.x}" y1="${b.y}" x2="${r.x}" y2="${r.y}" data-from="${b.id}" data-to="${r.id}"/>`;
+      }
+    });
+  });
+  edges.innerHTML = edgesHtml;
+
+  // cluster nodes
+  let nodesHtml = '';
+  CLUSTERS.forEach(c => {
+    nodesHtml += `<div class="gnode gnode--cluster" data-id="cluster-${c.id}" style="left:${c.x}%;top:${c.y}%">
+      <div class="gnode__dot"></div><div class="gnode__lbl">${c.label}</div>
+    </div>`;
+  });
+  // book nodes
+  BOOKS.forEach(b => {
+    nodesHtml += `<div class="gnode gnode--${b.status}" data-id="${b.id}" style="left:${b.x}%;top:${b.y}%">
+      <div class="gnode__dot"></div><div class="gnode__lbl">${b.title.length>14?b.title.slice(0,14)+'…':b.title}</div>
+    </div>`;
+  });
+  nodesEl.innerHTML = nodesHtml;
+
+  // events
+  document.querySelectorAll('.gnode').forEach(n => {
+    n.addEventListener('mouseenter', () => highlight(n.dataset.id));
+    n.addEventListener('mouseleave', () => unhighlight());
+    n.addEventListener('click', () => {
+      const id = n.dataset.id;
+      if (id.startsWith('cluster-')) return;
+      openDetail(id);
+    });
+  });
+}
+
+function highlight(id) {
+  document.querySelectorAll('.graph-edge, .graph-edge-glow').forEach(e => {
+    const hit = e.dataset.from === id || e.dataset.to === id;
+    e.classList.toggle('is-hi', hit);
+  });
+  document.querySelectorAll('.gnode').forEach(n => {
+    if (n.dataset.id === id) return;
+    const adj = [...document.querySelectorAll('.graph-edge')].some(e =>
+      (e.dataset.from === id && e.dataset.to === n.dataset.id) ||
+      (e.dataset.to === id && e.dataset.from === n.dataset.id)
+    );
+    n.classList.toggle('is-faded', !adj);
+  });
+}
+function unhighlight() {
+  document.querySelectorAll('.graph-edge, .graph-edge-glow').forEach(e => e.classList.remove('is-hi'));
+  document.querySelectorAll('.gnode').forEach(n => n.classList.remove('is-faded'));
+}
+
+function openDetail(id) {
+  const b = BOOKS.find(x => x.id === id); if (!b) return;
+  document.querySelectorAll('.gnode').forEach(n => n.classList.toggle('is-active', n.dataset.id === id));
+  highlight(id);
+  document.getElementById('d-cat').textContent = (CLUSTERS.find(c=>c.id===b.cluster)||{}).label;
+  document.getElementById('d-title').textContent = b.title;
+  document.getElementById('d-author').textContent = b.author;
+  const s = document.getElementById('d-status');
+  s.textContent = b.status.toUpperCase();
+  s.className = 'detail__status detail__status--' + b.status;
+  document.getElementById('d-notes').textContent = b.notes;
+  const rel = b.related.map(rid => BOOKS.find(x=>x.id===rid)).filter(Boolean);
+  document.getElementById('d-related').innerHTML = rel.map(r=>`<span>${r.title.length>16?r.title.slice(0,16)+'…':r.title}</span>`).join('');
+  document.getElementById('detail').classList.add('is-open');
+}
+document.getElementById('detail-close').onclick = () => {
+  document.getElementById('detail').classList.remove('is-open');
+  document.querySelectorAll('.gnode').forEach(n => n.classList.remove('is-active'));
+  unhighlight();
+};
+
+buildGraph();
+
+// List view
+function buildList() {
+  const root = document.getElementById('list-view');
+  const tones = { arch:'cyan', low:'dark', web:'indigo', craft:'rose' };
+  root.innerHTML = CLUSTERS.map((c,i)=>{
+    const items = BOOKS.filter(b=>b.cluster===c.id);
+    return `
+      <section class="list-cluster" data-reveal>
+        <header class="list-cluster__head">
+          <span class="list-cluster__num">/${String(i+1).padStart(2,'0')}</span>
+          <h2 class="list-cluster__name">${c.label}</h2>
+          <span class="list-cluster__count">${items.length} books</span>
+        </header>
+        <div class="list-grid">
+          ${items.map(b=>`
+            <article class="bcard">
+              <div class="bcard__cover" data-tone="${tones[c.id]}">${b.title.split(' ').slice(0,3).join(' ')}</div>
+              <div>
+                <div class="bcard__title">${b.title}</div>
+                <div class="bcard__author">${b.author}</div>
+                <span class="bcard__status bcard__status--${b.status}">${b.status}</span>
+              </div>
+            </article>
+          `).join('')}
+        </div>
+      </section>
+    `;
+  }).join('');
+}
+buildList();
+
+// View toggle
+document.querySelectorAll('.view-toggle button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.view-toggle button').forEach(b=>b.classList.remove('is-active'));
+    btn.classList.add('is-active');
+    const v = btn.dataset.view;
+    document.getElementById('graph-view').classList.toggle('is-hidden', v !== 'graph');
+    document.getElementById('list-view').classList.toggle('is-hidden', v !== 'list');
+  });
+});
+</script>
+</body>
+</html>

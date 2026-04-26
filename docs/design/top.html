@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>onclimb — Fullstack engineer / architect</title>
+<link rel="stylesheet" href="shared/tokens.css" />
+<link rel="stylesheet" href="shared/shell.css" />
+<style>
+/* ============ HERO ============ */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 120px 0 80px;
+  overflow: hidden;
+}
+.hero__inner {
+  position: relative;
+  z-index: 2;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 24px;
+  text-align: center;
+}
+.hero__eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  padding: 6px 14px;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 999px;
+  margin-bottom: 32px;
+  background: var(--surface);
+}
+.hero__eyebrow::before {
+  content: "";
+  width: 7px; height: 7px;
+  background: var(--accent);
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px var(--accent-soft), 0 0 12px var(--accent);
+  animation: pulseDot 2.4s ease-in-out infinite;
+}
+@keyframes pulseDot {
+  0%, 100% { box-shadow: 0 0 0 4px var(--accent-soft), 0 0 12px var(--accent); }
+  50% { box-shadow: 0 0 0 7px transparent, 0 0 20px var(--accent); }
+}
+
+/* Particle title canvas — text resolves from particles */
+.hero__title-stage {
+  position: relative;
+  width: 100%;
+  height: clamp(180px, 24vw, 280px);
+  margin: 0 auto 24px;
+}
+#hero-title-canvas {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+}
+.hero__title-fallback {
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  font-size: clamp(72px, 14vw, 180px);
+  font-weight: 700;
+  letter-spacing: -0.06em;
+  background: linear-gradient(180deg, var(--fg-strong), var(--accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  opacity: 0;
+}
+
+.hero__lead {
+  font-size: clamp(18px, 2vw, 22px);
+  line-height: 1.6;
+  color: var(--fg);
+  max-width: 640px;
+  margin: 0 auto 16px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+.hero__sub {
+  font-size: 15px;
+  color: var(--fg-muted);
+  max-width: 560px;
+  margin: 0 auto 40px;
+  line-height: 1.7;
+}
+.hero__cta {
+  display: inline-flex; gap: 12px;
+  flex-wrap: wrap; justify-content: center;
+}
+
+/* Spotlight that follows mouse */
+.hero__spotlight {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    600px circle at var(--mx, 50%) var(--my, 40%),
+    color-mix(in srgb, var(--accent) 12%, transparent),
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 1;
+  transition: background 200ms linear;
+}
+
+/* Floating 3D shapes */
+.hero__shapes {
+  position: absolute; inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  perspective: 1200px;
+}
+.shape {
+  position: absolute;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--hairline-strong);
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--accent) 12%, transparent),
+    color-mix(in srgb, var(--indigo) 6%, transparent));
+  backdrop-filter: blur(6px);
+  box-shadow: var(--shadow-soft);
+  animation: float 18s ease-in-out infinite;
+}
+.shape--1 { top: 12%; left: 8%; width: 140px; height: 140px; transform: rotate(12deg); animation-delay: -2s; }
+.shape--2 { top: 18%; right: 10%; width: 90px; height: 90px; border-radius: 50%; animation-delay: -8s; }
+.shape--3 { bottom: 14%; left: 14%; width: 60px; height: 60px; border-radius: 4px; transform: rotate(-15deg); animation-delay: -12s; }
+.shape--4 { bottom: 22%; right: 18%; width: 110px; height: 110px; transform: rotate(8deg); animation-delay: -5s; }
+.shape--5 { top: 50%; left: 4%; width: 36px; height: 36px; border-radius: 50%; background: var(--accent-soft); animation-delay: -15s; }
+.shape--6 { top: 38%; right: 6%; width: 50px; height: 50px; border-radius: 4px; transform: rotate(45deg); animation-delay: -3s; }
+
+@keyframes float {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(var(--r, 0deg)); }
+  33%      { transform: translate3d(20px, -30px, 40px) rotate(calc(var(--r, 0deg) + 12deg)); }
+  66%      { transform: translate3d(-15px, 20px, -20px) rotate(calc(var(--r, 0deg) - 8deg)); }
+}
+
+/* Hero scroll hint */
+.hero__hint {
+  position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 11px; letter-spacing: 0.2em;
+  color: var(--fg-dim);
+  text-transform: uppercase;
+  display: flex; flex-direction: column; gap: 8px; align-items: center;
+}
+.hero__hint::after {
+  content: "";
+  width: 1px; height: 32px;
+  background: linear-gradient(180deg, var(--fg-dim), transparent);
+  animation: scrollHint 1.8s ease-in-out infinite;
+}
+@keyframes scrollHint {
+  0% { transform: translateY(-8px); opacity: 0; }
+  40% { opacity: 1; }
+  100% { transform: translateY(8px); opacity: 0; }
+}
+
+/* ============ STACK SECTION ============ */
+.section { padding: 120px 0; position: relative; }
+.section__head {
+  display: flex; flex-direction: column; gap: 12px;
+  margin-bottom: 56px;
+  max-width: 720px;
+}
+.section__num {
+  font-family: var(--font-mono); font-size: 12px;
+  letter-spacing: 0.2em; color: var(--accent);
+  text-transform: uppercase;
+}
+.section__title {
+  font-size: clamp(32px, 4vw, 48px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+.section__lead {
+  color: var(--fg-muted);
+  font-size: 16px;
+  line-height: 1.7;
+  max-width: 560px;
+}
+
+/* Capability grid */
+.cap-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  background: var(--hairline);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+@media (min-width: 720px) { .cap-grid { grid-template-columns: repeat(3, 1fr); } }
+.cap {
+  background: var(--bg-elev);
+  padding: 36px 32px;
+  position: relative;
+  transition: background 250ms var(--ease-out);
+  overflow: hidden;
+}
+.cap:hover { background: var(--bg-elev-2); }
+.cap::before {
+  content: "";
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 600ms var(--ease-out);
+}
+.cap:hover::before { transform: scaleX(1); }
+.cap__num {
+  font-family: var(--font-mono);
+  font-size: 11px; color: var(--fg-dim);
+  letter-spacing: 0.18em;
+  margin-bottom: 24px;
+}
+.cap__icon {
+  width: 44px; height: 44px;
+  margin-bottom: 24px;
+  display: grid; place-items: center;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 8px;
+  color: var(--accent);
+  background: var(--accent-soft);
+  transition: all 300ms var(--ease-out);
+}
+.cap:hover .cap__icon {
+  transform: rotate(-6deg) scale(1.06);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+.cap__title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  letter-spacing: -0.01em;
+}
+.cap__desc {
+  color: var(--fg-muted);
+  font-size: 14px;
+  line-height: 1.7;
+  margin-bottom: 18px;
+}
+.cap__chips {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.chip {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 4px 8px;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 4px;
+  color: var(--fg);
+  background: var(--bg);
+}
+
+/* ============ NAV CARDS (the Explore section) ============ */
+.explore-grid {
+  display: grid; gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+.explore {
+  display: block;
+  position: relative;
+  padding: 28px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  backdrop-filter: blur(8px);
+  overflow: hidden;
+  transition: all 350ms var(--ease-out);
+}
+.explore:hover {
+  border-color: var(--accent);
+  transform: translateY(-4px);
+}
+.explore::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: var(--radius-lg);
+  padding: 1px;
+  background: linear-gradient(135deg, var(--accent), transparent 50%, var(--indigo));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 350ms var(--ease-out);
+  pointer-events: none;
+}
+.explore:hover::after { opacity: 1; }
+.explore__num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--fg-dim);
+  letter-spacing: 0.2em;
+  margin-bottom: 16px;
+  display: block;
+}
+.explore__title {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: flex; align-items: center; gap: 8px;
+}
+.explore__arrow {
+  display: inline-block;
+  transition: transform 300ms var(--ease-out);
+}
+.explore:hover .explore__arrow { transform: translate(4px, -4px); }
+.explore__desc {
+  font-size: 14px;
+  color: var(--fg-muted);
+  line-height: 1.6;
+}
+.explore__shape {
+  position: absolute;
+  right: -20px; bottom: -20px;
+  width: 100px; height: 100px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--accent), transparent);
+  opacity: 0.05;
+  transition: opacity 350ms;
+}
+.explore:hover .explore__shape { opacity: 0.15; }
+
+/* ============ STATS ============ */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: var(--hairline);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-top: 60px;
+}
+@media (min-width: 720px) { .stats { grid-template-columns: repeat(4, 1fr); } }
+.stat {
+  background: var(--bg-elev);
+  padding: 32px 24px;
+  text-align: left;
+}
+.stat__value {
+  font-family: var(--font-mono);
+  font-size: 36px;
+  font-weight: 600;
+  color: var(--fg-strong);
+  letter-spacing: -0.03em;
+  display: block;
+}
+.stat__value sup { font-size: 16px; color: var(--accent); margin-left: 2px; }
+.stat__label {
+  font-size: 12px;
+  color: var(--fg-muted);
+  letter-spacing: 0.05em;
+  margin-top: 6px;
+}
+
+/* CTA */
+.cta-band {
+  margin: 0 auto;
+  padding: 80px 32px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--hairline-strong);
+  background:
+    radial-gradient(circle at 80% 20%, var(--accent-soft), transparent 50%),
+    radial-gradient(circle at 20% 80%, color-mix(in srgb, var(--indigo) 12%, transparent), transparent 50%),
+    var(--bg-elev);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.cta-band::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask: radial-gradient(circle at 50% 50%, black 0%, transparent 70%);
+  -webkit-mask: radial-gradient(circle at 50% 50%, black 0%, transparent 70%);
+  pointer-events: none;
+}
+.cta-band > * { position: relative; }
+.cta-band h2 {
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+}
+.cta-band p {
+  color: var(--fg-muted);
+  margin-bottom: 28px;
+  font-size: 16px;
+}
+</style>
+</head>
+<body data-page="top">
+
+<main class="page">
+
+  <!-- ========== HERO ========== -->
+  <section class="hero">
+    <div class="hero__spotlight" id="spotlight"></div>
+
+    <div class="hero__shapes">
+      <div class="shape shape--1" style="--r:12deg"></div>
+      <div class="shape shape--2"></div>
+      <div class="shape shape--3" style="--r:-15deg"></div>
+      <div class="shape shape--4" style="--r:8deg"></div>
+      <div class="shape shape--5"></div>
+      <div class="shape shape--6" style="--r:45deg"></div>
+    </div>
+
+    <div class="hero__inner">
+      <div class="hero__eyebrow" data-reveal>Fullstack engineer / architect</div>
+
+      <div class="hero__title-stage" data-reveal data-reveal-delay="120">
+        <canvas id="hero-title-canvas"></canvas>
+        <div class="hero__title-fallback" id="hero-title-fallback">onclimb</div>
+      </div>
+
+      <p class="hero__lead" data-reveal data-reveal-delay="240">
+        「なぜ動くのか」を理解することにこだわるエンジニア。
+      </p>
+      <p class="hero__sub" data-reveal data-reveal-delay="320">
+        フロントエンドからバックエンド、インフラまで一貫した開発でプロダクトを形にします。<br/>
+        手段としての技術を、課題を解決し続ける形で届ける。
+      </p>
+
+      <div class="hero__cta" data-reveal data-reveal-delay="420">
+        <a class="btn btn-primary" href="profile.html">
+          Profileを見る
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </a>
+        <a class="btn btn-ghost" href="portfolio.html">作ったものを見る</a>
+      </div>
+    </div>
+
+    <div class="hero__hint">SCROLL</div>
+  </section>
+
+  <!-- ========== STACK ========== -->
+  <section class="section">
+    <div class="container">
+      <header class="section__head" data-reveal>
+        <span class="section__num">01 / What I do</span>
+        <h2 class="section__title">設計から実装まで、<br/>地続きで責任を持つ。</h2>
+        <p class="section__lead">バックエンド・インフラを軸に、フロントエンドまで一貫して携わるフルスタックエンジニア。「作ったものがユーザーに届き、課題を解決し、安定して動き続けること」を最も大切にしています。</p>
+      </header>
+
+      <div class="cap-grid">
+        <article class="cap" data-reveal>
+          <div class="cap__num">/01</div>
+          <div class="cap__icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="6" rx="1"/><rect x="3" y="14" width="18" height="6" rx="1"/><circle cx="7" cy="7" r="0.8" fill="currentColor"/><circle cx="7" cy="17" r="0.8" fill="currentColor"/></svg>
+          </div>
+          <h3 class="cap__title">Backend / Architecture</h3>
+          <p class="cap__desc">スケーラブルで破綻しないシステム設計。ドメイン駆動設計、クリーンアーキテクチャ、マイクロサービスを実務で。</p>
+          <div class="cap__chips">
+            <span class="chip">TypeScript</span>
+            <span class="chip">Go</span>
+            <span class="chip">NestJS</span>
+            <span class="chip">GraphQL</span>
+            <span class="chip">PostgreSQL</span>
+          </div>
+        </article>
+        <article class="cap" data-reveal data-reveal-delay="100">
+          <div class="cap__num">/02</div>
+          <div class="cap__icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12l10-7 10 7-10 7z"/><path d="M2 17l10 7 10-7"/></svg>
+          </div>
+          <h3 class="cap__title">Frontend &amp; UX</h3>
+          <p class="cap__desc">React / Next.js で、デザインの意図に沿ったUI実装。アクセシビリティとパフォーマンスを両立させる。</p>
+          <div class="cap__chips">
+            <span class="chip">React</span>
+            <span class="chip">Next.js</span>
+            <span class="chip">Tailwind</span>
+            <span class="chip">SwiftUI</span>
+          </div>
+        </article>
+        <article class="cap" data-reveal data-reveal-delay="200">
+          <div class="cap__num">/03</div>
+          <div class="cap__icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M5 6h14M5 18h14"/><circle cx="9" cy="6" r="1.5" fill="currentColor"/><circle cx="15" cy="12" r="1.5" fill="currentColor"/><circle cx="9" cy="18" r="1.5" fill="currentColor"/></svg>
+          </div>
+          <h3 class="cap__title">Infra / DevOps</h3>
+          <p class="cap__desc">AWS Solutions Architect 保有。CI/CD、IaC、コンテナ運用。本質的な開発に注力するための仕組みづくりが得意。</p>
+          <div class="cap__chips">
+            <span class="chip">AWS</span>
+            <span class="chip">Terraform</span>
+            <span class="chip">Docker</span>
+            <span class="chip">GitHub Actions</span>
+          </div>
+        </article>
+      </div>
+
+      <div class="stats" data-reveal>
+        <div class="stat">
+          <span class="stat__value">5<sup>+</sup></span>
+          <div class="stat__label">years engineering</div>
+        </div>
+        <div class="stat">
+          <span class="stat__value">4</span>
+          <div class="stat__label">domains worked</div>
+        </div>
+        <div class="stat">
+          <span class="stat__value">¥10K</span>
+          <div class="stat__label">monthly book budget</div>
+        </div>
+        <div class="stat">
+          <span class="stat__value">∞</span>
+          <div class="stat__label">curiosity</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== EXPLORE ========== -->
+  <section class="section" style="padding-top: 40px;">
+    <div class="container">
+      <header class="section__head" data-reveal>
+        <span class="section__num">02 / Explore</span>
+        <h2 class="section__title">深掘りする場所を選ぶ。</h2>
+        <p class="section__lead">経歴、技術スタック、作ったもの、毎日の知識収集、読書ノート。それぞれのページに違うリズムがあります。</p>
+      </header>
+
+      <div class="explore-grid">
+        <a href="profile.html" class="explore" data-reveal>
+          <span class="explore__num">→ /profile</span>
+          <div class="explore__title">Profile <span class="explore__arrow">↗</span></div>
+          <div class="explore__desc">経歴と価値観、エンジニアとしての今</div>
+          <div class="explore__shape"></div>
+        </a>
+        <a href="skill.html" class="explore" data-reveal data-reveal-delay="60">
+          <span class="explore__num">→ /skills</span>
+          <div class="explore__title">Skills <span class="explore__arrow">↗</span></div>
+          <div class="explore__desc">技術スタックと習熟度を可視化</div>
+          <div class="explore__shape"></div>
+        </a>
+        <a href="portfolio.html" class="explore" data-reveal data-reveal-delay="120">
+          <span class="explore__num">→ /portfolio</span>
+          <div class="explore__title">Portfolio <span class="explore__arrow">↗</span></div>
+          <div class="explore__desc">制作したアプリケーションとプロジェクト</div>
+          <div class="explore__shape"></div>
+        </a>
+        <a href="news.html" class="explore" data-reveal data-reveal-delay="180">
+          <span class="explore__num">→ /news</span>
+          <div class="explore__title">News <span class="explore__arrow">↗</span></div>
+          <div class="explore__desc">毎日収集する技術ニュースのAI要約</div>
+          <div class="explore__shape"></div>
+        </a>
+        <a href="book.html" class="explore" data-reveal data-reveal-delay="240">
+          <span class="explore__num">→ /books</span>
+          <div class="explore__title">Books <span class="explore__arrow">↗</span></div>
+          <div class="explore__desc">読書記録、知識を線でつなぐ</div>
+          <div class="explore__shape"></div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== CTA ========== -->
+  <section class="section" style="padding-top: 40px;">
+    <div class="container">
+      <div class="cta-band" data-reveal>
+        <h2>仕事の話、しませんか。</h2>
+        <p>新しいプロダクト、技術相談、雑談まで。気軽に連絡してください。</p>
+        <div class="hero__cta" style="justify-content:center">
+          <a class="btn btn-primary" href="mailto:contact@onc-limb.com">contact@onc-limb.com</a>
+          <a class="btn btn-ghost" href="https://github.com/onc-limb" target="_blank" rel="noopener">GitHub ↗</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script src="shared/shell.js"></script>
+<script>
+/* ============ Hero spotlight follow mouse ============ */
+(function () {
+  const sp = document.getElementById('spotlight');
+  const hero = document.querySelector('.hero');
+  if (!sp || !hero) return;
+  hero.addEventListener('mousemove', (e) => {
+    const r = hero.getBoundingClientRect();
+    const x = ((e.clientX - r.left) / r.width) * 100;
+    const y = ((e.clientY - r.top) / r.height) * 100;
+    sp.style.setProperty('--mx', x + '%');
+    sp.style.setProperty('--my', y + '%');
+  });
+})();
+
+/* ============ Particle title — particles converge into "onclimb" ============ */
+(function () {
+  const canvas = document.getElementById('hero-title-canvas');
+  const fallback = document.getElementById('hero-title-fallback');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let dpr = Math.min(window.devicePixelRatio || 1, 2);
+  let w = 0, h = 0;
+  let targets = [];
+  let particles = [];
+  let started = false;
+
+  function getAccent() {
+    const rs = getComputedStyle(document.documentElement);
+    const cur = rs.getPropertyValue('--accent-strong').trim();
+    return cur || '#7BA4F5';
+  }
+  function getFg() {
+    const rs = getComputedStyle(document.documentElement);
+    return rs.getPropertyValue('--fg-strong').trim() || '#FFFFFF';
+  }
+
+  function build() {
+    const rect = canvas.getBoundingClientRect();
+    w = rect.width; h = rect.height;
+    canvas.width = w * dpr; canvas.height = h * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    // Render text into offscreen, sample pixels
+    const off = document.createElement('canvas');
+    off.width = w; off.height = h;
+    const octx = off.getContext('2d');
+    octx.fillStyle = '#fff';
+    octx.textAlign = 'center';
+    octx.textBaseline = 'middle';
+    const fontSize = Math.min(w * 0.22, h * 1.0);
+    octx.font = `700 ${fontSize}px "Geist", "Space Grotesk", "Noto Sans JP", sans-serif`;
+    octx.fillText('onclimb', w / 2, h / 2);
+    const data = octx.getImageData(0, 0, w, h).data;
+
+    targets = [];
+    const step = Math.max(3, Math.floor(w / 320));
+    for (let y = 0; y < h; y += step) {
+      for (let x = 0; x < w; x += step) {
+        const a = data[(y * w + x) * 4 + 3];
+        if (a > 128) targets.push({ x, y });
+      }
+    }
+
+    // Init particles from random positions
+    particles = targets.map((t) => {
+      const angle = Math.random() * Math.PI * 2;
+      const r = Math.max(w, h) * (0.4 + Math.random() * 0.5);
+      return {
+        tx: t.x, ty: t.y,
+        x: w / 2 + Math.cos(angle) * r,
+        y: h / 2 + Math.sin(angle) * r,
+        vx: 0, vy: 0,
+        d: Math.random() * 0.05 + 0.04,
+        f: Math.random() * 0.86 + 0.04,
+        s: Math.random() * 1.2 + 0.4,
+        c: Math.random() < 0.18,
+      };
+    });
+  }
+
+  let mouse = { x: -9999, y: -9999, active: false };
+  canvas.addEventListener('mousemove', (e) => {
+    const r = canvas.getBoundingClientRect();
+    mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; mouse.active = true;
+  });
+  canvas.addEventListener('mouseleave', () => { mouse.active = false; });
+
+  function frame() {
+    ctx.clearRect(0, 0, w, h);
+    const accent = getAccent();
+    const fg = getFg();
+    for (const p of particles) {
+      // Mouse repel
+      if (mouse.active) {
+        const dx = p.x - mouse.x, dy = p.y - mouse.y;
+        const d2 = dx*dx + dy*dy;
+        if (d2 < 80*80) {
+          const f = (1 - Math.sqrt(d2)/80) * 1.2;
+          p.vx += (dx / Math.sqrt(d2 + 1)) * f;
+          p.vy += (dy / Math.sqrt(d2 + 1)) * f;
+        }
+      }
+      // Spring to target
+      p.vx += (p.tx - p.x) * p.d;
+      p.vy += (p.ty - p.y) * p.d;
+      p.vx *= p.f; p.vy *= p.f;
+      p.x += p.vx; p.y += p.vy;
+
+      ctx.fillStyle = p.c ? accent : fg;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.s, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    requestAnimationFrame(frame);
+  }
+
+  function start() {
+    if (started) return;
+    started = true;
+    build();
+    requestAnimationFrame(frame);
+  }
+
+  // wait for fonts then build
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(start);
+    setTimeout(start, 1500); // safety
+  } else {
+    start();
+  }
+
+  let resizeT;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeT);
+    resizeT = setTimeout(build, 200);
+  });
+  document.addEventListener('themechange', () => { /* colors read live */ });
+})();
+</script>
+</body>
+</html>

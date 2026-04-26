@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Skills — onclimb</title>
+<link rel="stylesheet" href="shared/tokens.css" />
+<link rel="stylesheet" href="shared/shell.css" />
+<style>
+.page-hero { padding: 80px 0 40px; }
+.page-hero__inner { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+.page-hero__crumb {
+  font-family: var(--font-mono); font-size: 12px; color: var(--fg-dim);
+  letter-spacing: 0.16em; margin-bottom: 18px; display: flex; gap: 6px;
+}
+.page-hero__crumb b { color: var(--accent); font-weight: 500; }
+.page-hero h1 {
+  font-size: clamp(40px, 5.6vw, 64px);
+  font-weight: 600; letter-spacing: -0.03em; line-height: 1.05;
+  margin-bottom: 20px;
+}
+.page-hero__lead {
+  font-size: 18px; color: var(--fg); line-height: 1.7;
+  max-width: 640px;
+}
+
+/* Radar layout */
+.radar-section { padding: 60px 0; }
+.radar-section__inner { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+.radar-grid {
+  display: grid; gap: 32px;
+  grid-template-columns: 1fr;
+  align-items: center;
+}
+@media (min-width: 900px) {
+  .radar-grid { grid-template-columns: minmax(0, 1fr) 320px; gap: 60px; }
+}
+.radar-wrap {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  max-width: 600px;
+  margin: 0 auto;
+  width: 100%;
+}
+.radar-wrap svg { width: 100%; height: 100%; overflow: visible; }
+.radar-grid__line { stroke: var(--hairline-strong); fill: none; }
+.radar-grid__axis { stroke: var(--hairline); }
+.radar-grid__label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  fill: var(--fg-muted);
+  letter-spacing: 0.06em;
+}
+.radar-poly { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+.radar-dot { fill: var(--bg); stroke: var(--accent); stroke-width: 2; transition: r 200ms; }
+.radar-dot:hover { r: 8; }
+.radar-poly,.radar-dot { transition: all 800ms var(--ease-out); }
+.radar-legend {
+  display: flex; flex-direction: column; gap: 12px;
+}
+.radar-legend__item {
+  display: flex; gap: 14px; align-items: flex-start;
+  padding: 14px 16px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  background: var(--bg-elev);
+  cursor: pointer;
+  transition: all 200ms var(--ease-out);
+}
+.radar-legend__item:hover, .radar-legend__item.is-active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.radar-legend__bar {
+  width: 4px; align-self: stretch; border-radius: 4px;
+  background: var(--accent);
+}
+.radar-legend__name { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.radar-legend__sub { font-family: var(--font-mono); font-size: 11px; color: var(--fg-dim); }
+
+/* Level legend */
+.levels {
+  display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;
+  padding: 20px 0;
+  margin: 40px 0;
+  border-top: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--hairline);
+}
+.level {
+  display: flex; gap: 8px; align-items: center;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--fg-muted);
+}
+.level__dot { width: 10px; height: 10px; border-radius: 50%; }
+
+/* Category section */
+.cat-section { padding: 80px 0; }
+.cat-section__inner { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+.cat-section__head {
+  display: flex; align-items: baseline; gap: 16px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--hairline);
+  padding-bottom: 16px;
+}
+.cat-section__num { font-family: var(--font-mono); font-size: 12px; color: var(--accent); letter-spacing: 0.18em; }
+.cat-section__title { font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
+.cat-section__count {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 11px; color: var(--fg-dim);
+  letter-spacing: 0.16em;
+}
+
+.skills-bars {
+  display: grid; gap: 12px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 720px) { .skills-bars { grid-template-columns: 1fr 1fr; gap: 12px 32px; } }
+.skill-bar {
+  padding: 14px 16px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  background: var(--bg-elev);
+  transition: all 200ms;
+  cursor: pointer;
+}
+.skill-bar:hover { border-color: var(--accent); transform: translateX(4px); }
+.skill-bar__top {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.skill-bar__name { font-size: 14.5px; font-weight: 500; color: var(--fg-strong); }
+.skill-bar__lvl {
+  font-family: var(--font-mono);
+  font-size: 11px; color: var(--fg-muted);
+}
+.skill-bar__track {
+  height: 4px;
+  background: var(--hairline);
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+}
+.skill-bar__fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--cyan));
+  border-radius: 999px;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 1.2s var(--ease-out);
+}
+.skill-bar.is-revealed .skill-bar__fill { transform: scaleX(var(--w, 0)); }
+.skill-bar__bottom {
+  margin-top: 8px;
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.skill-bar__chip {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 2px 6px;
+  border: 1px solid var(--hairline);
+  border-radius: 3px;
+  color: var(--fg-muted);
+}
+
+/* Level color variants */
+.skill-bar[data-level="5"] .skill-bar__fill { background: linear-gradient(90deg, #4ADE80, #22C55E); }
+.skill-bar[data-level="4"] .skill-bar__fill { background: linear-gradient(90deg, var(--accent), var(--cyan)); }
+.skill-bar[data-level="3"] .skill-bar__fill { background: linear-gradient(90deg, var(--rose), var(--accent)); }
+.skill-bar[data-level="2"] .skill-bar__fill { background: linear-gradient(90deg, var(--amber), var(--rose)); }
+.skill-bar[data-level="1"] .skill-bar__fill { background: linear-gradient(90deg, var(--amber), var(--amber)); }
+</style>
+</head>
+<body data-page="skill">
+<main class="page">
+
+<section class="page-hero">
+  <div class="page-hero__inner">
+    <div class="page-hero__crumb" data-reveal><span>onclimb</span><span>/</span><b>skills</b></div>
+    <h1 data-reveal data-reveal-delay="80">手を動かしてきた、<br/>その全部。</h1>
+    <p class="page-hero__lead" data-reveal data-reveal-delay="160">
+      使ってきた技術と、その習熟度。レーダーで全体像を、バーで個別の深さを。
+    </p>
+  </div>
+</section>
+
+<section class="radar-section">
+  <div class="radar-section__inner">
+    <div class="radar-grid" data-reveal>
+      <div class="radar-wrap">
+        <svg viewBox="-200 -200 400 400" id="radar"></svg>
+      </div>
+      <div class="radar-legend" id="radar-legend"></div>
+    </div>
+
+    <div class="levels" data-reveal>
+      <div class="level"><span class="level__dot" style="background:#4ADE80"></span>5 — 専門</div>
+      <div class="level"><span class="level__dot" style="background:var(--accent)"></span>4 — 実務継続</div>
+      <div class="level"><span class="level__dot" style="background:var(--rose)"></span>3 — 実務経験</div>
+      <div class="level"><span class="level__dot" style="background:var(--amber)"></span>2 — 個人利用</div>
+      <div class="level"><span class="level__dot" style="background:var(--amber);opacity:0.6"></span>1 — 学習中</div>
+    </div>
+  </div>
+</section>
+
+<section class="cat-section">
+  <div class="cat-section__inner" id="categories"></div>
+</section>
+
+</main>
+
+<script src="shared/shell.js"></script>
+<script>
+const AXES = [
+  { key: 'backend',  label: 'Backend',       value: 4.5 },
+  { key: 'frontend', label: 'Frontend',      value: 3.5 },
+  { key: 'infra',    label: 'Infra/Cloud',   value: 4.0 },
+  { key: 'arch',     label: 'Architecture',  value: 4.0 },
+  { key: 'ai',       label: 'AI/MLOps',      value: 3.0 },
+  { key: 'devops',   label: 'DevOps',        value: 4.0 },
+  { key: 'low',      label: 'Low-level',     value: 3.5 },
+  { key: 'sec',      label: 'Security',      value: 3.0 },
+];
+
+(function buildRadar() {
+  const svg = document.getElementById('radar');
+  const R = 160;
+  const N = AXES.length;
+  function pt(i, r) {
+    const a = -Math.PI/2 + (i / N) * Math.PI * 2;
+    return [Math.cos(a) * r, Math.sin(a) * r];
+  }
+  let html = '';
+  // grid rings
+  for (let level = 1; level <= 5; level++) {
+    const r = (R * level) / 5;
+    let d = '';
+    for (let i = 0; i < N; i++) {
+      const [x, y] = pt(i, r);
+      d += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1);
+    }
+    d += 'Z';
+    html += `<path class="radar-grid__line" d="${d}" />`;
+  }
+  // axes
+  for (let i = 0; i < N; i++) {
+    const [x, y] = pt(i, R);
+    html += `<line class="radar-grid__axis" x1="0" y1="0" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}"/>`;
+    const [lx, ly] = pt(i, R + 28);
+    html += `<text class="radar-grid__label" x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" dominant-baseline="middle">${AXES[i].label.toUpperCase()}</text>`;
+  }
+  // poly
+  let poly = '';
+  AXES.forEach((a, i) => {
+    const [x, y] = pt(i, (R * a.value) / 5);
+    poly += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1);
+  });
+  poly += 'Z';
+  html += `<path class="radar-poly" d="${poly}" />`;
+  AXES.forEach((a, i) => {
+    const [x, y] = pt(i, (R * a.value) / 5);
+    html += `<circle class="radar-dot" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="5"><title>${a.label} ${a.value}/5</title></circle>`;
+  });
+  svg.innerHTML = html;
+
+  const legend = document.getElementById('radar-legend');
+  legend.innerHTML = AXES.map(a => `
+    <div class="radar-legend__item">
+      <div class="radar-legend__bar" style="opacity:${(a.value/5).toFixed(2)}"></div>
+      <div style="flex:1">
+        <div class="radar-legend__name">${a.label}</div>
+        <div class="radar-legend__sub">${a.value.toFixed(1)} / 5.0</div>
+      </div>
+    </div>
+  `).join('');
+})();
+
+const CATS = [
+  { name: 'プログラミング言語', tag: 'Language', skills: [
+    { name: 'TypeScript', lvl: 4, tech: ['Node.js', 'Next.js', 'NestJS'] },
+    { name: 'Go', lvl: 3, tech: ['gqlgen', 'Echo', 'gorm'] },
+    { name: 'Python', lvl: 4, tech: ['FastAPI', 'PyTorch', 'OpenCV'] },
+    { name: 'C', lvl: 3, tech: ['AUTOSAR', '組み込み'] },
+    { name: 'Swift', lvl: 2, tech: ['SwiftUI'] },
+  ]},
+  { name: 'フレームワーク・ライブラリ', tag: 'Framework', skills: [
+    { name: 'Next.js', lvl: 4, tech: ['App Router', 'OpenNext'] },
+    { name: 'React', lvl: 4, tech: ['Hooks', 'Tailwind'] },
+    { name: 'NestJS', lvl: 4, tech: ['Prisma', 'GraphQL'] },
+    { name: 'FastAPI', lvl: 3, tech: ['Pydantic'] },
+    { name: 'Express', lvl: 3, tech: [] },
+    { name: 'Apollo / GraphQL', lvl: 4, tech: ['gqlgen'] },
+  ]},
+  { name: 'クラウド・インフラ', tag: 'Cloud', skills: [
+    { name: 'AWS', lvl: 4, tech: ['ECS', 'Lambda', 'EC2', 'CDK'] },
+    { name: 'Cloudflare', lvl: 3, tech: ['Workers', 'D1'] },
+    { name: 'GCP / Cloud Run', lvl: 3, tech: [] },
+    { name: 'Vercel', lvl: 3, tech: [] },
+    { name: 'Terraform', lvl: 3, tech: ['IaC'] },
+    { name: 'Docker', lvl: 4, tech: ['compose', 'ECR'] },
+  ]},
+  { name: 'データベース・ストレージ', tag: 'Data', skills: [
+    { name: 'PostgreSQL', lvl: 4, tech: ['index', 'partition'] },
+    { name: 'Prisma', lvl: 4, tech: [] },
+    { name: 'gorm', lvl: 3, tech: [] },
+    { name: 'Drizzle', lvl: 3, tech: [] },
+  ]},
+  { name: 'AI / MLOps', tag: 'AI', skills: [
+    { name: 'PyTorch', lvl: 3, tech: ['推薦モデル'] },
+    { name: 'LLM / Claude', lvl: 4, tech: ['Claude Code', 'Copilot'] },
+    { name: 'MLflow', lvl: 3, tech: ['実験管理'] },
+    { name: 'AWS SageMaker', lvl: 3, tech: [] },
+    { name: 'OpenCV', lvl: 3, tech: ['画像処理'] },
+  ]},
+  { name: 'DevOps・テスト・セキュリティ', tag: 'DevOps', skills: [
+    { name: 'GitHub Actions', lvl: 4, tech: ['CI/CD'] },
+    { name: 'Datadog', lvl: 3, tech: ['監視'] },
+    { name: 'AWS CloudWatch', lvl: 3, tech: [] },
+    { name: 'JWT / OAuth2', lvl: 4, tech: ['NextAuth'] },
+    { name: 'Firebase Auth', lvl: 3, tech: [] },
+    { name: 'Supabase Auth', lvl: 3, tech: [] },
+  ]},
+];
+
+(function buildCats() {
+  const root = document.getElementById('categories');
+  root.innerHTML = CATS.map((c, i) => `
+    <div class="cat-section__head" data-reveal>
+      <span class="cat-section__num">/${String(i+1).padStart(2,'0')}</span>
+      <h3 class="cat-section__title">${c.name}</h3>
+      <span class="cat-section__count">${c.skills.length} skills</span>
+    </div>
+    <div class="skills-bars" style="margin-bottom:48px">
+      ${c.skills.map((s, j) => `
+        <div class="skill-bar" data-level="${s.lvl}" data-reveal data-reveal-delay="${j*40}" style="--w:${s.lvl/5}">
+          <div class="skill-bar__top">
+            <span class="skill-bar__name">${s.name}</span>
+            <span class="skill-bar__lvl">${s.lvl}/5</span>
+          </div>
+          <div class="skill-bar__track"><div class="skill-bar__fill"></div></div>
+          ${s.tech.length ? `<div class="skill-bar__bottom">${s.tech.map(t=>`<span class="skill-bar__chip">${t}</span>`).join('')}</div>` : ''}
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+})();
+</script>
+</body>
+</html>
