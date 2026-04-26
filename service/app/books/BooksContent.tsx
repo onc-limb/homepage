@@ -4,6 +4,13 @@ import type { Book, SortKey, SortOrder } from "@/lib/types/book"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
 import { BookOpen, ExternalLink, ArrowUpDown } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -15,11 +22,12 @@ import remarkGfm from "remark-gfm"
 function BookCard({
     book,
     ogpImage,
+    onOpenMemo,
 }: {
     book: Book
     ogpImage: string | null
+    onOpenMemo: (book: Book) => void
 }) {
-    const [memoExpanded, setMemoExpanded] = useState(false)
     return (
         <div className="border border-turquoise-200/60 bg-white/70 rounded-lg shadow-card hover:shadow-soft transition-all duration-200 overflow-hidden flex flex-row">
             {/* サムネイル */}
@@ -68,18 +76,16 @@ function BookCard({
                 )}
                 {book.memo && (
                     <div className="mt-auto">
-                        <div
-                            className={`text-sm text-foreground/70 leading-relaxed prose prose-sm prose-readable max-w-none ${memoExpanded ? "" : "line-clamp-3"}`}
-                        >
+                        <div className="text-sm text-foreground/70 leading-relaxed line-clamp-3 prose prose-sm prose-readable max-w-none">
                             <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                 {book.memo}
                             </ReactMarkdown>
                         </div>
                         <button
-                            onClick={() => setMemoExpanded(!memoExpanded)}
+                            onClick={() => onOpenMemo(book)}
                             className="text-xs text-turquoise-600 hover:text-turquoise-700 mt-1 transition-colors"
                         >
-                            {memoExpanded ? "閉じる" : "続きを読む"}
+                            続きを読む
                         </button>
                     </div>
                 )}
@@ -116,6 +122,7 @@ export default function BooksContent({
     const [books, setBooks] = useState<Book[]>(initialBooks)
     const [searchInput, setSearchInput] = useState(q)
     const debouncedQuery = useDebounce(searchInput, 300)
+    const [memoBook, setMemoBook] = useState<Book | null>(null)
 
     const isRead = tab !== "unread"
 
@@ -244,6 +251,7 @@ export default function BooksContent({
                                     key={book.id}
                                     book={book}
                                     ogpImage={book.ogpImage}
+                                    onOpenMemo={setMemoBook}
                                 />
                             ))}
                         </div>
@@ -258,6 +266,29 @@ export default function BooksContent({
                     )}
                 </div>
             </section>
+            {/* メモモーダル */}
+            <Dialog
+                open={memoBook !== null}
+                onOpenChange={(open) => {
+                    if (!open) setMemoBook(null)
+                }}
+            >
+                <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle>{memoBook?.title}</DialogTitle>
+                        <DialogDescription>
+                            {memoBook?.author}
+                            {memoBook?.publishedYear &&
+                                ` (${memoBook.publishedYear})`}
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="prose prose-sm prose-readable max-w-none">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            {memoBook?.memo ?? ""}
+                        </ReactMarkdown>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </>
     )
 }
