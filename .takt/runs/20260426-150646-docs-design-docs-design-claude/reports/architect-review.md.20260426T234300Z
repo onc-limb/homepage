@@ -1,0 +1,47 @@
+# アーキテクチャレビュー
+
+## 結果: REJECT
+
+## サマリー
+DRY 違反 5 件と新規純粋関数のテスト欠落 1 件、計 6 件のブロッキング問題を検出。同一モジュール内の重複ロジック・データ・SVG・構造が散在しており、契約の一覧性とテスト容易性が損なわれている。
+
+## 確認した観点
+- [x] 構造・設計
+- [x] コード品質
+- [x] 変更スコープ
+- [x] テストカバレッジ
+- [x] デッドコード
+- [x] 呼び出しチェーン検証
+
+## 今回の指摘（new）
+| # | finding_id | family_tag | スコープ | 場所 | 問題 | 修正案 |
+|---|------------|------------|---------|------|------|--------|
+| 1 | ARCH-NEW-BookCluster-tests-L44 | missing-tests | スコープ内 | `service/components/books/BookCluster.ts:44,66,105` | 新規追加された純粋関数 `deriveTopClusters` / `assignBooksToClusters` / `relatedIds` のテストが 0 件。coder-decisions #3 が「純粋関数として切り出した（テスト容易性）」と明記しているのに `lib/__tests__/` に対応テストが無い。Policy「テストがない新しい振る舞い → REJECT」 | `service/components/books/__tests__/BookCluster.test.ts` を追加。最低 (a) 上位 4 タグを件数降順・同点 label 昇順で返す、(b) `c.label ∈ book.tags` の本のみ採用、(c) `isRead` → `read`/`queue` マッピング、(d) `relatedIds` が同タグ共有の上限 4 件を返し自分を除外、を網羅する |
+| 2 | ARCH-NEW-isActive-dup | dry-violation | スコープ内 | `service/components/header/MobileNav.tsx:49-52` と `service/components/header/SiteNav.tsx:31-34` | 完全に同一の `function isActive(pathname, href)` が 2 ファイルで定義されている DRY 違反 | `service/components/header/nav-utils.ts` を新設し `isNavItemActive(pathname, href)` 1 つに集約、両ファイルから import。`header/` モジュール内に閉じる抽象化なので公開 API を不自然に広げない |
+| 3 | ARCH-NEW-social-urls-dup | dry-violation | スコープ内 | `service/components/footer/Footer.tsx:5-9` / `service/app/social/page.tsx:38-60` / `service/app/page.tsx:314` | GitHub/Zenn/X の URL が 3 箇所に散在。URL 変更時に 3 ファイル更新が必要 | `service/lib/constants.ts` に `SOCIAL_LINKS = [{ name, url, username }]` を canonical 定義。Footer / TopPage は `url` を参照、social page は icon/description を locally 結合。既存 `NAV_ITEMS` と同居が自然 |
+| 4 | ARCH-NEW-projectNumber-dup | dry-violation | スコープ内 | `service/app/portfolio/[id]/page.tsx:57-65` の `projectNumber()` と `service/components/portfolio/PortfolioListClient.tsx:45,74` の `` `P/${...}` `` / `` `W/${...}` `` | 番号フォーマット（プレフィックス + zero-pad 2桁）が複数箇所に重複し、フォーマット変更時の整合維持が困難 | `service/lib/portfolio.ts` に `formatProjectNumber(category, indexInList): string` を export し両呼び出し元から使う。既存 `findAdjacentProjectIds` と同モジュールでドメインの操作集約場所として自然 |
+| 5 | ARCH-NEW-icon-dup | dry-violation | スコープ内 | `GitHubIcon` が `service/components/portfolio/ProjectCard.tsx:4-14` / `service/app/portfolio/[id]/page.tsx:12-16` / `service/app/social/page.tsx:5-16` の 3 箇所、`ExternalIcon` が `ProjectCard.tsx:16-28` と `portfolio/[id]/page.tsx:18-29` の 2 箇所に重複 | 同一 SVG path/viewBox の Icon コンポーネントが複数定義され、サイト全体のアイコン一覧性が失われる | `service/components/icons/{GitHubIcon,ExternalIcon}.tsx` を新設し集約、3 ファイルから import。`XIcon` も同居させるとブランドアイコン全体が 1 箇所で見える |
+| 6 | ARCH-NEW-PortfolioSection-dup | dry-violation | スコープ内 | `service/components/portfolio/PortfolioListClient.tsx:23-51` (Personal Projects) と `52-80` (Work) | 構造完全同一の section が 2 回繰り返され、差分は title / countLabel / seq / prefix / 配列のみ。Knowledge: 「本質的に同じ構造のコンポーネント → REJECT」 | `service/components/portfolio/PortfolioSection.tsx` に抽出し `<PortfolioSection seq="/01" title="Personal Projects" countLabel="projects" prefix="P" projects={personal} />` を 2 回呼ぶ形に。number は ARCH-NEW-projectNumber-dup の helper を共用 |
+
+## 継続指摘（persists）
+| # | finding_id | family_tag | 前回根拠 | 今回根拠 | 問題 | 修正案 |
+|---|------------|------------|----------|----------|------|--------|
+| - | - | - | - | - | 該当なし（初回実行） | - |
+
+## 解消済み（resolved）
+| finding_id | 解消根拠 |
+|------------|----------|
+| - | 該当なし（初回実行） |
+
+## 再開指摘（reopened）
+| # | finding_id | family_tag | 解消根拠（前回） | 再発根拠 | 問題 | 修正案 |
+|---|------------|------------|----------------|---------|------|--------|
+| - | - | - | - | - | 該当なし（初回実行） | - |
+
+## 検証証跡
+- ビルド: 未実行（編集禁止フェーズのため。coder-decisions #7 で `tsc --noEmit` EXIT=0 / `pnpm lint` warnings 0 が記録済み）
+- テスト: 未実行。test-report.md の 50 passed (5 files) は lib 層のみで、本指摘 #1 の `BookCluster.ts` 純粋関数群はカバーされていないことを `lib/__tests__/` の grep（`deriveTopClusters|assignBooksToClusters` ヒット 0 件）で確認
+- 動作確認: 未実行（編集禁止フェーズのため）。ファクトチェックは git diff、ファイル直接読、grep による呼び出し元全件確認で実施
+
+## REJECT判定条件
+- `new` 6 件あり REJECT 確定。すべて `finding_id` 付き。修正は同一モジュール内 1 ファイル抽出 / 既存 `lib/` への helper 追加で済み、新規公開 API 拡張や責務境界変更は不要

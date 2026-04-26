@@ -1,0 +1,131 @@
+# 変更スコープ宣言
+
+## タスク
+docs/design 素案を service/ サイト (Next.js 15 + Tailwind) に再実装で適用。デザイントークン、共通シェル、各公開ページを素案準拠に置換。
+
+## 変更予定
+
+### 共通基盤
+| 種別 | ファイル |
+|------|---------|
+| 変更 | `service/tailwind.config.ts` |
+| 変更 | `service/tailwind.config.js` |
+| 変更 | `service/app/globals.css` |
+| 変更 | `service/app/layout.tsx` |
+| 変更 | `service/components/SiteShell.tsx` |
+| 変更 | `service/lib/constants.ts` |
+| 作成 | `service/lib/theme.ts` |
+
+### Theme / Reveal / Particle
+| 種別 | ファイル |
+|------|---------|
+| 作成 | `service/components/theme/ThemeProvider.tsx` |
+| 作成 | `service/components/theme/ThemeToggle.tsx` |
+| 作成 | `service/components/theme/index.ts` |
+| 作成 | `service/components/animations/ParticleBackground.tsx` |
+| 作成 | `service/components/animations/Reveal.tsx` |
+| 作成 | `service/components/animations/FloatingShapes.tsx` |
+| 作成 | `service/components/animations/HeroParticleTitle.tsx` |
+| 作成 | `service/components/animations/HeroSpotlight.tsx` |
+| 変更 | `service/components/animations/index.ts` |
+
+### Header / Footer
+| 種別 | ファイル |
+|------|---------|
+| 変更 | `service/components/header/Header.tsx` |
+| 作成 | `service/components/header/SiteBrand.tsx` |
+| 作成 | `service/components/header/SiteNav.tsx` |
+| 作成 | `service/components/header/MobileNav.tsx` |
+| 変更 | `service/components/header/index.ts` |
+| 削除 | `service/components/header/HeaderButton.tsx` |
+| 作成 | `service/components/footer/Footer.tsx` |
+| 作成 | `service/components/footer/FooterClock.tsx` |
+| 作成 | `service/components/footer/index.ts` |
+| 削除 | `service/components/footer.tsx` |
+
+### 既存 animation 削除
+| 種別 | ファイル |
+|------|---------|
+| 削除 | `service/components/animations/GeometricBackground.tsx` |
+| 削除 | `service/components/animations/FloatingShape.tsx` |
+| 削除 | `service/components/animations/HeroContent.tsx` |
+| 削除 | `service/components/animations/AnimatedNavCard.tsx` |
+| 削除 | `service/components/animations/AnimatedSkillCard.tsx` |
+| 削除 | `service/components/animations/FadeInSection.tsx` |
+
+### lib 拡張
+| 種別 | ファイル |
+|------|---------|
+| 変更 | `service/lib/profile.ts` (parseProfile 追加) |
+| 変更 | `service/lib/skills.ts` (getRadarAxes / RADAR_AXIS_KEYS 追加) |
+| 変更 | `service/lib/portfolio.ts` (findAdjacentProjectIds 追加 + portfolio-site.md import 復活) |
+
+### Pages / Components
+| 種別 | ファイル |
+|------|---------|
+| 変更 | `service/app/page.tsx` (top) |
+| 変更 | `service/app/profile/page.tsx` |
+| 変更 | `service/app/skills/page.tsx` |
+| 変更 | `service/app/portfolio/page.tsx` |
+| 変更 | `service/app/portfolio/[id]/page.tsx` |
+| 変更 | `service/app/news/page.tsx` |
+| 変更 | `service/app/news/[date]/page.tsx` |
+| 変更 | `service/app/books/page.tsx` |
+| 変更 | `service/app/books/BooksContent.tsx` |
+| 変更 | `service/app/social/page.tsx` |
+| 作成 | `service/components/skills/RadarChart.tsx` |
+| 作成 | `service/components/skills/SkillBar.tsx` |
+| 作成 | `service/components/skills/SkillCategorySection.tsx` |
+| 作成 | `service/components/skills/index.ts` |
+| 作成 | `service/components/portfolio/ProjectCard.tsx` |
+| 作成 | `service/components/portfolio/PortfolioFilter.tsx` |
+| 作成 | `service/components/portfolio/Pager.tsx` |
+| 作成 | `service/components/portfolio/ArchDiagram.tsx` |
+| 作成 | `service/components/portfolio/index.ts` |
+| 作成 | `service/components/news/Ticker.tsx` |
+| 作成 | `service/components/news/NewsCard.tsx` |
+| 作成 | `service/components/news/NewsTagFilter.tsx` |
+| 作成 | `service/components/news/DayHead.tsx` |
+| 作成 | `service/components/news/index.ts` |
+| 作成 | `service/components/books/BookGraph.tsx` |
+| 作成 | `service/components/books/BookListView.tsx` |
+| 作成 | `service/components/books/BookViewToggle.tsx` |
+| 作成 | `service/components/books/index.ts` |
+
+### docs
+| 種別 | ファイル |
+|------|---------|
+| 作成 | `docs/design/MISSING_FEATURES.md` |
+
+## 推定規模
+Large
+
+## 影響範囲
+- 全公開ページ (top / profile / skills / portfolio / portfolio detail / news / news[date] / books / social) の見た目と DOM 構造
+- `bg-turquoise-*` / `terracotta` / `watercolor` クラスの全廃 → CSS 変数経由のダーク青系トークンへ
+- `<html data-theme="dark">` SSR + ThemeProvider による hydration 安全な dark default
+- `NAV_ITEMS` 順序変更 (Home 先頭、Social ヘッダー除外) → Header / Footer / top Explore グリッドの全配線
+- フォント: Inter → Geist + Noto Sans JP + Space Grotesk + JetBrains Mono
+- `components/ui/*` shadcn コンポーネントは CSS 変数経由で自動追従 (個別変更しない)
+
+---
+
+## 実装で追加 / 修正したファイル (実績)
+
+計画外で追加・更新が必要だったもの:
+
+| 種別 | ファイル | 追加理由 |
+|------|---------|---------|
+| 作成 | `service/components/books/BookCluster.ts` | クラスタ導出 / 本配置 / related 算出を純粋関数化 (BookGraph と BookListView 双方が利用) |
+| 修正 | `service/components/animations/Reveal.tsx` | `as` prop の dynamic-tag 型解決が "union type too complex" になりビルド失敗 → `React.createElement` ベースに書き換え |
+| 修正 | `service/lib/profile.ts` | regex の `\z` (JS 未対応) で文書末セクションが取れず 4 テスト失敗 → 行配列走査に変更 |
+| 修正 | `service/components/footer/Footer.tsx` | `// status` を JSX 子要素として記述しており `react/jsx-no-comment-textnodes` で失敗 → `{"// status"}` に変更 |
+| 修正 | `service/components/ui/card.tsx` | hardcoded turquoise を `bg-surface / border-hairline / hover:border-accent` 等のデザイントークンに置換 |
+| 修正 | `service/app/studio/page.tsx` | `text-turquoise-600` 等の dead クラスを `text-accent` / `text-fg-muted` に置換 (本来は scope 外扱いだが、admin UI が無色化するため tokens 化のみ実施) |
+| 作成 | `docs/design/MISSING_FEATURES.md` | 計画のとおり、portfolio / news / books の不足項目を「該当ページ / 不足機能 / 暫定対応 / 推奨」で記録 |
+
+## 削除ファイル
+
+- `service/components/footer.tsx` (新 `components/footer/` ディレクトリと resolution が衝突)
+- `service/components/header/HeaderButton.tsx`
+- `service/components/animations/{FadeInSection,FloatingShape,GeometricBackground,HeroContent,AnimatedNavCard,AnimatedSkillCard}.tsx`

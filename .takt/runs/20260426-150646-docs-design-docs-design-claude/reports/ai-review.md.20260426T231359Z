@@ -1,0 +1,44 @@
+# AI生成コードレビュー
+
+## 結果: REJECT
+
+## サマリー
+ロジックバグ・dead code・DRY違反・未使用export・silent fallback など、AI 特有の問題を 11 件検出したため REJECT。
+
+## 検証した項目
+| 観点 | 結果 | 備考 |
+|------|------|------|
+| 仮定の妥当性 | ❌ | profile pull-quote 判定が文字列ハードコード推測 |
+| API/ライブラリの実在 | ✅ | next/font, IntersectionObserver, document.fonts いずれも実在 |
+| コンテキスト適合 | ⚠️ | tailwind config 二重管理に整合不一致 (accent-shadcn が片方のみ) |
+| スコープ | ✅ | turquoise/terracotta 全廃、削除コンポーネント参照残存なし |
+
+## 今回の指摘（new）
+| # | finding_id | family_tag | カテゴリ | 場所 | 問題 | 修正案 |
+|---|------------|------------|---------|------|------|--------|
+| 1 | AI-NEW-HeroParticleTitle-L148 | logic-bug | 二重start実行+分岐重複 | `service/components/animations/HeroParticleTitle.tsx:148-174` | `document.fonts.ready.then(start)` と `setTimeout(start, 1500)` で start() が 2 回実行される。if/else 両分岐の listener 登録/cleanup も重複 | `started` フラグで多重実行を抑止し、listener 登録を分岐外に出す |
+| 2 | AI-NEW-NewsContent-L31 | dead-code | 無意味な useMemo | `service/components/news/NewsContent.tsx:31-34` | `tag` 値に関わらず `days` と等価な値を返すだけ。実際のフィルタは内側 map で実施。useMemo・spread・分岐すべて dead | `filteredDays` 削除し、`days` を直接 map |
+| 3 | AI-NEW-NewsCard-L111 | dead-code | 到達不能 catch | `service/components/news/NewsCard.tsx:111-121` | try 内の `new Date()` `isNaN` `padStart` `slice` はいずれも throw しない。catch は論理的デッドコード | try-catch を撤去 |
+| 4 | AI-NEW-page-L92 | dead-code | 空 style + What/How コメント | `service/app/page.tsx:92-99` | 中身が「dot is rendered via ::before」コメントのみの空 CSSProperties。何も適用されない | `style` prop ごと削除 |
+| 5 | AI-NEW-tailwind-ts-L68 | dead-code | 未使用 color key | `service/tailwind.config.ts:68-71` | `accent-shadcn` がコードベース全体で未参照、`tailwind.config.js` にも無し | ブロック削除 |
+| 6 | AI-NEW-profile-page-L130 | hallucination | 文字列ハードコード推測 | `service/app/profile/page.tsx:130-145` | `para.startsWith("最も大切にしているのは")` で pull-quote 化。md 文言が変わると壊れる隠れた結合 | md 側で `>` ブロッククォートを使い、`parseProfile` の戻り値に pull-quote フィールドを追加 |
+| 7 | AI-NEW-portfolio-detail-L76 | dry-violation | 番号算出ロジック 3 重複 | `service/app/portfolio/[id]/page.tsx:76-78,294-301,310-317` | `(category==="personal"?"P/":"W/")+padStart(...)` が 3 回繰り返される | 同ファイル内に `projectNumber(p, all)` helper を定義し 3 箇所を置換 |
+| 8 | AI-NEW-Footer-L69 | maintenance-debt | 著作権年ハードコード | `service/components/footer/Footer.tsx:69` | `© 2026 onclimb` 直書き。直前コミット `6eaccc3` で同種更新が発生済み (ボーイスカウト違反) | `© {new Date().getFullYear()} onclimb` |
+| 9 | AI-NEW-profile-import-L5 | api-leakage | profile.md 二重 import | `service/lib/profile.ts:3` + `service/app/profile/page.tsx:5-6` | `getProfile()` 内部で読む md を、page でも `import profileRaw` で再 import。配線責任が外に漏れている | `lib/profile.ts` に `getParsedProfile()` を export し、page から `import profileRaw` を削除 |
+| 10 | AI-NEW-skills-index-L2 | unused-export | 内部限定 export の公開 | `service/components/skills/index.ts:2` + `service/components/theme/index.ts:1` | `SkillBar` は `SkillCategorySection` 内部のみ、`useTheme` は `ThemeToggle` 内部のみで使用 | 両 index.ts から該当 export を削除し、相対 import に変更 |
+| 11 | AI-NEW-NewsContent-L120 | silent-fallback | デフォルト値で UX 崩壊 | `service/components/news/NewsContent.tsx:120` | `tags.length===0 ? ["frontend"] : tags`。タグ無し記事を強制的に frontend 扱い → フィルタが意味を失う | `return []` を返し、UI 側で「タグ未確定」を正直に扱う (all 以外で非表示など) |
+
+## 継続指摘（persists）
+| # | finding_id | family_tag | 前回根拠 | 今回根拠 | 問題 | 修正案 |
+|---|------------|------------|----------|----------|------|--------|
+| - | - | - | - | - | 初回レビューのため該当なし | - |
+
+## 解消済み（resolved）
+| finding_id | 解消根拠 |
+|------------|----------|
+| - | 初回レビューのため該当なし |
+
+## 再開指摘（reopened）
+| # | finding_id | family_tag | 解消根拠（前回） | 再発根拠 | 問題 | 修正案 |
+|---|------------|------------|----------------|---------|------|--------|
+| - | - | - | - | - | 初回レビューのため該当なし | - |

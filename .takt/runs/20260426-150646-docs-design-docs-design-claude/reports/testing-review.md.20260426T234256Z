@@ -1,0 +1,45 @@
+# テストレビュー
+
+## 結果: REJECT
+
+## サマリー
+新規追加された `service/components/books/BookCluster.ts` の純粋関数（`deriveTopClusters` / `assignBooksToClusters`）にテストが 0 件。「新しい振る舞い：テスト必須」基準に違反。既存 5 ファイルのテスト品質（GWT 構造／命名／独立性／境界値）は良好。
+
+## 確認した観点
+| 観点 | 結果 | 備考 |
+|------|------|------|
+| テストカバレッジ | ❌ | BookCluster.ts 未カバー |
+| テスト構造（Given-When-Then） | ✅ | 既存 5 ファイル全テストに GWT コメント |
+| テスト命名 | ✅ | `it("does X when Y")` パターン徹底 |
+| テスト独立性・再現性 | ✅ | `factorySkill` ファクトリ採用、共有可変フィクスチャなし |
+| モック・フィクスチャ | ✅ | 内部実装モックなし、引数経由の純粋関数検証 |
+| テスト戦略（ユニット/統合/E2E） | ✅ | 純粋関数はユニット適切。統合不要の判断も妥当 |
+| 契約入力位置（body/query/path） | N/A | 本変更に HTTP 契約なし |
+
+## 今回の指摘（new）
+| # | finding_id | family_tag | カテゴリ | 場所 | 問題 | 修正案 |
+|---|-----------|------------|---------|------|------|--------|
+| 1 | TEST-NEW-bookcluster-L44 | books-graph-untested | カバレッジ欠落 | `service/components/books/BookCluster.ts:44-103` | 新規純粋関数 `deriveTopClusters` / `assignBooksToClusters` にテストなし。`coder-decisions.md` 第3項で「純粋関数として切り出した（テスト容易性のため）」と明記されているのにテスト未作成。`Grep BookCluster\|deriveTopClusters\|assignBooksToClusters` 結果は 3 ソースのみで `__tests__` 配下なし。タグ集計／同点 lexical tiebreak／上位 4 件 slice／位置 fallback `?? 50`／`isRead` 二値マッピング／`relatedIds` 4 件キャップ／座標 5..95 クランプの分岐ロジックが多数あり回帰検出に必須 | `service/components/books/__tests__/BookCluster.test.ts` を作成し以下 8 ケースを追加: (a) 空入力で `[]` 返却、(b) タグ頻度上位 4 件のみ／limit 打ち切り、(c) 同頻度時 lexical 昇順、(d) 本は最初にマッチした cluster のみに割当、(e) クラスタ非該当本は除外、(f) `isRead:true→"read"` / `false→"queue"`、(g) 座標 5..95 クランプ、(h) `relatedIds` が自身を除外し 4 件で打切。`Book` ファクトリは `factorySkill` 同パターン |
+
+## 継続指摘（persists）
+| # | finding_id | family_tag | 前回根拠 | 今回根拠 | 問題 | 修正案 |
+|---|-----------|------------|----------|----------|------|--------|
+| - | - | - | - | - | 該当なし（このステップは初回実行） | - |
+
+## 解消済み（resolved）
+| finding_id | 解消根拠 |
+|------------|----------|
+| - | 該当なし |
+
+## 再開指摘（reopened）
+| # | finding_id | family_tag | 解消根拠（前回） | 再発根拠 | 問題 | 修正案 |
+|---|-----------|------------|----------------|---------|------|--------|
+| - | - | - | - | - | 該当なし | - |
+
+## 検証証跡
+- ビルド: 未確認（実装ステップで `pnpm exec tsc --noEmit EXIT=0` / `pnpm lint warnings 0` を `coder-scope.md` および `implement.1` レポートで確認済み）
+- テスト: 未実行（権限制約のため `pnpm test` を直接実行できず）。`implement.1` レポートで `Test Files 5 passed (5) / Tests 50 passed (50)` 報告を確認。`__tests__` 配下を `ls` で実列挙し、`BookCluster` 関連テストファイルが存在しないことを確認
+- 動作確認: ソース直読（`BookCluster.ts` 128 行 / 既存 5 テストファイル全文）と `Grep BookCluster\|deriveTopClusters\|assignBooksToClusters` で test 不在を確認
+
+## REJECT判定条件
+- `new` 1 件（`TEST-NEW-bookcluster-L44`）により REJECT

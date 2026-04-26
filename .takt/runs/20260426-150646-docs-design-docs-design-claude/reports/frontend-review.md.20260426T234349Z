@@ -1,0 +1,42 @@
+# フロントエンドレビュー
+
+## 結果: REJECT
+
+## サマリー
+`/news` ページの DayHead と NewsCard が永続的に不可視になる重大な UX バグを検出。両者は `<Reveal>` ラッパーなしで `data-reveal=""` を直書きしており、`globals.css:318` の `[data-reveal] { opacity: 0 }` から復帰できない。
+
+## 確認した観点
+| 観点 | 結果 | 備考 |
+|------|------|------|
+| コンポーネント設計 | ❌ | data-reveal 属性の責務分離が不整合 |
+| 状態管理 | ✅ | - |
+| パフォーマンス | ✅ | - |
+| アクセシビリティ | ❌ | 表示が消える＝SR にも届かない |
+| 型安全性 | ✅ | - |
+
+## 今回の指摘（new）
+| # | finding_id | family_tag | 場所 | 問題 | 修正案 |
+|---|------------|------------|------|------|--------|
+| 1 | FE-NEW1-NewsCard-L70 | reveal-orphan-attr | `service/components/news/NewsCard.tsx:70-71` | `<a>` に `data-reveal=""` `data-reveal-delay={delay}` を直書きしているが、`NewsContent.tsx:54-61` で `<Reveal>` 包みなしに直接描画される。`globals.css:318` の `[data-reveal] { opacity:0; transform:translateY(20px) }` が常時適用、`is-revealed` を付けるのは `Reveal.tsx:33-55` の自要素 ref 限定なので **全 NewsCard が永続的に不可視**（hover 拡大も opacity:0 のため無意味）。素案 `shell.js:220-237` の global `setupReveal()` の責務移動が漏れている。 | `NewsContent.tsx:54-61` を `<Reveal key={article.url} delay={i*40}><NewsCard ... /></Reveal>` に変更し、`NewsCard.tsx:70-71` の `data-reveal=""`/`data-reveal-delay` 属性と `delay` プロップを削除。Reveal を共通基盤として導入済みなので、個別コンポーネントが裸属性で隠れ依存を持たない方針に統一する。 |
+| 2 | FE-NEW2-DayHead-L12 | reveal-orphan-attr | `service/components/news/DayHead.tsx:9-13` | `<header>` に `data-reveal=""` を直書きしているが `NewsContent.tsx:39-43` で `<Reveal>` 包みなしに直接描画される。FE-NEW1 と同根で **全日付ヘッダー (Today / Yesterday / Two days ago) が永続的に不可視**。 | `NewsContent.tsx:39-43` で `<Reveal as="header"><DayHead ... /></Reveal>` で包む（または DayHead 自身を `<Reveal as="header">` ベースに置換）し、`DayHead.tsx:12` の `data-reveal=""` を削除。FE-NEW1 と同じ責務分離方針に揃える。 |
+
+## 継続指摘（persists）
+| # | finding_id | family_tag | 前回根拠 | 今回根拠 | 問題 | 修正案 |
+|---|------------|------------|----------|----------|------|--------|
+| - | - | - | - | - | 該当なし（reviewers_1 初回） | - |
+
+## 解消済み（resolved）
+| finding_id | 解消根拠 |
+|------------|----------|
+| - | reviewers_1 初回実行のため過去指摘なし |
+
+## 再開指摘（reopened）
+| # | finding_id | family_tag | 解消根拠（前回） | 再発根拠 | 問題 | 修正案 |
+|---|------------|------------|----------------|---------|------|--------|
+| - | - | - | - | - | 該当なし | - |
+
+## 参考メモ（非ブロッキング）
+- `service/components/header/SiteNav.tsx:31-34` と `MobileNav.tsx:49-52` で `isActive()` が重複（DRY、共通化推奨）
+- `service/components/portfolio/ProjectCard.tsx:72` の `pl-4.5` は Tailwind v3 デフォルト外で dead class（`paddingLeft:"18px"` style で上書き済み）
+- `service/components/portfolio/Pager.tsx:8-23` の inline `transform: rotate(180deg)` が `group-hover:scale-110` を打ち消し hover 拡大が無効
+- `service/app/globals.css:359-361` の `.live-blink::before` は `content` 未指定で疑似要素が描画されず、設定された blink animation が無動作

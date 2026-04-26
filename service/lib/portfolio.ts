@@ -107,7 +107,7 @@ function extractChallenges(content: string): Challenge[] {
 }
 // すべての Portfolio Markdown
 const portfolioMarkdowns: string[] = [
-    // portfolioSiteMd,
+    portfolioSiteMd,
     // 新しいプロジェクトを追加する場合は、ここにインポートを追加
 ]
 function parsePortfolioMarkdown(rawContent: string): Project {
@@ -165,4 +165,41 @@ export function getProjectById(id: string): Project | undefined {
 export function getProjectIds(): string[] {
     const projects = getProjects()
     return projects.map((project) => project.id)
+}
+
+/**
+ * 指定 id の前後 id を返す純粋関数 (pager 用)。
+ * - currentId が ids に無い場合は両方 undefined
+ * - 重複 id は最初の出現位置を採用
+ * - ラップなし (末尾の next は undefined)
+ */
+export function findAdjacentProjectIds(
+    ids: string[],
+    currentId: string,
+): { prev?: string; next?: string } {
+    const idx = ids.indexOf(currentId)
+    if (idx === -1) return {}
+    return {
+        prev: idx > 0 ? ids[idx - 1] : undefined,
+        next: idx < ids.length - 1 ? ids[idx + 1] : undefined,
+    }
+}
+
+const CATEGORY_PREFIX: Record<Project["category"], string> = {
+    personal: "P",
+    work: "W",
+}
+
+/**
+ * 表示用のプロジェクト番号を生成する純粋関数。
+ * - personal は "P/01" 形式、work は "W/01" 形式
+ * - indexInList は 0 始まり
+ * - フォーマット (prefix / 桁数 / 区切り) を変えるときはここだけを更新する
+ */
+export function formatProjectNumber(
+    category: Project["category"],
+    indexInList: number,
+): string {
+    const prefix = CATEGORY_PREFIX[category]
+    return `${prefix}/${String(indexInList + 1).padStart(2, "0")}`
 }

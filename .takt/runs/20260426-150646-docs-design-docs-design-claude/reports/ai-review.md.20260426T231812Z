@@ -1,0 +1,71 @@
+# AI生成コードレビュー
+
+## 結果: APPROVE
+
+## サマリー
+前回 REJECT した 3 件の barrel 内部限定 export 問題（news / portfolio / books）はすべて修正済み。`*/index.ts` には外部から参照される export のみが残る規約が news / portfolio / books / skills / theme / animations / footer / header の 8 モジュール全体で確立されている。新規の AI 特有の問題は検出せず。tsc 型チェック・vitest 全 51 件 pass の報告と現在のソース状態が整合している。
+
+## 検証した項目
+| 観点 | 結果 | 備考 |
+|------|------|------|
+| 仮定の妥当性 | ✅ | profile / skills / portfolio とも assumption がコードと整合（過去2ラウンドで確認済み、再発無し） |
+| API/ライブラリの実在 | ✅ | gray-matter / IntersectionObserver / document.fonts いずれも実在（過去確認済み） |
+| コンテキスト適合 | ✅ | `*/index.ts` の barrel 規約が news / portfolio / books でも遵守されるようになった |
+| スコープ | ✅ | 素案準拠の hardcoded 値は引き続きユーザー方針「素案優先」で許容 |
+| 前回指摘の解消確認 | ✅ | 3 件すべて修正、内部相対 import で内部参照は維持 |
+
+## ファクトチェックの根拠
+
+### AI-NEW2-news-index-L1 解消確認
+- `service/components/news/index.ts` を直接 Read：1 行のみ `export { NewsContent, type NewsDayGroup } from "./NewsContent"`
+- 外部 import 検索 `from "@/components/news"`：`service/app/news/page.tsx:3` の `NewsContent, NewsDayGroup` のみヒット → barrel と完全一致
+- 削除された `Ticker` / `NewsCard` / `DayHead` 等は `NewsContent.tsx` 内の相対 import で参照される構造（前回 ai-fix.2 報告通り）
+
+### AI-NEW2-portfolio-index-L1 解消確認
+- `service/components/portfolio/index.ts` を直接 Read：3 行 `PortfolioListClient` / `Pager` / `ArchDiagram` のみ
+- 外部 import 検索 `from "@/components/portfolio"`：`app/portfolio/page.tsx:3` (`PortfolioListClient`)、`app/portfolio/[id]/page.tsx:10` (`ArchDiagram, Pager`) → barrel と完全一致
+- 削除された `ProjectCard` / `PortfolioFilterBar` / `PortfolioFilter` は `PortfolioListClient.tsx` 内部の相対 import に閉じ込め済み
+
+### AI-NEW2-books-index-L4 解消確認
+- `service/components/books/index.ts` を直接 Read：3 行 `BookViewToggle, type BookView` / `BookGraph` / `BookListView` のみ
+- 外部 import 検索 `from "@/components/books"`：`app/books/BooksContent.tsx:19-24` で `BookGraph, BookListView, BookViewToggle, type BookView` → barrel と完全一致
+- 削除された cluster 系 5 件（`deriveTopClusters` / `assignBooksToClusters` / `BookCluster` / `PositionedBook` / `BookStatus`）は `BookGraph.tsx` / `BookListView.tsx` 内の相対 import に閉じ込め済み
+
+### 他モジュールの barrel 規約確認（横展開チェック）
+- `animations/index.ts`：`ParticleBackground` / `Reveal` / `FloatingShapes` / `HeroSpotlight` / `HeroParticleTitle` の 5 件すべて外部使用箇所あり
+- `skills/index.ts`：`RadarChart` / `SkillCategorySection` のみ（前回 resolved）
+- `theme/index.ts`：`ThemeProvider` / `themeBootScript` / `ThemeToggle` のみ（前回 resolved）
+- `footer/index.ts` / `header/index.ts`：`default` 一本のみ
+
+## 今回の指摘（new）
+| # | finding_id | family_tag | カテゴリ | 場所 | 問題 | 修正案 |
+|---|------------|------------|---------|------|------|--------|
+| - | - | - | - | - | 該当なし | - |
+
+## 継続指摘（persists）
+| # | finding_id | family_tag | 前回根拠 | 今回根拠 | 問題 | 修正案 |
+|---|------------|------------|----------|----------|------|--------|
+| - | - | - | - | - | 該当なし | - |
+
+## 解消済み（resolved）
+| finding_id | 解消根拠 |
+|------------|----------|
+| AI-NEW2-news-index-L1 | `service/components/news/index.ts` が `export { NewsContent, type NewsDayGroup } from "./NewsContent"` 1 行のみ。外部 import (`app/news/page.tsx:3`) と完全一致 |
+| AI-NEW2-portfolio-index-L1 | `service/components/portfolio/index.ts` が `PortfolioListClient` / `Pager` / `ArchDiagram` の 3 export のみ。外部 import (`app/portfolio/page.tsx:3`, `app/portfolio/[id]/page.tsx:10`) と完全一致 |
+| AI-NEW2-books-index-L4 | `service/components/books/index.ts` が `BookViewToggle, type BookView` / `BookGraph` / `BookListView` の 3 export のみ。外部 import (`app/books/BooksContent.tsx:19-24`) と完全一致 |
+| AI-NEW-HeroParticleTitle-L148 | （前回 resolved 維持） |
+| AI-NEW-NewsContent-L31 | （前回 resolved 維持） |
+| AI-NEW-NewsCard-L111 | （前回 resolved 維持） |
+| AI-NEW-page-L92 | （前回 resolved 維持） |
+| AI-NEW-tailwind-ts-L68 | （前回 resolved 維持） |
+| AI-NEW-profile-page-L130 | （前回 resolved 維持） |
+| AI-NEW-portfolio-detail-L76 | （前回 resolved 維持） |
+| AI-NEW-Footer-L69 | （前回 resolved 維持） |
+| AI-NEW-profile-import-L5 | （前回 resolved 維持） |
+| AI-NEW-skills-index-L2 | （前回 resolved 維持） |
+| AI-NEW-NewsContent-L120 | （前回 resolved 維持） |
+
+## 再開指摘（reopened）
+| # | finding_id | family_tag | 解消根拠（前回） | 再発根拠 | 問題 | 修正案 |
+|---|------------|------------|----------------|---------|------|--------|
+| - | - | - | - | - | 該当なし | - |
