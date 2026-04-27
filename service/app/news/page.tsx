@@ -1,53 +1,72 @@
-import Link from "next/link"
-import { getNewsDates } from "@/lib/news"
-import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { getNewsByDate, getNewsDates } from "@/lib/news"
+import { Reveal } from "@/components/animations"
+import { NewsContent, type NewsDayGroup } from "@/components/news"
 
 export const revalidate = 36000
 
-export default async function NewsListPage() {
-    const newsList = await getNewsDates()
-    return (
-        <section className="w-full py-16 md:py-24">
-            <div className="container px-4 md:px-6 mx-auto">
-                <div className="flex flex-col items-center justify-center space-y-6 text-center">
-                    <span className="text-xs tracking-wide-elegant text-turquoise-600 uppercase">
-                        Daily Updates
-                    </span>
-                    <h2 className="text-4xl font-light tracking-elegant sm:text-5xl text-foreground">
-                        技術ニュース
-                    </h2>
-                    <div className="w-16 h-px bg-turquoise-400/60" />
-                    <p className="max-w-[600px] text-muted-foreground text-sm md:text-base font-light tracking-elegant">
-                        毎日自動収集される技術ニュースのAI要約
-                    </p>
-                </div>
-                <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    {newsList.length === 0 ? (
-                        <p className="col-span-full text-center text-muted-foreground tracking-elegant">
-                            ニュースはまだありません
-                        </p>
-                    ) : (
-                        newsList.map((news) => (
-                            <Link
-                                key={news.date}
-                                href={`/news/${news.date}`}
-                                prefetch={false}
-                            >
-                                <Card className="h-full">
-                                    <CardHeader>
-                                        <CardTitle className="text-lg font-light tracking-elegant">
-                                            {news.date}
-                                        </CardTitle>
-                                        <CardDescription className="text-muted-foreground/70 tracking-elegant">
-                                            {news.count}件の記事
-                                        </CardDescription>
-                                    </CardHeader>
-                                </Card>
-                            </Link>
-                        ))
-                    )}
-                </div>
-            </div>
-        </section>
+const RECENT_DAYS = 3
+const RELATIVE_LABELS = ["Today", "Yesterday", "Two days ago"]
+
+export default async function NewsPage() {
+    const allDates = await getNewsDates()
+    const recent = allDates.slice(0, RECENT_DAYS)
+
+    const days: NewsDayGroup[] = await Promise.all(
+        recent.map(async (entry, i) => ({
+            date: formatDate(entry.date),
+            label: RELATIVE_LABELS[i] || entry.date,
+            articles: await getNewsByDate(entry.date),
+        })),
     )
+
+    return (
+        <main className="page flex-1">
+            <section className="px-0 pb-7 pt-20">
+                <div className="mx-auto max-w-[1200px] px-6">
+                    <Reveal className="mb-4 flex gap-1.5 font-mono text-xs uppercase tracking-[0.16em] text-fg-dim">
+                        <span>onclimb</span>
+                        <span>/</span>
+                        <b className="font-medium text-accent">news</b>
+                    </Reveal>
+                    <div className="mb-4 flex flex-wrap items-end justify-between gap-6">
+                        <Reveal delay={80}>
+                            <h1 className="text-[clamp(40px,5.6vw,64px)] font-semibold leading-[1.05] tracking-[-0.03em]">
+                                毎日の
+                                <br />
+                                知識収集ログ。
+                            </h1>
+                        </Reveal>
+                        <Reveal
+                            delay={160}
+                            className="live-blink inline-flex items-center gap-2 rounded-full border px-3.5 py-2 font-mono text-xs text-accent"
+                            style={{
+                                background: "var(--accent-soft)",
+                                borderColor: "var(--accent)",
+                            }}
+                        >
+                            <span
+                                aria-hidden="true"
+                                className="block h-2 w-2 rounded-full"
+                                style={{ background: "var(--accent)" }}
+                            />
+                            LIVE — collecting
+                        </Reveal>
+                    </div>
+                    <Reveal delay={200}>
+                        <p className="max-w-[640px] text-[17px] leading-[1.7] text-fg">
+                            毎日自動収集される技術ニュースの AI
+                            要約。情報源は HackerNews / GitHub Trending / RSS / カンファレンスサイト。読みやすさ重視で、見た目はちょっと遊んでます。
+                        </p>
+                    </Reveal>
+                </div>
+            </section>
+
+            <NewsContent days={days} />
+        </main>
+    )
+}
+
+function formatDate(date: string): string {
+    // crawlDate is YYYY-MM-DD; convert to YYYY.MM.DD for the design.
+    return date.replace(/-/g, ".")
 }

@@ -1,169 +1,317 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { getProfile } from "@/lib/profile"
-import ReactMarkdown from "react-markdown"
-import remarkGfm from "remark-gfm"
+import Image from "next/image"
 import Link from "next/link"
-import { ArrowRight } from "lucide-react"
-const Profile = async () => {
+import { getProfile, getParsedProfile } from "@/lib/profile"
+import { Reveal } from "@/components/animations"
+
+export default async function ProfilePage() {
     const profile = await getProfile()
-    const { data, content } = profile
-    // Markdownコンテンツをセクションごとに分割(## レベルのみ)
-    const parseSections = () => {
-        const result: { [key: string]: string } = {}
-        const lines = content.split("\n")
-        let currentSection = ""
-        let currentContent: string[] = []
-        lines.forEach((line) => {
-            // ## で始まる行はセクションタイトル
-            if (line.startsWith("## ")) {
-                // 前のセクションを保存
-                if (currentSection) {
-                    result[currentSection] = currentContent.join("\n").trim()
-                }
-                // 新しいセクション開始
-                currentSection = line.replace("## ", "").trim()
-                currentContent = []
-            } else if (currentSection) {
-                // セクション内のコンテンツを追加
-                currentContent.push(line)
-            }
-        })
-        // 最後のセクションを保存
-        if (currentSection) {
-            result[currentSection] = currentContent.join("\n").trim()
-        }
-        return result
-    }
-    const sectionData = parseSections()
+    const parsed = await getParsedProfile()
+
     return (
-        <main className="flex-1">
-            {/* Hero Section */}
-            <section className="w-full py-16 md:py-24">
-                <div className="container px-4 md:px-6 mx-auto">
-                    <div className="flex flex-col items-center justify-center space-y-6 text-center">
-                        <Avatar className="w-28 h-28 border-2 border-turquoise-300/60 shadow-soft">
-                            <AvatarImage src={data.avatar} alt={data.name} />
-                            <AvatarFallback className="bg-turquoise-50 text-turquoise-600">
-                                OC
-                            </AvatarFallback>
-                        </Avatar>
-                        <div>
-                            <span className="text-xs tracking-wide-elegant text-turquoise-600 uppercase">
-                                {data.title}
-                            </span>
-                            <h1 className="text-4xl font-light tracking-wide-elegant sm:text-5xl text-foreground mt-2">
-                                {data.name}
-                            </h1>
+        <main className="page flex-1">
+            {/* page-hero */}
+            <section className="px-0 pb-10 pt-20">
+                <div className="mx-auto max-w-[820px] px-6">
+                    <Reveal className="mb-4 flex gap-1.5 font-mono text-xs uppercase tracking-[0.16em] text-fg-dim">
+                        <span>onclimb</span>
+                        <span>/</span>
+                        <b className="font-medium text-accent">profile</b>
+                    </Reveal>
+                    <Reveal
+                        delay={80}
+                        className="mb-7 inline-flex items-center gap-2.5 rounded-full border border-hairline-strong bg-surface px-3.5 py-1.5 font-mono text-[13px] text-fg-muted"
+                    >
+                        <span
+                            aria-hidden="true"
+                            className="block h-1.5 w-1.5 rounded-full"
+                            style={{
+                                background: "var(--accent)",
+                                boxShadow: "0 0 8px var(--accent)",
+                            }}
+                        />
+                        <span className="font-mono">available for new projects</span>
+                    </Reveal>
+                    <Reveal delay={160}>
+                        <h1 className="mb-5 text-[clamp(40px,5.6vw,64px)] font-semibold leading-[1.05] tracking-[-0.03em]">
+                            動く理由を知り、
+                            <br />
+                            使う人を想う。
+                        </h1>
+                    </Reveal>
+                    <Reveal delay={240}>
+                        <p className="mb-4 max-w-[640px] text-lg leading-[1.8] text-fg">
+                            フロントエンドからバックエンド、インフラまで一貫して携わるフルスタックエンジニア。「なぜ動くのか」にこだわりながら、最終的にユーザーへ届く形まで責任を持って届ける。
+                        </p>
+                    </Reveal>
+                </div>
+            </section>
+
+            {/* identity card */}
+            <div className="mx-auto max-w-[820px] px-6">
+                <Reveal
+                    as="section"
+                    className="my-14 grid grid-cols-1 items-center gap-8 rounded-[var(--radius-lg)] border border-hairline p-10 backdrop-blur-[10px] [@media(min-width:720px)]:grid-cols-[200px_1fr] [@media(min-width:720px)]:gap-12"
+                    style={{
+                        background:
+                            "radial-gradient(circle at 90% 0%, var(--accent-soft), transparent 60%), var(--surface)",
+                    }}
+                >
+                    <div className="relative h-[200px] w-[200px] rounded-full p-[3px]"
+                        style={{
+                            background:
+                                "linear-gradient(135deg, var(--accent), var(--indigo))",
+                        }}
+                    >
+                        <span
+                            aria-hidden="true"
+                            className="absolute -inset-2 rounded-full border border-dashed border-hairline-strong"
+                            style={{ animation: "spin-slow 30s linear infinite" }}
+                        />
+                        <div className="relative h-full w-full overflow-hidden rounded-full bg-bg">
+                            <Image
+                                src={profile.data.avatar}
+                                alt={profile.data.name}
+                                fill
+                                sizes="200px"
+                                className="object-cover"
+                            />
                         </div>
-                        <div className="w-16 h-px bg-turquoise-400/60 my-4" />
                     </div>
-                </div>
-            </section>
-            {/* Divider */}
-            <div className="w-full border-t border-turquoise-200/50" />
-            {/* Content Section */}
-            <section className="w-full py-16 md:py-20">
-                <div className="container px-4 md:px-6 mx-auto max-w-3xl">
-                    <div className="space-y-8">
-                        {sectionData["自己紹介"] && (
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="text-lg font-light tracking-elegant">
-                                        自己紹介
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="leading-relaxed prose prose-sm prose-readable max-w-none">
-                                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                            {sectionData["自己紹介"]}
-                                        </ReactMarkdown>
+                    <div>
+                        <div className="mb-1.5 text-[28px] font-semibold tracking-[-0.02em]">
+                            {profile.data.name}
+                        </div>
+                        <div className="mb-5 text-sm leading-[1.5] text-fg-muted">
+                            {profile.data.title}
+                        </div>
+                        <div className="flex flex-wrap gap-5 font-mono text-xs text-fg-dim">
+                            <span>
+                                📍 <b className="font-medium text-fg">Tokyo</b>
+                            </span>
+                            <span>
+                                EXP <b className="font-medium text-fg">5+ years</b>
+                            </span>
+                            <span>
+                                FOCUS{" "}
+                                <b className="font-medium text-fg">
+                                    Backend / Architecture
+                                </b>
+                            </span>
+                            <span>
+                                STATUS{" "}
+                                <b className="font-medium text-accent">open to work</b>
+                            </span>
+                        </div>
+                    </div>
+                </Reveal>
+            </div>
+
+            {/* 自己紹介 */}
+            {parsed.selfIntroduction.length > 0 && (
+                <section className="relative py-20">
+                    <div className="mx-auto max-w-[820px] px-6">
+                        <Reveal
+                            as="header"
+                            className="mb-8 flex items-baseline gap-4 border-b border-hairline pb-4"
+                        >
+                            <span className="font-mono text-xs tracking-[0.18em] text-accent">
+                                01
+                            </span>
+                            <h2 className="text-[28px] font-semibold tracking-[-0.02em]">
+                                自己紹介
+                            </h2>
+                        </Reveal>
+                        <Reveal
+                            delay={80}
+                            className="text-[17px] leading-[1.85] tracking-[0.005em] text-fg"
+                        >
+                            {parsed.selfIntroduction.map((block, i) =>
+                                block.type === "pullQuote" ? (
+                                    <div
+                                        key={i}
+                                        className="my-8 rounded-r-[var(--radius)] border-l-[3px] border-accent bg-accent-soft px-7 py-6 text-lg font-medium text-fg-strong"
+                                    >
+                                        {block.text}
                                     </div>
-                                </CardContent>
-                            </Card>
-                        )}
-                        {sectionData["エンジニアとしての今"] && (
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="text-lg font-light tracking-elegant">
-                                        エンジニアとしての今
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="prose prose-sm prose-readable max-w-none">
-                                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                            {sectionData["エンジニアとしての今"]}
-                                        </ReactMarkdown>
+                                ) : (
+                                    <p key={i} className="mb-[18px]">
+                                        {block.text}
+                                    </p>
+                                ),
+                            )}
+                        </Reveal>
+                    </div>
+                </section>
+            )}
+
+            {/* 経歴 */}
+            {parsed.career.length > 0 && (
+                <section className="relative py-20">
+                    <div className="mx-auto max-w-[820px] px-6">
+                        <Reveal
+                            as="header"
+                            className="mb-8 flex items-baseline gap-4 border-b border-hairline pb-4"
+                        >
+                            <span className="font-mono text-xs tracking-[0.18em] text-accent">
+                                02
+                            </span>
+                            <h2 className="text-[28px] font-semibold tracking-[-0.02em]">
+                                経歴
+                            </h2>
+                        </Reveal>
+                        <div className="grid gap-6">
+                            {parsed.career.map((item, i) => (
+                                <Reveal
+                                    key={i}
+                                    delay={i * 80}
+                                    as="article"
+                                    className="grid grid-cols-1 gap-1.5 border-b border-hairline py-5 last:border-b-0 [@media(min-width:601px)]:grid-cols-[140px_1fr] [@media(min-width:601px)]:gap-6"
+                                >
+                                    <div className="pt-1 font-mono text-xs tracking-[0.06em] text-accent">
+                                        {item.period}
                                     </div>
-                                </CardContent>
-                            </Card>
-                        )}
-                        {sectionData["経歴"] && (
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="text-lg font-light tracking-elegant">
-                                        経歴
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="prose prose-sm max-w-none">
-                                        <ReactMarkdown
-                                            remarkPlugins={[remarkGfm]}
-                                            components={{
-                                                h3: ({ children }) => (
-                                                    <h3 className="font-medium text-foreground mb-1 tracking-elegant">
-                                                        {children}
-                                                    </h3>
-                                                ),
-                                                p: ({ children }) => (
-                                                    <p className="text-muted-foreground mb-4">
-                                                        {children}
-                                                    </p>
-                                                ),
-                                            }}
+                                    <div>
+                                        <div className="mb-2 text-base font-semibold text-fg-strong">
+                                            {item.role}
+                                        </div>
+                                        <ul className="m-0 list-none p-0">
+                                            {item.bullets.map((b, j) => (
+                                                <li
+                                                    key={j}
+                                                    className="relative py-1 pl-5 text-[14.5px] leading-[1.6] text-fg-muted before:absolute before:left-0 before:top-[13px] before:block before:h-px before:w-2 before:bg-fg-dim"
+                                                >
+                                                    {b}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </Reveal>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            )}
+
+            {/* 関心 */}
+            {parsed.interests.length > 0 && (
+                <section className="relative py-20">
+                    <div className="mx-auto max-w-[820px] px-6">
+                        <Reveal
+                            as="header"
+                            className="mb-8 flex items-baseline gap-4 border-b border-hairline pb-4"
+                        >
+                            <span className="font-mono text-xs tracking-[0.18em] text-accent">
+                                03
+                            </span>
+                            <h2 className="text-[28px] font-semibold tracking-[-0.02em]">
+                                エンジニアとしての今 — 関心
+                            </h2>
+                        </Reveal>
+                        <div
+                            className="mt-3 grid grid-cols-1 gap-px overflow-hidden rounded-[var(--radius-lg)] border border-hairline [@media(min-width:720px)]:grid-cols-2"
+                            style={{ background: "var(--hairline)" }}
+                        >
+                            {parsed.interests.map((item, i) => (
+                                <Reveal
+                                    key={i}
+                                    delay={i * 60}
+                                    className="bg-bg-elev px-7 py-6 transition-colors duration-200 hover:bg-bg-elev-2"
+                                >
+                                    <div className="mb-1.5 text-[15px] font-semibold text-accent-strong">
+                                        {item.title}
+                                    </div>
+                                    <div className="text-sm leading-[1.7] text-fg-muted">
+                                        {item.description}
+                                    </div>
+                                </Reveal>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            )}
+
+            {/* 資格 */}
+            {parsed.certs.length > 0 && (
+                <section className="relative py-20">
+                    <div className="mx-auto max-w-[820px] px-6">
+                        <Reveal
+                            as="header"
+                            className="mb-8 flex items-baseline gap-4 border-b border-hairline pb-4"
+                        >
+                            <span className="font-mono text-xs tracking-[0.18em] text-accent">
+                                04
+                            </span>
+                            <h2 className="text-[28px] font-semibold tracking-[-0.02em]">
+                                資格
+                            </h2>
+                        </Reveal>
+                        <div className="grid grid-cols-1 gap-3 [@media(min-width:600px)]:grid-cols-2">
+                            {parsed.certs.map((cert, i) => (
+                                <Reveal
+                                    key={i}
+                                    delay={i * 50}
+                                    className="flex items-start gap-3.5 rounded-[var(--radius)] border border-hairline bg-bg-elev px-5 py-4 transition-colors duration-200 hover:border-accent"
+                                >
+                                    <div
+                                        className="grid h-8 w-8 shrink-0 place-items-center rounded-md text-accent"
+                                        style={{ background: "var(--accent-soft)" }}
+                                    >
+                                        <svg
+                                            width="16"
+                                            height="16"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
                                         >
-                                            {sectionData["経歴"]}
-                                        </ReactMarkdown>
+                                            <path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z" />
+                                        </svg>
                                     </div>
-                                </CardContent>
-                            </Card>
-                        )}
-                        {/* Skills Link Card */}
-                        <Link href="/skills" className="block group">
-                            <Card>
-                                <CardContent className="flex items-center justify-between p-6">
                                     <div>
-                                        <h3 className="text-lg font-light tracking-elegant text-foreground">
-                                            技術スタック
-                                        </h3>
-                                        <p className="text-sm text-muted-foreground mt-1">
-                                            使用・学習中の技術スタックと経験の詳細
-                                        </p>
+                                        <div className="mb-0.5 text-sm font-medium leading-[1.5]">
+                                            {cert.title}
+                                        </div>
+                                        <div className="font-mono text-[11px] text-fg-dim">
+                                            {cert.year}
+                                        </div>
                                     </div>
-                                    <ArrowRight className="w-5 h-5 text-turquoise-500 group-hover:text-turquoise-600 transition-colors" />
-                                </CardContent>
-                            </Card>
-                        </Link>
-                        {/* Social Link Card */}
-                        <Link href="/social" className="block group">
-                            <Card>
-                                <CardContent className="flex items-center justify-between p-6">
-                                    <div>
-                                        <h3 className="text-lg font-light tracking-elegant text-foreground">
-                                            Social
-                                        </h3>
-                                        <p className="text-sm text-muted-foreground mt-1">
-                                            GitHub, Zenn, X など各プラットフォーム
-                                        </p>
-                                    </div>
-                                    <ArrowRight className="w-5 h-5 text-turquoise-500 group-hover:text-turquoise-600 transition-colors" />
-                                </CardContent>
-                            </Card>
-                        </Link>
+                                </Reveal>
+                            ))}
+                        </div>
                     </div>
-                </div>
-            </section>
+                </section>
+            )}
+
+            {/* next-link */}
+            <div className="mx-auto max-w-[820px] px-6">
+                <Reveal>
+                    <Link
+                        href="/skills"
+                        className="my-14 flex items-center justify-between rounded-[var(--radius-lg)] border border-hairline-strong bg-surface px-8 py-7 transition-all duration-[250ms] hover:-translate-y-0.5 hover:border-accent"
+                    >
+                        <div>
+                            <div className="mb-1 font-mono text-[11px] tracking-[0.16em] text-fg-dim">
+                                NEXT — 02
+                            </div>
+                            <div className="text-xl font-semibold">
+                                使ってきた技術スタックを見る
+                            </div>
+                        </div>
+                        <div className="grid h-11 w-11 place-items-center rounded-full bg-accent text-white transition-transform duration-[300ms] [.group:hover_&]:translate-x-1.5">
+                            <svg
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                            >
+                                <path d="M5 12h14M13 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                    </Link>
+                </Reveal>
+            </div>
         </main>
     )
 }
-export default Profile

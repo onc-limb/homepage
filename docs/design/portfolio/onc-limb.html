@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>onc-limb.com — Portfolio detail — onclimb</title>
+<link rel="stylesheet" href="../shared/tokens.css" />
+<link rel="stylesheet" href="../shared/shell.css" />
+<style>
+/* ===== Hero ===== */
+.detail-hero {
+  padding: 72px 0 48px;
+  position: relative;
+  border-bottom: 1px solid var(--hairline);
+  overflow: hidden;
+}
+.detail-hero::after {
+  content:""; position:absolute; inset:0;
+  background:
+    radial-gradient(circle at 80% 20%, var(--accent-soft), transparent 55%),
+    radial-gradient(circle at 10% 90%, color-mix(in oklch, var(--cyan), transparent 80%), transparent 60%);
+  pointer-events: none;
+  z-index: -1;
+}
+.detail-hero__inner { max-width: 980px; margin: 0 auto; padding: 0 24px; }
+.crumb { font-family: var(--font-mono); font-size: 12px; color: var(--fg-dim); letter-spacing: 0.16em; margin-bottom: 22px; display: flex; gap: 6px; align-items: center; }
+.crumb a { color: var(--fg-muted); transition: color 200ms; }
+.crumb a:hover { color: var(--accent); }
+.crumb b { color: var(--accent); font-weight: 500; }
+.crumb__sep { color: var(--fg-dim); }
+
+.title-row { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin-bottom: 18px; }
+.title-num { font-family: var(--font-mono); font-size: 13px; color: var(--accent); letter-spacing: 0.18em; }
+.title-period { font-family: var(--font-mono); font-size: 12px; color: var(--fg-dim); letter-spacing: 0.06em; }
+.title-status {
+  font-family: var(--font-mono); font-size: 11px; padding: 3px 10px; border-radius: 999px;
+  background: var(--accent-soft); color: var(--accent);
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.title-status::before { content:""; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 6px var(--accent); }
+.detail-hero h1 {
+  font-size: clamp(40px, 5.6vw, 64px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  margin-bottom: 18px;
+}
+.detail-hero__lead { font-size: 18px; color: var(--fg); line-height: 1.7; max-width: 720px; margin-bottom: 28px; }
+.detail-hero__cta { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn {
+  display: inline-flex; gap: 8px; align-items: center;
+  padding: 10px 18px;
+  font-size: 13px; font-family: var(--font-mono); letter-spacing: 0.04em;
+  border-radius: 999px;
+  transition: all 200ms;
+}
+.btn--primary { background: var(--accent); color: white; }
+.btn--primary:hover { background: var(--accent-strong); transform: translateY(-1px); box-shadow: var(--shadow-soft); }
+.btn--ghost { border: 1px solid var(--hairline-strong); color: var(--fg); }
+.btn--ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ===== Quick facts ===== */
+.facts {
+  max-width: 980px; margin: -24px auto 0; padding: 0 24px;
+  display: grid; gap: 1px;
+  grid-template-columns: 1fr;
+  background: var(--hairline);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+@media (min-width: 720px) { .facts { grid-template-columns: repeat(4, 1fr); } }
+.fact { background: var(--bg-elev); padding: 18px 20px; }
+.fact__lbl { font-family: var(--font-mono); font-size: 10px; color: var(--fg-dim); letter-spacing: 0.18em; margin-bottom: 6px; }
+.fact__val { font-size: 15px; font-weight: 600; color: var(--fg-strong); line-height: 1.3; }
+
+/* ===== Section ===== */
+.sec { padding: 70px 0; }
+.sec__inner { max-width: 980px; margin: 0 auto; padding: 0 24px; }
+.sec__head {
+  display: flex; align-items: baseline; gap: 16px;
+  margin-bottom: 28px;
+  border-bottom: 1px solid var(--hairline);
+  padding-bottom: 14px;
+}
+.sec__num { font-family: var(--font-mono); font-size: 12px; color: var(--accent); letter-spacing: 0.18em; }
+.sec__title { font-size: 28px; font-weight: 600; letter-spacing: -0.02em; }
+.sec__sub { margin-left: auto; font-family: var(--font-mono); font-size: 11px; color: var(--fg-dim); letter-spacing: 0.16em; }
+.sec__body { font-size: 16px; line-height: 1.85; color: var(--fg); }
+.sec__body p { margin-bottom: 16px; }
+.sec__body strong { color: var(--fg-strong); font-weight: 600; }
+
+.pull {
+  margin: 24px 0;
+  padding: 18px 22px;
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  font-weight: 500;
+  color: var(--fg-strong);
+}
+
+/* ===== Tech grid ===== */
+.tech-grid {
+  display: grid;
+  gap: 1px;
+  grid-template-columns: 1fr;
+  background: var(--hairline);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+@media (min-width: 720px) { .tech-grid { grid-template-columns: repeat(2, 1fr); } }
+.tech-cat { background: var(--bg-elev); padding: 22px 24px; transition: background 200ms; }
+.tech-cat:hover { background: var(--bg-elev-2); }
+.tech-cat__head {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 14px;
+}
+.tech-cat__icon {
+  width: 32px; height: 32px;
+  display: grid; place-items: center;
+  border-radius: 8px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.tech-cat__lbl { font-size: 14px; font-weight: 600; color: var(--fg-strong); }
+.tech-cat__items { display: flex; flex-wrap: wrap; gap: 6px; }
+.tech-cat__items span {
+  font-family: var(--font-mono); font-size: 11.5px;
+  padding: 4px 10px;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 4px;
+  background: var(--bg);
+  color: var(--fg);
+  transition: all 200ms;
+}
+.tech-cat__items span:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+
+/* ===== Architecture diagram ===== */
+.arch-wrap {
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(circle at 50% 30%, var(--accent-soft), transparent 55%),
+    var(--surface);
+  padding: 32px 20px;
+  overflow: hidden;
+}
+.arch-svg {
+  width: 100%;
+  height: auto;
+  max-height: 560px;
+  display: block;
+}
+.arch-svg .a-box {
+  fill: var(--bg-elev);
+  stroke: var(--hairline-strong);
+  stroke-width: 1;
+  rx: 8;
+}
+.arch-svg .a-box.is-accent {
+  stroke: var(--accent);
+  fill: var(--accent-soft);
+}
+.arch-svg .a-cluster {
+  fill: none;
+  stroke: var(--hairline);
+  stroke-dasharray: 4 3;
+  rx: 12;
+}
+.arch-svg .a-label {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  fill: var(--fg-strong);
+}
+.arch-svg .a-sub {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  fill: var(--fg-muted);
+  letter-spacing: 0.06em;
+}
+.arch-svg .a-cluster-lbl {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  fill: var(--fg-dim);
+  letter-spacing: 0.18em;
+}
+.arch-svg .a-arrow { stroke: var(--accent); stroke-width: 1.5; fill: none; marker-end: url(#arr); }
+.arch-svg .a-arrow.is-dim { stroke: var(--fg-dim); }
+.arch-svg .a-arrow-lbl {
+  font-family: var(--font-mono); font-size: 10px; fill: var(--fg-muted);
+  letter-spacing: 0.04em;
+}
+.arch-svg .a-icon {
+  fill: var(--accent);
+}
+.arch-flow-step {
+  animation: flowDash 2s linear infinite;
+}
+@keyframes flowDash {
+  to { stroke-dashoffset: -20; }
+}
+
+.arch-legend {
+  display: flex; gap: 18px; flex-wrap: wrap;
+  margin-top: 16px;
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--fg-muted);
+}
+.arch-legend__item { display: flex; gap: 6px; align-items: center; }
+.arch-legend__sw { width: 14px; height: 8px; border-radius: 2px; border: 1px solid var(--hairline-strong); }
+.arch-legend__sw.is-accent { background: var(--accent-soft); border-color: var(--accent); }
+.arch-legend__sw.is-base { background: var(--bg-elev); }
+
+/* ===== Highlights / Crafts ===== */
+.crafts { display: grid; gap: 16px; grid-template-columns: 1fr; }
+@media (min-width: 720px) { .crafts { grid-template-columns: 1fr 1fr; } }
+.craft {
+  position: relative;
+  padding: 24px 26px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  transition: all 250ms var(--ease-out);
+  overflow: hidden;
+}
+.craft:hover {
+  border-color: var(--accent);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-soft);
+}
+.craft::before {
+  content:""; position:absolute; top:0; left:0;
+  width: 3px; height: 100%; background: var(--accent);
+  transform: scaleY(0); transform-origin: top;
+  transition: transform 350ms var(--ease-out);
+}
+.craft:hover::before { transform: scaleY(1); }
+.craft__num {
+  font-family: var(--font-mono); font-size: 11px; color: var(--accent);
+  letter-spacing: 0.18em; margin-bottom: 8px;
+}
+.craft__title { font-size: 18px; font-weight: 600; line-height: 1.4; margin-bottom: 10px; }
+.craft__desc { font-size: 14.5px; line-height: 1.75; color: var(--fg-muted); margin-bottom: 14px; }
+.craft__detail {
+  font-family: var(--font-mono); font-size: 11.5px;
+  color: var(--fg);
+  background: var(--bg-elev);
+  border: 1px solid var(--hairline);
+  border-radius: 6px;
+  padding: 10px 12px;
+  line-height: 1.6;
+}
+
+/* ===== Pager ===== */
+.pager {
+  max-width: 980px; margin: 40px auto 80px; padding: 0 24px;
+  display: grid; gap: 12px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 720px) { .pager { grid-template-columns: 1fr 1fr; } }
+.pager__card {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 22px 26px;
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  transition: all 250ms;
+}
+.pager__card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.pager__card--prev { text-align: left; }
+.pager__card--next { text-align: right; flex-direction: row-reverse; }
+.pager__lbl { font-family: var(--font-mono); font-size: 10px; color: var(--fg-dim); letter-spacing: 0.18em; margin-bottom: 4px; }
+.pager__title { font-size: 16px; font-weight: 600; color: var(--fg-strong); }
+.pager__arrow {
+  width: 36px; height: 36px;
+  border-radius: 50%; background: var(--accent);
+  color: white; display: grid; place-items: center;
+  transition: transform 300ms var(--ease-out);
+  flex-shrink: 0;
+}
+.pager__card:hover .pager__arrow { transform: scale(1.1); }
+</style>
+</head>
+<body data-page="portfolio" data-base="../">
+<main class="page">
+
+<!-- HERO -->
+<section class="detail-hero">
+  <div class="detail-hero__inner">
+    <div class="crumb" data-reveal>
+      <a href="../index.html">onclimb</a>
+      <span class="crumb__sep">/</span>
+      <a href="../portfolio.html">portfolio</a>
+      <span class="crumb__sep">/</span>
+      <b>onc-limb.com</b>
+    </div>
+    <div class="title-row" data-reveal data-reveal-delay="60">
+      <span class="title-num">P/01</span>
+      <span class="title-period">2024 — present</span>
+      <span class="title-status">production</span>
+    </div>
+    <h1 data-reveal data-reveal-delay="120">onc-limb.com</h1>
+    <p class="detail-hero__lead" data-reveal data-reveal-delay="180">
+      自分自身のホームページ。プロフィール / 技術スタック / 読書記録 / 情報収集ログを一元管理する個人ハブ。Cloudflare のエッジ環境でフルスタックに完結させる構成。
+    </p>
+    <div class="detail-hero__cta" data-reveal data-reveal-delay="240">
+      <a class="btn btn--primary" href="https://onc-limb.com" target="_blank" rel="noopener">
+        Live demo
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3h7v7M10 14L21 3M21 14v6a1 1 0 01-1 1H4a1 1 0 01-1-1V4a1 1 0 011-1h6"/></svg>
+      </a>
+      <a class="btn btn--ghost" href="https://github.com/onc-limb/homepage" target="_blank" rel="noopener">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 00-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.4-4-1.4-.5-1.4-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.4 11.4 0 016 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.6.2 2.9.1 3.2.7.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0012 .5z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FACTS -->
+<div class="facts" data-reveal>
+  <div class="fact"><div class="fact__lbl">CATEGORY</div><div class="fact__val">Personal · Web</div></div>
+  <div class="fact"><div class="fact__lbl">ROLE</div><div class="fact__val">Solo / Full-stack</div></div>
+  <div class="fact"><div class="fact__lbl">DURATION</div><div class="fact__val">2024 — present</div></div>
+  <div class="fact"><div class="fact__lbl">STATUS</div><div class="fact__val" style="color:var(--accent)">In Production</div></div>
+</div>
+
+<!-- 01 BACKGROUND -->
+<section class="sec">
+  <div class="sec__inner">
+    <header class="sec__head" data-reveal>
+      <span class="sec__num">/01</span>
+      <h2 class="sec__title">作成背景</h2>
+      <span class="sec__sub">— why I built this</span>
+    </header>
+    <div class="sec__body" data-reveal data-reveal-delay="80">
+      <p>SNSやQiitaに分散していた発信を、<strong>自分自身のドメインに集約</strong>したかった。プロフィール・技術スタック・読書記録・情報収集ログを一元化することで、エンジニアおよび非エンジニアに向けて「自分が何者か」を一目で伝えられる場を作る。</p>
+      <p>同時に、自分が興味を持つ <strong>エッジコンピューティング・低レイヤー寄りのアーキテクチャ</strong> を実際に運用する場として実験台にしたかった。仕事で使う技術スタックとは別軸で、Cloudflare Workers / D1 / OpenNext などをプロダクション運用することで、技術判断の引き出しを増やすのが裏目的。</p>
+      <div class="pull">
+        「動く理由を知り、使う人を想う」を体現する場として、自分自身が最もハードなユーザーになる。
+      </div>
+      <p>更新が止まれば自分の手抜きが可視化される。<strong>サボれない仕組みとして</strong>、本気で使い倒すホームページを目指した。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 02 TECH STACK -->
+<section class="sec">
+  <div class="sec__inner">
+    <header class="sec__head" data-reveal>
+      <span class="sec__num">/02</span>
+      <h2 class="sec__title">使用技術</h2>
+      <span class="sec__sub">— stack &amp; tooling</span>
+    </header>
+    <div class="tech-grid" data-reveal>
+      <div class="tech-cat">
+        <div class="tech-cat__head">
+          <div class="tech-cat__icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M9 4v16M4 9h5"/></svg>
+          </div>
+          <div class="tech-cat__lbl">Frontend</div>
+        </div>
+        <div class="tech-cat__items">
+          <span>Next.js 15</span><span>App Router</span><span>TypeScript</span>
+          <span>Tailwind CSS</span><span>Radix UI</span><span>RSC</span>
+        </div>
+      </div>
+      <div class="tech-cat">
+        <div class="tech-cat__head">
+          <div class="tech-cat__icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+          </div>
+          <div class="tech-cat__lbl">Backend / API</div>
+        </div>
+        <div class="tech-cat__items">
+          <span>Server Actions</span><span>NextAuth</span><span>Drizzle ORM</span>
+          <span>gray-matter</span><span>OpenAI SDK</span>
+        </div>
+      </div>
+      <div class="tech-cat">
+        <div class="tech-cat__head">
+          <div class="tech-cat__icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>
+          </div>
+          <div class="tech-cat__lbl">Data</div>
+        </div>
+        <div class="tech-cat__items">
+          <span>Cloudflare D1</span><span>Cloudflare R2</span><span>Drizzle Studio</span><span>Markdown (FS)</span>
+        </div>
+      </div>
+      <div class="tech-cat">
+        <div class="tech-cat__head">
+          <div class="tech-cat__icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a4 4 0 014-4h2a5 5 0 0110 1 4 4 0 010 8H7a4 4 0 01-4-5z"/></svg>
+          </div>
+          <div class="tech-cat__lbl">Infra / CDN</div>
+        </div>
+        <div class="tech-cat__items">
+          <span>Cloudflare Workers</span><span>OpenNext</span><span>Wrangler</span><span>GitHub Actions</span>
+        </div>
+      </div>
+      <div class="tech-cat">
+        <div class="tech-cat__head">
+          <div class="tech-cat__icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3h0a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8h0a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>
+          </div>
+          <div class="tech-cat__lbl">DevOps</div>
+        </div>
+        <div class="tech-cat__items">
+          <span>GitHub Actions</span><span>Wrangler Deploy</span><span>Preview Branches</span>
+        </div>
+      </div>
+      <div class="tech-cat">
+        <div class="tech-cat__head">
+          <div class="tech-cat__icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg>
+          </div>
+          <div class="tech-cat__lbl">Quality</div>
+        </div>
+        <div class="tech-cat__items">
+          <span>Biome</span><span>Vitest</span><span>Playwright</span><span>tsc --noEmit</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 ARCHITECTURE -->
+<section class="sec">
+  <div class="sec__inner">
+    <header class="sec__head" data-reveal>
+      <span class="sec__num">/03</span>
+      <h2 class="sec__title">インフラ構成図</h2>
+      <span class="sec__sub">— architecture</span>
+    </header>
+    <div class="arch-wrap" data-reveal>
+      <svg class="arch-svg" viewBox="0 0 900 480" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/>
+          </marker>
+        </defs>
+
+        <!-- User cluster -->
+        <rect class="a-cluster" x="20" y="20" width="160" height="440" />
+        <text class="a-cluster-lbl" x="40" y="42">USER</text>
+        <rect class="a-box" x="50" y="200" width="100" height="60" />
+        <text class="a-label" x="100" y="225" text-anchor="middle">User</text>
+        <text class="a-sub" x="100" y="245" text-anchor="middle">browser</text>
+
+        <!-- Edge cluster -->
+        <rect class="a-cluster" x="220" y="20" width="320" height="440" />
+        <text class="a-cluster-lbl" x="240" y="42">CLOUDFLARE EDGE</text>
+
+        <!-- Workers (OpenNext) -->
+        <rect class="a-box is-accent" x="260" y="80" width="240" height="80" />
+        <text class="a-label" x="380" y="108" text-anchor="middle">Cloudflare Workers</text>
+        <text class="a-sub" x="380" y="128" text-anchor="middle">OpenNext / Next.js 15 App Router</text>
+        <text class="a-sub" x="380" y="146" text-anchor="middle">RSC · Server Actions · NextAuth</text>
+
+        <!-- Static / KV -->
+        <rect class="a-box" x="260" y="200" width="110" height="60" />
+        <text class="a-label" x="315" y="226" text-anchor="middle">R2</text>
+        <text class="a-sub" x="315" y="244" text-anchor="middle">images / md</text>
+
+        <rect class="a-box" x="390" y="200" width="110" height="60" />
+        <text class="a-label" x="445" y="226" text-anchor="middle">KV Cache</text>
+        <text class="a-sub" x="445" y="244" text-anchor="middle">ISR cache</text>
+
+        <!-- D1 -->
+        <rect class="a-box is-accent" x="260" y="320" width="240" height="80" />
+        <text class="a-label" x="380" y="348" text-anchor="middle">Cloudflare D1</text>
+        <text class="a-sub" x="380" y="368" text-anchor="middle">SQLite · Drizzle ORM</text>
+        <text class="a-sub" x="380" y="386" text-anchor="middle">books · notes · views</text>
+
+        <!-- External cluster -->
+        <rect class="a-cluster" x="580" y="20" width="300" height="240" />
+        <text class="a-cluster-lbl" x="600" y="42">EXTERNAL</text>
+        <rect class="a-box" x="620" y="80" width="220" height="60" />
+        <text class="a-label" x="730" y="106" text-anchor="middle">OpenAI / Anthropic</text>
+        <text class="a-sub" x="730" y="124" text-anchor="middle">news summary</text>
+        <rect class="a-box" x="620" y="170" width="220" height="60" />
+        <text class="a-label" x="730" y="196" text-anchor="middle">RSS / GitHub Trending</text>
+        <text class="a-sub" x="730" y="214" text-anchor="middle">scheduled fetch</text>
+
+        <!-- CI cluster -->
+        <rect class="a-cluster" x="580" y="280" width="300" height="180" />
+        <text class="a-cluster-lbl" x="600" y="302">CI / CD</text>
+        <rect class="a-box" x="620" y="330" width="220" height="60" />
+        <text class="a-label" x="730" y="356" text-anchor="middle">GitHub Actions</text>
+        <text class="a-sub" x="730" y="374" text-anchor="middle">Wrangler deploy</text>
+
+        <rect class="a-box" x="620" y="400" width="220" height="40" />
+        <text class="a-label" x="730" y="425" text-anchor="middle">GitHub Repo (main)</text>
+
+        <!-- Arrows: User -> Workers -->
+        <path class="a-arrow arch-flow-step" d="M 150 220 C 200 220, 220 120, 260 120" stroke-dasharray="5 5"/>
+        <text class="a-arrow-lbl" x="170" y="155">HTTPS</text>
+
+        <!-- Workers -> R2 -->
+        <path class="a-arrow" d="M 320 160 L 315 200" />
+        <!-- Workers -> KV -->
+        <path class="a-arrow" d="M 440 160 L 445 200" />
+        <!-- Workers -> D1 -->
+        <path class="a-arrow arch-flow-step" d="M 380 260 L 380 320" stroke-dasharray="4 3"/>
+        <text class="a-arrow-lbl" x="390" y="295">SQL</text>
+
+        <!-- Workers -> OpenAI -->
+        <path class="a-arrow" d="M 500 110 L 620 110" />
+        <text class="a-arrow-lbl" x="525" y="100">fetch</text>
+
+        <!-- RSS -> Workers (cron) -->
+        <path class="a-arrow is-dim" d="M 620 200 L 500 140" />
+        <text class="a-arrow-lbl" x="525" y="170">cron</text>
+
+        <!-- GHA -> Workers (deploy) -->
+        <path class="a-arrow is-dim" d="M 620 360 C 540 360, 540 130, 500 130" />
+        <text class="a-arrow-lbl" x="540" y="252">deploy</text>
+
+        <!-- Repo -> GHA -->
+        <path class="a-arrow is-dim" d="M 730 400 L 730 390" />
+      </svg>
+
+      <div class="arch-legend">
+        <div class="arch-legend__item"><span class="arch-legend__sw is-accent"></span>Core compute</div>
+        <div class="arch-legend__item"><span class="arch-legend__sw is-base"></span>Storage / external</div>
+        <div class="arch-legend__item"><span style="width:14px;height:0;border-top:2px dashed var(--accent)"></span>request flow</div>
+        <div class="arch-legend__item"><span style="width:14px;height:0;border-top:1px solid var(--fg-dim)"></span>scheduled / deploy</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 CRAFTS -->
+<section class="sec">
+  <div class="sec__inner">
+    <header class="sec__head" data-reveal>
+      <span class="sec__num">/04</span>
+      <h2 class="sec__title">工夫した点</h2>
+      <span class="sec__sub">— what I obsessed over</span>
+    </header>
+    <div class="crafts">
+      <article class="craft" data-reveal>
+        <div class="craft__num">01</div>
+        <h3 class="craft__title">エッジでのフルスタック完結</h3>
+        <p class="craft__desc">OpenNext を介して Next.js App Router 全体を Workers にデプロイ。レンダリング/API/DB アクセスを<strong>すべてエッジで完結</strong>させ、コールドスタートを最小化。</p>
+        <div class="craft__detail">avg TTFB: ~80ms (Tokyo)<br/>cold start: &lt; 50ms<br/>cf-cache-status: HIT 比率 &gt;70%</div>
+      </article>
+
+      <article class="craft" data-reveal data-reveal-delay="80">
+        <div class="craft__num">02</div>
+        <h3 class="craft__title">D1 + Drizzle で型安全なスキーマ駆動</h3>
+        <p class="craft__desc">Cloudflare D1 (SQLite) を Drizzle ORM 経由で操作。スキーマを単一ソースとし、<strong>マイグレーションも型もコードで管理</strong>。Drizzle Studio で Markdown ノートも CRUD できる。</p>
+        <div class="craft__detail">schema.ts → migrate → typed queries<br/>zod でランタイム検証も二重化</div>
+      </article>
+
+      <article class="craft" data-reveal data-reveal-delay="160">
+        <div class="craft__num">03</div>
+        <h3 class="craft__title">News の AI 要約パイプライン</h3>
+        <p class="craft__desc">Cron Triggers が定期的に RSS / HN / GitHub Trending を取得。LLM で<strong>3 行要約 + タグ付け</strong>を生成し、D1 にキャッシュ。トップは静的に近い速度で配信される。</p>
+        <div class="craft__detail">cron: 0 */3 * * *<br/>cost: $0.04 / day<br/>token usage の自動アラート付き</div>
+      </article>
+
+      <article class="craft" data-reveal data-reveal-delay="240">
+        <div class="craft__num">04</div>
+        <h3 class="craft__title">Markdown コンテンツのハイブリッド管理</h3>
+        <p class="craft__desc">プロフィールや読書メモは<strong>リポジトリ内の Markdown</strong>として管理し、gray-matter でメタデータを抽出。下書き状態のコンテンツだけ D1 に保存して切替可能。</p>
+        <div class="craft__detail">/content/**/*.md ← git-managed<br/>D1.drafts ← admin で編集</div>
+      </article>
+
+      <article class="craft" data-reveal data-reveal-delay="320">
+        <div class="craft__num">05</div>
+        <h3 class="craft__title">Preview Deploy でゼロリスク改修</h3>
+        <p class="craft__desc">PR ごとに Wrangler が一意ドメインを発行。<strong>本番と同等の D1 ブランチに接続</strong>することで、データの絡む UI 変更も安心して試せる。</p>
+        <div class="craft__detail">PR #N → onclimb-pr-N.dev<br/>D1 branch → cleanup on merge</div>
+      </article>
+
+      <article class="craft" data-reveal data-reveal-delay="400">
+        <div class="craft__num">06</div>
+        <h3 class="craft__title">読みやすさを最優先したタイポ設計</h3>
+        <p class="craft__desc">エンジニアにも非エンジニアにも読みやすいよう、<strong>本文は Inter + Noto Sans JP の混植</strong>。font-feature-settings, text-wrap: pretty を要所で使い分け。</p>
+        <div class="craft__detail">body: 16px / line-height 1.85<br/>letter-spacing: 0.005em (JP)<br/>code: JetBrains Mono</div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- PAGER -->
+<nav class="pager">
+  <a href="../portfolio.html" class="pager__card pager__card--prev">
+    <div class="pager__arrow" style="transform:rotate(180deg)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+    </div>
+    <div>
+      <div class="pager__lbl">BACK</div>
+      <div class="pager__title">All Portfolio</div>
+    </div>
+  </a>
+  <a href="noboru-note.html" class="pager__card pager__card--next">
+    <div class="pager__arrow">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+    </div>
+    <div>
+      <div class="pager__lbl">NEXT — P/02</div>
+      <div class="pager__title">noboru-note</div>
+    </div>
+  </a>
+</nav>
+
+</main>
+<script src="../shared/shell.js?v=2"></script>
+</body>
+</html>

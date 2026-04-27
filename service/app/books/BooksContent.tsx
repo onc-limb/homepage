@@ -2,87 +2,102 @@
 
 import type { Book, SortKey, SortOrder } from "@/lib/types/book"
 import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
 import { BookOpen, ExternalLink, ArrowUpDown } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useSearchParams, useRouter } from "next/navigation"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
+import {
+    BookGraph,
+    BookListView,
+    BookViewToggle,
+    type BookView,
+} from "@/components/books"
 
 function BookCard({
     book,
-    ogpImage,
+    onOpenMemo,
 }: {
     book: Book
-    ogpImage: string | null
+    onOpenMemo: (book: Book) => void
 }) {
-    const [memoExpanded, setMemoExpanded] = useState(false)
     return (
-        <div className="border border-turquoise-200/60 bg-white/70 rounded-lg shadow-card hover:shadow-soft transition-all duration-200 overflow-hidden flex flex-row">
-            {/* サムネイル */}
-            <div className="w-28 md:w-32 shrink-0 bg-turquoise-50 flex items-center justify-center border-r border-turquoise-200/40 relative">
-                {ogpImage ? (
-                    <Image
-                        src={ogpImage}
-                        alt={book.title}
-                        fill
-                        className="object-contain p-2"
-                        sizes="128px"
-                    />
-                ) : (
-                    <BookOpen className="w-10 h-10 text-turquoise-300" />
-                )}
-            </div>
-            {/* 情報 */}
-            <div className="p-4 flex flex-col flex-1 min-w-0">
-                <h3 className="text-lg font-medium text-foreground tracking-elegant leading-snug mb-1">
-                    {book.officialUrl ? (
-                        <Link
-                            href={book.officialUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="hover:text-turquoise-600 transition-colors inline-flex items-center gap-1"
-                        >
-                            {book.title}
-                            <ExternalLink className="w-3.5 h-3.5 text-muted-foreground" />
-                        </Link>
+        <div className="overflow-hidden rounded-[var(--radius-lg)] border border-hairline bg-surface backdrop-blur-[8px] transition-all duration-200 hover:border-accent hover:shadow-card-soft">
+            <div className="flex flex-row">
+                <div
+                    className="relative flex w-28 shrink-0 items-center justify-center border-r border-hairline md:w-32"
+                    style={{ background: "var(--bg-elev)" }}
+                >
+                    {book.ogpImage ? (
+                        <Image
+                            src={book.ogpImage}
+                            alt={book.title}
+                            fill
+                            className="object-contain p-2"
+                            sizes="128px"
+                        />
                     ) : (
-                        book.title
+                        <BookOpen className="h-10 w-10 text-fg-dim" />
                     )}
-                </h3>
-                <p className="text-sm text-muted-foreground mb-3">
-                    {book.author}
-                    {book.publishedYear && ` (${book.publishedYear})`}
-                </p>
-                {book.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mb-3">
-                        {book.tags.map((tag) => (
-                            <Badge key={tag} variant="secondary">
-                                {tag}
-                            </Badge>
-                        ))}
-                    </div>
-                )}
-                {book.memo && (
-                    <div className="mt-auto">
-                        <div
-                            className={`text-sm text-foreground/70 leading-relaxed prose prose-sm prose-readable max-w-none ${memoExpanded ? "" : "line-clamp-3"}`}
-                        >
-                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                {book.memo}
-                            </ReactMarkdown>
+                </div>
+                <div className="flex min-w-0 flex-1 flex-col p-4">
+                    <h3 className="mb-1 text-base font-semibold leading-snug text-fg-strong">
+                        {book.officialUrl ? (
+                            <Link
+                                href={book.officialUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 transition-colors hover:text-accent"
+                            >
+                                {book.title}
+                                <ExternalLink className="h-3.5 w-3.5 text-fg-dim" />
+                            </Link>
+                        ) : (
+                            book.title
+                        )}
+                    </h3>
+                    <p className="mb-3 font-mono text-xs text-fg-dim">
+                        {book.author}
+                        {book.publishedYear && ` (${book.publishedYear})`}
+                    </p>
+                    {book.tags.length > 0 && (
+                        <div className="mb-3 flex flex-wrap gap-1.5">
+                            {book.tags.map((tag) => (
+                                <span
+                                    key={tag}
+                                    className="rounded-[3px] border border-hairline-strong px-1.5 py-0.5 font-mono text-[10px] text-fg-muted"
+                                >
+                                    {tag}
+                                </span>
+                            ))}
                         </div>
-                        <button
-                            onClick={() => setMemoExpanded(!memoExpanded)}
-                            className="text-xs text-turquoise-600 hover:text-turquoise-700 mt-1 transition-colors"
-                        >
-                            {memoExpanded ? "閉じる" : "続きを読む"}
-                        </button>
-                    </div>
-                )}
+                    )}
+                    {book.memo && (
+                        <div className="mt-auto">
+                            <div className="prose prose-sm prose-invert line-clamp-3 max-w-none text-[13px] leading-relaxed text-fg-muted">
+                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                    {book.memo}
+                                </ReactMarkdown>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => onOpenMemo(book)}
+                                className="mt-1 font-mono text-[11px] text-accent transition-colors hover:text-accent-strong"
+                            >
+                                続きを読む →
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     )
@@ -116,6 +131,8 @@ export default function BooksContent({
     const [books, setBooks] = useState<Book[]>(initialBooks)
     const [searchInput, setSearchInput] = useState(q)
     const debouncedQuery = useDebounce(searchInput, 300)
+    const [memoBook, setMemoBook] = useState<Book | null>(null)
+    const [view, setView] = useState<BookView>("graph")
 
     const isRead = tab !== "unread"
 
@@ -132,16 +149,13 @@ export default function BooksContent({
         [searchParams, router],
     )
 
-    // 初回レンダリングかどうかを追跡
     const isInitialRender = useRef(true)
 
-    // debounceされた検索クエリをURLに反映
     useEffect(() => {
         if (isInitialRender.current) return
         updateParam("q", debouncedQuery)
     }, [debouncedQuery, updateParam])
 
-    // フィルタ変更時にAPIで書籍を再取得
     useEffect(() => {
         if (isInitialRender.current) {
             isInitialRender.current = false
@@ -173,27 +187,89 @@ export default function BooksContent({
         router.push(`/books?${params.toString()}`, { scroll: false })
     }, [sort, searchParams, router])
 
+    const graphBooks = useMemo(
+        () => books.filter((b) => b.tags.length > 0),
+        [books],
+    )
+
     return (
         <>
-            {/* タブ切り替え */}
-            <section className="w-full pt-8">
-                <div className="container px-4 md:px-6 mx-auto max-w-5xl">
-                    <Tabs
-                        value={tab}
-                        onValueChange={(value) => updateParam("tab", value)}
-                    >
-                        <TabsList>
-                            <TabsTrigger value="read">書籍一覧</TabsTrigger>
-                            <TabsTrigger value="unread">積読一覧</TabsTrigger>
-                        </TabsList>
-                    </Tabs>
+            {/* View toggle (graph/list) */}
+            <section className="px-0 py-2">
+                <div className="mx-auto flex max-w-[1200px] items-center justify-end px-6">
+                    <BookViewToggle value={view} onChange={setView} />
                 </div>
             </section>
-            {/* 検索・フィルタ・ソート */}
-            <section className="w-full py-8">
-                <div className="container px-4 md:px-6 mx-auto max-w-5xl">
-                    <div className="flex flex-col gap-4">
-                        <div className="flex gap-3 items-center">
+
+            {/* Graph or grouped-list rendering */}
+            <section className="px-0 pb-10 pt-2">
+                <div className="mx-auto max-w-[1200px] px-6">
+                    {view === "graph" ? (
+                        graphBooks.length > 0 ? (
+                            <BookGraph books={graphBooks} />
+                        ) : (
+                            <div
+                                className="rounded-[var(--radius-lg)] border border-hairline px-6 py-10 text-center text-fg-muted"
+                                style={{ background: "var(--surface)" }}
+                            >
+                                グラフ表示にはタグ付きの書籍が必要です。
+                            </div>
+                        )
+                    ) : graphBooks.length > 0 ? (
+                        <BookListView books={graphBooks} />
+                    ) : (
+                        <div
+                            className="rounded-[var(--radius-lg)] border border-hairline px-6 py-10 text-center text-fg-muted"
+                            style={{ background: "var(--surface)" }}
+                        >
+                            タグ付きの書籍がありません。
+                        </div>
+                    )}
+                </div>
+            </section>
+
+            {/* Existing search / read-unread tabs / tag filter / memo modal — apply tokens only */}
+            <section className="border-t border-hairline px-0 py-10">
+                <div className="mx-auto max-w-[1200px] px-6">
+                    <div className="mb-6 flex items-baseline gap-3.5 border-b border-hairline pb-3.5">
+                        <span className="font-mono text-xs tracking-[0.18em] text-accent">
+                            /05
+                        </span>
+                        <h2 className="text-[20px] font-semibold tracking-[-0.01em]">
+                            検索 ・ 積読
+                        </h2>
+                        <span className="ml-auto font-mono text-[11px] tracking-[0.16em] text-fg-dim">
+                            full library
+                        </span>
+                    </div>
+
+                    {/* Tab toggle (read / unread) */}
+                    <div className="mb-6 inline-flex rounded-full border border-hairline-strong p-1" style={{ background: "var(--bg-elev)" }}>
+                        {[
+                            { key: "read", label: "書籍一覧" },
+                            { key: "unread", label: "積読一覧" },
+                        ].map((opt) => {
+                            const active = tab === opt.key
+                            return (
+                                <button
+                                    key={opt.key}
+                                    type="button"
+                                    onClick={() => updateParam("tab", opt.key)}
+                                    className={
+                                        "rounded-full px-4 py-2 font-mono text-xs tracking-[0.06em] transition-all duration-200 " +
+                                        (active
+                                            ? "bg-accent text-white"
+                                            : "bg-transparent text-fg-muted hover:text-fg")
+                                    }
+                                >
+                                    {opt.label}
+                                </button>
+                            )
+                        })}
+                    </div>
+
+                    <div className="mb-6 flex flex-col gap-4">
+                        <div className="flex items-center gap-3">
                             <Input
                                 placeholder="タイトル・著者・メモで検索..."
                                 value={searchInput}
@@ -201,63 +277,89 @@ export default function BooksContent({
                                 className="flex-1"
                             />
                             <button
+                                type="button"
                                 onClick={toggleSort}
-                                className="flex items-center gap-1.5 px-3 py-2 text-sm text-muted-foreground hover:text-foreground border border-border rounded-md transition-colors whitespace-nowrap"
+                                className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-hairline-strong bg-bg-elev px-3 py-2 font-mono text-xs text-fg-muted transition-colors hover:border-accent hover:text-accent"
                             >
-                                <ArrowUpDown className="w-4 h-4" />
+                                <ArrowUpDown className="h-4 w-4" />
                                 {sort === "title" ? "タイトル順" : "出版年順"}
                             </button>
                         </div>
                         {allTags.length > 0 && (
                             <div className="flex flex-wrap gap-2">
-                                <Badge
-                                    variant={tag === "" ? "default" : "outline"}
-                                    className="cursor-pointer"
+                                <button
+                                    type="button"
                                     onClick={() => updateParam("tag", "")}
+                                    className={
+                                        "rounded-full border px-3 py-1 font-mono text-[11px] tracking-[0.04em] transition-all duration-200 " +
+                                        (tag === ""
+                                            ? "border-accent bg-accent text-white"
+                                            : "border-hairline-strong bg-transparent text-fg-muted hover:border-fg-muted hover:text-fg")
+                                    }
                                 >
                                     すべて
-                                </Badge>
+                                </button>
                                 {allTags.map((t) => (
-                                    <Badge
+                                    <button
                                         key={t}
-                                        variant={tag === t ? "default" : "outline"}
-                                        className="cursor-pointer"
+                                        type="button"
                                         onClick={() => updateParam("tag", t)}
+                                        className={
+                                            "rounded-full border px-3 py-1 font-mono text-[11px] tracking-[0.04em] transition-all duration-200 " +
+                                            (tag === t
+                                                ? "border-accent bg-accent text-white"
+                                                : "border-hairline-strong bg-transparent text-fg-muted hover:border-fg-muted hover:text-fg")
+                                        }
                                     >
                                         {t}
-                                    </Badge>
+                                    </button>
                                 ))}
                             </div>
                         )}
                     </div>
-                </div>
-            </section>
-            {/* Divider */}
-            <div className="w-full border-t border-turquoise-200/50" />
-            {/* 書籍一覧 */}
-            <section className="w-full py-16 md:py-20">
-                <div className="container px-4 md:px-6 mx-auto max-w-5xl">
+
                     {books.length > 0 ? (
-                        <div className="grid gap-6 md:grid-cols-2">
+                        <div className="grid gap-4 md:grid-cols-2">
                             {books.map((book) => (
                                 <BookCard
                                     key={book.id}
                                     book={book}
-                                    ogpImage={book.ogpImage}
+                                    onOpenMemo={setMemoBook}
                                 />
                             ))}
                         </div>
                     ) : (
-                        <div className="text-center py-12">
-                            <p className="text-muted-foreground">
-                                {isRead
-                                    ? "条件に一致する書籍が見つかりません"
-                                    : "積読はありません"}
-                            </p>
+                        <div className="py-12 text-center text-fg-muted">
+                            {isRead
+                                ? "条件に一致する書籍が見つかりません"
+                                : "積読はありません"}
                         </div>
                     )}
                 </div>
             </section>
+
+            <Dialog
+                open={memoBook !== null}
+                onOpenChange={(open) => {
+                    if (!open) setMemoBook(null)
+                }}
+            >
+                <DialogContent className="max-h-[80vh] max-w-2xl overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle>{memoBook?.title}</DialogTitle>
+                        <DialogDescription>
+                            {memoBook?.author}
+                            {memoBook?.publishedYear &&
+                                ` (${memoBook.publishedYear})`}
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="prose prose-sm prose-invert max-w-none">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            {memoBook?.memo ?? ""}
+                        </ReactMarkdown>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </>
     )
 }

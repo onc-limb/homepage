@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>onclimb — design preview</title>
+<link rel="stylesheet" href="shared/tokens.css" />
+<link rel="stylesheet" href="shared/shell.css" />
+<style>
+body { padding: 60px 24px; }
+.wrap { max-width: 960px; margin: 0 auto; }
+.crumb { font-family: var(--font-mono); font-size: 12px; color: var(--fg-dim); letter-spacing: 0.16em; margin-bottom: 18px; }
+.crumb b { color: var(--accent); font-weight: 500; }
+h1 { font-size: clamp(36px, 5vw, 56px); font-weight: 600; letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 16px; }
+.lead { font-size: 17px; color: var(--fg-muted); line-height: 1.7; max-width: 640px; margin-bottom: 40px; }
+.grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
+@media(min-width:720px){ .grid { grid-template-columns: 1fr 1fr; } }
+.card {
+  display: block; padding: 26px 28px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  transition: all 250ms var(--ease-out);
+  position: relative;
+  overflow: hidden;
+}
+.card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: var(--shadow-soft); }
+.card__num { font-family: var(--font-mono); font-size: 11px; color: var(--accent); letter-spacing: 0.16em; margin-bottom: 10px; }
+.card__name { font-size: 22px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 6px; }
+.card__desc { font-size: 14px; color: var(--fg-muted); line-height: 1.6; }
+.card__arrow { position: absolute; top: 22px; right: 22px; color: var(--fg-dim); transition: transform 300ms; }
+.card:hover .card__arrow { transform: translateX(4px); color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="crumb">onclimb / <b>design preview</b></div>
+  <h1>onc-limb<br/>homepage redesign</h1>
+  <p class="lead">「ややブルー」をコンセプトカラーに、モダン技術者像を表現したリデザイン案。各ページをクリックして確認できます。右上のテーマ切り替えでホワイト/ブラックを切替。</p>
+  <div class="grid">
+    <a href="top.html" class="card">
+      <div class="card__num">/01 — TOP</div>
+      <div class="card__name">Top</div>
+      <div class="card__desc">粒子が文字に集まるヒーロー、自己紹介の核、各ページへの導線。</div>
+      <span class="card__arrow">→</span>
+    </a>
+    <a href="profile.html" class="card">
+      <div class="card__num">/02 — PROFILE</div>
+      <div class="card__name">Profile</div>
+      <div class="card__desc">経歴と関心。読みやすさを最優先したロングフォーム。</div>
+      <span class="card__arrow">→</span>
+    </a>
+    <a href="skill.html" class="card">
+      <div class="card__num">/03 — SKILLS</div>
+      <div class="card__name">Skills</div>
+      <div class="card__desc">レーダーチャートで全体像 + バー可視化で個別深さ。</div>
+      <span class="card__arrow">→</span>
+    </a>
+    <a href="portfolio.html" class="card">
+      <div class="card__num">/04 — PORTFOLIO</div>
+      <div class="card__name">Portfolio</div>
+      <div class="card__desc">作ってきたもの。フィルタで Personal / Work を切替。</div>
+      <span class="card__arrow">→</span>
+    </a>
+    <a href="news.html" class="card">
+      <div class="card__num">/05 — NEWS</div>
+      <div class="card__name">News</div>
+      <div class="card__desc">情報収集ログ。ティッカー、グロウカード、タグフィルタ。</div>
+      <span class="card__arrow">→</span>
+    </a>
+    <a href="book.html" class="card">
+      <div class="card__num">/06 — BOOKS</div>
+      <div class="card__name">Books</div>
+      <div class="card__desc">ナレッジグラフで本の繋がりを可視化。リストビューも切替可能。</div>
+      <span class="card__arrow">→</span>
+    </a>
+  </div>
+</div>
+<script src="shared/shell.js"></script>
+</body>
+</html>

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Portfolio — onclimb</title>
+<link rel="stylesheet" href="shared/tokens.css" />
+<link rel="stylesheet" href="shared/shell.css" />
+<style>
+.page-hero { padding: 80px 0 40px; }
+.page-hero__inner { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+.page-hero__crumb { font-family: var(--font-mono); font-size: 12px; color: var(--fg-dim); letter-spacing: 0.16em; margin-bottom: 18px; display: flex; gap: 6px; }
+.page-hero__crumb b { color: var(--accent); font-weight: 500; }
+.page-hero h1 { font-size: clamp(40px, 5.6vw, 64px); font-weight: 600; letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 20px; }
+.page-hero__lead { font-size: 18px; color: var(--fg); line-height: 1.7; max-width: 640px; }
+
+.filter-bar {
+  max-width: 1080px; margin: 24px auto 0; padding: 0 24px;
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+}
+.filter-bar__lbl { font-family: var(--font-mono); font-size: 11px; color: var(--fg-dim); letter-spacing: 0.16em; margin-right: 8px; }
+.filter {
+  padding: 6px 14px;
+  font-size: 13px;
+  border-radius: 999px;
+  border: 1px solid var(--hairline-strong);
+  color: var(--fg-muted);
+  background: transparent;
+  transition: all 200ms;
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+}
+.filter.is-active { background: var(--accent); border-color: var(--accent); color: white; }
+.filter:not(.is-active):hover { color: var(--fg); border-color: var(--fg-muted); }
+
+.proj-section { padding: 60px 0; }
+.proj-section__inner { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+.proj-cat {
+  display: flex; align-items: baseline; gap: 14px;
+  margin: 40px 0 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--hairline);
+}
+.proj-cat__num { font-family: var(--font-mono); font-size: 12px; color: var(--accent); letter-spacing: 0.18em; }
+.proj-cat__name { font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
+.proj-cat__count { margin-left: auto; font-family: var(--font-mono); font-size: 11px; color: var(--fg-dim); letter-spacing: 0.16em; }
+
+.proj-list { display: grid; gap: 16px; }
+.proj {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  padding: 28px 32px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  backdrop-filter: blur(8px);
+  position: relative;
+  overflow: hidden;
+  transition: all 250ms var(--ease-out);
+}
+@media (min-width: 720px) { .proj { grid-template-columns: 80px 1fr auto; align-items: start; } }
+.proj:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow-soft); }
+.proj::before {
+  content: ""; position: absolute;
+  top: 0; left: 0; width: 3px; height: 100%;
+  background: var(--accent);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 350ms var(--ease-out);
+}
+.proj:hover::before { transform: scaleY(1); }
+
+.proj__num {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--fg-dim);
+  letter-spacing: 0.16em;
+  padding-top: 4px;
+}
+.proj__head {
+  display: flex; gap: 14px; align-items: baseline;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.proj__title { font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
+.proj__title a { color: inherit; transition: color 200ms; }
+.proj__title a:hover { color: var(--accent); }
+.proj__detail-cta {
+  display: inline-flex; gap: 6px; align-items: center;
+  margin-top: 12px;
+  font-family: var(--font-mono); font-size: 12px;
+  color: var(--accent); letter-spacing: 0.06em;
+  transition: gap 200ms;
+}
+.proj__detail-cta:hover { gap: 10px; }
+.proj__detail-cta svg { transition: transform 200ms; }
+.proj__detail-cta:hover svg { transform: translateX(2px); }
+.proj__period { font-family: var(--font-mono); font-size: 11px; color: var(--fg-dim); letter-spacing: 0.06em; }
+.proj__desc { color: var(--fg-muted); font-size: 14.5px; line-height: 1.7; margin-bottom: 14px; }
+.proj__highlights { list-style: none; padding: 0; margin: 0 0 14px; display: grid; gap: 4px; }
+.proj__highlights li {
+  padding: 2px 0 2px 18px; position: relative;
+  font-size: 13.5px; color: var(--fg);
+}
+.proj__highlights li::before {
+  content: "›"; position: absolute; left: 0; color: var(--accent); font-weight: 600;
+}
+.proj__tech { display: flex; flex-wrap: wrap; gap: 6px; }
+.proj__tech span {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 3px 8px;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 4px;
+  color: var(--fg);
+  background: var(--bg);
+}
+.proj__links {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  align-self: start;
+}
+.proj__link {
+  width: 36px; height: 36px;
+  display: grid; place-items: center;
+  border-radius: 8px;
+  border: 1px solid var(--hairline-strong);
+  color: var(--fg-muted);
+  transition: all 200ms;
+}
+.proj__link:hover { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+.proj.is-hidden { display: none; }
+</style>
+</head>
+<body data-page="portfolio">
+<main class="page">
+
+<section class="page-hero">
+  <div class="page-hero__inner">
+    <div class="page-hero__crumb" data-reveal><span>onclimb</span><span>/</span><b>portfolio</b></div>
+    <h1 data-reveal data-reveal-delay="80">作って、届けて、<br/>動かし続けたもの。</h1>
+    <p class="page-hero__lead" data-reveal data-reveal-delay="160">
+      個人と業務、両方のプロジェクト。詳細を残せるものは詳細ページへ。
+    </p>
+  </div>
+</section>
+
+<div class="filter-bar" data-reveal>
+  <span class="filter-bar__lbl">FILTER —</span>
+  <button class="filter is-active" data-filter="all">All</button>
+  <button class="filter" data-filter="personal">Personal</button>
+  <button class="filter" data-filter="work">Work</button>
+</div>
+
+<section class="proj-section">
+  <div class="proj-section__inner">
+    <header class="proj-cat" data-reveal data-cat="personal">
+      <span class="proj-cat__num">/01</span>
+      <h2 class="proj-cat__name">Personal Projects</h2>
+      <span class="proj-cat__count">3 projects</span>
+    </header>
+
+    <div class="proj-list">
+      <article class="proj" data-cat="personal" data-reveal>
+        <div class="proj__num">P/01</div>
+        <div>
+          <div class="proj__head">
+            <h3 class="proj__title"><a href="portfolio/onc-limb.html">onc-limb.com</a></h3>
+            <span class="proj__period">2024 — present</span>
+          </div>
+          <p class="proj__desc">自身のホームページ。Next.js App Router + Cloudflare Workers/D1 で構築。プロフィール、技術スタック、読書記録を一元管理する個人ハブ。</p>
+          <ul class="proj__highlights">
+            <li>OpenNext + Cloudflare Workers でエッジ配信</li>
+            <li>Markdown ベースのコンテンツ管理 (gray-matter)</li>
+            <li>Drizzle + D1 で書籍メモを Studio から CRUD</li>
+          </ul>
+          <div class="proj__tech">
+            <span>Next.js 15</span><span>TypeScript</span><span>Tailwind</span>
+            <span>Drizzle ORM</span><span>Cloudflare D1</span><span>NextAuth</span>
+          </div>
+          <a href="portfolio/onc-limb.html" class="proj__detail-cta">View case study<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
+        </div>
+        <div class="proj__links">
+          <a class="proj__link" href="https://github.com/onc-limb/homepage" target="_blank" rel="noopener" aria-label="GitHub">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 00-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.4-4-1.4-.5-1.4-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.4 11.4 0 016 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.6.2 2.9.1 3.2.7.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0012 .5z"/></svg>
+          </a>
+          <a class="proj__link" href="https://onc-limb.com" target="_blank" rel="noopener" aria-label="Demo">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3h7v7M10 14L21 3M21 14v6a1 1 0 01-1 1H4a1 1 0 01-1-1V4a1 1 0 011-1h6"/></svg>
+          </a>
+        </div>
+      </article>
+
+      <article class="proj" data-cat="personal" data-reveal data-reveal-delay="80">
+        <div class="proj__num">P/02</div>
+        <div>
+          <div class="proj__head">
+            <h3 class="proj__title">noboru-note</h3>
+            <span class="proj__period">2024 — present</span>
+          </div>
+          <p class="proj__desc">ボルダリング課題の記録・分析アプリ。モバイル(React Native) + 分析バックエンド(Python)で、ジムごとの課題進捗をトラッキング。</p>
+          <ul class="proj__highlights">
+            <li>iOS/Android 共通の課題記録 UI</li>
+            <li>難易度傾向と成功率の可視化</li>
+            <li>分析パイプラインを別 microservice に分離</li>
+          </ul>
+          <div class="proj__tech">
+            <span>React Native</span><span>TypeScript</span><span>Python</span><span>FastAPI</span><span>PostgreSQL</span>
+          </div>
+        </div>
+        <div class="proj__links">
+          <a class="proj__link" href="#" aria-label="GitHub"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 00-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.4-4-1.4-.5-1.4-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.4 11.4 0 016 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.6.2 2.9.1 3.2.7.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0012 .5z"/></svg></a>
+        </div>
+      </article>
+
+      <article class="proj" data-cat="personal" data-reveal data-reveal-delay="160">
+        <div class="proj__num">P/03</div>
+        <div>
+          <div class="proj__head">
+            <h3 class="proj__title">nand-to-tetris</h3>
+            <span class="proj__period">2024</span>
+          </div>
+          <p class="proj__desc">『コンピュータシステムの理論と実装』を題材に、NANDゲートからテトリスまで自作。低レイヤーの理解にこだわる自分らしい趣味プロジェクト。</p>
+          <ul class="proj__highlights">
+            <li>HDL によるロジック回路設計</li>
+            <li>VM翻訳器、コンパイラ、OSの自作</li>
+            <li>低レイヤーの「なぜ動くのか」を体感</li>
+          </ul>
+          <div class="proj__tech"><span>HDL</span><span>Hack ASM</span><span>Jack</span></div>
+        </div>
+        <div class="proj__links">
+          <a class="proj__link" href="https://github.com/onc-limb/nand-to-tetris" target="_blank" rel="noopener" aria-label="GitHub"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 00-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.4-4-1.4-.5-1.4-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.4 11.4 0 016 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.6.2 2.9.1 3.2.7.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0012 .5z"/></svg></a>
+        </div>
+      </article>
+    </div>
+
+    <header class="proj-cat" data-reveal data-cat="work">
+      <span class="proj-cat__num">/02</span>
+      <h2 class="proj-cat__name">Work</h2>
+      <span class="proj-cat__count">3 engagements</span>
+    </header>
+
+    <div class="proj-list">
+      <article class="proj" data-cat="work" data-reveal>
+        <div class="proj__num">W/01</div>
+        <div>
+          <div class="proj__head">
+            <h3 class="proj__title">推薦システム MLOps 基盤</h3>
+            <span class="proj__period">2024 — present</span>
+          </div>
+          <p class="proj__desc">推薦モデルの学習パイプラインと評価機構を構築。データの取得、前処理、学習、デプロイ、評価までを連結する。</p>
+          <ul class="proj__highlights">
+            <li>SageMaker + Step Functions による学習自動化</li>
+            <li>MLflow を用いた実験管理とモデル比較</li>
+            <li>オフライン/オンライン評価のダッシュボード</li>
+          </ul>
+          <div class="proj__tech"><span>Python</span><span>PyTorch</span><span>AWS SageMaker</span><span>MLflow</span><span>Step Functions</span></div>
+        </div>
+        <div class="proj__links"></div>
+      </article>
+
+      <article class="proj" data-cat="work" data-reveal data-reveal-delay="80">
+        <div class="proj__num">W/02</div>
+        <div>
+          <div class="proj__head">
+            <h3 class="proj__title">人材サービス統合 / 社内システム</h3>
+            <span class="proj__period">2022 — 2024</span>
+          </div>
+          <p class="proj__desc">複数サービスの統合に伴うアーキテクチャ提案と、自社社内システムの新規開発・運用。バックエンド設計とドメインモデリングを主導。</p>
+          <ul class="proj__highlights">
+            <li>マイクロサービス境界の再設計</li>
+            <li>NestJS + GraphQL でのスキーマ駆動開発</li>
+            <li>運用保守における監視・アラート体制の整備</li>
+          </ul>
+          <div class="proj__tech"><span>TypeScript</span><span>NestJS</span><span>GraphQL</span><span>PostgreSQL</span><span>AWS ECS</span></div>
+        </div>
+        <div class="proj__links"></div>
+      </article>
+
+      <article class="proj" data-cat="work" data-reveal data-reveal-delay="160">
+        <div class="proj__num">W/03</div>
+        <div>
+          <div class="proj__head">
+            <h3 class="proj__title">車載ソフトウェア / リバースエンジニアリング</h3>
+            <span class="proj__period">2020 — 2022</span>
+          </div>
+          <p class="proj__desc">AUTOSAR プラットフォームの製品向けカスタマイズ、既存ソフトウェアの解析と AUTOSAR 準拠ドキュメント作成。CANalyzer によるテスト。</p>
+          <ul class="proj__highlights">
+            <li>C 言語による組み込み機能開発</li>
+            <li>仕様書なきソフトウェアの読み解き</li>
+            <li>「なぜ動くのか」を起点にした業務</li>
+          </ul>
+          <div class="proj__tech"><span>C</span><span>AUTOSAR</span><span>CANalyzer</span></div>
+        </div>
+        <div class="proj__links"></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+</main>
+<script src="shared/shell.js"></script>
+<script>
+const filters = document.querySelectorAll('.filter');
+filters.forEach(btn => btn.addEventListener('click', () => {
+  filters.forEach(b => b.classList.remove('is-active'));
+  btn.classList.add('is-active');
+  const f = btn.dataset.filter;
+  document.querySelectorAll('.proj, .proj-cat').forEach(el => {
+    const cat = el.dataset.cat;
+    if (!cat) return;
+    el.classList.toggle('is-hidden', f !== 'all' && cat !== f);
+  });
+}));
+</script>
+</body>
+</html>

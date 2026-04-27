@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>News — onclimb</title>
+<link rel="stylesheet" href="shared/tokens.css" />
+<link rel="stylesheet" href="shared/shell.css" />
+<style>
+.page-hero { padding: 80px 0 30px; }
+.page-hero__inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+.page-hero__crumb { font-family: var(--font-mono); font-size: 12px; color: var(--fg-dim); letter-spacing: 0.16em; margin-bottom: 18px; display:flex; gap:6px; }
+.page-hero__crumb b { color: var(--accent); font-weight: 500; }
+.page-hero__top { display: flex; justify-content: space-between; align-items: end; flex-wrap: wrap; gap: 24px; margin-bottom: 16px; }
+.page-hero h1 { font-size: clamp(40px, 5.6vw, 64px); font-weight: 600; letter-spacing: -0.03em; line-height: 1.05; }
+.page-hero__lead { font-size: 17px; color: var(--fg); line-height: 1.7; max-width: 640px; }
+.live-status {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono); font-size: 12px; color: var(--accent);
+  padding: 8px 14px; border: 1px solid var(--accent); border-radius: 999px;
+  background: var(--accent-soft);
+}
+.live-status::before { content:""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: blink 1.5s infinite; }
+@keyframes blink { 50% { opacity: 0.2; } }
+
+.ticker {
+  margin: 30px 0;
+  border-top: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--hairline);
+  background: var(--bg-elev);
+  overflow: hidden;
+  white-space: nowrap;
+  display: flex; gap: 0;
+}
+.ticker__inner {
+  display: inline-flex; gap: 48px;
+  padding: 14px 0;
+  animation: tickerScroll 60s linear infinite;
+  font-family: var(--font-mono); font-size: 13px;
+}
+.ticker:hover .ticker__inner { animation-play-state: paused; }
+.ticker__item { display: inline-flex; gap: 10px; align-items: center; color: var(--fg-muted); }
+.ticker__item b { color: var(--accent); font-weight: 600; }
+.ticker__item .up { color: #4ADE80; }
+.ticker__item .down { color: var(--rose); }
+@keyframes tickerScroll { to { transform: translateX(-50%); } }
+
+.controls { max-width: 1200px; margin: 30px auto 16px; padding: 0 24px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.controls__lbl { font-family: var(--font-mono); font-size: 11px; color: var(--fg-dim); letter-spacing: 0.16em; margin-right: 8px; }
+.tag { padding: 6px 14px; font-size: 12px; border-radius: 999px; border: 1px solid var(--hairline-strong); color: var(--fg-muted); background: transparent; transition: all 200ms; font-family: var(--font-mono); letter-spacing: 0.04em; }
+.tag.is-active { background: var(--accent); border-color: var(--accent); color: white; }
+.tag:not(.is-active):hover { color: var(--fg); border-color: var(--fg-muted); }
+
+/* News grid */
+.news-section { padding: 30px 0 60px; }
+.news-section__inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+.day-head {
+  display: flex; align-items: baseline; gap: 14px;
+  margin: 24px 0 18px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed var(--hairline-strong);
+}
+.day-head__date { font-family: var(--font-mono); font-size: 13px; color: var(--accent); letter-spacing: 0.06em; }
+.day-head__name { font-size: 18px; font-weight: 600; }
+.day-head__count { margin-left: auto; font-family: var(--font-mono); font-size: 11px; color: var(--fg-dim); letter-spacing: 0.16em; }
+
+.news-grid {
+  display: grid; gap: 14px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 720px) { .news-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1100px) { .news-grid { grid-template-columns: repeat(3, 1fr); } }
+
+.ncard {
+  position: relative;
+  padding: 22px 22px 60px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+  transition: transform 350ms var(--ease-out), border-color 250ms;
+  overflow: hidden;
+  min-height: 220px;
+  display: flex; flex-direction: column;
+}
+.ncard::before {
+  content: "";
+  position: absolute; inset: -1px;
+  border-radius: var(--radius-lg);
+  padding: 1px;
+  background: linear-gradient(135deg, var(--accent), var(--cyan), var(--violet));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 350ms;
+  pointer-events: none;
+}
+.ncard:hover { transform: translateY(-6px) rotate(-0.4deg); }
+.ncard:hover::before { opacity: 1; }
+.ncard__glow {
+  position: absolute; inset: 0;
+  background: radial-gradient(400px circle at var(--mx, 50%) var(--my, 50%), var(--accent-soft), transparent 50%);
+  opacity: 0;
+  transition: opacity 250ms;
+  pointer-events: none;
+}
+.ncard:hover .ncard__glow { opacity: 1; }
+.ncard__top {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px;
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--fg-dim); letter-spacing: 0.1em;
+}
+.ncard__src { display: inline-flex; gap: 6px; align-items: center; }
+.ncard__src::before { content: ""; width: 4px; height: 4px; background: var(--accent); border-radius: 50%; }
+.ncard__title {
+  font-size: 16px; font-weight: 600;
+  line-height: 1.4;
+  color: var(--fg-strong);
+  margin-bottom: 10px;
+  letter-spacing: -0.005em;
+}
+.ncard__sum {
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--fg-muted);
+  flex: 1;
+}
+.ncard__tags { position: absolute; bottom: 18px; left: 22px; right: 22px; display: flex; gap: 6px; flex-wrap: wrap; }
+.ncard__tag { font-family: var(--font-mono); font-size: 10px; padding: 2px 6px; border: 1px solid var(--hairline-strong); border-radius: 3px; color: var(--fg); }
+
+/* Variant: featured */
+.ncard--feat {
+  grid-column: 1 / -1;
+  background:
+    radial-gradient(circle at 90% 0%, var(--accent-soft), transparent 60%),
+    var(--surface-strong);
+}
+@media (min-width: 720px) { .ncard--feat { grid-column: span 2; } }
+.ncard--feat .ncard__title { font-size: 22px; }
+
+/* Variant: compact */
+.ncard--mono { background: var(--bg-elev); }
+.ncard--mono .ncard__title { font-family: var(--font-mono); font-size: 14.5px; }
+
+.ncard.is-hidden { display: none; }
+</style>
+</head>
+<body data-page="news">
+<main class="page">
+
+<section class="page-hero">
+  <div class="page-hero__inner">
+    <div class="page-hero__crumb" data-reveal><span>onclimb</span><span>/</span><b>news</b></div>
+    <div class="page-hero__top">
+      <div>
+        <h1 data-reveal data-reveal-delay="80">毎日の<br/>知識収集ログ。</h1>
+      </div>
+      <div class="live-status" data-reveal data-reveal-delay="160">LIVE — collecting</div>
+    </div>
+    <p class="page-hero__lead" data-reveal data-reveal-delay="200">毎日自動収集される技術ニュースの AI 要約。情報源は HackerNews / GitHub Trending / RSS / カンファレンスサイト。読みやすさ重視で、見た目はちょっと遊んでます。</p>
+  </div>
+</section>
+
+<div class="ticker" data-reveal>
+  <div class="ticker__inner">
+    <span class="ticker__item">📈 <b>react</b> <span class="up">+12</span></span>
+    <span class="ticker__item">⚡️ <b>bun</b> <span class="up">+8</span></span>
+    <span class="ticker__item">🦀 <b>rust</b> <span class="up">+5</span></span>
+    <span class="ticker__item">📉 <b>webpack</b> <span class="down">-3</span></span>
+    <span class="ticker__item">🤖 <b>llm</b> <span class="up">+24</span></span>
+    <span class="ticker__item">☁️ <b>cloudflare</b> <span class="up">+9</span></span>
+    <span class="ticker__item">🐳 <b>kubernetes</b> <span class="up">+2</span></span>
+    <span class="ticker__item">🔐 <b>oauth2.1</b> <span class="up">+11</span></span>
+    <span class="ticker__item">🟦 <b>typescript</b> <span class="up">+7</span></span>
+    <span class="ticker__item">📈 <b>react</b> <span class="up">+12</span></span>
+    <span class="ticker__item">⚡️ <b>bun</b> <span class="up">+8</span></span>
+    <span class="ticker__item">🦀 <b>rust</b> <span class="up">+5</span></span>
+    <span class="ticker__item">📉 <b>webpack</b> <span class="down">-3</span></span>
+    <span class="ticker__item">🤖 <b>llm</b> <span class="up">+24</span></span>
+    <span class="ticker__item">☁️ <b>cloudflare</b> <span class="up">+9</span></span>
+    <span class="ticker__item">🐳 <b>kubernetes</b> <span class="up">+2</span></span>
+    <span class="ticker__item">🔐 <b>oauth2.1</b> <span class="up">+11</span></span>
+    <span class="ticker__item">🟦 <b>typescript</b> <span class="up">+7</span></span>
+  </div>
+</div>
+
+<div class="controls" data-reveal>
+  <span class="controls__lbl">FILTER —</span>
+  <button class="tag is-active" data-tag="all">All</button>
+  <button class="tag" data-tag="frontend">frontend</button>
+  <button class="tag" data-tag="backend">backend</button>
+  <button class="tag" data-tag="infra">infra</button>
+  <button class="tag" data-tag="ai">ai</button>
+  <button class="tag" data-tag="lang">lang</button>
+</div>
+
+<section class="news-section">
+  <div class="news-section__inner">
+
+    <div class="day-head" data-reveal>
+      <span class="day-head__date">2026.04.26</span>
+      <span class="day-head__name">Today</span>
+      <span class="day-head__count">9 stories</span>
+    </div>
+
+    <div class="news-grid" id="grid-today"></div>
+
+    <div class="day-head" data-reveal>
+      <span class="day-head__date">2026.04.25</span>
+      <span class="day-head__name">Yesterday</span>
+      <span class="day-head__count">7 stories</span>
+    </div>
+
+    <div class="news-grid" id="grid-yesterday"></div>
+
+    <div class="day-head" data-reveal>
+      <span class="day-head__date">2026.04.24</span>
+      <span class="day-head__name">Two days ago</span>
+      <span class="day-head__count">8 stories</span>
+    </div>
+
+    <div class="news-grid" id="grid-two"></div>
+  </div>
+</section>
+
+</main>
+
+<script src="shared/shell.js"></script>
+<script>
+const NEWS = {
+  today: [
+    { feat: true, src: 'HackerNews', title: 'React Server Actions が GA 到達、Next.js 16 で正式採用', sum: '長らく実験的扱いだった Server Actions が安定版に。フォーム送信や mutate 経路が JS 不要で動くようになり、エラーバウンダリやストリーミングも標準対応。', tags: ['frontend','lang'], time: '14:20' },
+    { mono: true, src: 'GitHub Trending', title: 'biomejs/biome v2.0 — Rust 製 lint+format の決定版', sum: 'oxc に対抗する形で biome が大幅高速化。monorepo の解析時間が ESLint 比 14x。', tags: ['frontend'], time: '11:48' },
+    { src: 'arxiv', title: 'LLM の context window を 100M tokens に拡張する手法', sum: 'Sliding Attention に階層的 KV キャッシュを組み合わせることで、メモリ消費を抑えつつ超長文を実現。Anthropic と Google が共著。', tags: ['ai'], time: '09:30' },
+    { src: 'AWS Blog', title: 'Aurora DSQL が東京リージョンに到来', sum: 'マルチリージョン分散の SQL データベース。Active-Active 構成でも書き込み一貫性を保証する設計が興味深い。', tags: ['infra','backend'], time: '08:12' },
+    { src: 'Cloudflare', title: 'Workers が Wasm Components を完全サポート', sum: 'WIT インターフェース定義から多言語コンポーネントが組めるように。Rust/Go/Zig コードを Workers にそのまま持ち込める。', tags: ['infra','lang'], time: '07:55' },
+    { src: 'TC39', title: 'Stage 4: Pipeline Operator |>', sum: 'long-awaited な提案がついに最終段階。F# 流の Hack pipe ではなく minimal pipeline で決着。', tags: ['lang','frontend'], time: '07:00' },
+    { mono: true, src: 'GitHub Blog', title: 'Copilot Workspace に PR レビュー自律エージェント', sum: 'PR の意図とコード品質を機械が読んで指摘するモードが GA。', tags: ['ai'], time: '06:30' },
+    { src: 'Vercel', title: 'Edge Functions の cold start が 0ms に', sum: 'Isolate プールの再利用と V8 snapshot の組み合わせで実質ゼロ遅延を達成。', tags: ['infra','frontend'], time: '06:00' },
+    { src: 'OpenAI', title: 'GPT-5.5 が研究者プレビューに', sum: '推論時の self-verify ループを内蔵。誤答率は GPT-5 比で約半減。', tags: ['ai'], time: '05:30' },
+  ],
+  yesterday: [
+    { feat: true, src: 'PostgreSQL', title: 'PostgreSQL 18 リリース — 非同期 IO とベクトル検索が標準に', sum: 'pgvector 互換のインデックス型がコアに統合。OLTP と AI 推論を同じ DB で完結させる動きが強まる。', tags: ['backend'], time: '22:00' },
+    { src: 'Bun', title: 'Bun 2.0 — Node 互換が 99% 到達', sum: '残るは fs.watch のエッジケースのみ。production 移行事例が増加中。', tags: ['backend','lang'], time: '20:14' },
+    { mono: true, src: 'Rust Blog', title: 'Rust 1.90: const generics の expr が安定化', sum: '配列演算が完全に const fn 内で書けるように。embedded 勢が歓喜。', tags: ['lang'], time: '17:30' },
+    { src: 'Kubernetes', title: 'k8s 1.34 で Sidecar コンテナが GA', sum: '長年の悲願。restart policy と起動順序が正式仕様化。', tags: ['infra'], time: '15:00' },
+    { src: 'Anthropic', title: 'Claude Code の MCP プロトコルが業界標準に', sum: 'OpenAI/Google も追従し、エージェントの tool 接続規格として ISO 提出予定。', tags: ['ai'], time: '12:00' },
+    { src: 'TypeScript', title: 'TS 6.0 — 型推論が 3x 高速化', sum: '巨大 monorepo での tsc --noEmit が分単位から秒単位へ。', tags: ['lang','frontend'], time: '09:30' },
+    { mono: true, src: 'GitHub Trending', title: 'lukechilds/keyv 5.0 — universal cache 抽象', sum: 'TTL とアダプタ拡張が綺麗。サーバーキャッシュ実装の定番に。', tags: ['backend'], time: '08:00' },
+  ],
+  two: [
+    { src: 'Apple', title: 'Swift 6.5: Strict Concurrency が opt-out に', sum: 'デフォルトで data-race safety がオン。並行処理の書き方そのものが変わる。', tags: ['lang'], time: '21:00' },
+    { feat: true, src: 'Anthropic', title: 'Claude 4.5 Opus 公開 — 推論精度で SWE-bench 96%', sum: '人間のシニアエンジニアと同等の修正精度に到達。エージェントとしての自立性も向上し、初期投入から完了まで全自動で動く事例が増加。', tags: ['ai'], time: '18:30' },
+    { src: 'GraphQL', title: 'GraphQL Federation v3 — schema stitching の終焉', sum: 'composition の正しさをコンパイル時に検証できる仕組み。', tags: ['backend'], time: '16:00' },
+    { src: 'Stripe', title: 'Stripe SDK が ai-sdk 経由で呼べるように', sum: 'LLM が直接決済 API を叩く未来が現実に。auth スコープも工夫されている。', tags: ['ai','backend'], time: '14:20' },
+    { mono: true, src: 'Linux Kernel', title: 'Linux 6.14 — io_uring がデフォルト IO に', sum: '全 syscall が漸進的に async 化。サーバーパフォーマンス底上げ。', tags: ['infra'], time: '13:00' },
+    { src: 'Tailwind', title: 'Tailwind 5 — runtime CSS の自動最適化', sum: 'JIT を超える design token compaction。bundle が更に縮小。', tags: ['frontend'], time: '11:30' },
+    { src: 'AWS', title: 'Lambda がカスタムランタイムなしで Wasm 実行', sum: 'コンテナイメージ不要、wasm モジュール直接 deploy。cold start も短縮。', tags: ['infra'], time: '09:00' },
+    { mono: true, src: 'GitHub Blog', title: 'Branch protection で AI レビューが必須化可能に', sum: 'Copilot Review が approve するまで merge できない設定が追加。', tags: ['ai','infra'], time: '06:30' },
+  ],
+};
+
+function render(grid, items, day) {
+  grid.innerHTML = items.map((n, i) => `
+    <article class="ncard ${n.feat?'ncard--feat':''} ${n.mono?'ncard--mono':''}" data-tags="${(n.tags||[]).join(',')}" data-reveal data-reveal-delay="${i*40}">
+      <div class="ncard__glow"></div>
+      <div class="ncard__top">
+        <span class="ncard__src">${n.src}</span>
+        <span>${n.time}</span>
+      </div>
+      <h3 class="ncard__title">${n.title}</h3>
+      <p class="ncard__sum">${n.sum}</p>
+      <div class="ncard__tags">${(n.tags||[]).map(t=>`<span class="ncard__tag">${t}</span>`).join('')}</div>
+    </article>
+  `).join('');
+}
+render(document.getElementById('grid-today'), NEWS.today, 'today');
+render(document.getElementById('grid-yesterday'), NEWS.yesterday, 'yesterday');
+render(document.getElementById('grid-two'), NEWS.two, 'two');
+
+document.querySelectorAll('.ncard').forEach(card => {
+  card.addEventListener('mousemove', (e) => {
+    const r = card.getBoundingClientRect();
+    card.querySelector('.ncard__glow').style.setProperty('--mx', ((e.clientX-r.left)/r.width*100)+'%');
+    card.querySelector('.ncard__glow').style.setProperty('--my', ((e.clientY-r.top)/r.height*100)+'%');
+  });
+});
+
+const tags = document.querySelectorAll('.tag');
+tags.forEach(t => t.addEventListener('click', () => {
+  tags.forEach(b => b.classList.remove('is-active'));
+  t.classList.add('is-active');
+  const f = t.dataset.tag;
+  document.querySelectorAll('.ncard').forEach(c => {
+    const tagList = (c.dataset.tags||'').split(',');
+    c.classList.toggle('is-hidden', f !== 'all' && !tagList.includes(f));
+  });
+}));
+</script>
+</body>
+</html>
