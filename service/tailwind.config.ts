@@ -1,67 +1,112 @@
 import type { Config } from "tailwindcss"
+
+/**
+ * Tailwind config aligned with docs/design/shared/tokens.css.
+ * `darkMode: ['selector', '[data-theme="dark"]']` lets shadcn's `dark:` variants
+ * follow the same data-attribute the design prototype toggles.
+ */
 const config: Config = {
+    darkMode: ["selector", '[data-theme="dark"]'],
     content: [
         "./pages/**/*.{js,ts,jsx,tsx,mdx}",
         "./components/**/*.{js,ts,jsx,tsx,mdx}",
         "./app/**/*.{js,ts,jsx,tsx,mdx}",
     ],
     theme: {
-        extend: {
-            backgroundImage: {
-                "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-                "gradient-conic":
-                    "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
-                "watercolor-gradient":
-                    "linear-gradient(135deg, hsl(195, 30%, 98%) 0%, hsl(185, 40%, 95%) 50%, hsl(195, 30%, 98%) 100%)",
+        container: {
+            center: true,
+            padding: "1.5rem",
+            screens: {
+                "2xl": "1200px",
             },
+        },
+        extend: {
             colors: {
-                // 水彩ヤモリロゴベースのカラーパレット
-                turquoise: {
-                    50: "#F0FAFA",
-                    100: "#D4F3F3",
-                    200: "#A9E6E6",
-                    300: "#7DD9D9",
-                    400: "#52CCCC",
-                    500: "#299E9E" /* メインターコイズ */,
-                    600: "#218080",
-                    700: "#196262",
-                    800: "#114444",
-                    900: "#092626",
+                // Design tokens (CSS variables defined in app/globals.css)
+                bg: "var(--bg)",
+                "bg-elev": "var(--bg-elev)",
+                "bg-elev-2": "var(--bg-elev-2)",
+                surface: "var(--surface)",
+                "surface-strong": "var(--surface-strong)",
+                hairline: "var(--hairline)",
+                "hairline-strong": "var(--hairline-strong)",
+                fg: "var(--fg)",
+                "fg-strong": "var(--fg-strong)",
+                "fg-muted": "var(--fg-muted)",
+                "fg-dim": "var(--fg-dim)",
+                accent: "var(--accent)",
+                "accent-strong": "var(--accent-strong)",
+                "accent-soft": "var(--accent-soft)",
+                "accent-glow": "var(--accent-glow)",
+                cyan: "var(--cyan)",
+                indigo: "var(--indigo)",
+                violet: "var(--violet)",
+                amber: "var(--amber)",
+                rose: "var(--rose)",
+                // shadcn-compat aliases (consumed by components/ui/*)
+                border: "var(--hairline)",
+                input: "var(--hairline-strong)",
+                ring: "var(--accent)",
+                background: "var(--bg)",
+                foreground: "var(--fg)",
+                primary: {
+                    DEFAULT: "var(--accent)",
+                    foreground: "var(--fg-strong)",
                 },
-                terracotta: {
-                    50: "#FDF6F3",
-                    100: "#FAE9E1",
-                    200: "#F5D3C4",
-                    300: "#EDBDA6",
-                    400: "#E5A789",
-                    500: "#C87746" /* メインテラコッタ */,
-                    600: "#A55F38",
-                    700: "#82482A",
-                    800: "#5F311C",
-                    900: "#3C1A0E",
+                secondary: {
+                    DEFAULT: "var(--bg-elev-2)",
+                    foreground: "var(--fg)",
                 },
-                watercolor: {
-                    light: "#F8FBFC",
-                    blue: "#B8D4E3",
-                    mist: "#E8F0F5",
+                destructive: {
+                    DEFAULT: "var(--rose)",
+                    foreground: "var(--fg-strong)",
                 },
+                muted: {
+                    DEFAULT: "var(--bg-elev)",
+                    foreground: "var(--fg-muted)",
+                },
+                popover: {
+                    DEFAULT: "var(--bg-elev)",
+                    foreground: "var(--fg)",
+                },
+                card: {
+                    DEFAULT: "var(--bg-elev)",
+                    foreground: "var(--fg)",
+                },
+            },
+            borderRadius: {
+                lg: "var(--radius-lg)",
+                md: "var(--radius)",
+                sm: "calc(var(--radius) - 2px)",
             },
             fontFamily: {
-                sans: ["Inter", "system-ui", "-apple-system", "sans-serif"],
-            },
-            letterSpacing: {
-                elegant: "0.03em",
-                "wide-elegant": "0.08em",
-            },
-            transitionDuration: {
-                "250": "250ms",
+                sans: [
+                    "var(--font-sans)",
+                ],
+                mono: [
+                    "var(--font-mono)",
+                ],
             },
             boxShadow: {
-                soft: "0 2px 15px -3px rgba(41, 158, 158, 0.1), 0 4px 6px -4px rgba(41, 158, 158, 0.05)",
-                card: "0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03)",
+                "card-soft": "var(--shadow-soft)",
+                "card-lg": "var(--shadow-lg)",
+            },
+            keyframes: {
+                "accordion-down": {
+                    from: { height: "0" },
+                    to: { height: "var(--radix-accordion-content-height)" },
+                },
+                "accordion-up": {
+                    from: { height: "var(--radix-accordion-content-height)" },
+                    to: { height: "0" },
+                },
+            },
+            animation: {
+                "accordion-down": "accordion-down 0.2s ease-out",
+                "accordion-up": "accordion-up 0.2s ease-out",
             },
         },
     },
-    plugins: [require("@tailwindcss/typography")],
+    plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
 }
 export default config

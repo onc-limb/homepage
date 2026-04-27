@@ -1,41 +1,45 @@
 import { Suspense } from "react"
 import BooksContent from "./BooksContent"
 import { getBooks, getBookTags } from "@/lib/books"
+import { Reveal } from "@/components/animations"
 
 export const revalidate = 60
 
 export default async function BooksPage() {
-    const [initialBooks, allTags] = await Promise.all([
+    const [readBooks, allTags] = await Promise.all([
         getBooks({ isRead: true, sort: "title", order: "asc" }),
         getBookTags(),
     ])
 
     return (
-        <main className="flex-1">
-            {/* Hero Section */}
-            <section className="w-full py-16 md:py-24">
-                <div className="container px-4 md:px-6 mx-auto">
-                    <div className="flex flex-col items-center justify-center space-y-6 text-center">
-                        <span className="text-xs tracking-wide-elegant text-turquoise-600 uppercase">
-                            Library
-                        </span>
-                        <h1 className="text-4xl font-light tracking-wide-elegant sm:text-5xl text-foreground">
-                            Books
-                        </h1>
-                        <div className="w-16 h-px bg-turquoise-400/60 my-4" />
-                        <p className="max-w-[600px] text-muted-foreground text-base md:text-lg font-light tracking-elegant">
-                            読んだ書籍の一覧
-                        </p>
+        <main className="page flex-1">
+            {/* page-hero */}
+            <section className="px-0 pb-8 pt-20">
+                <div className="mx-auto max-w-[1200px] px-6">
+                    <Reveal className="mb-4 flex gap-1.5 font-mono text-xs uppercase tracking-[0.16em] text-fg-dim">
+                        <span>onclimb</span>
+                        <span>/</span>
+                        <b className="font-medium text-accent">books</b>
+                    </Reveal>
+                    <div className="mb-2 flex flex-wrap items-end justify-between gap-6">
+                        <Reveal delay={80}>
+                            <h1 className="text-[clamp(40px,5.6vw,64px)] font-semibold leading-[1.05] tracking-[-0.03em]">
+                                読んだ・読みたい
+                                <br />
+                                本のグラフ。
+                            </h1>
+                        </Reveal>
                     </div>
+                    <Reveal delay={160}>
+                        <p className="max-w-[640px] text-[17px] leading-[1.7] text-fg">
+                            技術書を中心とした個人ライブラリ。本同士のつながりをグラフで眺め、深掘りはノートで。
+                        </p>
+                    </Reveal>
                 </div>
             </section>
-            {/* Divider */}
-            <div className="w-full border-t border-turquoise-200/50" />
+
             <Suspense fallback={null}>
-                <BooksContent
-                    initialBooks={initialBooks}
-                    allTags={allTags}
-                />
+                <BooksContent initialBooks={readBooks} allTags={allTags} />
             </Suspense>
         </main>
     )

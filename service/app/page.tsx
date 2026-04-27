@@ -1,120 +1,330 @@
 import Link from "next/link"
-import { Server, Layers, Wrench, ArrowRight } from "lucide-react"
+import { NAV_ITEMS, SOCIAL_LINKS } from "@/lib/constants"
 import {
-    GeometricBackground,
-    HeroContent,
-    AnimatedSkillCard,
-    AnimatedNavCard,
-    FadeInSection,
+    FloatingShapes,
+    HeroParticleTitle,
+    HeroSpotlight,
+    Reveal,
 } from "@/components/animations"
-import { NAV_ITEMS } from "@/lib/constants"
-const highlights = [
+
+const githubLink = SOCIAL_LINKS.find((s) => s.name === "GitHub")
+if (!githubLink) {
+    throw new Error("SOCIAL_LINKS must include a GitHub entry")
+}
+const GITHUB_URL = githubLink.url
+
+const CAPS = [
     {
-        icon: <Server className="w-5 h-5" />,
-        title: "Backend",
-        description: "TypeScript / NestJS / REST API / GraphQL / PostgreSQL / Python",
+        num: "/01",
+        title: "Backend / Architecture",
+        desc: "スケーラブルで破綻しないシステム設計。ドメイン駆動設計、クリーンアーキテクチャ、マイクロサービスを実務で。",
+        chips: ["TypeScript", "Go", "NestJS", "GraphQL", "PostgreSQL"],
+        icon: (
+            <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+            >
+                <rect x="3" y="4" width="18" height="6" rx="1" />
+                <rect x="3" y="14" width="18" height="6" rx="1" />
+                <circle cx="7" cy="7" r="0.8" fill="currentColor" />
+                <circle cx="7" cy="17" r="0.8" fill="currentColor" />
+            </svg>
+        ),
     },
     {
-        icon: <Layers className="w-5 h-5" />,
-        title: "Architecture",
-        description: "Clean Architecture / DDD / Microservices",
+        num: "/02",
+        title: "Frontend & UX",
+        desc: "React / Next.js で、デザインの意図に沿ったUI実装。アクセシビリティとパフォーマンスを両立させる。",
+        chips: ["React", "Next.js", "Tailwind", "SwiftUI"],
+        icon: (
+            <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+            >
+                <path d="M2 12l10-7 10 7-10 7z" />
+                <path d="M2 17l10 7 10-7" />
+            </svg>
+        ),
     },
     {
-        icon: <Wrench className="w-5 h-5" />,
-        title: "Frontend & Infra",
-        description: "React / Next.js / AWS / Docker",
+        num: "/03",
+        title: "Infra / DevOps",
+        desc: "AWS Solutions Architect 保有。CI/CD、IaC、コンテナ運用。本質的な開発に注力するための仕組みづくりが得意。",
+        chips: ["AWS", "Terraform", "Docker", "GitHub Actions"],
+        icon: (
+            <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+            >
+                <path d="M5 12h14M5 6h14M5 18h14" />
+                <circle cx="9" cy="6" r="1.5" fill="currentColor" />
+                <circle cx="15" cy="12" r="1.5" fill="currentColor" />
+                <circle cx="9" cy="18" r="1.5" fill="currentColor" />
+            </svg>
+        ),
     },
 ]
-export default function Top() {
+
+const STATS = [
+    { value: "5", sup: "+", label: "years engineering" },
+    { value: "4", sup: "", label: "domains worked" },
+    { value: "¥10K", sup: "", label: "monthly book budget" },
+    { value: "∞", sup: "", label: "curiosity" },
+]
+
+const EXPLORE_ITEMS = NAV_ITEMS.filter((n) => n.href !== "/")
+
+export default function TopPage() {
     return (
-        <main className="flex-1">
-            {/* Hero Section */}
-            <section className="relative w-full py-20 md:py-28 lg:py-36 overflow-hidden">
-                {/* 幾何学背景アニメーション */}
-                <GeometricBackground />
-                <div className="container px-4 md:px-6 mx-auto relative z-10">
-                    <HeroContent
-                        subtitle="Fullstack Engineer / Architect"
-                        title="onclimb"
-                        description={
-                            <>
-                                フロントエンドからバックエンド、インフラまで
-                                <br className="hidden sm:block" />
-                                一貫した開発でプロダクトを形にします
-                            </>
-                        }
-                    />
-                </div>
-            </section>
-            {/* Divider */}
-            <div className="w-full border-t border-turquoise-200/50" />
-            {/* Skills Highlight Section */}
-            <section className="w-full py-16 md:py-20 bg-gradient-to-b from-turquoise-50/30 to-background">
-                <div className="container px-4 md:px-6 mx-auto">
-                    <div className="grid gap-8 md:grid-cols-3 max-w-4xl mx-auto">
-                        {highlights.map((item, index) => (
-                            <AnimatedSkillCard
-                                key={item.title}
-                                icon={item.icon}
-                                title={item.title}
-                                description={item.description}
-                                index={index}
+        <main className="page flex-1">
+            {/* HERO */}
+            <section className="relative grid min-h-screen place-items-center overflow-hidden px-0 pb-20 pt-[120px]">
+                <HeroSpotlight />
+                <FloatingShapes />
+
+                <div className="relative z-[2] mx-auto max-w-[980px] px-6 text-center">
+                    <Reveal as="div">
+                        <span
+                            className="pulse-dot mb-8 inline-flex items-center gap-2 rounded-full border border-hairline-strong bg-surface px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.22em] text-fg-muted"
+                        >
+                            <span
+                                aria-hidden="true"
+                                className="block h-[7px] w-[7px] rounded-full"
+                                style={{
+                                    background: "var(--accent)",
+                                    boxShadow:
+                                        "0 0 0 4px var(--accent-soft), 0 0 12px var(--accent)",
+                                }}
                             />
-                        ))}
-                    </div>
-                    <FadeInSection className="flex justify-center mt-10" delay={0.3}>
-                        <Link
-                            href="/skills"
-                            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground tracking-elegant transition-colors"
-                        >
-                            View all skills
-                            <ArrowRight className="w-4 h-4" />
-                        </Link>
-                    </FadeInSection>
-                </div>
-            </section>
-            {/* Divider */}
-            <div className="w-full border-t border-turquoise-200/50" />
-            {/* Navigation Section */}
-            <section className="w-full py-16 md:py-20">
-                <div className="container px-4 md:px-6 mx-auto">
-                    <FadeInSection className="flex flex-col items-center justify-center space-y-6 text-center mb-12">
-                        <span className="text-xs tracking-wide-elegant text-turquoise-600 uppercase">
-                            Explore
+                            Fullstack engineer / architect
                         </span>
-                        <h2 className="text-3xl font-light tracking-elegant sm:text-4xl text-foreground">
-                            Contents
-                        </h2>
-                    </FadeInSection>
-                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 max-w-4xl mx-auto">
-                        {NAV_ITEMS.map((item, index) => (
-                            <AnimatedNavCard key={item.href} item={item} index={index} />
-                        ))}
-                    </div>
-                </div>
-            </section>
-            {/* Divider */}
-            <div className="w-full border-t border-turquoise-200/50" />
-            {/* News Section */}
-            <section className="w-full py-16 md:py-20 bg-gradient-to-b from-turquoise-50/30 to-background">
-                <div className="container px-4 md:px-6 mx-auto">
-                    <FadeInSection className="flex flex-col items-center justify-center space-y-6 text-center">
-                        <span className="text-xs tracking-wide-elegant text-turquoise-600 uppercase">
-                            Daily Updates
-                        </span>
-                        <h2 className="text-3xl font-light tracking-elegant sm:text-4xl text-foreground">
-                            技術ニュース
-                        </h2>
-                        <p className="max-w-[600px] text-muted-foreground text-sm md:text-base font-light tracking-elegant">
-                            毎日自動収集される技術ニュースのAI要約
+                    </Reveal>
+
+                    <Reveal
+                        delay={120}
+                        className="relative mx-auto mb-6"
+                        style={{
+                            width: "100%",
+                            height: "clamp(180px, 24vw, 280px)",
+                        }}
+                    >
+                        <HeroParticleTitle text="onclimb" />
+                    </Reveal>
+
+                    <Reveal delay={240}>
+                        <p className="mx-auto mb-4 max-w-[640px] text-[clamp(18px,2vw,22px)] font-normal leading-[1.6] tracking-normal text-fg">
+                            「なぜ動くのか」を理解することにこだわるエンジニア。
                         </p>
-                        <Link
-                            className="mt-4 inline-flex h-11 items-center justify-center bg-turquoise-500 hover:bg-turquoise-600 px-8 text-sm text-white tracking-elegant rounded-md transition-all duration-200 shadow-soft"
-                            href="/news"
-                        >
-                            View News →
+                    </Reveal>
+                    <Reveal delay={320}>
+                        <p className="mx-auto mb-10 max-w-[560px] text-[15px] leading-[1.7] text-fg-muted">
+                            フロントエンドからバックエンド、インフラまで一貫した開発でプロダクトを形にします。
+                            <br />
+                            手段としての技術を、課題を解決し続ける形で届ける。
+                        </p>
+                    </Reveal>
+
+                    <Reveal
+                        delay={420}
+                        className="inline-flex flex-wrap justify-center gap-3"
+                    >
+                        <Link className="btn btn-primary" href="/profile">
+                            Profileを見る
+                            <svg
+                                width="14"
+                                height="14"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                            >
+                                <path d="M5 12h14M13 5l7 7-7 7" />
+                            </svg>
                         </Link>
-                    </FadeInSection>
+                        <Link className="btn btn-ghost" href="/portfolio">
+                            作ったものを見る
+                        </Link>
+                    </Reveal>
+                </div>
+
+                <div className="scroll-hint pointer-events-none absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 font-mono text-[11px] uppercase tracking-[0.2em] text-fg-dim">
+                    SCROLL
+                </div>
+            </section>
+
+            {/* STACK / WHAT I DO */}
+            <section className="relative py-[120px]">
+                <div className="container-design">
+                    <Reveal as="header" className="mb-14 flex max-w-[720px] flex-col gap-3">
+                        <span className="font-mono text-xs uppercase tracking-[0.2em] text-accent">
+                            01 / What I do
+                        </span>
+                        <h2 className="text-[clamp(32px,4vw,48px)] font-semibold leading-[1.05] tracking-[-0.03em]">
+                            設計から実装まで、
+                            <br />
+                            地続きで責任を持つ。
+                        </h2>
+                        <p className="max-w-[560px] text-base leading-[1.7] text-fg-muted">
+                            バックエンド・インフラを軸に、フロントエンドまで一貫して携わるフルスタックエンジニア。「作ったものがユーザーに届き、課題を解決し、安定して動き続けること」を最も大切にしています。
+                        </p>
+                    </Reveal>
+
+                    <div
+                        className="grid grid-cols-1 gap-px overflow-hidden rounded-[var(--radius-lg)] border border-hairline [@media(min-width:720px)]:grid-cols-3"
+                        style={{ background: "var(--hairline)" }}
+                    >
+                        {CAPS.map((cap, i) => (
+                            <Reveal
+                                key={cap.title}
+                                delay={i * 100}
+                                as="article"
+                                className="cap-cell relative overflow-hidden bg-bg-elev px-8 py-9 transition-colors duration-[250ms] hover:bg-bg-elev-2"
+                            >
+                                <div className="mb-6 font-mono text-[11px] uppercase tracking-[0.18em] text-fg-dim">
+                                    {cap.num}
+                                </div>
+                                <div
+                                    className="mb-6 grid h-11 w-11 place-items-center rounded-md border border-hairline-strong text-accent transition-all duration-[300ms]"
+                                    style={{ background: "var(--accent-soft)" }}
+                                >
+                                    {cap.icon}
+                                </div>
+                                <h3 className="mb-3 text-[20px] font-semibold tracking-[-0.01em]">
+                                    {cap.title}
+                                </h3>
+                                <p className="mb-4 text-sm leading-[1.7] text-fg-muted">
+                                    {cap.desc}
+                                </p>
+                                <div className="flex flex-wrap gap-1.5">
+                                    {cap.chips.map((c) => (
+                                        <span
+                                            key={c}
+                                            className="rounded-[4px] border border-hairline-strong bg-bg px-2 py-1 font-mono text-[11px] text-fg"
+                                        >
+                                            {c}
+                                        </span>
+                                    ))}
+                                </div>
+                            </Reveal>
+                        ))}
+                    </div>
+
+                    <Reveal
+                        className="mt-16 grid grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-lg)] border border-hairline [@media(min-width:720px)]:grid-cols-4"
+                        style={{ background: "var(--hairline)" }}
+                    >
+                        {STATS.map((s) => (
+                            <div key={s.label} className="bg-bg-elev p-8 text-left">
+                                <span className="block font-mono text-[36px] font-semibold tracking-[-0.03em] text-fg-strong">
+                                    {s.value}
+                                    {s.sup && (
+                                        <sup className="ml-0.5 text-base text-accent">
+                                            {s.sup}
+                                        </sup>
+                                    )}
+                                </span>
+                                <div className="mt-1.5 text-xs tracking-[0.05em] text-fg-muted">
+                                    {s.label}
+                                </div>
+                            </div>
+                        ))}
+                    </Reveal>
+                </div>
+            </section>
+
+            {/* EXPLORE */}
+            <section className="relative pb-[120px] pt-10">
+                <div className="container-design">
+                    <Reveal as="header" className="mb-14 flex max-w-[720px] flex-col gap-3">
+                        <span className="font-mono text-xs uppercase tracking-[0.2em] text-accent">
+                            02 / Explore
+                        </span>
+                        <h2 className="text-[clamp(32px,4vw,48px)] font-semibold leading-[1.05] tracking-[-0.03em]">
+                            深掘りする場所を選ぶ。
+                        </h2>
+                        <p className="max-w-[560px] text-base leading-[1.7] text-fg-muted">
+                            経歴、技術スタック、作ったもの、毎日の知識収集、読書ノート。それぞれのページに違うリズムがあります。
+                        </p>
+                    </Reveal>
+
+                    <div className="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
+                        {EXPLORE_ITEMS.map((item, i) => (
+                            <Reveal key={item.href} delay={i * 60}>
+                                <Link
+                                    href={item.href}
+                                    className="explore relative block overflow-hidden rounded-[var(--radius-lg)] border border-hairline bg-surface p-7 backdrop-blur-[8px] transition-all duration-[350ms] hover:-translate-y-1 hover:border-accent"
+                                >
+                                    <span className="mb-4 block font-mono text-[11px] tracking-[0.2em] text-fg-dim">
+                                        → {item.href}
+                                    </span>
+                                    <div className="mb-1.5 flex items-center gap-2 text-[22px] font-semibold">
+                                        {item.label}
+                                        <span className="explore__arrow inline-block transition-transform duration-[300ms]">
+                                            ↗
+                                        </span>
+                                    </div>
+                                    <div className="text-sm leading-[1.6] text-fg-muted">
+                                        {item.description}
+                                    </div>
+                                    <span
+                                        className="pointer-events-none absolute -bottom-5 -right-5 h-[100px] w-[100px] rounded-md opacity-[0.05] transition-opacity duration-[350ms]"
+                                        style={{
+                                            background:
+                                                "linear-gradient(135deg, var(--accent), transparent)",
+                                        }}
+                                    />
+                                </Link>
+                            </Reveal>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* CTA BAND */}
+            <section className="relative pb-[120px] pt-10">
+                <div className="container-design">
+                    <Reveal
+                        className="relative overflow-hidden rounded-[var(--radius-lg)] border border-hairline-strong px-8 py-20 text-center"
+                        style={{
+                            background:
+                                "radial-gradient(circle at 80% 20%, var(--accent-soft), transparent 50%), radial-gradient(circle at 20% 80%, color-mix(in srgb, var(--indigo) 12%, transparent), transparent 50%), var(--bg-elev)",
+                        }}
+                    >
+                        <h2 className="relative mb-4 text-[clamp(28px,4vw,44px)] font-semibold tracking-[-0.02em]">
+                            仕事の話、しませんか。
+                        </h2>
+                        <p className="relative mb-7 text-base text-fg-muted">
+                            新しいプロダクト、技術相談、雑談まで。気軽に連絡してください。
+                        </p>
+                        <div className="relative inline-flex flex-wrap justify-center gap-3">
+                            <a
+                                className="btn btn-primary"
+                                href="mailto:contact@onc-limb.com"
+                            >
+                                contact@onc-limb.com
+                            </a>
+                            <a
+                                className="btn btn-ghost"
+                                href={GITHUB_URL}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                GitHub ↗
+                            </a>
+                        </div>
+                    </Reveal>
                 </div>
             </section>
         </main>

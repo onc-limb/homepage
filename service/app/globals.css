@@ -2,238 +2,480 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-    :root {
-        /* Watercolor Theme - 水彩ヤモリロゴに合わせた柔らかいテーマ */
-        /* 読みやすさ最優先のライトテーマ */
-        --background: 195 30% 98%;
-        /* #F8FBFC 淡い水色がかった白 */
-        --foreground: 200 20% 20%;
-        /* #2A3640 読みやすいダークグレー */
+/* ============================================================
+   Design tokens (mirrors docs/design/shared/tokens.css)
+   ============================================================ */
+:root {
+    /* Type — next/font provides --font-geist / --font-noto-jp / --font-space-grotesk / --font-geist-mono / --font-jetbrains-mono on <body>. We compose a sans/mono fallback chain that uses those vars first. */
+    --font-sans:
+        var(--font-geist), var(--font-space-grotesk), var(--font-noto-jp),
+        -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --font-mono:
+        var(--font-jetbrains-mono), var(--font-geist-mono), ui-monospace,
+        SFMono-Regular, Menlo, monospace;
 
-        --card: 195 25% 97%;
-        /* #F5F9FA カードは少し薄い水色 */
-        --card-foreground: 200 20% 20%;
+    /* Layout */
+    --container: 1200px;
+    --radius: 4px;
+    --radius-lg: 12px;
 
-        --popover: 0 0% 100%;
-        --popover-foreground: 200 20% 20%;
-
-        --primary: 185 60% 40%;
-        /* #299E9E ターコイズ - ロゴのメインカラー */
-        --primary-foreground: 0 0% 100%;
-
-        --secondary: 195 20% 93%;
-        /* #E8EFF2 淡いグレーブルー */
-        --secondary-foreground: 200 20% 25%;
-
-        --muted: 195 15% 92%;
-        /* #E5EBED */
-        --muted-foreground: 200 10% 45%;
-        /* #6B7680 十分なコントラスト */
-
-        --accent: 20 50% 55%;
-        /* #C87746 テラコッタオレンジ - アクセント */
-        --accent-foreground: 0 0% 100%;
-
-        --destructive: 0 65% 50%;
-        --destructive-foreground: 0 0% 100%;
-
-        --border: 195 20% 88%;
-        /* #D9E4E8 */
-        --input: 195 20% 88%;
-        --ring: 185 60% 40%;
-        /* ターコイズ */
-
-        --radius: 0.5rem;
-
-        /* カスタムカラー変数 */
-        --turquoise: 185 60% 40%;
-        /* メインターコイズ */
-        --turquoise-light: 185 50% 85%;
-        /* 薄いターコイズ */
-        --terracotta: 20 50% 55%;
-        /* テラコッタオレンジ */
-        --watercolor-blue: 195 45% 75%;
-        /* 水彩ブルー */
-    }
+    /* Easing */
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+:root,
+:root[data-theme="dark"] {
+    color-scheme: dark;
+
+    --bg: #0a1020;
+    --bg-elev: #0f1830;
+    --bg-elev-2: #141f3d;
+    --surface: rgba(20, 31, 61, 0.5);
+    --surface-strong: rgba(30, 44, 78, 0.85);
+    --hairline: rgba(140, 170, 230, 0.14);
+    --hairline-strong: rgba(140, 170, 230, 0.28);
+
+    --fg: #e6ecfb;
+    --fg-strong: #ffffff;
+    --fg-muted: #9da8c5;
+    --fg-dim: #6f7c9e;
+
+    --accent: #5b8def;
+    --accent-strong: #7ba4f5;
+    --accent-soft: rgba(91, 141, 239, 0.16);
+    --accent-glow: rgba(91, 141, 239, 0.45);
+
+    --cyan: #6bd9f2;
+    --indigo: #8b9dff;
+    --violet: #b49bff;
+    --amber: #f5c46b;
+    --rose: #f47a8c;
+
+    --grid: rgba(140, 170, 230, 0.06);
+    --shadow-lg: 0 30px 80px -20px rgba(0, 8, 30, 0.7);
+    --shadow-soft: 0 10px 40px -10px rgba(91, 141, 239, 0.25);
+}
+
+:root[data-theme="light"] {
+    color-scheme: light;
+
+    --bg: #f2f5fb;
+    --bg-elev: #ffffff;
+    --bg-elev-2: #f7f9fe;
+    --surface: rgba(255, 255, 255, 0.72);
+    --surface-strong: rgba(255, 255, 255, 0.95);
+    --hairline: rgba(20, 40, 90, 0.08);
+    --hairline-strong: rgba(20, 40, 90, 0.18);
+
+    --fg: #0f1830;
+    --fg-strong: #050b1c;
+    --fg-muted: #4a5878;
+    --fg-dim: #7c8aaa;
+
+    --accent: #2f6be0;
+    --accent-strong: #1f4fbe;
+    --accent-soft: rgba(47, 107, 224, 0.1);
+    --accent-glow: rgba(47, 107, 224, 0.3);
+
+    --cyan: #1aa9d1;
+    --indigo: #3f4fe0;
+    --violet: #6e5de0;
+    --amber: #c58b17;
+    --rose: #d54562;
+
+    --grid: rgba(20, 40, 90, 0.04);
+    --shadow-lg: 0 30px 80px -20px rgba(20, 40, 90, 0.18);
+    --shadow-soft: 0 10px 40px -10px rgba(47, 107, 224, 0.2);
+}
+
+/* ============================================================
+   Reset / base
+   ============================================================ */
 @layer base {
-    * {
-        @apply border-border;
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
+
+    html,
+    body {
+        margin: 0;
+        padding: 0;
     }
 
     body {
-        @apply bg-background text-foreground antialiased;
+        font-family: var(--font-sans);
+        background: var(--bg);
+        color: var(--fg);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        font-feature-settings: "ss01", "cv01";
+        letter-spacing: 0.005em;
+        overflow-x: hidden;
+        min-height: 100vh;
     }
 
-    /* 水彩テーマ用タイポグラフィ - 読みやすさ重視 */
+    a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    button {
+        font: inherit;
+        color: inherit;
+        background: none;
+        border: 0;
+        cursor: pointer;
+        padding: 0;
+    }
+
+    img {
+        max-width: 100%;
+        display: block;
+    }
+
     h1,
     h2,
     h3,
-    h4,
-    h5,
-    h6 {
-        @apply tracking-tight font-semibold;
-        color: hsl(200, 25%, 18%);
-        /* やや濃いめで視認性確保 */
+    h4 {
+        margin: 0;
+        font-weight: 500;
+        letter-spacing: -0.02em;
+        color: var(--fg-strong);
     }
 
-    /* リンクのスタイル - ターコイズベース */
-    a {
-        @apply transition-colors duration-200;
+    p {
+        margin: 0;
     }
 
-    /* 本文テキストの読みやすさ向上 */
-    p,
-    li {
-        line-height: 1.8;
+    ::selection {
+        background: var(--accent-soft);
+        color: var(--fg-strong);
+    }
+
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: var(--hairline-strong);
+        border-radius: 999px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--accent);
+    }
+}
+
+/* ============================================================
+   Component utilities (mirrors design tokens.css + shell.css)
+   ============================================================ */
+@layer components {
+    .font-mono {
+        font-family: var(--font-mono);
+    }
+
+    .eyebrow {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--accent);
+        font-weight: 500;
+    }
+
+    .container-design {
+        width: 100%;
+        max-width: var(--container);
+        margin: 0 auto;
+        padding: 0 24px;
+    }
+
+    @media (min-width: 768px) {
+        .container-design {
+            padding: 0 40px;
+        }
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        height: 44px;
+        padding: 0 20px;
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        border-radius: var(--radius);
+        transition: all 200ms var(--ease-out);
+        border: 1px solid transparent;
+    }
+
+    .btn-primary {
+        background: var(--accent);
+        color: #ffffff;
+        box-shadow: 0 8px 24px -8px var(--accent-glow);
+    }
+
+    .btn-primary:hover {
+        background: var(--accent-strong);
+        transform: translateY(-1px);
+        box-shadow: 0 12px 32px -8px var(--accent-glow);
+    }
+
+    .btn-ghost {
+        border-color: var(--hairline-strong);
+        color: var(--fg);
+    }
+
+    .btn-ghost:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: var(--accent-soft);
+    }
+
+    .card-surface {
+        background: var(--surface);
+        border: 1px solid var(--hairline);
+        border-radius: var(--radius-lg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+    }
+
+    .hairline {
+        border-top: 1px solid var(--hairline);
+    }
+
+    .grid-bg {
+        background-image:
+            linear-gradient(var(--grid) 1px, transparent 1px),
+            linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+        background-size: 48px 48px;
+    }
+
+    /* Theme toggle icons (driven by data-theme on <html>) */
+    .theme-toggle .theme-toggle__sun {
+        display: none;
+    }
+    .theme-toggle .theme-toggle__moon {
+        display: block;
+    }
+    :root[data-theme="light"] .theme-toggle .theme-toggle__sun {
+        display: block;
+    }
+    :root[data-theme="light"] .theme-toggle .theme-toggle__moon {
+        display: none;
+    }
+
+    /* Nav link underline animation */
+    .site-nav__link::after {
+        content: "";
+        position: absolute;
+        left: 14px;
+        right: 14px;
+        bottom: 4px;
+        height: 1px;
+        background: var(--accent);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 300ms var(--ease-out);
+    }
+    .site-nav__link:hover::after,
+    .site-nav__link.is-active::after {
+        transform: scaleX(1);
+    }
+
+    /* Site shell: header */
+    .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: color-mix(in srgb, var(--bg) 78%, transparent);
+        backdrop-filter: blur(14px) saturate(140%);
+        -webkit-backdrop-filter: blur(14px) saturate(140%);
+        border-bottom: 1px solid var(--hairline);
+    }
+
+    .site-bg-canvas {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        pointer-events: none;
+        opacity: 0.85;
+    }
+
+    /* Reveal animation */
+    [data-reveal] {
+        opacity: 0;
+        transform: translateY(20px);
+        transition:
+            opacity 700ms var(--ease-out),
+            transform 700ms var(--ease-out);
+    }
+
+    [data-reveal].is-revealed {
+        opacity: 1;
+        transform: none;
+    }
+
+    .page {
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Hero floating shapes */
+    .shape {
+        animation: shape-float 18s ease-in-out infinite;
+    }
+
+    /* Pulse animations */
+    .pulse-dot {
+        animation: pulse-dot 2.4s ease-in-out infinite;
+    }
+
+    .pulse-ring {
+        animation: pulse-ring 3s infinite ease-out;
+    }
+
+    .scroll-hint::after {
+        content: "";
+        width: 1px;
+        height: 32px;
+        background: linear-gradient(180deg, var(--fg-dim), transparent);
+        animation: scroll-hint 1.8s ease-in-out infinite;
+        display: block;
+    }
+
+    .live-blink::before {
+        animation: live-blink 1.5s infinite;
+    }
+
+    .ticker-track {
+        animation: ticker-scroll 60s linear infinite;
+    }
+
+    .ticker-wrap:hover .ticker-track {
+        animation-play-state: paused;
+    }
+
+    .arch-flow-step {
+        animation: arch-flow-dash 2s linear infinite;
+    }
+}
+
+@keyframes shape-float {
+    0%,
+    100% {
+        transform: translate3d(0, 0, 0) rotate(var(--r, 0deg));
+    }
+    33% {
+        transform: translate3d(20px, -30px, 40px) rotate(calc(var(--r, 0deg) + 12deg));
+    }
+    66% {
+        transform: translate3d(-15px, 20px, -20px) rotate(calc(var(--r, 0deg) - 8deg));
+    }
+}
+
+@keyframes pulse-dot {
+    0%,
+    100% {
+        box-shadow:
+            0 0 0 4px var(--accent-soft),
+            0 0 12px var(--accent);
+    }
+    50% {
+        box-shadow:
+            0 0 0 7px transparent,
+            0 0 20px var(--accent);
+    }
+}
+
+@keyframes pulse-ring {
+    0% {
+        transform: scale(0.6);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(1.6);
+        opacity: 0;
+    }
+}
+
+@keyframes scroll-hint {
+    0% {
+        transform: translateY(-8px);
+        opacity: 0;
+    }
+    40% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(8px);
+        opacity: 0;
+    }
+}
+
+@keyframes live-blink {
+    50% {
+        opacity: 0.2;
+    }
+}
+
+@keyframes ticker-scroll {
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+@keyframes arch-flow-dash {
+    to {
+        stroke-dashoffset: -20;
+    }
+}
+
+@keyframes spin-slow {
+    to {
+        transform: rotate(360deg);
     }
 }
 
 @layer utilities {
-    /* 細いボーダーライン */
-    .border-subtle {
-        border-color: rgba(0, 100, 120, 0.1);
+    .dim {
+        color: var(--fg-muted);
     }
 
-    /* ホバー時の背景変化 */
-    .hover-lift {
-        @apply transition-all duration-300;
+    .dimmer {
+        color: var(--fg-dim);
     }
 
-    .hover-lift:hover {
-        @apply bg-secondary/50;
+    .strong {
+        color: var(--fg-strong);
     }
 
-    /* セクション区切り線 */
-    .section-divider {
-        @apply border-t border-border;
-    }
-
-    /* テキストのレタースペーシング */
-    .tracking-elegant {
-        letter-spacing: 0.03em;
-    }
-
-    .tracking-wide-elegant {
-        letter-spacing: 0.08em;
-    }
-
-    /* 水彩風グラデーション背景 */
-    .watercolor-gradient {
-        background: linear-gradient(
-            135deg,
-            hsl(195, 30%, 98%) 0%,
-            hsl(185, 40%, 95%) 50%,
-            hsl(195, 30%, 98%) 100%
-        );
-    }
-
-    /* ターコイズアクセント */
-    .accent-turquoise {
-        color: hsl(185, 60%, 35%);
-    }
-
-    /* テラコッタアクセント */
-    .accent-terracotta {
-        color: hsl(20, 50%, 50%);
+    .text-accent {
+        color: var(--accent);
     }
 }
 
-/* ライトテーマ用のproseスタイル - 読みやすさ最優先 */
-@layer components {
-    .prose-readable {
-        /* 本文テキストの可読性向上 */
-        --tw-prose-body: #2a3640;
-        /* 本文は十分に濃いグレー */
-        --tw-prose-headings: #1e2a33;
-        /* 見出しはさらに濃く */
-        --tw-prose-lead: #3d4d5a;
-        --tw-prose-links: #299e9e;
-        /* ターコイズリンク */
-        --tw-prose-bold: #1e2a33;
-        --tw-prose-counters: #5a6a75;
-        --tw-prose-bullets: #299e9e;
-        /* ターコイズ */
-        --tw-prose-hr: #d9e4e8;
-        --tw-prose-quotes: #3d4d5a;
-        --tw-prose-quote-borders: #299e9e;
-        /* ターコイズ */
-        --tw-prose-captions: #5a6a75;
-        --tw-prose-code: #1e2a33;
-        --tw-prose-pre-code: #2a3640;
-        --tw-prose-pre-bg: #f0f5f7;
-        --tw-prose-th-borders: #d9e4e8;
-        --tw-prose-td-borders: #e5ebed;
-    }
-
-    .prose-readable p {
-        line-height: 1.9;
-        margin-bottom: 1.5em;
-        color: var(--tw-prose-body);
-    }
-
-    .prose-readable h1,
-    .prose-readable h2,
-    .prose-readable h3,
-    .prose-readable h4 {
-        color: var(--tw-prose-headings);
-        margin-top: 2em;
-        margin-bottom: 0.75em;
-    }
-
-    .prose-readable li {
-        line-height: 1.8;
-        margin-bottom: 0.5em;
-    }
-
-    .prose-readable a {
-        color: var(--tw-prose-links);
-        text-decoration: underline;
-        text-underline-offset: 3px;
-    }
-
-    .prose-readable a:hover {
-        color: hsl(185, 60%, 30%);
-    }
-
-    .prose-readable code {
-        background-color: #e8eff2;
-        padding: 0.2em 0.4em;
-        border-radius: 0.25rem;
-        font-size: 0.9em;
-        color: #1e2a33;
-    }
-
-    .prose-readable pre {
-        background-color: #f0f5f7;
-        border: 1px solid #d9e4e8;
-        border-radius: 0.5rem;
-    }
-
-    .prose-readable blockquote {
-        border-left-color: #299e9e;
-        background-color: rgba(41, 158, 158, 0.05);
-        padding: 0.5em 1em;
-        border-radius: 0 0.25rem 0.25rem 0;
-    }
-
-    .prose-readable strong {
-        color: var(--tw-prose-bold);
-    }
-
-    .prose-readable table {
-        border-collapse: collapse;
-    }
-
-    .prose-readable th,
-    .prose-readable td {
-        border: 1px solid #d9e4e8;
-        padding: 0.75em 1em;
-    }
-
-    .prose-readable th {
-        background-color: #e8eff2;
+/* ============================================================
+   Reduced motion
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
     }
 }

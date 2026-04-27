@@ -192,3 +192,71 @@ export function getSkillsByCategory(): Record<SkillCategory, Skill[]> {
         {} as Record<SkillCategory, Skill[]>
     )
 }
+
+/**
+ * docs/design/skill.html の radar chart に必要な 8 軸定義。
+ */
+export const RADAR_AXIS_KEYS = [
+    "backend",
+    "frontend",
+    "infra",
+    "arch",
+    "ai",
+    "devops",
+    "low",
+    "sec",
+] as const
+
+export type RadarAxisKey = (typeof RADAR_AXIS_KEYS)[number]
+
+export interface RadarAxis {
+    key: RadarAxisKey
+    label: string
+    value: number
+}
+
+const RADAR_AXIS_LABELS: Record<RadarAxisKey, string> = {
+    backend: "Backend",
+    frontend: "Frontend",
+    infra: "Infra/Cloud",
+    arch: "Architecture",
+    ai: "AI/MLOps",
+    devops: "DevOps",
+    low: "Low-level",
+    sec: "Security",
+}
+
+const AXIS_TO_CATEGORIES: Record<RadarAxisKey, SkillCategory[]> = {
+    backend: ["framework", "api"],
+    frontend: ["markup-style"],
+    infra: ["compute", "networking", "storage", "IaC", "container"],
+    arch: ["methodology"],
+    ai: ["ai-ml"],
+    devops: ["devops-sre", "tools"],
+    low: ["language"],
+    sec: ["security", "auth"],
+}
+
+/**
+ * 各軸に紐付くカテゴリの level を平均し 0..5 で返す。
+ * 寄与スキルが 0 件の軸は 0 を返す。
+ */
+export function getRadarAxes(skills: Skill[]): RadarAxis[] {
+    return RADAR_AXIS_KEYS.map((key) => {
+        const categories = AXIS_TO_CATEGORIES[key]
+        const matched = skills.filter((s) => categories.includes(s.category))
+        const value =
+            matched.length === 0
+                ? 0
+                : clamp(
+                      matched.reduce((sum, s) => sum + s.level, 0) / matched.length,
+                      0,
+                      5,
+                  )
+        return { key, label: RADAR_AXIS_LABELS[key], value }
+    })
+}
+
+function clamp(value: number, min: number, max: number): number {
+    return Math.min(max, Math.max(min, value))
+}

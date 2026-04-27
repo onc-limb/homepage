@@ -1,67 +1,51 @@
-import { notFound } from "next/navigation"
 import Link from "next/link"
+import { notFound } from "next/navigation"
 import {
-    Github,
-    ExternalLink,
-    FileText,
-    ArrowLeft,
-    Server,
-    Code,
-    Layers,
-} from "lucide-react"
-import {
+    findAdjacentProjectIds,
+    formatProjectNumber,
     getProjectById,
     getProjectIds,
-    type Project,
-    type ArchitectureComponent as ArchitectureComponentType,
+    getProjects,
 } from "@/lib/portfolio"
-// 静的パスを生成
+import { Reveal } from "@/components/animations"
+import { ExternalIcon, GitHubIcon } from "@/components/icons"
+import { ArchDiagram, Pager } from "@/components/portfolio"
+
 export function generateStaticParams() {
-    const ids = getProjectIds()
-    return ids.map((id) => ({ id }))
+    return getProjectIds().map((id) => ({ id }))
 }
-// メタデータを生成
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<{ id: string }>
+}) {
     const { id } = await params
     const project = getProjectById(id)
-    if (!project) {
-        return { title: "Project Not Found" }
-    }
+    if (!project) return { title: "Project Not Found" }
     return {
         title: `${project.title} | Portfolio`,
         description: project.description,
     }
 }
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-    return (
-        <section className="mb-12">
-            <h2 className="text-xl font-light tracking-elegant text-foreground mb-6 pb-2 border-b border-border/30">
-                {title}
-            </h2>
-            {children}
-        </section>
-    )
+
+function inferStatus(period: string): string {
+    return /present|現在|〜/i.test(period) ? "production" : "archived"
 }
-function ArchitectureComponent({ component }: { component: ArchitectureComponentType }) {
-    return (
-        <div className="border border-border/50 bg-card/30 p-4">
-            <h4 className="text-base font-medium text-foreground tracking-elegant mb-2">
-                {component.name}
-            </h4>
-            <p className="text-sm text-muted-foreground mb-3">{component.description}</p>
-            <div className="flex flex-wrap gap-2">
-                {component.technologies.map((tech) => (
-                    <span
-                        key={tech}
-                        className="text-xs px-2 py-1 bg-accent/50 text-foreground/80 tracking-elegant"
-                    >
-                        {tech}
-                    </span>
-                ))}
-            </div>
-        </div>
-    )
+
+function statusVisual(period: string): string {
+    return inferStatus(period) === "production" ? "In Production" : "Archived"
 }
+
+function projectNumber(
+    project: { id: string; category: "personal" | "work" },
+    all: { id: string; category: "personal" | "work" }[],
+): string {
+    const sameList = all.filter((p) => p.category === project.category)
+    const indexInList = sameList.findIndex((p) => p.id === project.id)
+    return formatProjectNumber(project.category, indexInList)
+}
+
 export default async function ProjectDetailPage({
     params,
 }: {
@@ -69,243 +53,302 @@ export default async function ProjectDetailPage({
 }) {
     const { id } = await params
     const project = getProjectById(id)
-    if (!project || !project.detail) {
-        notFound()
-    }
-    const { detail } = project
+    if (!project) notFound()
+
+    const ids = getProjectIds()
+    const all = getProjects()
+    const { prev, next } = findAdjacentProjectIds(ids, project.id)
+    const prevProj = prev ? all.find((p) => p.id === prev) : null
+    const nextProj = next ? all.find((p) => p.id === next) : null
+
+    const detailNumber = projectNumber(project, all)
+
+    const isOncLimb = project.id === "portfolio-site"
+
     return (
-        <main className="flex-1">
-            {/* Hero Section */}
-            <section className="w-full py-16 md:py-24">
-                <div className="container px-4 md:px-6 mx-auto">
-                    <div className="flex flex-col items-center justify-center space-y-6 text-center">
-                        {/* Back Link */}
+        <main className="page flex-1">
+            {/* HERO */}
+            <section className="relative overflow-hidden border-b border-hairline px-0 pb-12 pt-[72px]">
+                <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 -z-[1]"
+                    style={{
+                        background:
+                            "radial-gradient(circle at 80% 20%, var(--accent-soft), transparent 55%), radial-gradient(circle at 10% 90%, color-mix(in oklch, var(--cyan), transparent 80%), transparent 60%)",
+                    }}
+                />
+                <div className="mx-auto max-w-[980px] px-6">
+                    <Reveal className="mb-6 flex items-center gap-1.5 font-mono text-xs uppercase tracking-[0.16em] text-fg-dim">
+                        <Link
+                            href="/"
+                            className="text-fg-muted transition-colors hover:text-accent"
+                        >
+                            onclimb
+                        </Link>
+                        <span className="text-fg-dim">/</span>
                         <Link
                             href="/portfolio"
-                            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
+                            className="text-fg-muted transition-colors hover:text-accent"
                         >
-                            <ArrowLeft className="w-4 h-4" />
-                            <span>Portfolio に戻る</span>
+                            portfolio
                         </Link>
-                        <span className="text-xs tracking-wide-elegant text-muted-foreground uppercase">
-                            {project.category === "personal"
-                                ? "Personal Project"
-                                : "Work Experience"}
+                        <span className="text-fg-dim">/</span>
+                        <b className="font-medium text-accent">{project.title}</b>
+                    </Reveal>
+                    <Reveal
+                        delay={60}
+                        className="mb-5 flex flex-wrap items-baseline gap-3.5"
+                    >
+                        <span className="font-mono text-[13px] tracking-[0.18em] text-accent">
+                            {detailNumber}
                         </span>
-                        <h1 className="text-4xl font-light tracking-wide-elegant sm:text-5xl text-foreground">
+                        <span className="font-mono text-xs tracking-[0.06em] text-fg-dim">
+                            {project.period}
+                        </span>
+                        <span
+                            className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 font-mono text-[11px]"
+                            style={{
+                                background: "var(--accent-soft)",
+                                color: "var(--accent)",
+                            }}
+                        >
+                            <span
+                                aria-hidden="true"
+                                className="block h-1.5 w-1.5 rounded-full"
+                                style={{
+                                    background: "var(--accent)",
+                                    boxShadow: "0 0 6px var(--accent)",
+                                }}
+                            />
+                            {inferStatus(project.period)}
+                        </span>
+                    </Reveal>
+                    <Reveal delay={120}>
+                        <h1 className="mb-4 text-[clamp(40px,5.6vw,64px)] font-semibold leading-[1.05] tracking-[-0.03em]">
                             {project.title}
                         </h1>
-                        <div className="w-16 h-px bg-border/70 my-4" />
-                        <p className="max-w-[700px] text-muted-foreground text-base md:text-lg font-light tracking-elegant">
+                    </Reveal>
+                    <Reveal delay={180}>
+                        <p className="mb-7 max-w-[720px] text-lg leading-[1.7] text-fg">
                             {project.longDescription || project.description}
                         </p>
-                        {/* Meta Info */}
-                        <div className="flex flex-wrap justify-center gap-6 text-sm text-muted-foreground mt-4">
-                            <div>
-                                <span className="text-xs uppercase tracking-wide">
-                                    期間
-                                </span>
-                                <p className="text-foreground">{project.period}</p>
-                            </div>
-                            <div>
-                                <span className="text-xs uppercase tracking-wide">
-                                    担当
-                                </span>
-                                <p className="text-foreground">{project.role}</p>
-                            </div>
-                        </div>
-                        {/* Links */}
-                        {project.links && (
-                            <div className="flex gap-4 mt-4">
-                                {project.links.github && (
-                                    <Link
-                                        href={project.links.github}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="flex items-center gap-2 px-4 py-2 border border-border/50 text-sm text-foreground hover:bg-accent transition-colors"
-                                    >
-                                        <Github className="w-4 h-4" />
-                                        <span>GitHub</span>
-                                    </Link>
-                                )}
-                                {project.links.demo && (
-                                    <Link
-                                        href={project.links.demo}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="flex items-center gap-2 px-4 py-2 border border-border/50 text-sm text-foreground hover:bg-accent transition-colors"
-                                    >
-                                        <ExternalLink className="w-4 h-4" />
-                                        <span>Demo</span>
-                                    </Link>
-                                )}
-                                {project.links.article && (
-                                    <Link
-                                        href={project.links.article}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="flex items-center gap-2 px-4 py-2 border border-border/50 text-sm text-foreground hover:bg-accent transition-colors"
-                                    >
-                                        <FileText className="w-4 h-4" />
-                                        <span>Article</span>
-                                    </Link>
-                                )}
-                            </div>
+                    </Reveal>
+                    <Reveal
+                        delay={240}
+                        className="flex flex-wrap gap-2.5"
+                    >
+                        {project.links?.demo && (
+                            <a
+                                href={project.links.demo}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 rounded-full bg-accent px-4 py-2.5 font-mono text-xs tracking-[0.04em] text-white transition-all duration-200 hover:-translate-y-0.5"
+                                style={{ background: "var(--accent)" }}
+                            >
+                                Live demo
+                                <ExternalIcon width={12} height={12} />
+                            </a>
                         )}
-                    </div>
+                        {project.links?.github && (
+                            <a
+                                href={project.links.github}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 rounded-full border border-hairline-strong px-4 py-2.5 font-mono text-xs tracking-[0.04em] text-fg transition-colors duration-200 hover:border-accent hover:text-accent"
+                            >
+                                <GitHubIcon />
+                                GitHub
+                            </a>
+                        )}
+                    </Reveal>
                 </div>
             </section>
-            {/* Divider */}
-            <div className="w-full border-t border-border/30" />
-            {/* Content Section */}
-            <section className="w-full py-16 md:py-20">
-                <div className="container px-4 md:px-6 mx-auto max-w-4xl">
-                    {/* Technologies */}
-                    <Section title="使用技術">
-                        <div className="flex flex-wrap gap-2">
-                            {project.technologies.map((tech) => (
-                                <span
-                                    key={tech}
-                                    className="text-sm px-3 py-1.5 bg-accent/50 text-foreground tracking-elegant"
+
+            {/* FACTS */}
+            <Reveal
+                className="mx-auto -mt-6 grid max-w-[980px] grid-cols-1 gap-px overflow-hidden rounded-[var(--radius-lg)] border border-hairline px-6 [@media(min-width:720px)]:grid-cols-4"
+                style={{ background: "var(--hairline)" }}
+            >
+                <Fact label="CATEGORY">
+                    {project.category === "personal" ? "Personal · Web" : "Work"}
+                </Fact>
+                <Fact label="ROLE">{project.role}</Fact>
+                <Fact label="DURATION">{project.period}</Fact>
+                <Fact label="STATUS" accent>
+                    {statusVisual(project.period)}
+                </Fact>
+            </Reveal>
+
+            {/* 01 BACKGROUND */}
+            {(project.detail?.background || project.detail?.overview) && (
+                <DetailSection num="/01" title="作成背景" sub="— why I built this">
+                    <div className="text-base leading-[1.85] text-fg">
+                        {project.detail.overview && (
+                            <p className="mb-4">{project.detail.overview}</p>
+                        )}
+                        {project.detail.background && (
+                            <p className="mb-4">{project.detail.background}</p>
+                        )}
+                    </div>
+                </DetailSection>
+            )}
+
+            {/* 02 TECH */}
+            <DetailSection num="/02" title="使用技術" sub="— stack & tooling">
+                <div
+                    className="grid grid-cols-1 gap-px overflow-hidden rounded-[var(--radius-lg)] border border-hairline [@media(min-width:720px)]:grid-cols-2"
+                    style={{ background: "var(--hairline)" }}
+                >
+                    <div className="bg-bg-elev px-6 py-5 transition-colors duration-200 hover:bg-bg-elev-2">
+                        <div className="mb-3.5 flex items-center gap-2.5">
+                            <div
+                                className="grid h-8 w-8 place-items-center rounded-md text-accent"
+                                style={{ background: "var(--accent-soft)" }}
+                            >
+                                <svg
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
                                 >
-                                    {tech}
+                                    <path d="M4 4h16v16H4z" />
+                                    <path d="M9 4v16M4 9h5" />
+                                </svg>
+                            </div>
+                            <div className="text-sm font-semibold text-fg-strong">
+                                Stack
+                            </div>
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
+                            {project.technologies.map((t) => (
+                                <span
+                                    key={t}
+                                    className="rounded-[4px] border border-hairline-strong bg-bg px-2.5 py-1 font-mono text-[11.5px] text-fg transition-all duration-200 hover:border-accent hover:text-accent"
+                                >
+                                    {t}
                                 </span>
                             ))}
                         </div>
-                    </Section>
-                    {/* Overview */}
-                    {detail.overview && (
-                        <Section title="概要">
-                            <p className="text-muted-foreground leading-relaxed">
-                                {detail.overview}
-                            </p>
-                        </Section>
-                    )}
-                    {/* Background */}
-                    {detail.background && (
-                        <Section title="背景・課題">
-                            <p className="text-muted-foreground leading-relaxed">
-                                {detail.background}
-                            </p>
-                        </Section>
-                    )}
-                    {/* Architecture */}
-                    {detail.architecture && (
-                        <Section title="アーキテクチャ">
-                            <div className="space-y-6">
-                                <p className="text-muted-foreground leading-relaxed">
-                                    {detail.architecture.description}
-                                </p>
-                                {detail.architecture.components &&
-                                    detail.architecture.components.length > 0 && (
-                                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                                            {detail.architecture.components.map(
-                                                (component, index) => (
-                                                    <ArchitectureComponent
-                                                        key={index}
-                                                        component={component}
-                                                    />
-                                                )
-                                            )}
-                                        </div>
-                                    )}
-                            </div>
-                        </Section>
-                    )}
-                    {/* Technical Points */}
-                    {detail.technicalPoints && detail.technicalPoints.length > 0 && (
-                        <Section title="技術的な工夫">
-                            <div className="space-y-6">
-                                {detail.technicalPoints.map((point, index) => (
-                                    <div
-                                        key={index}
-                                        className="border-l-2 border-border/50 pl-4"
-                                    >
-                                        <h3 className="text-base font-medium text-foreground tracking-elegant mb-2">
-                                            {point.title}
-                                        </h3>
-                                        <p className="text-sm text-muted-foreground leading-relaxed">
-                                            {point.description}
-                                        </p>
-                                    </div>
-                                ))}
-                            </div>
-                        </Section>
-                    )}
-                    {/* Challenges */}
-                    {detail.challenges && detail.challenges.length > 0 && (
-                        <Section title="課題と解決策">
-                            <div className="space-y-6">
-                                {detail.challenges.map((challenge, index) => (
-                                    <div
-                                        key={index}
-                                        className="border border-border/50 bg-card/30 p-4"
-                                    >
-                                        <div className="mb-3">
-                                            <span className="text-xs text-muted-foreground uppercase tracking-wide">
-                                                課題
-                                            </span>
-                                            <p className="text-foreground mt-1">
-                                                {challenge.problem}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <span className="text-xs text-muted-foreground uppercase tracking-wide">
-                                                解決策
-                                            </span>
-                                            <p className="text-foreground/80 mt-1">
-                                                {challenge.solution}
-                                            </p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </Section>
-                    )}
-                    {/* Results */}
-                    {detail.results && detail.results.length > 0 && (
-                        <Section title="成果・学び">
-                            <ul className="space-y-2">
-                                {detail.results.map((result, index) => (
-                                    <li
-                                        key={index}
-                                        className="text-muted-foreground flex items-start gap-2"
-                                    >
-                                        <span className="text-foreground/50 mt-1">•</span>
-                                        <span>{result}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </Section>
-                    )}
-                    {/* Future Work */}
-                    {detail.futureWork && detail.futureWork.length > 0 && (
-                        <Section title="今後の展望">
-                            <ul className="space-y-2">
-                                {detail.futureWork.map((work, index) => (
-                                    <li
-                                        key={index}
-                                        className="text-muted-foreground flex items-start gap-2"
-                                    >
-                                        <span className="text-foreground/50 mt-1">•</span>
-                                        <span>{work}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </Section>
-                    )}
-                    {/* Back to Portfolio */}
-                    <div className="mt-16 pt-8 border-t border-border/30 text-center">
-                        <Link
-                            href="/portfolio"
-                            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                            <ArrowLeft className="w-4 h-4" />
-                            <span>Portfolio 一覧に戻る</span>
-                        </Link>
                     </div>
                 </div>
-            </section>
+            </DetailSection>
+
+            {/* 03 ARCH */}
+            {isOncLimb && (
+                <DetailSection num="/03" title="インフラ構成図" sub="— architecture">
+                    <Reveal>
+                        <ArchDiagram />
+                    </Reveal>
+                </DetailSection>
+            )}
+
+            {/* 04 CRAFTS */}
+            {project.detail?.technicalPoints &&
+                project.detail.technicalPoints.length > 0 && (
+                    <DetailSection num="/04" title="工夫した点" sub="— what I obsessed over">
+                        <div className="grid grid-cols-1 gap-4 [@media(min-width:720px)]:grid-cols-2">
+                            {project.detail.technicalPoints.map((pt, i) => (
+                                <Reveal
+                                    key={i}
+                                    delay={i * 80}
+                                    as="article"
+                                    className="craft relative overflow-hidden rounded-[var(--radius-lg)] border border-hairline bg-surface px-7 py-6 transition-all duration-[250ms] hover:-translate-y-0.5 hover:border-accent hover:shadow-card-soft"
+                                >
+                                    <div className="mb-2 font-mono text-[11px] tracking-[0.18em] text-accent">
+                                        {String(i + 1).padStart(2, "0")}
+                                    </div>
+                                    <h3 className="mb-2.5 text-lg font-semibold leading-[1.4]">
+                                        {pt.title}
+                                    </h3>
+                                    <p className="text-[14.5px] leading-[1.75] text-fg-muted">
+                                        {pt.description}
+                                    </p>
+                                </Reveal>
+                            ))}
+                        </div>
+                    </DetailSection>
+                )}
+
+            <Pager
+                prev={
+                    prevProj
+                        ? {
+                              id: prevProj.id,
+                              title: prevProj.title,
+                              number: projectNumber(prevProj, all),
+                          }
+                        : null
+                }
+                next={
+                    nextProj
+                        ? {
+                              id: nextProj.id,
+                              title: nextProj.title,
+                              number: projectNumber(nextProj, all),
+                          }
+                        : null
+                }
+            />
         </main>
+    )
+}
+
+function Fact({
+    label,
+    children,
+    accent = false,
+}: {
+    label: string
+    children: React.ReactNode
+    accent?: boolean
+}) {
+    return (
+        <div className="bg-bg-elev px-5 py-4">
+            <div className="mb-1.5 font-mono text-[10px] tracking-[0.18em] text-fg-dim">
+                {label}
+            </div>
+            <div
+                className="text-[15px] font-semibold leading-[1.3]"
+                style={accent ? { color: "var(--accent)" } : { color: "var(--fg-strong)" }}
+            >
+                {children}
+            </div>
+        </div>
+    )
+}
+
+function DetailSection({
+    num,
+    title,
+    sub,
+    children,
+}: {
+    num: string
+    title: string
+    sub: string
+    children: React.ReactNode
+}) {
+    return (
+        <section className="py-[70px]">
+            <div className="mx-auto max-w-[980px] px-6">
+                <Reveal
+                    as="header"
+                    className="mb-7 flex items-baseline gap-4 border-b border-hairline pb-3.5"
+                >
+                    <span className="font-mono text-xs tracking-[0.18em] text-accent">
+                        {num}
+                    </span>
+                    <h2 className="text-[28px] font-semibold tracking-[-0.02em]">
+                        {title}
+                    </h2>
+                    <span className="ml-auto font-mono text-[11px] tracking-[0.16em] text-fg-dim">
+                        {sub}
+                    </span>
+                </Reveal>
+                <Reveal delay={80}>{children}</Reveal>
+            </div>
+        </section>
     )
 }

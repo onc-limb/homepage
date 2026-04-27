@@ -1,178 +1,121 @@
 import {
-    getSkillsByCategory,
-    categoryLabels,
     categoryOrder,
-    levelLabels,
-    type Skill,
-    type SkillCategory,
-    type ListItem,
+    getRadarAxes,
+    getSkills,
+    getSkillsByCategory,
 } from "@/lib/skills"
-// 再帰的にリストアイテムをレンダリングするコンポーネント
-function NestedListItem({ item, depth = 0 }: { item: ListItem; depth?: number }) {
-    const hasChildren = item.children.length > 0
-    return (
-        <li className="text-sm text-foreground/80">
-            <div className="flex items-start gap-2">
-                <span className="text-muted-foreground mt-1">•</span>
-                <span>{item.text}</span>
-            </div>
-            {hasChildren && (
-                <ul className="ml-4 mt-1 space-y-1">
-                    {item.children.map((child, index) => (
-                        <NestedListItem key={index} item={child} depth={depth + 1} />
-                    ))}
-                </ul>
-            )}
-        </li>
-    )
-}
-// ListItem配列をレンダリングするコンポーネント
-function NestedList({ items }: { items: ListItem[] }) {
-    return (
-        <ul className="space-y-1">
-            {items.map((item, index) => (
-                <NestedListItem key={index} item={item} />
-            ))}
-        </ul>
-    )
-}
-function SkillCard({ skill }: { skill: Skill }) {
-    const levelInfo = levelLabels[skill.level]
-    return (
-        <div className="border border-border/50 bg-card/30 p-6">
-            <div className="flex items-center gap-3 mb-4">
-                <span className="text-lg">{levelInfo.icon}</span>
-                <h3 className="text-lg font-medium text-foreground tracking-elegant">
-                    {skill.name}
-                </h3>
-                <span className={`text-xs ${levelInfo.color}`}>{levelInfo.label}</span>
-            </div>
-            {skill.experience.length > 0 && (
-                <div className="mb-4">
-                    <h4 className="text-sm text-muted-foreground mb-2 tracking-elegant">
-                        経験
-                    </h4>
-                    <NestedList items={skill.experience} />
-                </div>
-            )}
-            {skill.knowledge.length > 0 && (
-                <div className="mb-4">
-                    <h4 className="text-sm text-muted-foreground mb-2 tracking-elegant">
-                        知識
-                    </h4>
-                    <NestedList items={skill.knowledge} />
-                </div>
-            )}
-            {skill.relatedTech.length > 0 && (
-                <div className="mb-4">
-                    <h4 className="text-sm text-muted-foreground mb-2 tracking-elegant">
-                        関連技術
-                    </h4>
-                    <div className="flex flex-wrap gap-2">
-                        {skill.relatedTech.map((tech, index) => (
-                            <span
-                                key={index}
-                                className="text-xs px-2 py-1 bg-turquoise-100 text-turquoise-700 rounded"
-                            >
-                                {tech}
-                            </span>
-                        ))}
-                    </div>
-                </div>
-            )}
-            {skill.relatedBooks.length > 0 && (
-                <div>
-                    <h4 className="text-sm text-muted-foreground mb-2 tracking-elegant">
-                        📚 関連書籍
-                    </h4>
-                    <ul className="space-y-1">
-                        {skill.relatedBooks.map((book, index) => (
-                            <li
-                                key={index}
-                                className="text-sm text-foreground/80 flex items-start gap-2"
-                            >
-                                <span className="text-muted-foreground mt-1">•</span>
-                                <span>{book}</span>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            )}
-        </div>
-    )
-}
-function SkillCategorySection({
-    category,
-    skills,
-}: {
-    category: SkillCategory
-    skills: Skill[]
-}) {
-    if (skills.length === 0) return null
-    return (
-        <div className="mb-12">
-            <h2 className="text-xl font-light tracking-elegant text-foreground mb-6 pb-2 border-b border-turquoise-300/50">
-                {categoryLabels[category]}
-            </h2>
-            <div className="grid gap-4 md:grid-cols-2">
-                {skills.map((skill) => (
-                    <SkillCard key={skill.name} skill={skill} />
-                ))}
-            </div>
-        </div>
-    )
-}
+import { Reveal } from "@/components/animations"
+import {
+    RadarChart,
+    SkillCategorySection,
+} from "@/components/skills"
+
+const LEVEL_LEGEND = [
+    { value: 5, label: "5 — 専門", color: "#4ADE80", opacity: 1 },
+    { value: 4, label: "4 — 実務継続", color: "var(--accent)", opacity: 1 },
+    { value: 3, label: "3 — 実務経験", color: "var(--rose)", opacity: 1 },
+    { value: 2, label: "2 — 個人利用", color: "var(--amber)", opacity: 1 },
+    { value: 1, label: "1 — 学習中", color: "var(--amber)", opacity: 0.6 },
+]
+
 export default function SkillsPage() {
-    // カテゴリごとにスキルをグループ化
+    const skills = getSkills()
+    const axes = getRadarAxes(skills)
     const skillsByCategory = getSkillsByCategory()
+
     return (
-        <main className="flex-1">
-            {/* Hero Section */}
-            <section className="w-full py-16 md:py-24">
-                <div className="container px-4 md:px-6 mx-auto">
-                    <div className="flex flex-col items-center justify-center space-y-6 text-center">
-                        <span className="text-xs tracking-wide-elegant text-turquoise-600 uppercase">
-                            Tech Stack
-                        </span>
-                        <h1 className="text-4xl font-light tracking-wide-elegant sm:text-5xl text-foreground">
-                            Skills
+        <main className="page flex-1">
+            {/* page-hero */}
+            <section className="px-0 pb-10 pt-20">
+                <div className="mx-auto max-w-[1100px] px-6">
+                    <Reveal className="mb-4 flex gap-1.5 font-mono text-xs uppercase tracking-[0.16em] text-fg-dim">
+                        <span>onclimb</span>
+                        <span>/</span>
+                        <b className="font-medium text-accent">skills</b>
+                    </Reveal>
+                    <Reveal delay={80}>
+                        <h1 className="mb-5 text-[clamp(40px,5.6vw,64px)] font-semibold leading-[1.05] tracking-[-0.03em]">
+                            手を動かしてきた、
+                            <br />
+                            その全部。
                         </h1>
-                        <div className="w-16 h-px bg-turquoise-400/60 my-4" />
-                        <p className="max-w-[600px] text-muted-foreground text-base md:text-lg font-light tracking-elegant">
-                            使用・学習中の技術スタックと経験
+                    </Reveal>
+                    <Reveal delay={160}>
+                        <p className="max-w-[640px] text-lg leading-[1.7] text-fg">
+                            使ってきた技術と、その習熟度。レーダーで全体像を、バーで個別の深さを。
                         </p>
-                    </div>
+                    </Reveal>
                 </div>
             </section>
-            {/* Divider */}
-            <div className="w-full border-t border-turquoise-200/50" />
-            {/* Legend Section */}
-            <section className="w-full py-8 bg-card/30">
-                <div className="container px-4 md:px-6 mx-auto max-w-5xl">
-                    <div className="flex flex-wrap justify-center gap-6 text-sm">
-                        {Object.entries(levelLabels).map(([key, value]) => (
-                            <div key={key} className="flex items-center gap-2">
-                                <span>{value.icon}</span>
-                                <span className="text-muted-foreground">
-                                    {value.label}
-                                </span>
+
+            {/* Radar */}
+            <section className="py-14">
+                <div className="mx-auto max-w-[1100px] px-6">
+                    <Reveal
+                        className="grid grid-cols-1 items-center gap-8 [@media(min-width:900px)]:grid-cols-[minmax(0,1fr)_320px] [@media(min-width:900px)]:gap-14"
+                    >
+                        <div className="relative mx-auto aspect-square w-full max-w-[600px]">
+                            <RadarChart axes={axes} />
+                        </div>
+                        <div className="flex flex-col gap-3">
+                            {axes.map((a) => (
+                                <div
+                                    key={a.key}
+                                    className="flex items-start gap-3.5 rounded-[var(--radius)] border border-hairline bg-bg-elev px-4 py-3.5 transition-all duration-200 hover:border-accent hover:bg-accent-soft"
+                                >
+                                    <div
+                                        className="w-1 self-stretch rounded"
+                                        style={{
+                                            background: "var(--accent)",
+                                            opacity: (a.value / 5).toFixed(2),
+                                        }}
+                                    />
+                                    <div className="flex-1">
+                                        <div className="mb-0.5 text-sm font-semibold">
+                                            {a.label}
+                                        </div>
+                                        <div className="font-mono text-[11px] text-fg-dim">
+                                            {a.value.toFixed(1)} / 5.0
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </Reveal>
+
+                    <Reveal className="my-10 flex flex-wrap justify-center gap-4 border-y border-hairline py-5">
+                        {LEVEL_LEGEND.map((l) => (
+                            <div
+                                key={l.value}
+                                className="flex items-center gap-2 font-mono text-xs text-fg-muted"
+                            >
+                                <span
+                                    className="block h-2.5 w-2.5 rounded-full"
+                                    style={{
+                                        background: l.color,
+                                        opacity: l.opacity,
+                                    }}
+                                />
+                                {l.label}
                             </div>
                         ))}
-                    </div>
+                    </Reveal>
                 </div>
             </section>
-            {/* Divider */}
-            <div className="w-full border-t border-border/30" />
-            {/* Skills Section */}
-            <section className="w-full py-16 md:py-20">
-                <div className="container px-4 md:px-6 mx-auto max-w-5xl">
-                    {categoryOrder.map((category) => (
-                        <SkillCategorySection
-                            key={category}
-                            category={category}
-                            skills={skillsByCategory[category]}
-                        />
-                    ))}
+
+            {/* Category sections */}
+            <section className="py-20">
+                <div className="mx-auto max-w-[1100px] px-6">
+                    {categoryOrder
+                        .filter((c) => skillsByCategory[c].length > 0)
+                        .map((category, idx) => (
+                            <SkillCategorySection
+                                key={category}
+                                category={category}
+                                skills={skillsByCategory[category]}
+                                index={idx}
+                            />
+                        ))}
                 </div>
             </section>
         </main>
