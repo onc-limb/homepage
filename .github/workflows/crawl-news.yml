@@ -29,7 +29,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: command/crawl-news
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --ignore-scripts
 
       - name: Run crawl-news
         working-directory: command/crawl-news
