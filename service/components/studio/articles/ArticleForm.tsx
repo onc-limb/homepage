@@ -117,11 +117,16 @@ export function ArticleForm({
                     </Button>
                 </div>
                 {showPreview ? (
-                    <div className="prose min-h-[16rem] max-w-none rounded-md border border-input p-4 dark:prose-invert">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                            {body || "_（本文がありません）_"}
-                        </ReactMarkdown>
-                    </div>
+                    <>
+                        <div className="prose min-h-[16rem] max-w-none rounded-md border border-input p-4 dark:prose-invert">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                {body || "_（本文がありません）_"}
+                            </ReactMarkdown>
+                        </div>
+                        {/* プレビュー中は Textarea がアンマウントされ name="body" が DOM から消えるため、
+                            hidden input で本文を保持し、プレビュー表示のまま送信しても FormData に含める。 */}
+                        <input type="hidden" name="body" value={body} />
+                    </>
                 ) : (
                     <Textarea
                         id="body"

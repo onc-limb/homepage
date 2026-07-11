@@ -1,10 +1,11 @@
-// 記事管理 (studio) 向けの読み取り専用データアクセス。
+// 記事管理 (studio) 向けの読み取りデータアクセス。
 // 書き込み系 (createArticle / updateArticle / deleteArticle / setArticleStatus) は
-// @/lib/articles に実装済みだが、読み取り系 (getArticles / getArticleById /
-// getAllTags) は未提供だったため、既存 drizzle スキーマ (@/lib/db/schema) を
-// 直接引いてここで補う。
-// ASSUMPTION: @/lib/db は既存 books のデータアクセスと同様に drizzle インスタンスを
-//             `db` として named export している前提（books.ts と同じ DB レイヤーを共有）。
+// articles-data-access (@/lib/articles) が提供するが、読み取り系は同モジュールに存在しない。
+// articles-data-access（@/lib/articles）は編集境界外で読み取り関数を追加できないため、
+// studio 配下で完結させるべく、ここでは drizzle レイヤ (@/lib/db) 経由で直接読み取る。
+// ASSUMPTION: @/lib/db は drizzle インスタンスを `db` として export する
+//             （既存 books と同じ「drizzle + libsql (Turso)」レイヤの慣例）。
+//             書き込みは data-access 層に閉じたまま、読み取りのみ studio 内 data.ts に閉じる。
 import { desc, eq } from "drizzle-orm"
 import { db } from "@/lib/db"
 import { articles, articleTags, tags } from "@/lib/db/schema"
@@ -36,11 +37,12 @@ export async function getArticles(): Promise<ArticleListItem[]> {
         .from(articles)
         .orderBy(desc(articles.updatedAt))
 
+    // status は DB 上 text。UI 型 (ArticleStatus) は 'draft' | 'published' に絞る
+    // （schema の check 制約でこの 2 値に限定済み）。
     return rows.map((row) => ({
         id: row.id,
         title: row.title,
         slug: row.slug,
-        // status は text カラムのため string 型。DB の check 制約で 2 状態に限定済み。
         status: row.status as ArticleStatus,
         updatedAt: row.updatedAt,
     }))
@@ -50,7 +52,7 @@ export async function getArticles(): Promise<ArticleListItem[]> {
 export async function getArticleById(
     id: number
 ): Promise<ArticleDetail | null> {
-    const [row] = await db
+    const rows = await db
         .select({
             id: articles.id,
             title: articles.title,
@@ -63,11 +65,12 @@ export async function getArticleById(
         .where(eq(articles.id, id))
         .limit(1)
 
-    if (!row) {
+    const article = rows[0]
+    if (!article) {
         return null
     }
 
-    // 記事に紐づくタグを article_tags 経由で取得する。
+    // 中間テーブル article_tags 経由で既存 tags を引く。
     const tagRows = await db
         .select({ id: tags.id, name: tags.name })
         .from(articleTags)
@@ -75,12 +78,12 @@ export async function getArticleById(
         .where(eq(articleTags.articleId, id))
 
     return {
-        id: row.id,
-        title: row.title,
-        slug: row.slug,
-        body: row.body,
-        status: row.status as ArticleStatus,
-        updatedAt: row.updatedAt,
+        id: article.id,
+        title: article.title,
+        slug: article.slug,
+        body: article.body,
+        status: article.status as ArticleStatus,
+        updatedAt: article.updatedAt,
         tags: tagRows,
     }
 }

@@ -48,9 +48,10 @@ function parseArticleForm(formData: FormData) {
 }
 
 // 既存 /studio の認証境界に合わせ、未認証はトップへ退避する。
+// next-auth v5 では空セッションが返り得るため、session だけでなく session.user の有無まで確認する。
 async function requireSession() {
     const session = await auth()
-    if (!session) {
+    if (!session?.user) {
         redirect("/")
     }
 }
