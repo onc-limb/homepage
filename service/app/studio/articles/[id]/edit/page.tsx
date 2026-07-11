@@ -4,7 +4,8 @@ import { ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ArticleForm } from "@/components/studio/articles"
 import type { ArticleDetail, TagOption } from "@/components/studio/articles"
-// ASSUMPTION: articles 読み取り系は data.ts で補う。getArticleById() は本文・タグ込みの記事を返す。
+// ASSUMPTION: articles 読み取り系は data.ts 経由（@/lib/articles の read 層）で取得する。
+//             getArticleById() は本文・タグ込みの記事を返す。
 import { getAllTags, getArticleById } from "../../data"
 import { updateArticleAction } from "../../actions"
 
@@ -15,7 +16,12 @@ export default async function EditArticlePage({
     params: Promise<{ id: string }>
 }) {
     const { id } = await params
+    // ASSUMPTION: 既存 books 管理 UI の id パースに揃え、数値でない id（例: /studio/articles/abc/edit）は
+    //             getArticleById に渡す前に明示的に弾く。正の整数以外は 404 とする。
     const articleId = Number(id)
+    if (!Number.isInteger(articleId) || articleId <= 0) {
+        notFound()
+    }
 
     const [article, tags] = await Promise.all([
         getArticleById(articleId) as Promise<ArticleDetail | null>,
