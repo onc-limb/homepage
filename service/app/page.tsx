@@ -311,9 +311,9 @@ export default function TopPage() {
                         <div className="relative inline-flex flex-wrap justify-center gap-3">
                             <a
                                 className="btn btn-primary"
-                                href="mailto:contact@onc-limb.com"
+                                href="mailto:satoshi-onga@onc-limb.com"
                             >
-                                contact@onc-limb.com
+                                satoshi-onga@onc-limb.com
                             </a>
                             <a
                                 className="btn btn-ghost"
