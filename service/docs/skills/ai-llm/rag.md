@@ -1,6 +1,6 @@
 ---
-name: Amazon Bedrock AgentCore
-category: ai-ml
+name: RAG
+category: ai-llm
 level: 1
 publish: false
 ---

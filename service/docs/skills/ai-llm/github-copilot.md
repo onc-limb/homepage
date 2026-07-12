@@ -1,6 +1,6 @@
 ---
 name: GitHub Copilot
-category: ai-ml
+category: ai-llm
 level: 4
 publish: false
 ---

@@ -1,6 +1,6 @@
 ---
-name: DDD
-category: methodology
+name: SolidJS
+category: frontend
 level: 1
 publish: false
 ---

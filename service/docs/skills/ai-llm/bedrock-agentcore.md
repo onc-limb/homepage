@@ -1,6 +1,6 @@
 ---
-name: OpenCV
-category: ai-ml
+name: Amazon Bedrock AgentCore
+category: ai-llm
 level: 1
 publish: false
 ---

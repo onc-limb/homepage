@@ -1,6 +1,6 @@
 ---
-name: MLflow
-category: ai-ml
+name: Claude Code
+category: ai-llm
 level: 1
 publish: false
 ---

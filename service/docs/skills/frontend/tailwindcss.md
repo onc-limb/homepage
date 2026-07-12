@@ -1,7 +1,7 @@
 ---
-name: AWS SageMaker
-category: ai-ml
-level: 4
+name: Tailwind CSS
+category: frontend
+level: 2
 publish: false
 ---
 

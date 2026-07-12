@@ -1,6 +1,6 @@
 ---
-name: Clean Architecture
-category: methodology
+name: PyTorch
+category: ml
 level: 1
 publish: false
 ---

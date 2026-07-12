@@ -1,6 +1,6 @@
 ---
-name: RAG
-category: ai-ml
+name: OpenCV
+category: ml
 level: 1
 publish: false
 ---

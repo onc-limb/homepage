@@ -1,6 +1,6 @@
 ---
 name: HTML5
-category: markup-style
+category: frontend
 level: 3
 publish: false
 ---

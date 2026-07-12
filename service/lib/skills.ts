@@ -11,8 +11,8 @@ const skillMarkdowns: string[] = requireContext.keys().map((key: string) => {
 })
 export type SkillCategory =
     | "language" // プログラミング言語
-    | "framework" // フレームワーク・ライブラリ
-    | "markup-style" // マークアップ・スタイル
+    | "frontend" // フロントエンド
+    | "framework" // バックエンド・フレームワーク
     | "compute" // コンピューティング
     | "networking" // ネットワーキング
     | "storage" // ストレージ
@@ -21,9 +21,11 @@ export type SkillCategory =
     | "IaC" // インフラ構成管理・IaC
     | "container" // コンテナ・オーケストレーション
     | "tools" // ツール・SaaS
+    | "architecture" // 設計・アーキテクチャ
     | "methodology" // 開発手法・プロセス
     | "api" // API
-    | "ai-ml" // AI・機械学習
+    | "ai-llm" // LLM・AIエージェント
+    | "ml" // 機械学習
     | "devops-sre" // DevOps・SRE
     | "testing" // テスト・品質保証
     | "security" // セキュリティ
@@ -43,8 +45,8 @@ export interface Skill extends SkillMeta {
 }
 export const categoryLabels: Record<SkillCategory, string> = {
     language: "プログラミング言語",
-    framework: "フレームワーク・ライブラリ",
-    "markup-style": "マークアップ・スタイル",
+    frontend: "フロントエンド",
+    framework: "バックエンド・フレームワーク",
     compute: "コンピューティング",
     networking: "ネットワーキング",
     storage: "ストレージ",
@@ -53,9 +55,11 @@ export const categoryLabels: Record<SkillCategory, string> = {
     IaC: "インフラ構成管理・IaC",
     container: "コンテナ・オーケストレーション",
     tools: "ツール・SaaS",
+    architecture: "設計・アーキテクチャ",
     methodology: "開発手法・プロセス",
     api: "API",
-    "ai-ml": "AI・機械学習",
+    "ai-llm": "LLM・AIエージェント",
+    ml: "機械学習",
     "devops-sre": "DevOps・SRE",
     testing: "テスト・品質保証",
     security: "セキュリティ",
@@ -74,8 +78,8 @@ export const levelLabels: Record<
 // カテゴリの表示順序
 export const categoryOrder: SkillCategory[] = [
     "language",
+    "frontend",
     "framework",
-    "markup-style",
     "compute",
     "networking",
     "storage",
@@ -84,9 +88,11 @@ export const categoryOrder: SkillCategory[] = [
     "IaC",
     "container",
     "tools",
+    "architecture",
     "methodology",
     "api",
-    "ai-ml",
+    "ai-llm",
+    "ml",
     "devops-sre",
     "testing",
     "security",
@@ -227,12 +233,12 @@ const RADAR_AXIS_LABELS: Record<RadarAxisKey, string> = {
 }
 
 const AXIS_TO_CATEGORIES: Record<RadarAxisKey, SkillCategory[]> = {
-    backend: ["framework", "api"],
-    frontend: ["markup-style"],
+    backend: ["framework", "api", "database", "integration"],
+    frontend: ["frontend"],
     infra: ["compute", "networking", "storage", "IaC", "container"],
-    arch: ["methodology"],
-    ai: ["ai-ml"],
-    devops: ["devops-sre", "tools"],
+    arch: ["architecture"],
+    ai: ["ai-llm", "ml"],
+    devops: ["devops-sre", "tools", "testing"],
     low: ["language"],
     sec: ["security", "auth"],
 }

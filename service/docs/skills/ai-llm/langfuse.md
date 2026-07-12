@@ -1,6 +1,6 @@
 ---
-name: SolidJS
-category: framework
+name: Langfuse
+category: ai-llm
 level: 1
 publish: false
 ---

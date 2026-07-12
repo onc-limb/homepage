@@ -1,6 +1,6 @@
 ---
-name: Langfuse
-category: ai-ml
+name: TanStack Start
+category: frontend
 level: 1
 publish: false
 ---

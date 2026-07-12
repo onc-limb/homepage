@@ -1,7 +1,7 @@
 ---
-name: OOP / SOLID
-category: methodology
-level: 1
+name: React
+category: frontend
+level: 4
 publish: false
 ---
 

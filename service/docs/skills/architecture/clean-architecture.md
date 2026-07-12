@@ -1,7 +1,7 @@
 ---
-name: LLM
-category: ai-ml
-level: 2
+name: Clean Architecture
+category: architecture
+level: 1
 publish: false
 ---
 

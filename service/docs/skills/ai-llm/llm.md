@@ -1,7 +1,7 @@
 ---
-name: Next.js
-category: framework
-level: 4
+name: LLM
+category: ai-llm
+level: 2
 publish: false
 ---
 

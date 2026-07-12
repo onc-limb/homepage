@@ -1,6 +1,6 @@
 ---
-name: Google ADK
-category: ai-ml
+name: DDD
+category: architecture
 level: 1
 publish: false
 ---

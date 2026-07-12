@@ -1,7 +1,7 @@
 ---
-name: PyTorch
-category: ai-ml
-level: 1
+name: AWS SageMaker
+category: ml
+level: 4
 publish: false
 ---
 

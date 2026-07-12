@@ -1,7 +1,7 @@
 ---
-name: React
-category: framework
-level: 4
+name: OOP / SOLID
+category: architecture
+level: 1
 publish: false
 ---
 
