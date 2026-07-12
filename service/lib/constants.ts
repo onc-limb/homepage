@@ -68,4 +68,9 @@ export const NAV_ITEMS: NavItem[] = [
         label: "Books",
         description: "読書記録、知識を線でつなぐ",
     },
+    {
+        href: "/blog",
+        label: "Blog",
+        description: "技術記事、学んだことを言葉にして残す",
+    },
 ]
