@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { NAV_ITEMS, SOCIAL_LINKS } from "@/lib/constants"
+import { getHomeStats } from "@/lib/stats"
 import {
     FloatingShapes,
     HeroParticleTitle,
@@ -77,16 +78,24 @@ const CAPS = [
     },
 ]
 
-const STATS = [
-    { value: "5", sup: "+", label: "years engineering" },
-    { value: "4", sup: "", label: "domains worked" },
-    { value: "¥10K", sup: "", label: "monthly book budget" },
-    { value: "∞", sup: "", label: "curiosity" },
-]
-
 const EXPLORE_ITEMS = NAV_ITEMS.filter((n) => n.href !== "/")
 
-export default function TopPage() {
+// STATS はリクエスト毎に DB 集計するため、ページを動的レンダリングにする（#127）。
+// /studio で本を読了にしたり記事を公開すると、再デプロイなしで次回アクセスに反映される。
+export const dynamic = "force-dynamic"
+
+export default async function TopPage() {
+    // トップ STATS 4 枠を、私的指標（書籍予算・curiosity）から
+    // DB 裏付けの実績指標に刷新する（#127）。
+    const { readBooksCount, publishedArticlesCount, usedTagCount, totalBooksCount } =
+        await getHomeStats()
+    const stats = [
+        { value: String(readBooksCount), sup: "", label: "books read" },
+        { value: String(publishedArticlesCount), sup: "", label: "articles published" },
+        { value: String(usedTagCount), sup: "", label: "topics covered" },
+        { value: String(totalBooksCount), sup: "", label: "books logged" },
+    ]
+
     return (
         <main className="page flex-1">
             {/* HERO */}
@@ -225,7 +234,7 @@ export default function TopPage() {
                         className="mt-16 grid grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-lg)] border border-hairline [@media(min-width:720px)]:grid-cols-4"
                         style={{ background: "var(--hairline)" }}
                     >
-                        {STATS.map((s) => (
+                        {stats.map((s) => (
                             <div key={s.label} className="bg-bg-elev p-8 text-left">
                                 <span className="block font-mono text-[36px] font-semibold tracking-[-0.03em] text-fg-strong">
                                     {s.value}
