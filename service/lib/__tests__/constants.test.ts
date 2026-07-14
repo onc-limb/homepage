@@ -7,15 +7,17 @@ import { NAV_ITEMS, SOCIAL_LINKS } from "@/lib/constants"
  * Plan: design 素案 `shared/shell.js` の `NAV` 配列順序に合わせ、
  *   [Home, Profile, Skills, Portfolio, News, Books] とする。
  *   Social はヘッダーから外し、フッター "Find me" カラムへ降格する。
+ *   #124: Blog を末尾に加え、他項目と同じく NAV_ITEMS 経由で
+ *   SiteNav / MobileNav から一貫描画する（SiteShell の別建てナビは撤去）。
  *
  * Reference: docs/design/shared/shell.js:34-41
  */
 describe("NAV_ITEMS", () => {
-    it("has the 6 entries required by the design draft", () => {
-        // Given the design draft NAV definition
+    it("has the 7 entries required by the design draft (Blog added in #124)", () => {
+        // Given the design draft NAV definition plus the Blog entry from #124
         // When NAV_ITEMS is loaded
-        // Then it provides exactly 6 entries
-        expect(NAV_ITEMS).toHaveLength(6)
+        // Then it provides exactly 7 entries
+        expect(NAV_ITEMS).toHaveLength(7)
     })
 
     it("starts with the Home entry pointing at the site root", () => {
@@ -29,7 +31,7 @@ describe("NAV_ITEMS", () => {
     })
 
     it("orders entries to match the design draft sequence", () => {
-        // Given the draft NAV order: Home / Profile / Skills / Portfolio / News / Books
+        // Given the draft NAV order: Home / Profile / Skills / Portfolio / News / Books / Blog
         // When labels are extracted
         // Then they appear in that exact order
         const labels = NAV_ITEMS.map((item) => item.label)
@@ -40,6 +42,7 @@ describe("NAV_ITEMS", () => {
             "Portfolio",
             "News",
             "Books",
+            "Blog",
         ])
     })
 
@@ -57,6 +60,7 @@ describe("NAV_ITEMS", () => {
             Portfolio: "/portfolio",
             News: "/news",
             Books: "/books",
+            Blog: "/blog",
         })
     })
 
