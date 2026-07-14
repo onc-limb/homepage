@@ -2,6 +2,14 @@ import matter from "gray-matter"
 import { extractFlatListItems, extractSection } from "./markdown-utils"
 // @ts-expect-error raw-loader returns string
 import portfolioSiteMd from "../docs/portfolio/portfolio-site.md"
+// @ts-expect-error raw-loader returns string
+import noboruNoteMd from "../docs/portfolio/noboru-note.md"
+// @ts-expect-error raw-loader returns string
+import climbinsightMd from "../docs/portfolio/climbinsight.md"
+// @ts-expect-error raw-loader returns string
+import ironLegionMd from "../docs/portfolio/iron-legion.md"
+// @ts-expect-error raw-loader returns string
+import onclimbIndustriesMd from "../docs/portfolio/onclimb-industries.md"
 export interface ProjectLinks {
     github?: string
     demo?: string
@@ -108,6 +116,10 @@ function extractChallenges(content: string): Challenge[] {
 // すべての Portfolio Markdown
 const portfolioMarkdowns: string[] = [
     portfolioSiteMd,
+    noboruNoteMd,
+    climbinsightMd,
+    ironLegionMd,
+    onclimbIndustriesMd,
     // 新しいプロジェクトを追加する場合は、ここにインポートを追加
 ]
 function parsePortfolioMarkdown(rawContent: string): Project {
