@@ -5,7 +5,6 @@ const PAGE_LABELS: Record<string, string> = {
     "/profile": "profile",
     "/skills": "skills",
     "/portfolio": "portfolio",
-    "/news": "news",
     "/books": "books",
     "/social": "social",
 }

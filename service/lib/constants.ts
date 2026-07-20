@@ -59,11 +59,6 @@ export const NAV_ITEMS: NavItem[] = [
         description: "制作したアプリケーションとプロジェクト",
     },
     {
-        href: "/news",
-        label: "News",
-        description: "毎日収集する技術ニュースのAI要約",
-    },
-    {
         href: "/books",
         label: "Books",
         description: "読書記録、知識を線でつなぐ",
