@@ -17,7 +17,7 @@ const GITHUB_URL = githubLink.url
 const CAPS = [
     {
         num: "/01",
-        title: "Backend / Architecture",
+        title: "Backend / Software Architecture",
         desc: "スケーラブルで破綻しないシステム設計。ドメイン駆動設計、クリーンアーキテクチャ、マイクロサービスを実務で。",
         chips: ["TypeScript", "Go", "NestJS", "GraphQL", "PostgreSQL"],
         icon: (
@@ -117,7 +117,7 @@ export default async function TopPage() {
                                         "0 0 0 4px var(--accent-soft), 0 0 12px var(--accent)",
                                 }}
                             />
-                            Fullstack engineer / architect
+                            Fullstack engineer / software architect
                         </span>
                     </Reveal>
 

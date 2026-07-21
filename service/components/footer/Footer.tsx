@@ -16,7 +16,7 @@ export default function Footer() {
                         onclimb
                     </div>
                     <p className="text-xs text-fg-muted">
-                        Fullstack engineer / architect — Tokyo
+                        Fullstack engineer / software architect — Tokyo
                     </p>
                 </div>
                 <div className="flex flex-col gap-1.5 text-[13px]">
