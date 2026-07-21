@@ -58,6 +58,21 @@ async function insertTag(name: string): Promise<number> {
     return tag.id
 }
 
+// データ取得層が「握りつぶし」をしていないことを検証するための、必ず失敗する DB スタブ。
+// どのクエリビルダ入口（select/insert/update/delete）を叩いても即座に例外を投げるため、
+// data-access 関数がエラーを catch して空値へ潰していれば reject にならず、テストが落ちる。
+function throwingDb(message = "database unavailable"): LibSQLDatabase<typeof schema> {
+    const fail = () => {
+        throw new Error(message)
+    }
+    return {
+        select: fail,
+        insert: fail,
+        update: fail,
+        delete: fail,
+    } as unknown as LibSQLDatabase<typeof schema>
+}
+
 beforeEach(async () => {
     const client = createClient({ url: ":memory:" })
     await client.executeMultiple(DDL)
@@ -190,5 +205,109 @@ describe("articles data access", () => {
         expect(await getArticleBySlug("gone")).toBeNull()
         const links = await mocks.db.select().from(schema.articleTags)
         expect(links).toHaveLength(0)
+    })
+})
+
+/**
+ * エラー伝播（握りつぶし禁止）契約テスト。
+ *
+ * これらの data-access 関数は、公開ブログの Server Component
+ * （listPublishedArticles → /blog、getPublishedArticleBySlug → /blog/[slug]）と
+ * studio の Server Action の土台になっている。DB アクセスが失敗したとき、関数が
+ * その例外を catch して空配列 / null に潰してしまうと、Next.js の App Router は
+ * 正常応答とみなし app/error.tsx（致命時は app/global-error.tsx）へ到達しない。
+ *
+ * ここでは必ず失敗する DB スタブ（throwingDb）を差し込み、各公開関数が
+ * 「reject（例外伝播）」することを固定する。これにより:
+ *   - 「見つからない（空一覧 / null）」という意図的フォールバックは既存テストで維持しつつ、
+ *   - 「本来ユーザーに障害として見せるべき DB 障害」は throw され error boundary に届く、
+ * という 2 つの経路の切り分けを回帰的に守る。
+ */
+describe("error propagation to the error boundary (no swallowing)", () => {
+    it("rejects when the public blog list query fails (does not swallow into [])", async () => {
+        // Given the DB is unavailable when the /blog Server Component fetches the list
+        // When listPublishedArticles runs
+        // Then it rejects so Next.js renders app/error.tsx (not an empty list)
+        mocks.db = throwingDb()
+        await expect(listPublishedArticles()).rejects.toThrow("database unavailable")
+    })
+
+    it("rejects when the public blog detail query fails (does not swallow into null)", async () => {
+        // Given the DB is unavailable when the /blog/[slug] Server Component fetches the article
+        // When getPublishedArticleBySlug runs
+        // Then it rejects (a DB fault must not be indistinguishable from a missing article)
+        mocks.db = throwingDb()
+        await expect(getPublishedArticleBySlug("hello-world")).rejects.toThrow(
+            "database unavailable",
+        )
+    })
+
+    it("rejects when the tag-filtered published list query fails", async () => {
+        // Given the DB is unavailable when filtering the public list by tag
+        // When listPublishedArticlesByTag runs
+        // Then it rejects rather than returning an empty result set
+        mocks.db = throwingDb()
+        await expect(
+            listPublishedArticlesByTag({ tagSlug: "typescript" }),
+        ).rejects.toThrow("database unavailable")
+        await expect(
+            listPublishedArticlesByTag({ tagId: 1 }),
+        ).rejects.toThrow("database unavailable")
+    })
+
+    it("rejects when the admin article list query fails", async () => {
+        // Given the DB is unavailable when the studio list Server Component fetches articles
+        // When listArticles runs
+        // Then it rejects so the studio segment surfaces the failure via error.tsx
+        mocks.db = throwingDb()
+        await expect(listArticles()).rejects.toThrow("database unavailable")
+    })
+
+    it("rejects when the admin article-by-slug query fails", async () => {
+        // Given the DB is unavailable when fetching a single article for editing
+        // When getArticleBySlug runs
+        // Then it rejects rather than swallowing the fault into null
+        mocks.db = throwingDb()
+        await expect(getArticleBySlug("hello-world")).rejects.toThrow(
+            "database unavailable",
+        )
+    })
+
+    it("rejects when the create Server Action write fails", async () => {
+        // Given the DB is unavailable when the create Server Action inserts a row
+        // When createArticle runs
+        // Then it rejects so the caller can propagate the failure to the error boundary
+        mocks.db = throwingDb()
+        await expect(
+            createArticle({ slug: "x", title: "T", body: "B" }),
+        ).rejects.toThrow("database unavailable")
+    })
+
+    it("rejects when the update Server Action write fails", async () => {
+        // Given the DB is unavailable when the update Server Action mutates a row
+        // When updateArticle runs
+        // Then it rejects instead of silently reporting success
+        mocks.db = throwingDb()
+        await expect(
+            updateArticle(1, { title: "T2" }),
+        ).rejects.toThrow("database unavailable")
+    })
+
+    it("rejects when the status-toggle Server Action write fails", async () => {
+        // Given the DB is unavailable when toggling publish state
+        // When setArticleStatus runs
+        // Then it rejects rather than swallowing the write error into null
+        mocks.db = throwingDb()
+        await expect(
+            setArticleStatus(1, "published"),
+        ).rejects.toThrow("database unavailable")
+    })
+
+    it("rejects when the delete Server Action write fails", async () => {
+        // Given the DB is unavailable when the delete Server Action removes a row
+        // When deleteArticle runs
+        // Then it rejects so the failure reaches the error boundary
+        mocks.db = throwingDb()
+        await expect(deleteArticle(1)).rejects.toThrow("database unavailable")
     })
 })
