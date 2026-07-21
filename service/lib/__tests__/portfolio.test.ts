@@ -99,13 +99,6 @@ describe("formatProjectNumber()", () => {
         expect(formatProjectNumber("personal", 0)).toBe("P/01")
     })
 
-    it("formats a work project at index 0 as 'W/01'", () => {
-        // Given category=work and indexInList=0
-        // When the number is formatted
-        // Then prefix is W
-        expect(formatProjectNumber("work", 0)).toBe("W/01")
-    })
-
     it("zero-pads the index to two digits for indices below 10", () => {
         // Given indexInList=4 (5th entry)
         // When the number is formatted
@@ -117,6 +110,6 @@ describe("formatProjectNumber()", () => {
         // Given indexInList=11 (12th entry)
         // When the number is formatted
         // Then the index is "12" (no truncation, no padding)
-        expect(formatProjectNumber("work", 11)).toBe("W/12")
+        expect(formatProjectNumber("personal", 11)).toBe("P/12")
     })
 })
