@@ -117,6 +117,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
                         >
                             もう一度試す
                         </button>
+                        {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- global-error はルートレイアウトごと置き換わるため next/link の Router Context に依存できない */}
                         <a
                             href="/"
                             style={{
