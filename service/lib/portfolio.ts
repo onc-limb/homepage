@@ -39,7 +39,7 @@ export interface ProjectMeta {
     highlights: string[]
     links?: ProjectLinks
     image?: string
-    category: "personal" | "work"
+    category: "personal"
 }
 export interface ProjectDetail {
     overview?: string
@@ -199,12 +199,11 @@ export function findAdjacentProjectIds(
 
 const CATEGORY_PREFIX: Record<Project["category"], string> = {
     personal: "P",
-    work: "W",
 }
 
 /**
  * 表示用のプロジェクト番号を生成する純粋関数。
- * - personal は "P/01" 形式、work は "W/01" 形式
+ * - personal は "P/01" 形式
  * - indexInList は 0 始まり
  * - フォーマット (prefix / 桁数 / 区切り) を変えるときはここだけを更新する
  */
