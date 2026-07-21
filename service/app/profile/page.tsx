@@ -94,7 +94,7 @@ export default async function ProfilePage() {
                             <span>
                                 FOCUS{" "}
                                 <b className="font-medium text-fg">
-                                    Backend / Architecture
+                                    Backend / Software Architecture
                                 </b>
                             </span>
                             <span>
