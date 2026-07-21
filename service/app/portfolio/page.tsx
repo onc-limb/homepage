@@ -5,7 +5,6 @@ import { PortfolioListClient } from "@/components/portfolio"
 export default function PortfolioPage() {
     const projects = getProjects()
     const personal = projects.filter((p) => p.category === "personal")
-    const work = projects.filter((p) => p.category === "work")
 
     return (
         <main className="page flex-1">
@@ -25,13 +24,13 @@ export default function PortfolioPage() {
                     </Reveal>
                     <Reveal delay={160}>
                         <p className="max-w-[640px] text-lg leading-[1.7] text-fg">
-                            個人と業務、両方のプロジェクト。詳細を残せるものは詳細ページへ。
+                            個人プロジェクトの記録。詳細を残せるものは詳細ページへ。
                         </p>
                     </Reveal>
                 </div>
             </section>
 
-            <PortfolioListClient personal={personal} work={work} />
+            <PortfolioListClient personal={personal} />
         </main>
     )
 }

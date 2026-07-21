@@ -38,8 +38,8 @@ function statusVisual(period: string): string {
 }
 
 function projectNumber(
-    project: { id: string; category: "personal" | "work" },
-    all: { id: string; category: "personal" | "work" }[],
+    project: { id: string; category: "personal" },
+    all: { id: string; category: "personal" }[],
 ): string {
     const sameList = all.filter((p) => p.category === project.category)
     const indexInList = sameList.findIndex((p) => p.id === project.id)
@@ -169,9 +169,7 @@ export default async function ProjectDetailPage({
                 className="mx-auto -mt-6 grid max-w-[980px] grid-cols-1 gap-px overflow-hidden rounded-[var(--radius-lg)] border border-hairline px-6 [@media(min-width:720px)]:grid-cols-4"
                 style={{ background: "var(--hairline)" }}
             >
-                <Fact label="CATEGORY">
-                    {project.category === "personal" ? "Personal · Web" : "Work"}
-                </Fact>
+                <Fact label="CATEGORY">Personal · Web</Fact>
                 <Fact label="ROLE">{project.role}</Fact>
                 <Fact label="DURATION">{project.period}</Fact>
                 <Fact label="STATUS" accent>

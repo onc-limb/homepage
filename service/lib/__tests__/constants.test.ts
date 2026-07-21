@@ -7,12 +7,17 @@ import { NAV_ITEMS, SOCIAL_LINKS } from "@/lib/constants"
  * Plan: design 素案 `shared/shell.js` の `NAV` 配列順序に合わせ、
  *   [Home, Profile, Skills, Portfolio, News, Books] とする。
  *   Social はヘッダーから外し、フッター "Find me" カラムへ降格する。
+ *   #124: Blog を末尾に加え、他項目と同じく NAV_ITEMS 経由で
+ *   SiteNav / MobileNav から一貫描画する（SiteShell の別建てナビは撤去）。
+ *   ニュース機能撤去に伴い、まず導線として News エントリを NAV_ITEMS から削除。
+ *   これによりヘッダー / トップ 02 カード / フッター Sitemap の 3 箇所すべてから
+ *   News リンクが一括で消える（機能本体の撤去は #141）。
  *
  * Reference: docs/design/shared/shell.js:34-41
  */
 describe("NAV_ITEMS", () => {
-    it("has the 6 entries required by the design draft", () => {
-        // Given the design draft NAV definition
+    it("has the 6 entries remaining after News removal (Blog added in #124)", () => {
+        // Given the design draft NAV plus Blog (#124), minus the removed News entry
         // When NAV_ITEMS is loaded
         // Then it provides exactly 6 entries
         expect(NAV_ITEMS).toHaveLength(6)
@@ -28,8 +33,8 @@ describe("NAV_ITEMS", () => {
         })
     })
 
-    it("orders entries to match the design draft sequence", () => {
-        // Given the draft NAV order: Home / Profile / Skills / Portfolio / News / Books
+    it("orders entries to match the design draft sequence without News", () => {
+        // Given the draft NAV order minus News: Home / Profile / Skills / Portfolio / Books / Blog
         // When labels are extracted
         // Then they appear in that exact order
         const labels = NAV_ITEMS.map((item) => item.label)
@@ -38,8 +43,8 @@ describe("NAV_ITEMS", () => {
             "Profile",
             "Skills",
             "Portfolio",
-            "News",
             "Books",
+            "Blog",
         ])
     })
 
@@ -55,9 +60,17 @@ describe("NAV_ITEMS", () => {
             Profile: "/profile",
             Skills: "/skills",
             Portfolio: "/portfolio",
-            News: "/news",
             Books: "/books",
+            Blog: "/blog",
         })
+    })
+
+    it("does not include the News entry (news navigation removed)", () => {
+        // Given the news navigation is removed ahead of the feature retirement (#141)
+        // When NAV_ITEMS is searched for /news
+        // Then no entry is found
+        expect(NAV_ITEMS.find((item) => item.href === "/news")).toBeUndefined()
+        expect(NAV_ITEMS.find((item) => item.label === "News")).toBeUndefined()
     })
 
     it("does not include the Social entry (moved to footer Find me)", () => {

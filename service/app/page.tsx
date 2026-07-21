@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { NAV_ITEMS, SOCIAL_LINKS } from "@/lib/constants"
+import { getHomeStats } from "@/lib/stats"
 import {
     FloatingShapes,
     HeroParticleTitle,
@@ -16,8 +17,8 @@ const GITHUB_URL = githubLink.url
 const CAPS = [
     {
         num: "/01",
-        title: "Backend / Architecture",
-        desc: "スケーラブルで破綻しないシステム設計。ドメイン駆動設計、クリーンアーキテクチャ、マイクロサービスを実務で。",
+        title: "Backend / Software Architecture",
+        desc: "「作ると決まったもの」を、特定の誰かに依存せず誰でもメンテ・拡張できる形で実装する。ドメインモデリングを起点に、クリーンアーキテクチャと設計原則でスケールしても品質が落ちない構造を組む。",
         chips: ["TypeScript", "Go", "NestJS", "GraphQL", "PostgreSQL"],
         icon: (
             <svg
@@ -38,7 +39,7 @@ const CAPS = [
     {
         num: "/02",
         title: "Frontend & UX",
-        desc: "React / Next.js で、デザインの意図に沿ったUI実装。アクセシビリティとパフォーマンスを両立させる。",
+        desc: "React / Next.js で、デザインの意図を汲んだUIを実装。技術は課題解決の手段——アクセシビリティとパフォーマンスを両立させ、ユーザーに価値が届く形にする。",
         chips: ["React", "Next.js", "Tailwind", "SwiftUI"],
         icon: (
             <svg
@@ -57,7 +58,7 @@ const CAPS = [
     {
         num: "/03",
         title: "Infra / DevOps",
-        desc: "AWS Solutions Architect 保有。CI/CD、IaC、コンテナ運用。本質的な開発に注力するための仕組みづくりが得意。",
+        desc: "AWS Solutions Architect 保有。CI/CD・IaC・コンテナ運用で開発基盤を整え、開発者体験を高める。「なぜその挙動か」を一次情報から確かめ、根拠のある技術選定を行う。",
         chips: ["AWS", "Terraform", "Docker", "GitHub Actions"],
         icon: (
             <svg
@@ -77,16 +78,24 @@ const CAPS = [
     },
 ]
 
-const STATS = [
-    { value: "5", sup: "+", label: "years engineering" },
-    { value: "4", sup: "", label: "domains worked" },
-    { value: "¥10K", sup: "", label: "monthly book budget" },
-    { value: "∞", sup: "", label: "curiosity" },
-]
-
 const EXPLORE_ITEMS = NAV_ITEMS.filter((n) => n.href !== "/")
 
-export default function TopPage() {
+// STATS はリクエスト毎に DB 集計するため、ページを動的レンダリングにする（#127）。
+// /studio で本を読了にしたり記事を公開すると、再デプロイなしで次回アクセスに反映される。
+export const dynamic = "force-dynamic"
+
+export default async function TopPage() {
+    // トップ STATS 4 枠を、私的指標（書籍予算・curiosity）から
+    // DB 裏付けの実績指標に刷新する（#127）。
+    const { readBooksCount, publishedArticlesCount, usedTagCount, totalBooksCount } =
+        await getHomeStats()
+    const stats = [
+        { value: String(readBooksCount), sup: "", label: "books read" },
+        { value: String(publishedArticlesCount), sup: "", label: "articles published" },
+        { value: String(usedTagCount), sup: "", label: "topics covered" },
+        { value: String(totalBooksCount), sup: "", label: "books logged" },
+    ]
+
     return (
         <main className="page flex-1">
             {/* HERO */}
@@ -108,7 +117,7 @@ export default function TopPage() {
                                         "0 0 0 4px var(--accent-soft), 0 0 12px var(--accent)",
                                 }}
                             />
-                            Fullstack engineer / architect
+                            Fullstack engineer / software architect
                         </span>
                     </Reveal>
 
@@ -125,14 +134,14 @@ export default function TopPage() {
 
                     <Reveal delay={240}>
                         <p className="mx-auto mb-4 max-w-[640px] text-[clamp(18px,2vw,22px)] font-normal leading-[1.6] tracking-normal text-fg">
-                            「なぜ動くのか」を理解することにこだわるエンジニア。
+                            作ると決まったプロダクトを、動き続けるソフトウェアとして実装する。
                         </p>
                     </Reveal>
                     <Reveal delay={320}>
                         <p className="mx-auto mb-10 max-w-[560px] text-[15px] leading-[1.7] text-fg-muted">
-                            フロントエンドからバックエンド、インフラまで一貫した開発でプロダクトを形にします。
+                            ソフトウェアアーキテクトの思考を持ちながら、自ら手を動かす実装者。
                             <br />
-                            手段としての技術を、課題を解決し続ける形で届ける。
+                            技術は課題を解決し続けるための手段だと考えています。
                         </p>
                     </Reveal>
 
@@ -177,7 +186,7 @@ export default function TopPage() {
                             地続きで責任を持つ。
                         </h2>
                         <p className="max-w-[560px] text-base leading-[1.7] text-fg-muted">
-                            バックエンド・インフラを軸に、フロントエンドまで一貫して携わるフルスタックエンジニア。「作ったものがユーザーに届き、課題を解決し、安定して動き続けること」を最も大切にしています。
+                            ドメインを深く理解したモデリングを起点に、高保守性なアプリケーションを組み立てるフルスタックエンジニア。「何を作るか」の決定を尊重し、「作ると決まったもの」を正しく設計・運用し続けることに責任を持ちます。生成 AI で 0→1 が速くなった今こそ、それを拡大し長期運用へ導く「理解に基づく設計」の価値を磨き続けています。
                         </p>
                     </Reveal>
 
@@ -225,7 +234,7 @@ export default function TopPage() {
                         className="mt-16 grid grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-lg)] border border-hairline [@media(min-width:720px)]:grid-cols-4"
                         style={{ background: "var(--hairline)" }}
                     >
-                        {STATS.map((s) => (
+                        {stats.map((s) => (
                             <div key={s.label} className="bg-bg-elev p-8 text-left">
                                 <span className="block font-mono text-[36px] font-semibold tracking-[-0.03em] text-fg-strong">
                                     {s.value}
@@ -306,14 +315,14 @@ export default function TopPage() {
                             仕事の話、しませんか。
                         </h2>
                         <p className="relative mb-7 text-base text-fg-muted">
-                            新しいプロダクト、技術相談、雑談まで。気軽に連絡してください。
+                            作ると決まったプロダクトの実装・運用、技術相談、雑談まで。気軽に連絡してください。
                         </p>
                         <div className="relative inline-flex flex-wrap justify-center gap-3">
                             <a
                                 className="btn btn-primary"
-                                href="mailto:contact@onc-limb.com"
+                                href="mailto:satoshi-onga@onc-limb.com"
                             >
-                                contact@onc-limb.com
+                                satoshi-onga@onc-limb.com
                             </a>
                             <a
                                 className="btn btn-ghost"

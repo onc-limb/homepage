@@ -1356,6 +1356,108 @@ const seedBooks: BookSeed[] = [
     },
 ]
 
+// 記事系シードデータ。既存 books と同じ「本体 + tags 名の集合」パターンに揃える。
+// status は schema の check() に合わせて 'draft' | 'published' のみを使う。
+type ArticleStatus = "draft" | "published"
+
+type ArticleSeed = {
+    // slug は公開サイト /blog/[slug] のルーティングキー。一意である必要がある。
+    slug: string
+    title: string
+    // Markdown 本文（react-markdown + remark-gfm で表示する）。
+    body: string
+    status: ArticleStatus
+    tags: string[]
+}
+
+const seedArticles: ArticleSeed[] = [
+    {
+        slug: "hello-blog",
+        title: "ブログをはじめました",
+        body: [
+            "# ブログをはじめました",
+            "",
+            "この記事は Seeder で投入されるサンプル記事です。",
+            "記事一覧・詳細画面の表示確認に利用します。",
+            "",
+            "## できること",
+            "",
+            "- Markdown での本文表示",
+            "- タグによる分類",
+        ].join("\n"),
+        status: "published",
+        tags: ["読み物"],
+    },
+    {
+        slug: "ddd-in-practice",
+        title: "実践ドメイン駆動設計のはじめ方",
+        body: [
+            "# 実践ドメイン駆動設計のはじめ方",
+            "",
+            "ドメイン駆動設計（DDD）を実務に導入する際のポイントを整理します。",
+            "",
+            "## ユビキタス言語",
+            "",
+            "チーム全員が同じ言葉でドメインを語れるようにすることが第一歩です。",
+            "",
+            "## 境界づけられたコンテキスト",
+            "",
+            "モデルが有効な範囲を明示的に区切ることで、設計の一貫性を保ちます。",
+        ].join("\n"),
+        status: "published",
+        tags: ["DDD", "設計", "本質"],
+    },
+    {
+        slug: "nextjs-app-router-notes",
+        title: "Next.js App Router 移行メモ",
+        body: [
+            "# Next.js App Router 移行メモ",
+            "",
+            "Pages Router から App Router へ移行する際に押さえておきたい点をまとめます。",
+            "",
+            "## Server Components",
+            "",
+            "デフォルトが Server Component になるため、クライアント固有の処理は `\"use client\"` を明示します。",
+            "",
+            "## データ取得",
+            "",
+            "`fetch` のキャッシュ制御と `revalidate` の挙動を理解しておくと安定します。",
+        ].join("\n"),
+        status: "published",
+        tags: ["Next.js", "詳細"],
+    },
+    {
+        slug: "sre-getting-started",
+        title: "SRE 入門: SLO から始める信頼性設計",
+        body: [
+            "# SRE 入門: SLO から始める信頼性設計",
+            "",
+            "サービスの信頼性を数値で扱うための出発点として SLO を設定します。",
+            "",
+            "## エラーバジェット",
+            "",
+            "SLO を割ることで許容されるエラーの量を可視化し、開発と運用のバランスを取ります。",
+        ].join("\n"),
+        status: "draft",
+        tags: ["SRE", "本質"],
+    },
+    {
+        slug: "typescript-tips",
+        title: "TypeScript の型を安全に保つための小さな工夫",
+        body: [
+            "# TypeScript の型を安全に保つための小さな工夫",
+            "",
+            "日々のコーディングで型の安全性を高めるための小技を紹介します。",
+            "",
+            "## `as` を避ける",
+            "",
+            "型アサーションは最終手段にとどめ、まずは型ガードで絞り込みます。",
+        ].join("\n"),
+        status: "draft",
+        tags: ["言語", "TypeScript", "詳細"],
+    },
+]
+
 // ---------------------------------------------------------------------------
 // 実行
 // ---------------------------------------------------------------------------
@@ -1364,11 +1466,15 @@ async function seed() {
 
     // 既存データをクリア（順序重要: 外部キー制約）
     await db.delete(schema.bookTags)
+    await db.delete(schema.articleTags)
     await db.delete(schema.books)
+    await db.delete(schema.articles)
     await db.delete(schema.tags)
 
-    // 全タグを抽出・重複排除
-    const allTagNames = [...new Set(seedBooks.flatMap((b) => b.tags))].filter(Boolean)
+    // 全タグを抽出・重複排除（books / articles 双方のタグ名を集合化）
+    const allTagNames = [
+        ...new Set([...seedBooks.flatMap((b) => b.tags), ...seedArticles.flatMap((a) => a.tags)]),
+    ].filter(Boolean)
 
     // tags テーブルに挿入
     if (allTagNames.length > 0) {
@@ -1409,10 +1515,37 @@ async function seed() {
         }
     }
 
+    // articles + articleTags を挿入（books と同じパターンを踏襲）
+    let articleCount = 0
+    let articleTagCount = 0
+
+    for (const article of seedArticles) {
+        const [inserted] = await db
+            .insert(schema.articles)
+            .values({
+                slug: article.slug,
+                title: article.title,
+                body: article.body,
+                status: article.status,
+            })
+            .returning({ id: schema.articles.id })
+
+        articleCount++
+
+        // articleTags を挿入
+        const tagIds = article.tags.map((name) => tagMap.get(name)).filter((id): id is number => id !== undefined)
+        if (tagIds.length > 0) {
+            await db.insert(schema.articleTags).values(tagIds.map((tagId) => ({ articleId: inserted.id, tagId })))
+            articleTagCount += tagIds.length
+        }
+    }
+
     console.log(`Seed completed:`)
     console.log(`  - ${allTagNames.length} tags`)
     console.log(`  - ${bookCount} books`)
     console.log(`  - ${bookTagCount} book-tag relations`)
+    console.log(`  - ${articleCount} articles`)
+    console.log(`  - ${articleTagCount} article-tag relations`)
 }
 
 seed().catch((err) => {

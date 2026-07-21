@@ -40,7 +40,7 @@ export default async function ProfilePage() {
                     </Reveal>
                     <Reveal delay={240}>
                         <p className="mb-4 max-w-[640px] text-lg leading-[1.8] text-fg">
-                            フロントエンドからバックエンド、インフラまで一貫して携わるフルスタックエンジニア。「なぜ動くのか」にこだわりながら、最終的にユーザーへ届く形まで責任を持って届ける。
+                            「作る」と決まったプロダクトを、動き続けるソフトウェアとして実装し、運用まで担う当事者。ソフトウェアアーキテクトの視点で設計しながら、自ら手を動かす。フロントエンドからバックエンド、インフラまで一貫して携わるフルスタックエンジニア。
                         </p>
                     </Reveal>
                 </div>
@@ -94,7 +94,7 @@ export default async function ProfilePage() {
                             <span>
                                 FOCUS{" "}
                                 <b className="font-medium text-fg">
-                                    Backend / Architecture
+                                    Backend / Software Architecture
                                 </b>
                             </span>
                             <span>

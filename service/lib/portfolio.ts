@@ -2,6 +2,14 @@ import matter from "gray-matter"
 import { extractFlatListItems, extractSection } from "./markdown-utils"
 // @ts-expect-error raw-loader returns string
 import portfolioSiteMd from "../docs/portfolio/portfolio-site.md"
+// @ts-expect-error raw-loader returns string
+import noboruNoteMd from "../docs/portfolio/noboru-note.md"
+// @ts-expect-error raw-loader returns string
+import climbinsightMd from "../docs/portfolio/climbinsight.md"
+// @ts-expect-error raw-loader returns string
+import ironLegionMd from "../docs/portfolio/iron-legion.md"
+// @ts-expect-error raw-loader returns string
+import onclimbIndustriesMd from "../docs/portfolio/onclimb-industries.md"
 export interface ProjectLinks {
     github?: string
     demo?: string
@@ -31,7 +39,7 @@ export interface ProjectMeta {
     highlights: string[]
     links?: ProjectLinks
     image?: string
-    category: "personal" | "work"
+    category: "personal"
 }
 export interface ProjectDetail {
     overview?: string
@@ -108,6 +116,10 @@ function extractChallenges(content: string): Challenge[] {
 // すべての Portfolio Markdown
 const portfolioMarkdowns: string[] = [
     portfolioSiteMd,
+    noboruNoteMd,
+    climbinsightMd,
+    ironLegionMd,
+    onclimbIndustriesMd,
     // 新しいプロジェクトを追加する場合は、ここにインポートを追加
 ]
 function parsePortfolioMarkdown(rawContent: string): Project {
@@ -187,12 +199,11 @@ export function findAdjacentProjectIds(
 
 const CATEGORY_PREFIX: Record<Project["category"], string> = {
     personal: "P",
-    work: "W",
 }
 
 /**
  * 表示用のプロジェクト番号を生成する純粋関数。
- * - personal は "P/01" 形式、work は "W/01" 形式
+ * - personal は "P/01" 形式
  * - indexInList は 0 始まり
  * - フォーマット (prefix / 桁数 / 区切り) を変えるときはここだけを更新する
  */

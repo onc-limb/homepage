@@ -1,6 +1,5 @@
 import Link from "next/link"
 import { NAV_ITEMS, SOCIAL_LINKS } from "@/lib/constants"
-import { FooterClock } from "./FooterClock"
 
 export default function Footer() {
     return (
@@ -17,7 +16,7 @@ export default function Footer() {
                         onclimb
                     </div>
                     <p className="text-xs text-fg-muted">
-                        Fullstack engineer / architect — Tokyo
+                        Fullstack engineer / software architect — Tokyo
                     </p>
                 </div>
                 <div className="flex flex-col gap-1.5 text-[13px]">
@@ -51,15 +50,6 @@ export default function Footer() {
                     ))}
                 </div>
                 <div className="flex flex-col gap-1.5 text-[13px]">
-                    <div className="mb-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-fg-dim">
-                        {"// status"}
-                    </div>
-                    <div className="font-mono text-fg-muted">
-                        build &nbsp;<span className="strong">v2.0.0-prototype</span>
-                    </div>
-                    <div className="font-mono text-fg-muted">
-                        node &nbsp;<FooterClock />
-                    </div>
                     <div className="font-mono text-fg-muted">© {new Date().getFullYear()} onclimb</div>
                 </div>
             </div>

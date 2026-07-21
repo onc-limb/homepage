@@ -1,50 +1,27 @@
-"use client"
-
-import { useState } from "react"
 import type { Project } from "@/lib/portfolio"
-import { PortfolioFilterBar, type PortfolioFilter } from "./PortfolioFilter"
 import { PortfolioSection } from "./PortfolioSection"
 
 interface Props {
     personal: Project[]
-    work: Project[]
 }
 
-export function PortfolioListClient({ personal, work }: Props) {
-    const [filter, setFilter] = useState<PortfolioFilter>("all")
-
+export function PortfolioListClient({ personal }: Props) {
     return (
-        <>
-            <PortfolioFilterBar onChange={setFilter} initial={filter} />
-
-            <section className="py-14">
-                <div className="mx-auto max-w-[1080px] px-6">
-                    {(filter === "all" || filter === "personal") &&
-                        personal.length > 0 && (
-                            <PortfolioSection
-                                seq="/01"
-                                title="Personal Projects"
-                                countLabel="projects"
-                                projects={personal}
-                            />
-                        )}
-
-                    {(filter === "all" || filter === "work") && work.length > 0 && (
-                        <PortfolioSection
-                            seq="/02"
-                            title="Work"
-                            countLabel="engagements"
-                            projects={work}
-                        />
-                    )}
-
-                    {personal.length === 0 && work.length === 0 && (
-                        <div className="py-12 text-center text-fg-muted">
-                            プロジェクトは準備中です
-                        </div>
-                    )}
-                </div>
-            </section>
-        </>
+        <section className="py-14">
+            <div className="mx-auto max-w-[1080px] px-6">
+                {personal.length > 0 ? (
+                    <PortfolioSection
+                        seq="/01"
+                        title="Personal Projects"
+                        countLabel="projects"
+                        projects={personal}
+                    />
+                ) : (
+                    <div className="py-12 text-center text-fg-muted">
+                        プロジェクトは準備中です
+                    </div>
+                )}
+            </div>
+        </section>
     )
 }

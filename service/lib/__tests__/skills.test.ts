@@ -72,7 +72,7 @@ describe("getRadarAxes()", () => {
         // When axes are aggregated
         // Then non-contributing axes are 0
         const skills: Skill[] = [
-            factorySkill({ name: "PyTorch", category: "ai-ml", level: 3 }),
+            factorySkill({ name: "PyTorch", category: "ml", level: 3 }),
         ]
         const axes = getRadarAxes(skills)
         const nonAi = axes.filter((a) => a.key !== "ai")
@@ -81,13 +81,13 @@ describe("getRadarAxes()", () => {
         }
     })
 
-    it("aggregates ai-ml skills onto the 'ai' axis as an average", () => {
-        // Given two ai-ml skills with levels 2 and 4
+    it("aggregates ml and ai-llm skills onto the 'ai' axis as an average", () => {
+        // Given an ml skill and an ai-llm skill with levels 2 and 4
         // When axes are aggregated
         // Then the 'ai' axis equals their average (3)
         const skills: Skill[] = [
-            factorySkill({ name: "PyTorch", category: "ai-ml", level: 2 }),
-            factorySkill({ name: "LLM", category: "ai-ml", level: 4 }),
+            factorySkill({ name: "PyTorch", category: "ml", level: 2 }),
+            factorySkill({ name: "LLM", category: "ai-llm", level: 4 }),
         ]
         const axes = getRadarAxes(skills)
         const ai = axes.find((a) => a.key === "ai")
@@ -162,24 +162,36 @@ describe("getRadarAxes()", () => {
         expect(low?.value).toBe(3)
     })
 
-    it("aggregates methodology category onto the 'arch' axis", () => {
-        // Given one methodology skill at level 4
+    it("aggregates architecture category onto the 'arch' axis", () => {
+        // Given one architecture skill at level 4
         // When axes are aggregated
         // Then the 'arch' axis is 4
         const skills: Skill[] = [
-            factorySkill({ name: "DDD", category: "methodology", level: 4 }),
+            factorySkill({ name: "DDD", category: "architecture", level: 4 }),
         ]
         const axes = getRadarAxes(skills)
         const arch = axes.find((a) => a.key === "arch")
         expect(arch?.value).toBe(4)
     })
 
-    it("aggregates markup-style category onto the 'frontend' axis", () => {
-        // Given one markup-style skill at level 4
+    it("does not aggregate process methodology onto the 'arch' axis", () => {
+        // Given one methodology (process) skill at level 4
+        // When axes are aggregated
+        // Then the 'arch' axis stays 0
+        const skills: Skill[] = [
+            factorySkill({ name: "Scrum", category: "methodology", level: 4 }),
+        ]
+        const axes = getRadarAxes(skills)
+        const arch = axes.find((a) => a.key === "arch")
+        expect(arch?.value).toBe(0)
+    })
+
+    it("aggregates frontend category onto the 'frontend' axis", () => {
+        // Given one frontend skill at level 4
         // When axes are aggregated
         // Then the 'frontend' axis includes its level
         const skills: Skill[] = [
-            factorySkill({ name: "CSS", category: "markup-style", level: 4 }),
+            factorySkill({ name: "React", category: "frontend", level: 4 }),
         ]
         const axes = getRadarAxes(skills)
         const frontend = axes.find((a) => a.key === "frontend")
@@ -193,7 +205,7 @@ describe("getRadarAxes()", () => {
         const skills: Skill[] = [
             factorySkill({
                 name: "Hidden",
-                category: "ai-ml",
+                category: "ai-llm",
                 level: 5,
                 publish: false,
             }),

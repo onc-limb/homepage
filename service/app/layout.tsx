@@ -1,3 +1,4 @@
+import { AdSense } from "@/components/AdSense"
 import SiteShell from "@/components/SiteShell"
 import { ThemeProvider, themeBootScript } from "@/components/theme"
 import type { Metadata } from "next"
@@ -55,16 +56,12 @@ export default function RootLayout({
                 <script
                     dangerouslySetInnerHTML={{ __html: themeBootScript }}
                 />
-                <script
-                    async
-                    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2116109734269102"
-                    crossOrigin="anonymous"
-                />
             </head>
             <body className={`${fontVars} min-h-screen antialiased`}>
                 <ThemeProvider>
                     <SiteShell>{children}</SiteShell>
                 </ThemeProvider>
+                <AdSense />
             </body>
         </html>
     )

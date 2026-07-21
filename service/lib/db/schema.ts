@@ -40,20 +40,6 @@ export const bookTags = sqliteTable(
     ]
 )
 
-export const news = sqliteTable("news", {
-    id: integer().primaryKey({ autoIncrement: true }),
-    title: text().notNull(),
-    source: text().notNull(),
-    url: text().notNull().unique(),
-    summary: text(),
-    publishedAt: text("published_at").notNull(),
-    crawledAt: text("crawled_at")
-        .notNull()
-        .default(sql`(datetime('now'))`),
-    isPublished: integer("is_published", { mode: "boolean" }).notNull().default(true),
-    crawlDate: text("crawl_date").notNull(),
-})
-
 // 技術記事本体テーブル。既存 books と同じ「コンテンツ本体テーブル」パターンに揃える。
 // ルーティングキーの契約: 記事詳細ページ /blog/[slug] は slug で引く（id ルーティングは不採用）。
 export const articles = sqliteTable(
