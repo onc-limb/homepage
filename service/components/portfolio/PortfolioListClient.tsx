@@ -7,10 +7,9 @@ import { PortfolioSection } from "./PortfolioSection"
 
 interface Props {
     personal: Project[]
-    work: Project[]
 }
 
-export function PortfolioListClient({ personal, work }: Props) {
+export function PortfolioListClient({ personal }: Props) {
     const [filter, setFilter] = useState<PortfolioFilter>("all")
 
     return (
@@ -29,16 +28,7 @@ export function PortfolioListClient({ personal, work }: Props) {
                             />
                         )}
 
-                    {(filter === "all" || filter === "work") && work.length > 0 && (
-                        <PortfolioSection
-                            seq="/02"
-                            title="Work"
-                            countLabel="engagements"
-                            projects={work}
-                        />
-                    )}
-
-                    {personal.length === 0 && work.length === 0 && (
+                    {personal.length === 0 && (
                         <div className="py-12 text-center text-fg-muted">
                             プロジェクトは準備中です
                         </div>

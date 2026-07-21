@@ -10,7 +10,7 @@ interface PortfolioSectionProps {
 }
 
 /**
- * Portfolio 一覧の "Personal Projects" / "Work" セクションを共通化したコンポーネント。
+ * Portfolio 一覧の "Personal Projects" セクションを共通化したコンポーネント。
  * 番号フォーマットは `formatProjectNumber` を共用する。
  */
 export function PortfolioSection({

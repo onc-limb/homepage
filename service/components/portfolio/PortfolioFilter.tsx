@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 
-export type PortfolioFilter = "all" | "personal" | "work"
+export type PortfolioFilter = "all" | "personal"
 
 interface PortfolioFilterBarProps {
     onChange: (next: PortfolioFilter) => void
@@ -23,7 +23,6 @@ export function PortfolioFilterBar({
     const options: { key: PortfolioFilter; label: string }[] = [
         { key: "all", label: "All" },
         { key: "personal", label: "Personal" },
-        { key: "work", label: "Work" },
     ]
 
     return (
