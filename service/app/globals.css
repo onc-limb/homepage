@@ -34,6 +34,12 @@
     --bg-elev-2: #141f3d;
     --surface: rgba(20, 31, 61, 0.5);
     --surface-strong: rgba(30, 44, 78, 0.85);
+    /* Solid background tokens — gradient-free, fully opaque fills for
+       cards/panels/surfaces. Opaque counterparts of --surface / --surface-strong
+       so the solid-background pass can drop translucency + backdrop blur.
+       See docs/background-audit.md §(i). */
+    --surface-solid: #141f3d;
+    --surface-solid-strong: #1e2c4e;
     --hairline: rgba(140, 170, 230, 0.14);
     --hairline-strong: rgba(140, 170, 230, 0.28);
 
@@ -66,6 +72,11 @@
     --bg-elev-2: #f7f9fe;
     --surface: rgba(255, 255, 255, 0.72);
     --surface-strong: rgba(255, 255, 255, 0.95);
+    /* Solid background tokens — gradient-free, fully opaque fills for
+       cards/panels/surfaces. Opaque counterparts of --surface / --surface-strong.
+       See docs/background-audit.md §(i). */
+    --surface-solid: #ffffff;
+    --surface-solid-strong: #ffffff;
     --hairline: rgba(20, 40, 90, 0.08);
     --hairline-strong: rgba(20, 40, 90, 0.18);
 

@@ -1,8 +1,8 @@
 # 背景実装 特定調査レポート (background audit)
 
 対象リポジトリ: onc-limb/homepage (`service/` = Next.js 15 App Router)
-作成日: 2026-07-24 / 最終更新: 2026-07-24（`constellation-background-removal` タスクで削除実施・調査結果追記）
-ステータス: **背景コンポーネント削除タスク（constellation-background-removal）実行時にソースツリーへアクセスでき、下記 §(c-1)/§(d-4)/§(b-1)/§(a) の未確定項目を実確認して確定・追記した。その後の手動介入（§(h)）で `service/components/animations/ParticleBackground.tsx` をリポジトリからファイルごと削除し、あわせて barrel `service/components/animations/index.ts` の再エクスポートと `service/components/SiteShell.tsx` の import・マウント（唯一の実参照）を除去した。パーティクル背景はいずれのページでもレンダリングされない。**
+作成日: 2026-07-24 / 最終更新: 2026-07-25（`theme-solid-background-tokens` タスクで単色背景トークンを既存テーマ機構へ集約定義・§(i) を追記）
+ステータス: **背景コンポーネント削除タスク（constellation-background-removal）実行時にソースツリーへアクセスでき、下記 §(c-1)/§(d-4)/§(b-1)/§(a) の未確定項目を実確認して確定・追記した。その後の手動介入（§(h)）で `service/components/animations/ParticleBackground.tsx` をリポジトリからファイルごと削除し、あわせて barrel `service/components/animations/index.ts` の再エクスポートと `service/components/SiteShell.tsx` の import・マウント（唯一の実参照）を除去した。パーティクル背景はいずれのページでもレンダリングされない。さらに `theme-solid-background-tokens` タスクで単色背景トークン（`--surface-solid` / `--surface-solid-strong`）を `app/globals.css` の CSS 変数（両テーマ）と Tailwind 設定へ集約定義した（§(i)）。**
 
 > このドキュメントは後続サブタスク（星座風パーティクル背景の削除／グラデーション廃止・単色化）への
 > 唯一の受け渡し手段である。したがって「実際に確認できた事実」と「確認できていない事項」を取り違えないことが最優先である。
@@ -31,6 +31,7 @@
 | --- | --- |
 | ✅ 本文確認済み | 実際に全文を読んだファイルから直接確認した事実。訂正の対象外 |
 | ✅ 削除タスクで確定 | constellation-background-removal タスクがソースツリーへアクセスして実確認・追記した事実 |
+| ✅ トークン定義タスクで確定 | theme-solid-background-tokens タスクが `app/globals.css` / `tailwind.config.*` を実確認・編集して確定した事実 |
 | 🅘 前版推定（未確認） | 名称・配置・barrel 構成から推定した事項。該当ソースを未確認なら **候補**として扱う |
 | 🔎 要確認 | 削除・単色化・分離に着手する前に、ソースツリーへアクセスできるタスクがコマンドを実行して確定する事項 |
 
@@ -183,6 +184,12 @@ SiteBrand 経路のグラデーション 0 件は回帰込みで固定されて�
 > 背景アニメーション削除タスク（本タスク）のスコープはコンポーネント・CSS・テスト・依存の削除であり、
 > グラデーションの単色化は後続 `gradient-abolition-solid-background` に委譲する。d-2 の全数 grep は後続で実施する。
 
+> 補足（theme-solid-background-tokens で確認）: `service/app/globals.css` 本文には背景・セクション装飾としての
+> `linear-gradient`/`radial-gradient` は無い。`linear-gradient` の出現は `.grid-bg`（グリッド線パターン）と
+> `.scroll-hint::after`（スクロールヒントの線）の 2 箇所のみで、いずれも背景・セクションの面塗り装飾ではない。
+> `.card-surface` は `var(--surface)`（半透明単色）+ `backdrop-filter: blur()` でありグラデーションではない。
+> 後続タスクの単色化ではこれらを §(i) の単色トークンで置換する（面塗りが必要な箇所は `--surface-solid` 系へ）。
+
 ### d-3. 全数 grep（§(g) G5・グラデーション廃止タスクが実行し d-4 へ貼る）
 
 ```sh
@@ -206,10 +213,11 @@ grep -rn -E "(^|[\"'\` ])(from|via|to)-(\[|[a-z])" \
 | `service/components/header/SiteBrand.tsx` | （ヒットなし） | グラデーション 0 件（✅ 本タスク確認済み） |
 | `service/components/header/__tests__/SiteBrand.independence.test.ts` | `linear-gradient` 等のトークン定義・フィクスチャ | 検出ロジック・除外（装飾ではない、✅ 本タスク確認済み） |
 | `service/components/animations/ParticleBackground.tsx` | （ファイル削除済み。削除前も 0 件） | 対象コンポーネント削除（✅ 削除タスク確定） |
+| `service/app/globals.css` `.grid-bg` | `linear-gradient(... 1px, transparent 1px)` | グリッド線パターン（面塗り装飾ではない・除外候補、判断は後続タスク） |
+| `service/app/globals.css` `.scroll-hint::after` | `linear-gradient(180deg, var(--fg-dim), transparent)` | スクロールヒントの線（背景・セクション装飾ではない） |
 
-> 上表は本タスクの snapshot で本文確認できた範囲。`service/app/**` を含む全数 grep は
+> 上表は本タスク／トークン定義タスクの snapshot で本文確認できた範囲。`service/app/**` を含む全数 grep は
 > グラデーション廃止タスク（gradient-abolition-solid-background）が d-3 のコマンドで実行して残りを埋める。
-> 本タスク（背景アニメーション削除）のスコープではグラデーションの単色化は行わない。
 
 ### d-5. 受け入れ条件への含意
 
@@ -221,46 +229,50 @@ grep -rn -E "(^|[\"'\` ])(from|via|to)-(\[|[a-z])" \
 
 ## (e) 既存テーマ機構の所在
 
-> 以下は前版が推定した所在であり、本タスクでは `service/lib/**`・`service/app/globals.css`・
-> `service/tailwind.config.*` を開けていない。実在・本文は後続タスクが §(g) G6 で確認する。
-> 本タスク（背景アニメーション削除）のスコープはテーマ機構の変更を含まないため、これらは未着手のまま残す。
+> 以下は前版が推定した所在であり、背景削除タスクでは `service/lib/**`・`service/app/globals.css`・
+> `service/tailwind.config.*` を開けていなかった。`theme-solid-background-tokens` タスクで
+> `service/app/globals.css` と `service/tailwind.config.ts` / `service/tailwind.config.js` を実確認・編集して
+> §(e-2)/§(e-3)/§(e-4) の一部を確定した（実確認箇所には「✅ トークン定義タスクで確定」を付す）。
 
-### e-1. テーマモジュール（🅘 前版推定・本文未確認）
+### e-1. テーマモジュール（🅘 前版推定・本文未確認 / 一部 ✅）
 
 | 候補パス | 内容（推定） |
 | --- | --- |
-| `service/lib/theme.ts` | テーマ定義の実体（前版は単一ファイルと推定。`lib/theme/` ディレクトリではない可能性） |
-| `service/lib/__tests__/theme.test.ts` | テーマ契約テスト（`THEME_STORAGE_KEY` / `DEFAULT_THEME` / `THEMES` / `isTheme()` 等） |
+| `service/lib/theme.ts` | テーマ定義の実体（**単一ファイル**。`lib/theme/` ディレクトリではない）。`THEME_STORAGE_KEY`（`"onclimb-theme"`）/ `DEFAULT_THEME`（`"dark"`）/ `THEMES`（`dark` \| `light`）/ `isTheme()` を export。**ここに色は持たない**（色は CSS 変数 + Tailwind 側）✅ トークン定義タスクで確定（`service/lib/__tests__/theme.test.ts` 経由） |
+| `service/lib/__tests__/theme.test.ts` | テーマ契約テスト（`THEME_STORAGE_KEY` / `DEFAULT_THEME` / `THEMES` / `isTheme()`） |
 | `service/components/theme/ThemeProvider.tsx` | `<html data-theme="...">` を駆動する Provider（`service/app/layout.tsx` の `import { ThemeProvider, themeBootScript } from "@/components/theme"` で参照。✅ layout 本文確認） |
 | `service/components/theme/ThemeToggle.tsx` | ライト/ダーク切替 UI |
 | `service/components/theme/index.ts` | barrel export（layout の `@/components/theme` からの解決先。✅ 参照確認） |
 
-### e-2. Tailwind 設定・PostCSS（🅘 前版推定・本文未確認）
+### e-2. Tailwind 設定・PostCSS ✅ トークン定義タスクで確定
 
 | 候補パス | 状態 |
 | --- | --- |
-| `service/tailwind.config.*`（`.ts` または `.js`） | 🔎 拡張子・採用ファイルは G6 で確定（色トークン追加先） |
-| `service/postcss.config.js` | 🅘 推定 |
+| `service/tailwind.config.ts` | **実在**。`theme.extend.colors` に CSS 変数エイリアス（`bg` / `bg-elev` / `surface` 等）を定義。単色背景トークン `surface-solid` / `surface-solid-strong` を追記済み ✅ |
+| `service/tailwind.config.js` | **実在**（`.ts` とほぼ同一のミラー）。同じ 2 トークンを追記済み ✅ |
+| `service/postcss.config.js` | **実在**（`postcss.config.mjs` は無い）。本タスクでは未変更 ✅ |
 | `service/components.json` | 🅘 推定（shadcn/ui 設定） |
 
-### e-3. CSS 変数定義（🅘 前版推定・本文未確認）
+### e-3. CSS 変数定義 ✅ トークン定義タスクで確定
 
-| 候補パス | 備考 |
+| 実パス | 備考 |
 | --- | --- |
-| `service/app/globals.css` | `:root` / `[data-theme="dark"]` / `[data-theme="light"]` の CSS 変数定義先。単色背景の定義先の第一候補。`service/app/layout.tsx` が `import "./globals.css"` で読み込む（✅ 参照確認）。変数名は G6 で本文確認 |
+| `service/app/globals.css` | `:root`（共通 + `:root[data-theme="dark"]`）/ `:root[data-theme="light"]` の CSS 変数定義先。`--bg` / `--bg-elev` / `--bg-elev-2`（単色）、`--surface` / `--surface-strong`（半透明）を既存定義。**本タスクで両テーマに `--surface-solid` / `--surface-solid-strong`（単色・不透明）を追記**（§(i)）。`service/app/layout.tsx` が `import "./globals.css"` で読み込む（✅ 参照確認） |
 
-### e-4. 稼働中のカラートークン名 ✅ / 🔎
+### e-4. 稼働中のカラートークン名 ✅
 
 | 事実 | 確度 |
 | --- | --- |
 | `SiteBrand.tsx` が `text-fg-muted` / `text-fg-strong` / `text-accent` クラスを使用 | ✅ 本文確認済み |
 | `service/app/layout.tsx` が `data-theme="dark"` を初期値とし `ThemeProvider` / `themeBootScript` を使用 | ✅ 本文確認済み |
-| Tailwind の `theme.extend.colors` に `fg.muted` / `fg.strong` / `accent` が定義されている | 🔎 config 本文で確定 |
+| Tailwind の `theme.extend.colors` に `bg` / `bg-elev` / `bg-elev-2` / `surface` / `surface-strong` / `fg.*` / `accent` 等を CSS 変数エイリアスとして定義 | ✅ トークン定義タスクで確定 |
+| `theme.extend.colors` に `surface-solid` / `surface-solid-strong` を追記（`bg-surface-solid` 等で参照可能） | ✅ トークン定義タスクで確定（§(i)） |
 
 **単色化の実装方針（グラデーション廃止タスクへの推奨）**:
 新しい背景色をコンポーネントにハードコードせず、`globals.css` の CSS 変数
 （`[data-theme="dark"]` / `[data-theme="light"]` の両方）に定義し、Tailwind config でトークン化して
-`bg-*` クラス経由で参照する。定義先の実パス（config 拡張子・変数名）は §(g) G6 で確定してから着手すること。
+`bg-*` クラス経由で参照する。**本タスクで単色背景トークンは §(i) の通り定義済み**なので、後続タスクは
+新しい色を足さず §(i) の対応表に従って既存クラス/新トークンへ置換すること。
 
 ---
 
@@ -302,25 +314,27 @@ grep -rn -E "(^|[\"'\` ])(from|via|to)-(\[|[a-z])" \
 2. 親 issue が維持対象アニメーションの実体と推測した `SiteBrand` は**静的**である（✅ f-1）。
 3. ロックファイルは `service/pnpm-lock.yaml`（pnpm）で確定（✅ 削除タスク c-1）。
 4. パーティクル背景専用の外部依存は無し（自作実装）。依存関係の変更は不要（✅ 削除タスク b-1）。
-5. `ParticleBackground.tsx`（no-op スタブ）は本タスクでリポジトリからファイルごと削除済み（✅）。モジュール `ParticleBackground` はリポジトリから失われ、パーティクル背景はいずれのページでもレンダリングされない。`ParticleBackground` を再エクスポートする barrel（`index.ts`）はソースツリーに存在せず（`service/components/**/*.ts` 0 件）、import している箇所も snapshot 上 0 件のため、ファイル削除による破綻は生じない。
+5. `ParticleBackground.tsx`（no-op スタブ）は削除タスクでリポジトリからファイルごと削除済み（✅）。モジュール `ParticleBackground` はリポジトリから失われ、パーティクル背景はいずれのページでもレンダリングされない。
+6. 単色背景トークン（`--surface-solid` / `--surface-solid-strong`）を両テーマに定義し Tailwind へマッピング済み（✅ トークン定義タスク・§(i)）。ページ/セクション層は既存の単色 `--bg` / `--bg-elev` / `--bg-elev-2` を継続利用する。
 
 ### g-2. 未確定・後続タスクが確定する事項（🔎）
 
 | # | 事項 | 追記先 | 状態 |
 | --- | --- | --- | --- |
 | G1 | `animations/` の全ファイルの本文と役割 | (a-1) | 部分確定（ParticleBackground.tsx のみ surfacing・ファイル削除済み） |
-| G2 | 背景のマウント箇所（実パス:行） | (a-2) | 未確定（layout.tsx には参照なしを確認） |
-| G3 | 実装方式（canvas + rAF か） | (b-2) | 確定（canvas + rAF の自作実装） |
+| G2 | 背景のマウント箇所（実パス:行） | (a-2) | ✅ 確定（`SiteShell.tsx`・手動介入で除去） |
+| G3 | 実装方式（canvas + rAF か） | (b-2) | ✅ 確定（canvas + rAF の自作実装） |
 | G4 | ロックファイルの実在・実パス | (c-1) | ✅ 確定（`service/pnpm-lock.yaml`） |
-| G5 | グラデーション使用箇所の全数 grep | (d-4) | 後続 gradient-abolition-solid-background が実行 |
-| G6 | テーマ機構・Tailwind config・CSS 変数名 | (e-1〜e-4) | 未確定（後続 theme-solid-background-tokens） |
-| G7 | 維持対象アニメーションの実体特定 → 共有分離 | (f-2) | 共有なしを確認（本タスク範囲） |
+| G5 | グラデーション使用箇所の全数 grep | (d-4) | 後続 gradient-abolition-solid-background が実行（globals.css は §(d-2) 補足で確認済み） |
+| G6 | テーマ機構・Tailwind config・CSS 変数名 | (e-1〜e-4) | ✅ 確定（theme-solid-background-tokens・§(i)） |
+| G7 | 維持対象アニメーションの実体特定 → 共有分離 | (f-2) | 共有なしを確認（背景削除タスク範囲） |
 | G8 | パーティクル/canvas 系外部依存の有無 | (b-1) | ✅ 確定（依存なし） |
 
 ### g-3. コミット分割
 
-- `refactor: remove constellation background animation`（本タスク）
-- `refactor: replace gradients with solid theme colors`（後続）
+- `refactor: remove constellation background animation`（削除タスク）
+- `refactor: define solid background tokens in theme`（本タスク・単色化側の一部）
+- `refactor: replace gradients with solid theme colors`（後続 gradient-abolition-solid-background）
 
 ---
 
@@ -342,10 +356,74 @@ grep -rn -E "(^|[\"'\` ])(from|via|to)-(\[|[a-z])" \
 
 ---
 
+## (i) 単色背景トークンの定義と用途（theme-solid-background-tokens タスクで追記・2026-07-25）
+
+グラデーション廃止・単色化（gradient-abolition-solid-background）が「場当たりな色」を足さずに済むよう、
+背景の面塗りに使う単色トークンを **既存テーマ機構（`app/globals.css` の CSS 変数 + `tailwind.config.*` の
+`theme.extend.colors`）へ集約定義**した。新しい色管理の仕組みは導入していない（既存の
+`--bg` 系トークン + Tailwind エイリアスの延長線上）。
+
+### i-1. ベースカラーの選定
+
+既存テーマカラーからの選定（オーナー委任済み）。落ち着いた単色として、既存のページ背景系
+（ダーク = 深いネイビー `#0a1020`、ライト = ほぼ白 `#f2f5fb`）と、その elevation 段階
+（`--bg-elev` / `--bg-elev-2`）を**そのままベース**に採用する。アクセント青（`--accent`）は
+面塗りには使わない（テキスト/線/ボタン用に温存）。
+
+### i-2. 層とトークンの対応（後続の単色化はこの表に従って置換する）
+
+| 層（用途） | 使うトークン（Tailwind クラス） | ダーク値 | ライト値 |
+| --- | --- | --- | --- |
+| ページ全体の背景（`body` / ページ最外郭） | `--bg`（`bg-bg` / `bg-background`） | `#0a1020` | `#f2f5fb` |
+| セクション背景（区切り/一段持ち上げ） | `--bg-elev`（`bg-bg-elev`） | `#0f1830` | `#ffffff` |
+| セクション背景（さらに一段） | `--bg-elev-2`（`bg-bg-elev-2`） | `#141f3d` | `#f7f9fe` |
+| カード / サーフェス（単色・不透明） | `--surface-solid`（`bg-surface-solid`） | `#141f3d` | `#ffffff` |
+| 強調カード / パネル（単色・不透明） | `--surface-solid-strong`（`bg-surface-solid-strong`） | `#1e2c4e` | `#ffffff` |
+
+補足:
+
+- ページ/セクション層は**既存の単色トークンをそのまま**使う（新規追加なし）。
+- カード/サーフェス層のみ、既存 `--surface` / `--surface-strong` が**半透明（rgba）+ backdrop blur 前提**で
+  単色化に直接使えないため、その**不透明版**として `--surface-solid` / `--surface-solid-strong` を新設した。
+  `--surface`（`--surface-solid` の元 rgb は `rgba(20, 31, 61, ...)` = `#141f3d`）と一致させ、
+  ダークの強調版はワンステップ明るい `#1e2c4e` にして重なりの視認性を確保した。ライトは面が白で十分に立つため
+  両者とも `#ffffff`。
+- 既存の `--surface` / `--surface-strong`（半透明）や `.card-surface`（backdrop blur）は削除していない。
+  ガラス調をやめて面を単色で塗りたい箇所で `--surface-solid` 系に差し替える、という置換の受け皿である。
+
+### i-3. テーマ切り替え機構への載り方
+
+- 値は `app/globals.css` の `:root[data-theme="dark"]`（= `:root` 既定）と `:root[data-theme="light"]` の
+  両ブロックに定義してあり、`ThemeProvider` が切り替える `<html data-theme="...">` にそのまま追従する。
+  トークン名はテーマ間で同一なので、参照側（`bg-surface-solid` 等）は分岐不要。
+- Tailwind 側は `--surface-solid` → `surface-solid`、`--surface-solid-strong` → `surface-solid-strong` を
+  `tailwind.config.ts` と `tailwind.config.js` の両方に追加（2 ファイルはミラー関係のため同期）。
+
+### i-4. WCAG AA コントラスト確認（本文 `--fg` との組み合わせ）
+
+本文テキスト色 `--fg`（ダーク `#e6ecfb` / ライト `#0f1830`）に対する各単色背景トークンのコントラスト比
+（WCAG 2.2、通常サイズ本文の AA しきい値 = 4.5:1）。いずれも AA を大きく上回り、AAA（7:1）も満たす:
+
+| 背景トークン | ダーク（vs `#e6ecfb`） | ライト（vs `#0f1830`） |
+| --- | --- | --- |
+| `--bg` | ≈ 16.0:1 | ≈ 16.1:1 |
+| `--bg-elev` | ≈ 14.9:1 | ≈ 17.6:1 |
+| `--bg-elev-2` | ≈ 13.7:1 | ≈ 15.6:1 |
+| `--surface-solid` | ≈ 13.7:1 | ≈ 17.6:1 |
+| `--surface-solid-strong` | ≈ 11.6:1 | ≈ 17.6:1 |
+
+この検証は `service/lib/__tests__/background-tokens.test.ts` で自動化しており、`app/globals.css` を実読み込みして
+各トークンが両テーマで不透明 hex として定義されていること・`--fg` とのコントラストが 4.5:1 以上であること・
+Tailwind 両 config にマッピングされていることを契約として固定している（回帰で崩れれば検知できる）。
+
+---
+
 ## 参考情報(出典・取得日)
 
 - WCAG 2.2 達成基準 2.2.2「一時停止、停止、非表示」（レベル A）
   https://www.w3.org/WAI/WCAG22/Understanding/pause-stop-hide.html （取得日 2026-07-23）
+- WCAG 2.2 達成基準 1.4.3「コントラスト（最低限）」（レベル AA・通常テキスト 4.5:1）
+  https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html （取得日 2026-07-25）
 - prefers-reduced-motion（MDN）
   https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion （取得日 2026-07-23）
 - requestAnimationFrame（MDN）
