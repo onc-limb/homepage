@@ -290,8 +290,7 @@ export default async function TopPage() {
                                     <span
                                         className="pointer-events-none absolute -bottom-5 -right-5 h-[100px] w-[100px] rounded-md opacity-[0.05] transition-opacity duration-[350ms]"
                                         style={{
-                                            background:
-                                                "linear-gradient(135deg, var(--accent), transparent)",
+                                            background: "var(--accent)",
                                         }}
                                     />
                                 </Link>
@@ -307,8 +306,7 @@ export default async function TopPage() {
                     <Reveal
                         className="relative overflow-hidden rounded-[var(--radius-lg)] border border-hairline-strong px-8 py-20 text-center"
                         style={{
-                            background:
-                                "radial-gradient(circle at 80% 20%, var(--accent-soft), transparent 50%), radial-gradient(circle at 20% 80%, color-mix(in srgb, var(--indigo) 12%, transparent), transparent 50%), var(--bg-elev)",
+                            background: "var(--bg-elev)",
                         }}
                     >
                         <h2 className="relative mb-4 text-[clamp(28px,4vw,44px)] font-semibold tracking-[-0.02em]">
