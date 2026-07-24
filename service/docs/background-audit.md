@@ -2,7 +2,7 @@
 
 対象リポジトリ: onc-limb/homepage (`service/` = Next.js 15 App Router)
 作成日: 2026-07-24 / 最終更新: 2026-07-24（`constellation-background-removal` タスクで削除実施・調査結果追記）
-ステータス: **背景コンポーネント削除タスク（constellation-background-removal）実行時にソースツリーへアクセスでき、下記 §(c-1)/§(d-4)/§(b-1)/§(a) の未確定項目を実確認して確定・追記した。`service/components/animations/ParticleBackground.tsx` は本タスクでリポジトリからファイルごと削除した（`ParticleBackground` を再エクスポートする barrel も import している箇所も存在しないため、削除による import 破綻は生じない。パーティクル背景はいずれのページでもレンダリングされない）。**
+ステータス: **背景コンポーネント削除タスク（constellation-background-removal）実行時にソースツリーへアクセスでき、下記 §(c-1)/§(d-4)/§(b-1)/§(a) の未確定項目を実確認して確定・追記した。その後の手動介入（§(h)）で `service/components/animations/ParticleBackground.tsx` をリポジトリからファイルごと削除し、あわせて barrel `service/components/animations/index.ts` の再エクスポートと `service/components/SiteShell.tsx` の import・マウント（唯一の実参照）を除去した。パーティクル背景はいずれのページでもレンダリングされない。**
 
 > このドキュメントは後続サブタスク（星座風パーティクル背景の削除／グラデーション廃止・単色化）への
 > 唯一の受け渡し手段である。したがって「実際に確認できた事実」と「確認できていない事項」を取り違えないことが最優先である。
@@ -51,25 +51,26 @@
 | `service/components/animations/HeroSpotlight.tsx` | 装飾スポットライト演出（想定） | 削除候補 | 🅘 / 🔎 未surfacing |
 | `service/components/animations/FloatingShapes.tsx` | 浮遊シェイプの装飾演出（想定） | 削除候補 | 🅘 / 🔎 未surfacing |
 | `service/components/animations/Reveal.tsx` | スクロール表示演出ユーティリティ（背景専用でない可能性） | 維持候補 | 🅘 / 🔎 未surfacing |
-| `service/components/animations/index.ts` | barrel export（想定） | **本タスクの snapshot には実在せず（`service/components/**/*.ts` 0 件）。`ParticleBackground` を再エクスポートする barrel は存在しない** | ✅ 削除タスクで確定 |
+| `service/components/animations/index.ts` | barrel export | **実在する**（前版の「実在せず」は snapshot 不足による誤認）。`ParticleBackground` の再エクスポート行は手動介入（§(h)）で除去済み。他の export（Reveal / FloatingShapes / HeroSpotlight / HeroParticleTitle）は維持 | ✅ 手動介入で確定 |
 
-> **削除タスクの確定結果（✅）**: constellation-background-removal の実行環境で確実に手元に surfacing した
-> `animations/` 配下のファイルは `ParticleBackground.tsx` のみだった。これは canvas 描画コード・粒子生成ロジック・
-> requestAnimationFrame ループがすでに撤去され `return null` の no-op スタブになっていた（前段タスクの暫定対応）。
-> 前版はこのスタブを「barrel 再エクスポート（`export { ParticleBackground } from "./ParticleBackground"`）を有効に保つため」
-> 残す説明を付していたが、実際には当該 barrel（`index.ts`）はソースツリーに存在せず（`service/components/**/*.ts` は 0 件）、
-> `ParticleBackground` を import している箇所も snapshot 上は無かった（`service/app/layout.tsx` にも参照なし・§(a-2)）。
-> したがってスタブを残す根拠は無効であり、本タスクではファイルごと `ParticleBackground.tsx` をリポジトリから削除した。
-> その結果、モジュール `ParticleBackground` はリポジトリから失われ、パーティクル背景はいずれのページでもレンダリングされない。
-> 上表の他候補（HeroParticleTitle / HeroSpotlight / FloatingShapes / Reveal / index.ts）は本タスクの snapshot には現れず、
-> 実在有無は未確定のまま残す（推測で削除しないため、ファイル単位で本文確認できたものだけを対象とした）。
+> **確定結果（✅ 手動介入 §(h) で最終確定）**: 自動タスクの実行環境（sentinel 経由）は書き込み専用でファイル削除が
+> できず、`ParticleBackground.tsx` は canvas 描画コード・粒子生成ロジック・requestAnimationFrame ループを撤去した
+> `return null` の no-op スタブとして残っていた。また前版の「barrel（`index.ts`）はソースツリーに存在しない」
+> 「`ParticleBackground` を import している箇所は無い」という記述は snapshot 不足による**誤認**で、実際には
+> barrel `service/components/animations/index.ts` が再エクスポートし、`service/components/SiteShell.tsx` が
+> import してマウントしていた（実参照はこの 1 箇所のみ）。手動介入で `ParticleBackground.tsx` をファイルごと削除し、
+> barrel の再エクスポート行と `SiteShell.tsx` の import・マウントを除去した。その結果、モジュール
+> `ParticleBackground` はリポジトリから失われ、パーティクル背景はいずれのページでもレンダリングされない。
+> 上表の他候補（HeroParticleTitle / HeroSpotlight / FloatingShapes / Reveal）はいずれも実在し（手動確認）、
+> 本タスクでは変更していない（削除可否は後続タスクの判断に委ねる）。
 
-### a-2. マウント箇所 🔎 要確認
+### a-2. マウント箇所 ✅ 手動介入で確定
 
 `service/app/layout.tsx` には `ParticleBackground` への参照は無い（✅ 本文確認済み）。
-その他の呼び出し箇所（`SiteShell` 等）は本タスクの snapshot では未surfacing のため、実パス:行は未確定。
-削除タスクは呼び出し箇所（残存していれば）を除去してから本体を消すこと（§(g) G2）。本タスクの snapshot で確認できた
-参照は 0 件であり、ファイル削除による import 破綻は生じない。
+実際のマウント箇所は `service/components/SiteShell.tsx`（import + `<ParticleBackground />` の描画）で、
+これが唯一の実参照だった（前版の「参照 0 件」は snapshot 不足による誤認）。手動介入（§(h)）で
+呼び出し箇所を除去してから本体を削除した（§(g) G2 の手順どおり）。import 破綻は生じない
+（tsc / テストで確認済み）。
 
 ### a-3. 関連 CSS 🔎 要確認
 
@@ -108,8 +109,8 @@
 
 削除前の `ParticleBackground.tsx` はすでに canvas 描画コード・粒子生成ロジック・`requestAnimationFrame` ループ・
 テーマ追従・マウス反応が撤去され `return null` の no-op となっていた（前段タスクの暫定対応）。元実装は canvas + rAF ベースの
-自作実装であった旨がファイル内コメントに記録されていた。本タスクではこの no-op スタブを含む `ParticleBackground.tsx`
-ファイル自体をリポジトリから削除した（モジュール `ParticleBackground` はリポジトリから失われ、パーティクル背景はレンダリングされない）。
+自作実装であった旨がファイル内コメントに記録されていた。この no-op スタブを含む `ParticleBackground.tsx`
+ファイル自体は手動介入（§(h)）でリポジトリから削除した（モジュール `ParticleBackground` はリポジトリから失われ、パーティクル背景はレンダリングされない）。
 
 ### b-3. 受け入れ条件への含意
 
@@ -320,6 +321,24 @@ grep -rn -E "(^|[\"'\` ])(from|via|to)-(\[|[a-z])" \
 
 - `refactor: remove constellation background animation`（本タスク）
 - `refactor: replace gradients with solid theme colors`（後続）
+
+---
+
+## (h) 手動介入の記録（2026-07-25）
+
+自動タスクの書き込み経路（sentinel）は check / write / inventory のみでファイル削除ができず、
+自動ループは `ParticleBackground.tsx` を no-op スタブ化するところまでしか到達できなかった
+（レビューは「完全削除」の受け入れ条件未達として正しく reject）。このデッドロックを解消するため、
+人間側の介入として以下を実施した:
+
+1. `service/components/animations/ParticleBackground.tsx` を `git rm` でリポジトリから削除。
+2. barrel `service/components/animations/index.ts` から `ParticleBackground` の再エクスポート行を除去
+   （他の export は維持）。
+3. 唯一の実参照だった `service/components/SiteShell.tsx` の import と `<ParticleBackground />` マウントを除去。
+4. 本ドキュメント内の snapshot 不足による誤認（「barrel は実在しない」「参照 0 件」）を実態に合わせて訂正。
+
+`SiteBrand.independence.test.ts` 内の `ParticleBackground` への言及はすべて文字列フィクスチャ
+（テストデータ）であり、実モジュールへの import ではないため削除の影響を受けない。
 
 ---
 
