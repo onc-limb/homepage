@@ -49,6 +49,12 @@
     --surface-solid-strong: #1e2c4e;
     --hairline: rgba(140, 170, 230, 0.14);
     --hairline-strong: rgba(140, 170, 230, 0.28);
+    /* Opaque border tokens — solid hex equivalents of --hairline /
+       --hairline-strong composited over --surface-solid, so cards and buttons
+       can drop translucency without shifting the perceived border color
+       (opaque-surface-border-shadow-tokens). */
+    --hairline-solid: #253255;
+    --hairline-solid-strong: #36466c;
 
     --fg: #e6ecfb;
     --fg-strong: #ffffff;
@@ -79,6 +85,9 @@
     --grid: rgba(140, 170, 230, 0.06);
     --shadow-lg: 0 30px 80px -20px rgba(0, 8, 30, 0.7);
     --shadow-soft: 0 10px 40px -10px rgba(91, 141, 239, 0.25);
+    /* Subtle neutral card shadow for opaque surfaces — no accent tint. Alpha
+       here is fine: a drop shadow is not a translucent surface. */
+    --shadow-card: 0 2px 8px -2px rgba(0, 8, 30, 0.55);
 }
 
 :root[data-theme="light"] {
@@ -96,6 +105,10 @@
     --surface-solid-strong: #ffffff;
     --hairline: rgba(20, 40, 90, 0.08);
     --hairline-strong: rgba(20, 40, 90, 0.18);
+    /* Opaque border tokens — solid hex equivalents of --hairline /
+       --hairline-strong composited over --surface-solid (white). */
+    --hairline-solid: #eceef2;
+    --hairline-solid-strong: #d5d8e1;
 
     --fg: #0f1830;
     --fg-strong: #050b1c;
@@ -124,6 +137,8 @@
     --grid: rgba(20, 40, 90, 0.04);
     --shadow-lg: 0 30px 80px -20px rgba(20, 40, 90, 0.18);
     --shadow-soft: 0 10px 40px -10px rgba(47, 107, 224, 0.2);
+    /* Subtle neutral card shadow for opaque surfaces — no accent tint. */
+    --shadow-card: 0 2px 8px -2px rgba(20, 40, 90, 0.14);
 }
 
 /* ============================================================

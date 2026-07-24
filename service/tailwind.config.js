@@ -29,6 +29,9 @@ module.exports = {
                 "surface-solid-strong": "var(--surface-solid-strong)",
                 hairline: "var(--hairline)",
                 "hairline-strong": "var(--hairline-strong)",
+                // Opaque border tokens for the glassmorphism removal.
+                "hairline-solid": "var(--hairline-solid)",
+                "hairline-solid-strong": "var(--hairline-solid-strong)",
                 fg: "var(--fg)",
                 "fg-strong": "var(--fg-strong)",
                 "fg-muted": "var(--fg-muted)",
@@ -76,6 +79,12 @@ module.exports = {
                 lg: "var(--radius-lg)",
                 md: "var(--radius)",
                 sm: "calc(var(--radius) - 2px)",
+            },
+            boxShadow: {
+                // Kept in parity with tailwind.config.ts (which also maps
+                // card-soft / card-lg). Only the opaque-surface token is added
+                // here to avoid changing pre-existing behaviour of this config.
+                card: "var(--shadow-card)",
             },
             keyframes: {
                 "accordion-down": {
