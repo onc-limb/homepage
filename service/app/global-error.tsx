@@ -59,7 +59,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
                             margin: "0 0 1rem",
                             fontSize: "clamp(1.75rem, 5vw, 2.5rem)",
                             fontWeight: 700,
-                            background: "linear-gradient(135deg, #a5b4fc 0%, #818cf8 100%)",
+                            background: "#a5b4fc",
                             WebkitBackgroundClip: "text",
                             backgroundClip: "text",
                             color: "transparent",
@@ -111,8 +111,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
                                 fontSize: "0.9375rem",
                                 fontWeight: 600,
                                 color: "#0a0a0f",
-                                background:
-                                    "linear-gradient(135deg, #a5b4fc 0%, #818cf8 100%)",
+                                background: "#a5b4fc",
                             }}
                         >
                             もう一度試す
