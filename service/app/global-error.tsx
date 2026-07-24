@@ -128,7 +128,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
                                 fontWeight: 600,
                                 color: "#e5e7eb",
                                 textDecoration: "none",
-                                border: "1px solid rgba(148, 163, 184, 0.35)",
+                                border: "1px solid #3a404a",
                             }}
                         >
                             ホームへ戻る
