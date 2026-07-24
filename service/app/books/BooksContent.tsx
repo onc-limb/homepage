@@ -31,7 +31,7 @@ function BookCard({
     onOpenMemo: (book: Book) => void
 }) {
     return (
-        <div className="overflow-hidden rounded-[var(--radius-lg)] border border-hairline bg-surface backdrop-blur-[8px] transition-all duration-200 hover:border-accent hover:shadow-card-soft">
+        <div className="overflow-hidden rounded-[var(--radius-lg)] border border-hairline-solid bg-surface-solid shadow-card transition-all duration-200 hover:border-accent">
             <div className="flex flex-row">
                 <div
                     className="relative flex w-28 shrink-0 items-center justify-center border-r border-hairline md:w-32"
@@ -83,7 +83,7 @@ function BookCard({
                     )}
                     {book.memo && (
                         <div className="mt-auto">
-                            <div className="prose prose-sm prose-invert line-clamp-3 max-w-none text-[13px] leading-relaxed text-fg-muted">
+                            <div className="prose prose-sm dark:prose-invert line-clamp-3 max-w-none text-[13px] leading-relaxed text-fg-muted">
                                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                     {book.memo}
                                 </ReactMarkdown>
@@ -210,7 +210,7 @@ export default function BooksContent({
                         ) : (
                             <div
                                 className="rounded-[var(--radius-lg)] border border-hairline px-6 py-10 text-center text-fg-muted"
-                                style={{ background: "var(--surface)" }}
+                                style={{ background: "var(--surface-solid)" }}
                             >
                                 グラフ表示にはタグ付きの書籍が必要です。
                             </div>
@@ -220,7 +220,7 @@ export default function BooksContent({
                     ) : (
                         <div
                             className="rounded-[var(--radius-lg)] border border-hairline px-6 py-10 text-center text-fg-muted"
-                            style={{ background: "var(--surface)" }}
+                            style={{ background: "var(--surface-solid)" }}
                         >
                             タグ付きの書籍がありません。
                         </div>
@@ -353,7 +353,7 @@ export default function BooksContent({
                                 ` (${memoBook.publishedYear})`}
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="prose prose-sm prose-invert max-w-none">
+                    <div className="prose prose-sm dark:prose-invert max-w-none">
                         <ReactMarkdown remarkPlugins={[remarkGfm]}>
                             {memoBook?.memo ?? ""}
                         </ReactMarkdown>
