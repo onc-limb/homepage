@@ -44,7 +44,7 @@ export function FloatingShapes() {
             {SHAPES.map((s, i) => (
                 <div
                     key={i}
-                    className={`shape absolute rounded-[var(--radius-lg)] border border-hairline-strong shadow-card-soft backdrop-blur-[6px] ${s.className}`}
+                    className={`shape absolute rounded-[var(--radius-lg)] border border-hairline-strong shadow-card-soft ${s.className}`}
                     style={
                         {
                             // グラデーション廃止・単色化: 線形グラデーションを単色のアクセント面に置換
