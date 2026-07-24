@@ -1,11 +1,15 @@
 import type { Skill } from "@/lib/skills"
 
-const LEVEL_GRADIENT: Record<number, string> = {
-    5: "linear-gradient(90deg, #4ADE80, #22C55E)",
-    4: "linear-gradient(90deg, var(--accent), var(--cyan))",
-    3: "linear-gradient(90deg, var(--rose), var(--accent))",
-    2: "linear-gradient(90deg, var(--amber), var(--rose))",
-    1: "linear-gradient(90deg, var(--amber), var(--amber))",
+// グラデーション廃止・単色化: レベル別のバー色を線形グラデーションから単色へ置換。
+// 色はすべて既存テーマ機構（globals.css のトークン）で定義し、コンポーネント内に
+// ハードコード HEX を持たない。レベル 5 の緑は skills ページの LEVEL_LEGEND
+// （「5 — 専門」）と一致させるため専用トークン --level-expert を参照する。
+const LEVEL_COLOR: Record<number, string> = {
+    5: "var(--level-expert)",
+    4: "var(--accent)",
+    3: "var(--rose)",
+    2: "var(--amber)",
+    1: "var(--amber)",
 }
 
 export function SkillBar({ skill }: { skill: Skill }) {
@@ -30,7 +34,7 @@ export function SkillBar({ skill }: { skill: Skill }) {
                 <div
                     className="h-full rounded-full"
                     style={{
-                        background: LEVEL_GRADIENT[skill.level],
+                        background: LEVEL_COLOR[skill.level],
                         width: `${ratio * 100}%`,
                     }}
                 />

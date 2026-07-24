@@ -73,8 +73,8 @@ export default async function ProjectDetailPage({
                     aria-hidden="true"
                     className="pointer-events-none absolute inset-0 -z-[1]"
                     style={{
-                        background:
-                            "radial-gradient(circle at 80% 20%, var(--accent-soft), transparent 55%), radial-gradient(circle at 10% 90%, color-mix(in oklch, var(--cyan), transparent 80%), transparent 60%)",
+                        // グラデーション廃止・単色化: 放射状グラデーションの背面装飾を単色パネルに置換
+                        background: "var(--bg-elev)",
                     }}
                 />
                 <div className="mx-auto max-w-[980px] px-6">
