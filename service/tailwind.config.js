@@ -23,6 +23,10 @@ module.exports = {
                 "bg-elev-2": "var(--bg-elev-2)",
                 surface: "var(--surface)",
                 "surface-strong": "var(--surface-strong)",
+                // Solid (opaque, gradient-free) surface fills for cards/panels.
+                // See docs/background-audit.md §(i).
+                "surface-solid": "var(--surface-solid)",
+                "surface-solid-strong": "var(--surface-solid-strong)",
                 hairline: "var(--hairline)",
                 "hairline-strong": "var(--hairline-strong)",
                 fg: "var(--fg)",
