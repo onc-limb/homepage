@@ -13,7 +13,7 @@ export function ProjectCard({ project, number }: ProjectCardProps) {
     return (
         <article
             data-cat={project.category}
-            className="proj group relative grid grid-cols-1 gap-6 overflow-hidden rounded-[var(--radius-lg)] border border-hairline bg-surface px-8 py-7 backdrop-blur-[8px] transition-all duration-[250ms] hover:-translate-y-0.5 hover:border-accent hover:shadow-card-soft [@media(min-width:720px)]:grid-cols-[80px_1fr_auto] [@media(min-width:720px)]:items-start"
+            className="proj group relative grid grid-cols-1 gap-6 overflow-hidden rounded-[var(--radius-lg)] border border-hairline-solid bg-surface-solid px-8 py-7 shadow-card transition-all duration-[250ms] hover:-translate-y-0.5 hover:border-accent [@media(min-width:720px)]:grid-cols-[80px_1fr_auto] [@media(min-width:720px)]:items-start"
         >
             <div className="pt-1 font-mono text-xs tracking-[0.16em] text-fg-dim">
                 {number}
