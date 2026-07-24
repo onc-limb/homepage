@@ -39,8 +39,8 @@ export function BookGraph({ books }: { books: Book[] }) {
         <div
             className="relative h-[640px] overflow-hidden rounded-[var(--radius-lg)] border border-hairline"
             style={{
-                background:
-                    "radial-gradient(circle at 30% 30%, var(--accent-soft), transparent 50%), radial-gradient(circle at 70% 70%, color-mix(in oklch, var(--cyan), transparent 80%), transparent 60%), var(--surface)",
+                // グラデーション廃止・単色化: 放射状グラデーションの背景を単色サーフェスに置換
+                background: "var(--surface-solid)",
             }}
         >
             <svg

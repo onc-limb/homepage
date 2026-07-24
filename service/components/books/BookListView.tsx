@@ -6,11 +6,13 @@ import {
     type PositionedBook,
 } from "./BookCluster"
 
-const TONE_GRADIENTS: Record<string, string> = {
-    "0": "linear-gradient(135deg, var(--cyan), var(--accent))",
-    "1": "linear-gradient(135deg, #0F172A, var(--accent))",
-    "2": "linear-gradient(135deg, var(--indigo), var(--violet))",
-    "3": "linear-gradient(135deg, var(--rose), var(--amber))",
+// グラデーション廃止・単色化: 表紙タイルのトーンは線形グラデーションから
+// 既存テーマトークンの単色へ置換（cluster ごとに色を巡回）。
+const TONE_COLORS: Record<string, string> = {
+    "0": "var(--cyan)",
+    "1": "var(--accent)",
+    "2": "var(--indigo)",
+    "3": "var(--rose)",
 }
 
 /**
@@ -26,7 +28,7 @@ export function BookListView({ books }: { books: Book[] }) {
             {clusters.map((cluster, idx) => {
                 const items = positioned.filter((b) => b.cluster === cluster.id)
                 if (items.length === 0) return null
-                const tone = TONE_GRADIENTS[String(idx % 4)]
+                const tone = TONE_COLORS[String(idx % 4)]
                 return (
                     <section key={cluster.id} className="mb-9">
                         <Reveal
@@ -74,7 +76,10 @@ function BookCardItem({
                 className="grid aspect-[2/3] place-items-center rounded-[4px] p-1 text-center font-mono text-[9px] leading-[1.2] tracking-[0.04em]"
                 style={{
                     background: tone,
-                    color: "rgba(255,255,255,0.85)",
+                    // 表紙タイルのラベル色はテーマトークン --on-tone を参照
+                    // （テーマごとにインクの濃淡を切り替え、両テーマのトーン面で
+                    //   可読性を確保。ダークテーマの明るい cyan 面でも白潰れしない）。
+                    color: "var(--on-tone)",
                     boxShadow: "2px 2px 0 var(--hairline-strong)",
                 }}
             >

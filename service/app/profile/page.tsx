@@ -52,14 +52,14 @@ export default async function ProfilePage() {
                     as="section"
                     className="my-14 grid grid-cols-1 items-center gap-8 rounded-[var(--radius-lg)] border border-hairline p-10 backdrop-blur-[10px] [@media(min-width:720px)]:grid-cols-[200px_1fr] [@media(min-width:720px)]:gap-12"
                     style={{
-                        background:
-                            "radial-gradient(circle at 90% 0%, var(--accent-soft), transparent 60%), var(--surface)",
+                        // グラデーション廃止・単色化: 放射状グラデーションを単色サーフェスに置換
+                        background: "var(--surface-solid)",
                     }}
                 >
                     <div className="relative h-[200px] w-[200px] rounded-full p-[3px]"
                         style={{
-                            background:
-                                "linear-gradient(135deg, var(--accent), var(--indigo))",
+                            // グラデーション廃止・単色化: 線形グラデーションのリングを単色アクセントに置換
+                            background: "var(--accent)",
                         }}
                     >
                         <span
