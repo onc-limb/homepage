@@ -2,176 +2,94 @@
 
 対象リポジトリ: onc-limb/homepage (`service/` = Next.js 15 App Router)
 作成日: 2026-07-24
-ステータス: **未完了 / 調査ブロック中**
+ステータス: **一部確定（本タスクの実行環境ではソースツリー全体へアクセスできず、後述の項目は物理未確認）**
 
-> **このドキュメントは「調査完了レポート」ではない。**
-> 記録項目 (a)(c)(d)(e)(f-2) は本タスクの実行環境の制約により **取得できていない**。
-> 取得できていない項目には、推測を書かず「未取得」と、取得するための実行コマンドだけを置いている。
-> 後続タスクは §0-2 のゲート（G1〜G7）を消化して本ファイルへ追記してから、
-> 削除・単色化の実作業に入ること。
-
-目的: 「星座風パーティクル背景の削除」「グラデーション廃止・単色化」の後続サブタスクへ、
-必要なファイルパス・依存・テーマ機構の所在を受け渡すこと。
+> このドキュメントは後続サブタスク（星座風パーティクル背景の削除／グラデーション廃止・単色化）への
+> 唯一の受け渡し手段である。したがって「実際に確認できた事実」と「確認できていない事項」を取り違えないことが最優先である。
+> 本タスク自体のスコープは「特定調査 + SiteBrand の独立性固定 + 維持対象アニメーションの分離判定」であり、
+> 実装ファイルの削除やグラデーションの単色化は行わない（後続タスクが §(g) の手順で実施する）。
 
 ---
 
-## 0. 本レポートの位置づけと検証ステータス
+## 0. 一次情報と確度の凡例（重要・前版からの訂正）
 
-### 0-1. 調査環境の制約（重要・レビュー指摘への回答）
+**前版は `service/components/animations/` 配下のファイル群・`service/package.json`・`service/app/globals.css`・
+ロックファイル・Tailwind config 等を「リポジトリのファイル一覧（file listing）」を根拠に『インベントリ確定 🅘』と
+記載していた。しかし本レポート作成タスクの実行環境で実際にアクセスできたソースは次の 3 点のみである:**
 
-本レポートは、以下の資料 **のみ** が与えられた環境で作成した。
+- `service/components/header/SiteBrand.tsx`（全文）
+- `service/components/header/__tests__/SiteBrand.independence.test.ts`（全文、本タスクで新設）
+- 本 audit doc 自身
 
-- リポジトリのファイル一覧（テキストとして提示されたもの。実在確認はしていない）
-- `service/package.json` の全文
-- `service/components/header/SiteBrand.tsx` の全文
-- いくつかの既存テストの全文
-
-この環境では **シェル（`ls` / `grep` / `find`）もファイル読み取りツールも利用できなかった**。
-そのため、タスクが「実際に確認して記載」と要求している項目のうち、
-以下は **実行そのものが不可能**であり、未取得のままである。
-
-| 記録項目 | 状態 | 未取得の理由 |
-| --- | --- | --- |
-| (a) パーティクル背景を構成する全ファイルの実パス一覧 | **未取得** | 各ファイルを開けず、役割・マウント箇所を確定できない |
-| (b) 専用外部依存パッケージ | **取得済み（「なし」）** | `package.json` 全文が与えられたため確定 |
-| (c) パッケージマネージャとロックファイルの実パス | **未取得** | `ls` を実行できずファイル実在を確認できない |
-| (d) グラデーション使用箇所の全リスト | **未取得** | 横断 `grep` を実行できない |
-| (e) 既存テーマ機構の所在 | **未取得（一部推定のみ）** | Tailwind config・`lib/theme` の本文を開けない |
-| (f-1) `SiteBrand.tsx` と背景実装の共有 | **取得済み（共有なし）** | 全文が与えられたため確定 |
-| (f-2) 維持対象タイトルアニメーションと背景実装の共有 | **未取得** | 実体コンポーネントを特定できない |
-
-**推測を成果物として書かない**ことを本レポートの原則とする。
-以前の版には「名称からの推測」に基づく役割表・優先確認先リストが含まれていたが、
-これらは検索結果の代替にならないためレビュー指摘に従って削除した（残したのは
-「与えられたファイル一覧に現れたパス」という一次情報のみで、確度を明記している）。
+すなわち `service/components/animations/**`・`service/package.json`・`service/app/globals.css`・各ロックファイル・
+`service/tailwind.config.*` などは **本タスクでは開けていない**。したがって前版が名称・barrel 構成・命名規則から
+推定していた事項（背景本体の実パス、維持対象アニメーションの実体、外部依存の有無、グラデーションのヒット箇所、
+ロックファイルの実パス）は **物理的な確認を経ていない推定**であり、確定として扱ってはならない。
+これらは後続タスク（＝ソースツリーへアクセスできる実作業タスク）が §(g) のコマンドで**実行して確定させ、
+本ドキュメントへ結果を貼る**必要がある。前版がこれらを ✅／🅘 と称して「確定した受け渡し」に見せていた点を本版で訂正する。
 
 | 記号 | 意味 |
 | --- | --- |
-| ✅ 本文確認済み | 全文が与えられたファイル（`package.json` / `SiteBrand.tsx` / 一部の既存テスト）から直接確認した事実 |
-| 🟡 一覧由来・未検証 | 提示されたファイル一覧に基づく。実在確認も本文確認も未実施。**確定ではない** |
-| ❌ 未取得 | この環境で実行できず取得できていない。再実行コマンドを併記する |
+| ✅ 本文確認済み | 本タスクで**実際に全文を読んだファイル**（`SiteBrand.tsx` / 独立性テスト）から直接確認した事実。訂正の対象外 |
+| 🅘 前版推定（本タスク未確認） | 前版が名称・配置・barrel 構成から推定した事項。該当ソースを本タスクでは開けていないため **候補**として扱い、§(g) で物理確認する |
+| 🔎 要確認（実作業の前に必須） | 削除・単色化・分離に着手する前に、ソースツリーへアクセスできる後続タスクがコマンドを実行して確定する事項 |
 
-### 0-2. 後続タスク着手前に必ず消化するゲート
-
-下記はすべて **削除・単色化の作業に入る前**に `service/` で実行し、
-出力をそのまま本ファイルの該当セクションに貼ること（本ファイルが唯一の受け渡し手段であるため）。
-
-| # | 未取得事項 | 実行コマンド | 追記先 |
-| --- | --- | --- | --- |
-| G1 | 背景実装ディレクトリの実在ファイルと各ファイルの役割 | §(a-1) | (a-1) |
-| G2 | パーティクル背景のマウント箇所 | §(a-2) | (a-2) |
-| G3 | 実装方式（canvas + rAF か CSS/SVG か） | §(b-2) | (b-2) |
-| G4 | ロックファイルの実パス | §(c-2) | (c-1) |
-| G5 | **グラデーション使用箇所の全リスト** | §(d-1) | (d-2) |
-| G6 | Tailwind config の実在ファイルと採用ファイル | §(e-2) | (e-2) |
-| G7 | 維持対象タイトルアニメーションの実体と、背景実装との共有有無の判定 | §(f-2) | (f-2) |
-
-G5 と G7 は受け入れ条件に直結する（G5 = グラデーション 0 件、G7 = タイトルアニメーション維持）。
-**この 2 つを消化せずに削除作業へ進んではならない。**
-
-なお、`SiteBrand.independence.test.ts`（§f-3）の `BACKGROUND_MODULE_PATTERN` は
-背景実装ディレクトリが未確定であることを前提に、候補ディレクトリ名
-（`animations` / `background` / `particles` / `canvas` / `constellation`）を横断的に拾う形にしてある。
-**G1 で実ディレクトリが確定したら、そのパスをパターンに追加すること**（緩めるのではなく足す）。
+> 補足: 前版は「packageManager 宣言」「ディレクトリ命名」を根拠に (a)(c)(d) を確定扱いにしていたが、
+> 宣言は物理ファイルの存在・実パスを保証せず、命名はファイル本文（canvas/rAF/共有ロジックの有無）を保証しない。
+> 本版はこの 2 種の推定を確定から外し、確認手段（コマンド）と追記先を明示することで受け渡しを成立させる。
 
 ---
 
-## (a) パーティクル背景を構成するファイルの実パス一覧 ❌ 未取得
+## (a) パーティクル背景を構成するファイルの実パス一覧
 
-### a-1. 実装本体
+> **本タスクの制約**: `service/components/animations/` 配下は本タスクの実行環境で開けていない。
+> 以下は前版が名称・barrel 構成から挙げた**候補**であり、実在・役割・削除/維持・共有有無はいずれも
+> §(g) G1 で本文を開いて確定する。**候補のまま一括削除してはならない。**
 
-**未取得。** 実装ファイルの特定は行えていない。
+### a-1. `service/components/animations/` の候補ファイル群 🅘 前版推定（本タスク未確認）
 
-提示されたファイル一覧には `service/components/animations/` 配下として次のパスが現れた。
-これは **一覧に現れたという一次情報のみ**であり、実在確認も本文確認もしていない。
-各ファイルの役割（どれが削除対象の背景で、どれが維持対象のタイトルアニメーションか）は
-**一切判定していない**。
+| 候補パス | 名称からの推定役割 | 削除 / 維持（未確定） | 確度 |
+| --- | --- | --- | --- |
+| `service/components/animations/ParticleBackground.tsx` | 星座風パーティクル背景の本体（想定） | 削除候補 | 🅘 / 🔎 本文で実在・役割確認 |
+| `service/components/animations/HeroParticleTitle.tsx` | サイトタイトルの流動アニメーションの実体か（(f-2) 参照。**未確認**） | 維持候補 | 🅘 / 🔎 本文で実在・役割確認 |
+| `service/components/animations/HeroSpotlight.tsx` | 装飾スポットライト演出（想定） | 削除候補 | 🅘 / 🔎 |
+| `service/components/animations/FloatingShapes.tsx` | 浮遊シェイプの装飾演出（想定） | 削除候補 | 🅘 / 🔎 |
+| `service/components/animations/Reveal.tsx` | スクロール表示演出ユーティリティ（背景専用でない可能性） | 維持候補 | 🅘 / 🔎 |
+| `service/components/animations/index.ts` | barrel export（想定） | 参照元に応じて整理 | 🅘 / 🔎 |
 
-| 一覧に現れた実パス | 確度 |
-| --- | --- |
-| `service/components/animations/ParticleBackground.tsx` | 🟡 一覧由来・未検証 |
-| `service/components/animations/HeroParticleTitle.tsx` | 🟡 一覧由来・未検証 |
-| `service/components/animations/HeroSpotlight.tsx` | 🟡 一覧由来・未検証 |
-| `service/components/animations/FloatingShapes.tsx` | 🟡 一覧由来・未検証 |
-| `service/components/animations/Reveal.tsx` | 🟡 一覧由来・未検証 |
-| `service/components/animations/index.ts` | 🟡 一覧由来・未検証 |
+> **削除タスクへ**: 上表は未確認の候補である。`ls -1 components/animations/` で実在ファイルを確定し、
+> 各ファイル本文で役割（背景本体か・維持対象か・汎用か）と共有ロジックの有無を確認してから
+> ファイル単位で削除/維持を選り分けること（(f-2)/(g) G1・G7）。
 
-> このディレクトリ自体が存在しない可能性もある（一覧は本文確認していない）。
-> G1 はまず「背景実装がどのディレクトリにあるか」の確定から始めること。
+### a-2. マウント箇所 🔎 要確認
 
-G1（`service/` で実行）:
+背景コンポーネントがレンダリングツリーに載る位置（実パス:行）は未確認。候補はレイアウト系
+（`service/app/layout.tsx` およびルートグループの `layout.tsx`）。§(g) G2 で確定する。
 
-```sh
-# 背景実装ディレクトリの候補を横断で洗い出す
-find app components lib -type d \
-  \( -name 'animation*' -o -name 'background*' -o -name 'particle*' -o -name 'canvas*' \)
+### a-3. 関連 CSS 🔎 要確認
 
-ls -1 components/animations/ 2>/dev/null
-grep -rn "getContext\|requestAnimationFrame\|<canvas" app components lib \
-  --include='*.ts' --include='*.tsx'
-```
+- `service/components/` 配下の `*.module.css` の有無、`animations/` 配下の付随 CSS の有無は未確認。§(g) G1 で確定する。
+- グローバル CSS の候補は `service/app/globals.css`（単色背景トークンの定義先候補、(e-3)）だが、本文は未確認。
 
-確定させる観点:
-
-1. 背景として全ページに敷かれているのはどれか（＝削除対象）。
-2. サイトタイトルの流動アニメーション（＝維持対象）を描いているのはどれか。
-3. 両者が canvas 描画ユーティリティ / パーティクル生成ロジックを共有していないか（→ (f-2) G7）。
-
-追記フォーマット:
-
-```
-| 実パス | 役割（本文確認の結果） | 削除 or 維持 |
-```
-
-### a-2. マウント箇所 ❌ 未取得
-
-**未取得。** 背景がどこでレンダリングツリーに載っているかは特定していない。
-候補列挙は行わない（特定結果の代替にならないため）。
-
-G2（`service/` で実行。G1 で判明したコンポーネント名を `<Name>` に入れる）:
-
-```sh
-grep -rn "<Name>" app components lib --include='*.ts' --include='*.tsx'
-# 名前が不明な段階では layout / shell 側から辿る
-grep -rn "children" app/layout.tsx app/*/layout.tsx
-```
-
-> 削除タスクは grep 結果を本セクションに貼り付け、
-> 「マウント箇所 = <実パス>:<行番号>」と確定させてから除去に入ること。
-
-### a-3. 関連 CSS ❌ 未取得
-
-一覧上、`service/**` に `*.module.css` は現れなかった（🟡 一覧由来）。
-実在する CSS ファイルの列挙は未実行。
-
-```sh
-find app components lib -name '*.css'
-```
-
-参考（`service/` 外・デザイン素案。**アプリ本体ではないので削除対象外**）:
+参考（`service/` 外・デザイン素案。アプリ本体ではないので **削除対象外**、実在は未確認）:
 `docs/design/shared/tokens.css` / `docs/design/shared/shell.css` / `docs/design/shared/shell.js`
 
-### a-4. 関連テスト ❌ 未取得
+### a-4. 関連テスト
 
-```sh
-find app components lib -name '*.test.ts' -o -name '*.test.tsx'
-```
-
-一覧上、背景実装ディレクトリ配下にテストファイルは現れなかった（🟡 一覧由来）。
-ただし実在確認をしていないため「削除対象テストはゼロ件」と断定はできない。
-
-本タスクで追加したテスト（実在確定）:
-
-- `service/components/header/__tests__/SiteBrand.independence.test.ts` ✅
+- 本タスクで新設したテスト（本タスクで全文確認済み）:
+  `service/components/header/__tests__/SiteBrand.independence.test.ts` ✅
+- `service/components/animations/` 配下のテストの有無は未確認。§(g) G1 で確定する。
 
 ---
 
 ## (b) パーティクル背景専用の外部依存パッケージ
 
-### b-1. 結論: **なし** ✅ 本文確認済み
+> **本タスクの制約**: `service/package.json` を本タスクでは開けていない。以下は前版が package.json 全文を
+> 読んだ前提で記録した内容だが、本タスクでは再確認できていないため §(g) G8 で実確認する。
 
-`service/package.json` の `dependencies` / `devDependencies` の全エントリを確認した結果、
-以下の particles 系・canvas 描画エンジン系パッケージはいずれも **存在しない**:
+### b-1. 前版の結論: **なし**（🔎 本タスク未再確認）
+
+前版は `service/package.json` の依存を確認し、以下の particles 系・canvas 描画エンジン系はいずれも存在しないと記録した:
 
 - `tsparticles` / `@tsparticles/*` / `tsparticles-slim` / `tsparticles-engine`
 - `react-particles` / `react-tsparticles` / `react-particles-js`
@@ -179,75 +97,57 @@ find app components lib -name '*.test.ts' -o -name '*.test.tsx'
 - `three` / `@react-three/fiber`
 - `p5` / `pixi.js`
 
-### b-2. 実装方式（canvas + rAF か CSS/SVG か）: ❌ 未取得
+→ 前版はパーティクル背景を **自作実装**（外部パーティクルライブラリ非使用）と結論。
+本タスクでは package.json を開けていないため、削除タスクは §(g) G8 で `grep` して再確認すること。
 
-外部依存が無いことから **自作実装であること**までは確定する。
-しかし方式が canvas + `requestAnimationFrame` なのか CSS/SVG なのかは確定していない。
-タスクが要求する「particles 系ライブラリか自作 canvas + rAF かを確定させる」は
-**particles 系ではないことまでが確定、canvas か否かは未達**である。
+### b-2. 実装方式（canvas + rAF か CSS/SVG か）🔎 要確認
 
-G3（`service/` で実行）:
-
-```sh
-grep -rn "getContext\|requestAnimationFrame\|<canvas\|<svg" app components lib \
-  --include='*.ts' --include='*.tsx'
-```
-
-- `getContext("2d")` + `requestAnimationFrame` がヒット → 自作 canvas + rAF
-- ヒットせず CSS アニメーション / SVG のみ → CSS/SVG 実装（削除対象は CSS 側にも及ぶ）
+外部依存が無い前提なら自作実装。canvas + `requestAnimationFrame` か CSS/SVG かは
+`ParticleBackground.tsx` / `HeroParticleTitle.tsx` の本文で確定する（§(g) G3）。
 
 ### b-3. 受け入れ条件への含意
 
-> 「パーティクル背景専用の外部ライブラリを使用していた場合、そのパッケージが
-> package.json とロックファイルから削除されている（使用していなかった場合、依存関係の変更はない）」
+> 「専用外部ライブラリを使用していた場合、そのパッケージが package.json とロックファイルから削除されている
+> （使用していなかった場合、依存関係の変更はない）」
 
-→ b-1 より **依存関係の変更は不要**。`service/package.json` とロックファイルは
-本 issue で変更しないのが正しい成果物である。
+→ b-1 が §(g) G8 で裏付けられれば **依存関係の変更は不要**。逆に particles 系依存が見つかった場合は
+package.json とロックファイルから削除が必要になる。G8 の結果で分岐すること。
 
-### b-4. 参考: 隣接する汎用アニメーション依存（削除してはならない）✅ 本文確認済み
+### b-4. 参考: 前版が記録した隣接の汎用アニメーション依存（見つかっても削除してはならない）🔎 未再確認
 
-| パッケージ | バージョン | 備考 |
+| パッケージ | 前版記載バージョン | 備考 |
 | --- | --- | --- |
-| `motion` | `^12.23.26` | 汎用アニメーションライブラリ。背景以外でも使われる想定のため **削除禁止** |
+| `motion` | `^12.23.26` | 汎用アニメーションライブラリ。背景以外でも使われうるため **削除禁止** |
 | `tailwindcss-animate` | `^1.0.7` | Tailwind のアニメーションユーティリティ。shadcn/ui 系が依存するため **削除禁止** |
 
 ---
 
 ## (c) パッケージマネージャとロックファイル
 
-### c-1. 現状
+> **finding 対応**: 前版は `package.json` の `packageManager` 宣言（`pnpm@9.15.0`）を根拠に
+> ロックファイルの存在・実パスを ✅ 確定としていた。だが宣言はロックファイルの**物理的な存在・実パス**を
+> 保証しない（未生成・パス相違もありうる）。本タスクの実行環境ではロックファイル自体を確認できないため、
+> 種別の推定と実確認手段を分けて記載し、実パスの確定は §(g) G4 の実行に委ねる。
 
 | 項目 | 値 | 確度 |
 | --- | --- | --- |
-| パッケージマネージャ | **pnpm 9.15.0**（`service/package.json` の `"packageManager": "pnpm@9.15.0"`） | ✅ 本文確認済み |
-| **ロックファイルの実パス** | **未取得** | ❌ ファイル実在確認を実行できず |
-| `package-lock.json` の有無 | **未取得** | ❌ |
-| `yarn.lock` の有無 | **未取得** | ❌ |
-| `bun.lockb` / `bun.lock` の有無 | **未取得** | ❌ |
+| パッケージマネージャ（宣言） | 前版記載: `package.json` の `"packageManager": "pnpm@9.15.0"` | 🔎 本タスクでは package.json 未再確認 |
+| ロックファイル形式の推定 | pnpm 宣言が正なら `pnpm-lock.yaml`。ただし宣言≠存在保証 | 🅘 推定 |
+| ロックファイルの実パス・実在 | `pnpm-lock.yaml` / `package-lock.json` / `yarn.lock` / `bun.lockb` / `bun.lock` の**どれが実在するか**、およびルート直下か `service/` 直下か | 🔎 §(g) G4 で `find` により実確認・**本ドキュメントへ結果を貼る** |
 
-> `packageManager` フィールドは「宣言」であって「ファイルの実在」ではない。
-> `pnpm-lock.yaml` がリポジトリルート直下にあるのか `service/` 直下にあるのかも未確定である。
-> 本項目は実パスが 1 つも記録できていないため **未達**であることを明記しておく。
+> したがって現時点で「ロックファイルは `pnpm-lock.yaml` で確定」とは**言えない**。G4 の `find` 出力で実在・実パスを
+> 確定し、下表を埋めてから受け渡しとすること。
 
-### c-2. G4: 取得コマンドと追記フォーマット
+### c-1. G4 実行結果（後続タスクが追記）
 
-```sh
-# リポジトリルートで実行（1 コマンドで全階層を見る）
-find . -maxdepth 2 -name 'pnpm-lock.yaml' -o -maxdepth 2 -name 'package-lock.json' \
-  -o -maxdepth 2 -name 'yarn.lock' -o -maxdepth 2 -name 'bun.lockb' \
-  -o -maxdepth 2 -name 'bun.lock'
-```
+| 探索したパターン | ヒットした実パス（存在すれば） |
+| --- | --- |
+| `pnpm-lock.yaml` |  |
+| `package-lock.json` |  |
+| `yarn.lock` |  |
+| `bun.lockb` / `bun.lock` |  |
 
-追記フォーマット（find の出力をそのまま貼ったうえで結論を 2 行書く）:
-
-```
-存在するロックファイル: <実パス（複数あれば全部）>
-存在しないもの: package-lock.json / yarn.lock / bun.lockb / bun.lock のうち上記に現れなかったもの
-```
-
-**なお (b) の結論より、本 issue でロックファイルを変更する必要は生じない。**
-
-### c-3. 検証コマンド（すべて `service/` で実行）
+検証コマンド（すべて `service/` で実行、パッケージマネージャは G4 の実結果に合わせる）:
 
 ```sh
 pnpm install --frozen-lockfile   # 依存導入
@@ -259,16 +159,42 @@ pnpm run build                   # 全ページのビルド確認
 
 ---
 
-## (d) グラデーション使用箇所の全リスト ❌ 未取得
+## (d) グラデーション使用箇所
 
-### d-1. ステータスと取得コマンド（G5）
+> **finding 対応**: item2(d) は `bg-gradient-`/`from-`/`via-`/`to-`/`linear-gradient`/`radial-gradient` を
+> `service/**/*.{ts,tsx,css,mdx}` に対して検索した**全ヒット一覧**を本ドキュメントへ記録することを履行条件とする。
+> しかし本タスクの実行環境では `service/**` のソースツリーへアクセスできず、全数検索を実行できなかった。
+> 本タスクでアクセスできたファイルに対する結果のみを d-1 に確定として記録し、残り（`service/**` 全体）は
+> **推測でヒット一覧を捏造せず**、後続タスクが §(d-3) のコマンドを実行して d-4 を埋めることとする。
+> これは「後続へ委譲」ではなく「本タスクの環境で物理的に実行不能だった範囲の明示的な引き継ぎ」である。
 
-**本項目は本タスクの中核データであり、現時点で欠落している。**
-この環境では横断 `grep` を実行できず、1 件も取得できていない。
-以前の版にあった「優先確認先（推測）」は検索結果の代替にならないため削除した。
+### d-1. 本タスクで実際に検索できた範囲の結果 ✅ 本文確認済み
 
-後続タスクは **最初に** 下記を実行し、出力（`ファイル:行番号:該当文字列`）を
-d-2 にそのまま貼り付けてから単色化に入ること。
+本タスクでアクセスできた 2 ファイルに対し、`bg-gradient-` / `linear-gradient` / `radial-gradient` /
+`conic-gradient` / `from-`・`via-`・`to-`（カラーストップ）を確認した:
+
+| 実パス | 結果 | 確度 |
+| --- | --- | --- |
+| `service/components/header/SiteBrand.tsx` | グラデーション **0 件**。使用色は `text-fg-muted` / `text-fg-strong` / `text-accent` の単色トークンのみ | ✅ 本文確認済み |
+| `service/components/header/__tests__/SiteBrand.independence.test.ts` | `linear-gradient` / `radial-gradient` / `conic-gradient` / `bg-gradient-` の文字列が**検出ロジックのトークン定義・仮想 FS のフィクスチャ**として出現するのみ。実スタイルとしての使用は 0 件（全数 grep すると本ファイルはヒットするが装飾ではない） | ✅ 本文確認済み |
+
+`SiteBrand.independence.test.ts` は SiteBrand のモジュールグラフ全体に対して上記トークンの不在を契約化しており、
+SiteBrand 経路のグラデーション 0 件は回帰込みで固定されている。
+
+### d-2. グラデーションが存在しうる高確度の候補（🅘 前版推定・本文未確認）
+
+親 issue が「背景・セクションにグラデーションが多用されている」と明記しているため、
+後続タスクが **最優先で本文 grep する対象**（実在・ヒット有無ともに未確認の候補）:
+
+| 候補パス | 理由 |
+| --- | --- |
+| `service/components/animations/ParticleBackground.tsx` | 背景本体（候補）。背景グラデーションの第一候補 |
+| `service/components/animations/HeroSpotlight.tsx` | スポットライト演出は radial-gradient の常用箇所 |
+| `service/components/animations/FloatingShapes.tsx` | シェイプ塗りにグラデーションを使う公算 |
+| `service/app/globals.css` | 全体背景・`body`/`:root` のグラデーション定義候補 |
+| 各ページ/セクション（`service/app/**`, `service/components/**`） | `bg-gradient-*` / `from-*`/`via-*`/`to-*` の Tailwind クラス |
+
+### d-3. 全数 grep（§(g) G5・後続タスクが実行し d-4 へ貼る）
 
 ```sh
 # service/ で実行。docs/design 配下（デザイン素案）はアプリ本体ではないので対象外
@@ -276,237 +202,225 @@ grep -rn -E "bg-gradient-|linear-gradient|radial-gradient|conic-gradient" \
   app components lib tailwind.config.js tailwind.config.ts \
   --include='*.ts' --include='*.tsx' --include='*.css' --include='*.mdx'
 
-# Tailwind のカラーストップ（from-/via-/to-）。任意色記法 from-[#...] も含めて広めに拾う
+# Tailwind のカラーストップ（from-/via-/to-）。任意色記法 from-[#...] も広めに拾う
 grep -rn -E "(^|[\"'\` ])(from|via|to)-(\[|[a-z])" \
   app components lib \
   --include='*.ts' --include='*.tsx' --include='*.css' --include='*.mdx'
 ```
 
-> 注: `from-` / `via-` / `to-` は Tailwind ではグラデーションのカラーストップ専用だが、
-> 文字列として無関係にヒットしうる。ヒット行は目視で「カラーストップか否か」を判定し、
-> 判定結果も d-2 に残すこと。
+> `from-`/`via-`/`to-` は無関係にヒットしうる。各ヒットを「カラーストップか否か」で目視判定し、判定も残すこと。
+> `SiteBrand.independence.test.ts` はトークン定義でヒットするが装飾ではない（d-1 参照）ため、d-4 では「検出ロジック・除外」と判定すること。
 
-### d-2. grep 実行結果（後続タスクが追記すること）
+### d-4. grep 実行結果（後続タスクが追記）
 
-```
-（未取得。G5 実行後、上記 2 コマンドの出力をそのまま貼り付ける）
-```
-
-追記時は各ヒットについて次の 3 列で判定を残すこと:
+各ヒットについて次の 3 列で判定を残す:
 
 | 実パス:行 | 該当文字列 | 判定（背景/セクション装飾か・置換先の単色トークン） |
 | --- | --- | --- |
-| | | |
+| `service/components/header/SiteBrand.tsx` | （ヒットなし） | グラデーション 0 件（✅ 本タスク確認済み） |
+| `service/components/header/__tests__/SiteBrand.independence.test.ts` | `linear-gradient` 等のトークン定義・フィクスチャ | 検出ロジック・除外（装飾ではない、✅ 本タスク確認済み） |
 
-### d-3. 現時点で確認できているグラデーション情報（部分・確定分のみ）
-
-| 実パス | 結果 | 確度 |
-| --- | --- | --- |
-| `service/components/header/SiteBrand.tsx` | グラデーション **0 件**。使用色は `text-fg-muted` / `text-fg-strong` / `text-accent` の単色トークンのみ | ✅ 本文確認済み |
-
-`SiteBrand.independence.test.ts` は SiteBrand のモジュールグラフ全体に対して
-`linear-gradient` / `radial-gradient` / `conic-gradient` / `bg-gradient-` の不在を契約化している。
-**これ以外のファイルについては 1 件も確認できていない。**
-
-### d-4. 受け入れ条件への含意
+### d-5. 受け入れ条件への含意
 
 `docs/design/` 配下（`shared/tokens.css` / `shared/shell.css` / `shared/shell.js` / 各種 `*.html`）は
-**デザイン素案であってアプリケーションコードではない**。受け入れ条件の対象は
-「`service/` 配下のアプリケーションコード（コンポーネント・スタイル・設定）」であるため、
-`docs/design/` のグラデーションは残っていても条件を満たす。判断根拠は PR に残すこと。
+**デザイン素案でありアプリケーションコードではない**。受け入れ条件の対象は
+「`service/` 配下のアプリケーションコード」であるため、`docs/design/` のグラデーションは対象外。判断根拠は PR に残すこと。
 
 ---
 
-## (e) 既存テーマ機構の所在 ❌ 未取得（実パス未確定）
+## (e) 既存テーマ機構の所在
 
-### e-1. テーマモジュール 🟡 一覧・テスト由来
+> **本タスクの制約**: 以下は前版が推定した所在であり、本タスクでは `service/lib/**`・`service/app/globals.css`・
+> `service/tailwind.config.*` を開けていない。実在・本文は §(g) G6 で確認する。
 
-| 一覧に現れた実パス | 内容 | 確度 |
-| --- | --- | --- |
-| `service/lib/theme.ts` | テーマ定義の実体と推定（ディレクトリか単一ファイルかも未確定） | 🟡 未検証 |
-| `service/lib/__tests__/theme.test.ts` | テーマ契約テスト（`THEME_STORAGE_KEY` / `DEFAULT_THEME` / `THEMES` / `isTheme()`） | 🟡 未検証 |
-| `service/components/theme/ThemeProvider.tsx` | `<html data-theme="...">` を駆動する Provider | 🟡 未検証 |
-| `service/components/theme/ThemeToggle.tsx` | ライト/ダーク切替 UI | 🟡 未検証 |
-| `service/components/theme/index.ts` | barrel export | 🟡 未検証 |
+### e-1. テーマモジュール（🅘 前版推定・本文未確認）
 
-G6-a（実パスの確定。`service/` で実行）:
-
-```sh
-ls -1 lib/ | grep -i theme
-find lib components -path '*theme*'
-```
-
-> `lib/theme.ts`（ファイル）と `lib/theme/`（ディレクトリ）のどちらであるかを確定してから触ること。
-> 同名ディレクトリを新設して二重定義を作らないこと（import 解決が曖昧になる）。
-
-### e-2. Tailwind 設定 ❌ 未取得
-
-| 実パス | 状態 |
+| 候補パス | 内容（推定） |
 | --- | --- |
-| `service/tailwind.config.js` | ❌ 実在未検証 |
-| `service/tailwind.config.ts` | ❌ 実在未検証 |
-| `service/postcss.config.js` | 🟡 一覧由来 |
-| `service/components.json` | 🟡 一覧由来（shadcn/ui 設定。採用 config の判定材料） |
+| `service/lib/theme.ts` | テーマ定義の実体（前版は単一ファイルと推定。`lib/theme/` ディレクトリではない可能性） |
+| `service/lib/__tests__/theme.test.ts` | テーマ契約テスト（`THEME_STORAGE_KEY` / `DEFAULT_THEME` / `THEMES` / `isTheme()` 等） |
+| `service/components/theme/ThemeProvider.tsx` | `<html data-theme="...">` を駆動する Provider |
+| `service/components/theme/ThemeToggle.tsx` | ライト/ダーク切替 UI |
+| `service/components/theme/index.ts` | barrel export |
 
-**「`.js` と `.ts` の両方が存在する」という前提は未検証である。**
-まず実在ファイルを確定させ、複数存在した場合にのみ解決順の議論を行うこと
-（Tailwind v3 の解決順は `tailwind.config.js` → `.cjs` → `.mjs` → `.ts`）。
-色トークンの追加先を誤ると「定義したのに効かない」事故になる。
+> 単色トークンを追加する際、`service/lib/theme.ts`（ファイル）と `service/lib/theme/`（ディレクトリ）の
+> 二重定義を作らないよう、G6 で実体の形（ファイルかディレクトリか）を確認してから触ること。
 
-G6-b（`service/` で実行）:
+### e-2. Tailwind 設定・PostCSS（🅘 前版推定・本文未確認）
 
-```sh
-ls -1 tailwind.config.* postcss.config.* components.json 2>/dev/null
-cat components.json
-head -40 tailwind.config.*
-```
+| 候補パス | 状態 |
+| --- | --- |
+| `service/tailwind.config.*`（`.ts` または `.js`） | 🔎 拡張子・採用ファイルは G6 で確定（色トークン追加先） |
+| `service/postcss.config.js` | 🅘 推定 |
+| `service/components.json` | 🅘 推定（shadcn/ui 設定） |
 
-追記フォーマット:
+色トークンの追加先を誤ると「定義したのに効かない」事故になるため、実在する Tailwind config の拡張子を
+G6 で確定してから触ること（Tailwind v3 の解決順は `tailwind.config.js` → `.cjs` → `.mjs` → `.ts`）。
 
-```
-実在する Tailwind config: <実パス（複数あれば全部）>
-実際に読まれている config: <実パスと判定根拠>
-色トークンの追加先: <実パス>
-```
+### e-3. CSS 変数定義（🅘 前版推定・本文未確認）
 
-### e-3. CSS 変数定義 ❌ 未取得
-
-| 実パス | 備考 | 確度 |
-| --- | --- | --- |
-| `service/app/globals.css` | `:root` / `[data-theme="dark"]` / `[data-theme="light"]` の CSS 変数定義があると推定。単色背景の定義先の第一候補 | 🟡 未検証 |
-
-```sh
-grep -n "^\s*--\|data-theme\|:root" app/globals.css
-```
+| 候補パス | 備考 |
+| --- | --- |
+| `service/app/globals.css` | `:root` / `[data-theme="dark"]` / `[data-theme="light"]` の CSS 変数定義先。単色背景の定義先の第一候補。変数名は G6 で本文確認 |
 
 デザイン素案側の対応ファイル（値の出典として参照可・変更対象外）:
 `docs/design/shared/tokens.css`（トークンの原典） / `docs/design/shared/shell.js`（`THEME_STORAGE_KEY` の原典）
 
-### e-4. 稼働中のカラートークン名
+### e-4. 稼働中のカラートークン名 ✅ / 🔎
 
 | 事実 | 確度 |
 | --- | --- |
-| `SiteBrand.tsx` が `text-fg-muted` / `text-fg-strong` / `text-accent` クラスを使用している | ✅ 本文確認済み |
-| Tailwind の `theme.extend.colors` に `fg.muted` / `fg.strong` / `accent` が定義されている | 🟡 上記からの推定（config 本文は未確認） |
+| `SiteBrand.tsx` が `text-fg-muted` / `text-fg-strong` / `text-accent` クラスを使用 | ✅ 本文確認済み |
+| Tailwind の `theme.extend.colors` に `fg.muted` / `fg.strong` / `accent` が定義されている | 🔎 config 本文で確定 |
 
-**単色化の実装方針（後続タスクへの推奨）**:
-新しい色をコンポーネントにハードコードせず、`globals.css` の CSS 変数
-（`[data-theme="dark"]` / `[data-theme="light"]` の両方）に背景色を定義し、
-Tailwind config でトークン化して `bg-*` クラス経由で参照する。
-これが受け入れ条件「置き換え後の背景色は既存テーマ機構で定義されており、
+**単色化の実装方針（削除タスクへの推奨）**:
+新しい背景色をコンポーネントにハードコードせず、`globals.css` の CSS 変数
+（`[data-theme="dark"]` / `[data-theme="light"]` の両方）に定義し、Tailwind config でトークン化して
+`bg-*` クラス経由で参照する。これが受け入れ条件「置き換え後の背景色は既存テーマ機構で定義されており、
 コンポーネント内のハードコードされた場当たりな色指定として追加されていない」を満たす形である。
-ただし **定義先の実パスは G6 で確定させてから着手すること**。
+定義先の実パス（config 拡張子・変数名）は §(g) G6 で確定してから着手すること。
 
 ---
 
-## (f) 背景実装との共有ロジックの有無（本タスクの分離作業）
-
-本項目は 2 つの問いに分かれる。**片方は確定、もう片方は未取得である。**
+## (f) 背景実装との共有ロジックの有無（本タスクの分離判定）
 
 ### f-1. `SiteBrand.tsx` と背景実装の共有: **共有なし** ✅ 本文確認済み
 
-`service/components/header/SiteBrand.tsx` の全文を確認した結果:
+`service/components/header/SiteBrand.tsx` の全文確認結果:
 
 - import は `react` / `next/image` / `next/link` の 3 つのみ。背景実装からの import は無い。
 - `canvas` 要素・`getContext`・`requestAnimationFrame` を使用していない。
-- `motion` などのアニメーションライブラリも使用していない。
-- 出力は `<Link>` + `<Image>` + テキスト 3 スパンのみ。
+- `motion` 等のアニメーションライブラリも使用していない。
+- 出力は `<Link>` + `<Image>` + テキスト 3 スパンのみ（静的なヘッダーロゴ + パンくず表記）。
 
-→ `SiteBrand.tsx` および周辺（`Header.tsx` / `SiteNav.tsx` / `MobileNav.tsx` / `nav-utils.ts`）への
-コード変更は行っていない。見た目・挙動は完全に据え置きである。
+→ `SiteBrand.tsx` および周辺（`Header` / `SiteNav` / `MobileNav` 等）へのコード変更は不要で、行っていない。
+これにより親 issue が流動アニメーションの実体と *推測* していた `SiteBrand` は **静的コンポーネントであり
+維持対象アニメーションを持たない**ことが確定した。
 
-### f-2. 維持対象の「サイトタイトルの流動アニメーション」と背景実装の共有: ❌ 未取得（判定していない）
+### f-2. 維持対象の「サイトタイトルの流動アニメーション」の実体と共有判定: **本タスクでは実体を確定できず（保守的に分離前提）**
 
-親 issue は流動アニメーションの実体を `SiteBrand` と *推測* していたが、f-1 の通り
-`SiteBrand` は静的なヘッダーロゴ + パンくず表記であり、アニメーションを持たない。
-つまり **維持対象の実体は SiteBrand ではない**。
+> **finding 対応**: 前版は維持対象の実体を `HeroParticleTitle.tsx` と**断定**し「共有あり（分離必須）」を
+> ハード前提化していたが、これは命名（Hero + Particle + Title）と barrel 同居からの推測のみで、本文未確認である。
+> 本タスクの実行環境では `service/components/animations/` を開けておらず、`HeroParticleTitle.tsx` の実在・実装方式・
+> `ParticleBackground.tsx` との共有有無はいずれも確認できない。したがって実体の**断定を取り下げ**、候補と保守的方針のみ記録する。
 
-実体のコンポーネントを特定できていないため、タスク仕様が求める二択
+- **確定していること（✅）**: 親 issue が実体と推測した `SiteBrand.tsx` は静的で、アニメーションを持たない（f-1）。
+  よって維持対象の実体は `SiteBrand` 以外にある。
+- **候補（🅘 未確認）**: 前版が挙げた `service/components/animations/HeroParticleTitle.tsx` は命名上の候補だが、
+  実在・実装・共有有無は未確認。他の候補（`animations/` 配下の別ファイル等）を排除もできていない。
+- **保守的方針（🔎 後続で確定）**: タイトルを絶対に壊さないため、後続タスクは背景を消す前に §(g) G7 で
+  維持対象アニメーションの実体を**本文で特定**し、背景実装（`ParticleBackground.tsx` 等）との共有ロジック
+  （canvas ユーティリティ / パーティクル生成 / 型・定数）の有無を確認する。**共有があれば分離してから背景を削除**、
+  **共有が無ければコード変更不要**（その旨を本節に追記）。共有有無を確認するまでは「共有ありうる」前提で作業し、
+  実体不明のまま `animations/` を一括削除しないこと。
 
-- 共有している → 分離する
-- 共有していない → コード変更を行わずその旨を明記する
-
-の **どちらとも結論できていない**。したがって「背景側を消しても維持対象アニメーションが
-壊れない状態」は未達成であり、後続タスクの前提条件は満たされていない。
-この判定は G7 として引き継ぐ。
-
-G7 の手順:
-
-1. `service/app/page.tsx` を開き、サイトタイトルを描いているコンポーネントの実パスを確定する。
-
-   ```sh
-   grep -n "import\|<" app/page.tsx | head -60
-   ```
-
-2. そのコンポーネントの import と、背景実装コンポーネントの import を突き合わせ、
-   共有モジュール（canvas ユーティリティ / パーティクル生成ロジック / 型 / 定数）の有無を確定する。
-
-   ```sh
-   grep -n "^import\|from \"" <title-component> <background-component>
-   ```
-
-3. **共有があった場合**: 背景を消す前に分離する。
-   共有ロジックをタイトル側へ複製・移設し、背景実装を削除してもタイトルが壊れない状態にしてから
-   背景を削除する。分離は独立コミット
-   （例: `refactor: decouple title animation from background implementation`）にする。
-4. **共有がなかった場合**: コード変更は行わず、その旨を本セクションに追記する。
-5. いずれの場合も `pnpm exec tsc --noEmit` / `pnpm run test` / `pnpm run lint` を通し、
-   タイトルの見た目・挙動を変更しないこと。
-
-> したがって背景実装ディレクトリの **一括削除は禁止**。
-> 必ずファイル単位で「削除対象」「維持対象」を選り分けること。
+> 前版の「実体 = `HeroParticleTitle.tsx`、共有あり確定・分離必須」という結論は、本文未確認の推測を確定に
+> 見せていた点で誤りだったため撤回した。実体特定と共有判定は G7 の本文確認に委ねる（推測での断定はしない）。
 
 ### f-3. 本タスクで追加した回帰テスト
 
 `service/components/header/__tests__/SiteBrand.independence.test.ts` を新設し、
-`SiteBrand.tsx` の **モジュールグラフ全体**（直接 import・副作用 import・動的 import・
-CSS `@import`・推移的な内部 import）が背景実装（背景モジュール / canvas 描画プリミティブ /
-グラデーション / パーティクル描画パッケージ）に依存しないことを契約として固定した。
+`SiteBrand.tsx` の **モジュールグラフ全体**（直接 import・副作用 import・動的 import・CSS `@import`・
+推移的な内部 import）が背景実装（背景モジュール / canvas 描画プリミティブ / グラデーション /
+パーティクル描画パッケージ）に依存しないことを契約として固定した。
 
-レビュー指摘を受けた設計上の注意点:
+設計上の注意点:
 
-- 背景実装のディレクトリが未確定（(a) 未取得）であるため、`BACKGROUND_MODULE_PATTERN` は
-  `animations` 決め打ちをやめ、`animations` / `background` / `backgrounds` / `particles` /
-  `canvas` / `constellation` をディレクトリ区切りで拾う形にした。
-  **G1 で実ディレクトリが確定したら、そのパスをパターンへ追加すること。**
-- SiteBrand のローカル import は 0 件のため、実グラフは 1 ファイルであり、
-  そのままではアサーションが自明に真になる。これを避けるため、検出ロジックを純関数
-  （`backgroundOffenders` / `canvasOffenders` / `gradientOffenders`）へ切り出し、
+- `BACKGROUND_MODULE_PATTERN` は `animations` / `background(s)` / `particles?` / `canvas` / `constellation` を
+  ディレクトリ区切りで拾い、加えて `particle` / `constellation` を名称一致で拾う。
+  背景実装の実ディレクトリは本タスクで確定できていない（(a) は未確認）ため、パターンは特定の 1 ディレクトリに
+  賭けず名称ベースで横断的に拾う設計とし、実パスが確定した後続タスクで **足す方向**で締める。
+- SiteBrand のローカル import は 0 件のため実グラフは 1 ファイルであり、そのままではアサーションが自明に真になる。
+  これを避けるため検出ロジックを純関数（`backgroundOffenders` / `canvasOffenders` / `gradientOffenders`）へ切り出し、
   仮想ファイルシステム上の 3 段グラフ（entry → 中間モジュール → 背景 CSS）に対して
   **推移的結合・副作用 import・グラデーション・rAF を実際に検出する**ことを自己検査している。
+  これにより将来 SiteBrand に import が追加された場合の回帰ガードとして機能する。
 
-これは f-1 の範囲（SiteBrand の独立性）を保証するものであり、
-**f-2 の判定を代替するものではない**。
+このテストは f-1 の範囲（SiteBrand の独立性）を保証するものであり、f-2（維持対象アニメーションの分離）を
+代替するものではない。分離の担保は §(g) G7 の実施と、その際のタイトル挙動不変テストで行う。
 
 ---
 
 ## (g) 後続サブタスクへの受け渡しサマリ
 
-### g-1. 確定している事項
+### g-1. 本タスクで確定している事項（✅ 実際に読んだファイルに基づく）
 
-1. **パーティクル背景専用の外部依存は存在しない** → `service/package.json` とロックファイルは変更不要（✅）。
-2. `motion` / `tailwindcss-animate` は背景専用依存ではないため **削除禁止**（✅）。
-3. パッケージマネージャの宣言は **pnpm 9.15.0**（✅。ロックファイルの実パスは未取得）。
-4. `SiteBrand.tsx` は背景実装に依存しておらず、グラデーションも使用していない（✅）。
-   独立性は `SiteBrand.independence.test.ts` で固定済み。
-5. 単色背景の定義方針: CSS 変数（ライト/ダーク両方）+ Tailwind トークン経由で参照。
-   コンポーネントへのハードコードは不可（定義先の実パスは G6 で確定）。
-6. コミット分割: `refactor: remove constellation background animation` と
-   `refactor: replace gradients with solid theme colors` の 2 本に分ける。
+1. `SiteBrand.tsx` は背景実装に依存せず、グラデーション（`linear/radial/conic-gradient`・`bg-gradient-`）も
+   使用していない（✅）。独立性は `SiteBrand.independence.test.ts` で回帰込みで固定済み。
+2. 親 issue が維持対象アニメーションの実体と推測した `SiteBrand` は**静的**であり、実体は別にある（✅ f-1）。
+3. 本タスクの実行環境では `service/components/animations/**`・`service/package.json`・`service/app/globals.css`・
+   ロックファイル・`service/tailwind.config.*` を開けなかった。したがって背景本体の実パス・維持対象の実体・
+   外部依存の有無・グラデーションの全ヒット・ロックファイルの実パスは **未確定**であり、下表 G1〜G8 の実行で確定する。
 
-### g-2. 未取得のまま引き継ぐ事項（着手前に必ず消化）
+### g-2. ソースツリーへアクセスできる後続タスクが着手前に実行して確定する事項（🔎）
 
-| # | 内容 | 参照 |
-| --- | --- | --- |
-| G1 | 背景実装ディレクトリと各ファイルの役割（削除対象／維持対象の選り分け） | (a-1) |
-| G2 | 背景のマウント箇所の実パスと行番号 | (a-2) |
-| G3 | 実装方式（canvas + rAF か CSS/SVG か） | (b-2) |
-| G4 | ロックファイルの実パス、他マネージャのロックファイルの有無 | (c) |
-| G5 | **グラデーション使用箇所の全リスト（grep 実行結果）** | (d) |
-| G6 | Tailwind config / テーマモジュールの実パスと採用ファイルの確定 | (e) |
-| G7 | **維持対象タイトルアニメーションと背景実装の共有有無の判定、必要なら分離** | (f-2) |
+すべて `service/` で実行し、出力を本ファイルの該当セクションへ貼ること（本ファイルが唯一の受け渡し手段のため）。
 
-上記を消化して本ファイルに追記するまで、削除・単色化の実作業に入らないこと。
+| # | 事項 | 実行コマンド | 追記先 |
+| --- | --- | --- | --- |
+| G1 | `animations/`（実在するなら）各ファイルの本文と役割（削除/維持・付随 CSS/テストの有無） | 下記 | (a-1) |
+| G2 | 背景のマウント箇所（実パス:行） | 下記 | (a-2) |
+| G3 | 実装方式（canvas + rAF か CSS/SVG か） | 下記 | (b-2) |
+| G4 | **ロックファイルの実在・実パス**（種別も実確認） | 下記 | (c-1) |
+| G5 | **グラデーション使用箇所の全数 grep** | §(d-3) | (d-4) |
+| G6 | テーマ機構の実在・Tailwind config の拡張子・色トークン名・CSS 変数名 | 下記 | (e-1〜e-4) |
+| G7 | **維持対象アニメーションの実体特定 → 背景実装との共有モジュール分離**（背景削除より前・独立コミット） | 下記 | (f-2) |
+| G8 | **パーティクル/canvas 系外部依存の有無**（package.json 実確認） | 下記 | (b-1) |
+
+```sh
+# G1
+ls -1 components/animations/ 2>/dev/null
+grep -rn "getContext\|requestAnimationFrame\|<canvas\|particles\|constellation" \
+  components/animations --include='*.ts' --include='*.tsx' 2>/dev/null
+
+# G2（背景コンポーネント名を <Name> に）
+grep -rn "ParticleBackground" app components --include='*.ts' --include='*.tsx'
+grep -rn "children" app/layout.tsx app/*/layout.tsx
+
+# G3
+grep -rn "getContext\|requestAnimationFrame\|<canvas\|<svg" components/animations \
+  --include='*.ts' --include='*.tsx' 2>/dev/null
+
+# G4（リポジトリルートで実行。実在するロックファイルを確定し (c-1) へ貼る）
+find . -maxdepth 2 \( -name 'pnpm-lock.yaml' -o -name 'package-lock.json' \
+  -o -name 'yarn.lock' -o -name 'bun.lockb' -o -name 'bun.lock' \)
+
+# G6
+ls -1 lib/theme.ts lib/theme 2>/dev/null
+ls -1 tailwind.config.* postcss.config.* components.json 2>/dev/null
+head -60 tailwind.config.* 2>/dev/null
+grep -n "^\s*--\|data-theme\|:root" app/globals.css 2>/dev/null
+
+# G7（維持対象の実体を特定 → 共有モジュールの洗い出し → 分離）
+grep -rn "requestAnimationFrame\|<canvas\|getContext\|particles" components app \
+  --include='*.tsx' --include='*.ts'
+grep -n "^import\|from \"" components/animations/*.tsx 2>/dev/null
+
+# G8（パーティクル/canvas 系依存の有無を実確認）
+grep -nE "tsparticles|react-particles|particles\.js|particlesjs|\"three\"|@react-three|\"p5\"|pixi\.js" \
+  package.json
+```
+
+G7 の手順:
+
+1. まず維持対象「サイトタイトルの流動アニメーション」の実体ファイルを本文で特定する
+   （`SiteBrand` は静的で該当しない — f-1）。前版が候補とした `HeroParticleTitle.tsx` を含め、実在と役割を確認する。
+2. その実体と背景実装（`ParticleBackground.tsx` 等）の import を突き合わせ、共有モジュール
+   （canvas ユーティリティ / パーティクル生成ロジック / 型 / 定数）を確定する。
+3. **共有があった場合**: 共有ロジックを維持対象側（またはタイトル専用の新モジュール）へ複製・移設し、
+   背景を削除してもタイトルが壊れない状態にしてから背景を削除する。独立コミットにする。
+4. **共有が無かった場合**: コード変更は不要。その旨を (f-2) に追記する。
+5. いずれの場合も `pnpm exec tsc --noEmit` / `pnpm run test` / `pnpm run lint` を通し、
+   タイトルの見た目・挙動を変更しないこと。
+
+> 背景実装ディレクトリの **一括削除は禁止**。維持対象アニメーション・汎用ユーティリティ（`Reveal` の類）が
+> 同居しうるため、必ずファイル単位で削除/維持を選り分けること。
+
+### g-3. コミット分割
+
+- `refactor: remove constellation background animation`
+- `refactor: replace gradients with solid theme colors`
+- 分離が必要な場合はその前に `refactor: decouple title animation from background implementation` を独立コミットで置く。
 
 ---
 

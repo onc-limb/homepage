@@ -17,16 +17,13 @@ import { describe, expect, it } from "vitest"
  *   「経由モジュール越しに背景実装へ依存する」推移的結合と、
  *   `import "@/components/background/particles.css"` のような副作用 import も検出できる。
  *
- *   背景実装の実ディレクトリは調査未完了（service/docs/background-audit.md (a) 参照）である。
- *   そのため `BACKGROUND_MODULE_PATTERN` は特定の 1 ディレクトリ名を前提にせず、
- *   背景実装が置かれうるディレクトリ名（animations / background / particles / canvas /
- *   constellation）を横断的に拾う。(a) が確定したら実パスを追加して締めること
- *   （緩めるのではなく、確定したパスを **足す** 方向で更新する）。
- *
- *   グラフが 1 ファイルしか含まない状況でもアサーションが空振りしないことを示すため、
- *   検出ロジック（backgroundOffenders / canvasOffenders / gradientOffenders）は純関数として
- *   切り出し、仮想ファイルシステム上の多段グラフに対して「推移的結合を実際に検出する」ことを
- *   自己検査している。
+ *   背景実装の実ディレクトリは調査未完了（service/docs/background-audit.md (a) は
+ *   本文未確認の候補にとどまる）である。そのため `BACKGROUND_MODULE_PATTERN` は
+ *   特定の 1 ディレクトリ名を前提にせず、背景実装が置かれうるディレクトリ名
+ *   （animations / background / particles / canvas / constellation）を横断的に拾う。
+ *   実パスがソースツリーアクセス可能な後続タスクで確定したら、パターンを **緩めるのではなく**
+ *   確定したパスを足す方向で締めること（(a)/(g) G1 参照）。現状は SiteBrand の import が
+ *   0 件で実グラフが 1 ファイルのため、この契約は将来 import が追加された場合の回帰ガードとして機能する。
  *
  *   なお本テストが保証するのは SiteBrand の独立性のみであり、
  *   維持対象である「サイトタイトルの流動アニメーション」の実体と背景実装の
@@ -377,7 +374,7 @@ describe("SiteBrand independence from the background implementation", () => {
 
     it("never reaches a background module, directly or transitively", () => {
         // Given the background implementation lives in one of the candidate directories
-        //   (animations / background / particles / canvas / constellation — (a) 未確定)
+        //   (animations / background / particles / canvas / constellation — (a) 未確認の候補)
         // When every file and specifier in SiteBrand's module graph is inspected
         // Then none of them points into such a module
         expect(backgroundOffenders(GRAPH, SERVICE_ROOT)).toEqual([])
