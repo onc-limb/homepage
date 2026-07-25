@@ -16,6 +16,9 @@ const AlertDialogOverlay = React.forwardRef<
     React.ElementRef<typeof AlertDialogPrimitive.Overlay>,
     React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Overlay>
 >(({ className, ...props }, ref) => (
+    // ASSUMPTION: モーダルのスクリム（背面を暗くする遮蔽レイヤー）は機能上
+    // 半透明であることが必須のため、半透明禁止方針（docs/style/opaque-surfaces.md）の
+    // 例外として bg-black/80 を意図的に残す。装飾目的の半透明ではない。
     <AlertDialogPrimitive.Overlay
         className={cn(
             "fixed inset-0 z-50 bg-black/80  data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",

@@ -8,7 +8,7 @@ import { LogOut, Home } from "lucide-react"
 export default async function StudioLayout({ children }: { children: React.ReactNode }) {
     return (
         <div className="min-h-screen bg-slate-50">
-            <header className="sticky top-0 z-50 border-b bg-white/80 backdrop-blur">
+            <header className="sticky top-0 z-50 border-b bg-white">
                 <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
                     <div className="flex items-center gap-4">
                         <Link

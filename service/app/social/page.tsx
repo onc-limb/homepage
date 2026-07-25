@@ -68,7 +68,7 @@ export default function SocialPage() {
                                     href={link.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="group flex items-center gap-6 rounded-[var(--radius-lg)] border border-hairline-strong bg-surface p-7 transition-all duration-[250ms] hover:-translate-y-0.5 hover:border-accent hover:shadow-card-soft"
+                                    className="group flex items-center gap-6 rounded-[var(--radius-lg)] border border-hairline-strong bg-surface-solid p-7 transition-all duration-[250ms] hover:-translate-y-0.5 hover:border-accent hover:shadow-card-soft"
                                 >
                                     <div
                                         className="grid h-12 w-12 shrink-0 place-items-center rounded-md text-accent transition-colors group-hover:text-accent-strong"

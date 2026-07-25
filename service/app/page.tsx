@@ -106,7 +106,7 @@ export default async function TopPage() {
                 <div className="relative z-[2] mx-auto max-w-[980px] px-6 text-center">
                     <Reveal as="div">
                         <span
-                            className="pulse-dot mb-8 inline-flex items-center gap-2 rounded-full border border-hairline-strong bg-surface px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.22em] text-fg-muted"
+                            className="pulse-dot mb-8 inline-flex items-center gap-2 rounded-full border border-hairline-strong bg-surface-solid px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.22em] text-fg-muted"
                         >
                             <span
                                 aria-hidden="true"
@@ -273,7 +273,7 @@ export default async function TopPage() {
                             <Reveal key={item.href} delay={i * 60}>
                                 <Link
                                     href={item.href}
-                                    className="explore relative block overflow-hidden rounded-[var(--radius-lg)] border border-hairline bg-surface p-7 backdrop-blur-[8px] transition-all duration-[350ms] hover:-translate-y-1 hover:border-accent"
+                                    className="explore relative block overflow-hidden rounded-[var(--radius-lg)] border border-hairline-solid bg-surface-solid p-7 shadow-card transition-all duration-[350ms] hover:-translate-y-1 hover:border-accent"
                                 >
                                     <span className="mb-4 block font-mono text-[11px] tracking-[0.2em] text-fg-dim">
                                         → {item.href}
