@@ -7,7 +7,7 @@ import { excerpt, formatDate } from "./blog-utils"
  */
 export function BlogCard({ article }: { article: BlogArticle }) {
     return (
-        <article className="group relative overflow-hidden rounded-[var(--radius-lg)] border border-hairline-solid bg-surface-solid shadow-card transition-all duration-[250ms] hover:-translate-y-0.5 hover:border-accent">
+        <article className="group relative overflow-hidden rounded-[var(--radius-lg)] border border-hairline-solid bg-surface-solid shadow-card transition-all duration-250 hover:-translate-y-0.5 hover:border-accent">
             <Link href={`/blog/${article.slug}`} className="block px-6 py-5">
                 <div className="mb-2.5 flex items-center gap-3 font-mono text-[11px] tracking-[0.1em] text-fg-dim">
                     <span className="inline-flex items-center gap-1.5 before:block before:h-1 before:w-1 before:rounded-full before:bg-accent">
