@@ -90,7 +90,12 @@
     --shadow-card: 0 2px 8px -2px rgba(0, 8, 30, 0.55);
 }
 
-:root[data-theme="light"] {
+/* Also matched on non-root elements so a subtree can opt into the light
+   palette regardless of the site theme. /studio uses this: its layout is
+   built on light surfaces, so it carries data-theme="light" and overrides
+   the custom properties for its own subtree. */
+:root[data-theme="light"],
+[data-theme="light"] {
     color-scheme: light;
 
     --bg: #f2f5fb;
