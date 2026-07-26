@@ -144,7 +144,11 @@ export default function BooksContent({
             } else {
                 params.delete(key)
             }
-            router.push(`/books?${params.toString()}`, { scroll: false })
+            // 同じ URL への push は searchParams の参照だけを変えて
+            // updateParam → effect → push の無限ループになるため打ち切る。
+            const next = params.toString()
+            if (next === searchParams.toString()) return
+            router.push(`/books?${next}`, { scroll: false })
         },
         [searchParams, router],
     )
@@ -153,8 +157,11 @@ export default function BooksContent({
 
     useEffect(() => {
         if (isInitialRender.current) return
+        // updateParam は searchParams に依存するので push のたびに参照が変わり、
+        // この effect が再実行される。入力値が URL と一致していれば何もしない。
+        if (debouncedQuery === q) return
         updateParam("q", debouncedQuery)
-    }, [debouncedQuery, updateParam])
+    }, [debouncedQuery, q, updateParam])
 
     useEffect(() => {
         if (isInitialRender.current) {
