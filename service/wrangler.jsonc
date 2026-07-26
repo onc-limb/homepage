@@ -1,7 +1,9 @@
 {
     "main": ".open-next/worker.js",
     "name": "onc-limb",
-    "compatibility_date": "2025-10-01",
+    // インストール済み workerd (1.20260722.x) が解釈できる範囲の日付。
+    // opennextjs-cloudflare が古い日付だとビルドのたびに更新を促す。
+    "compatibility_date": "2026-07-22",
     "compatibility_flags": ["nodejs_compat"],
     "minify": true,
     "keep_vars": true,
