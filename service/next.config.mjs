@@ -1,3 +1,5 @@
+const isProduction = process.env.NODE_ENV === 'production'
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     outputFileTracingIncludes: {
@@ -19,23 +21,26 @@ const nextConfig = {
             },
         ],
     },
-    webpack: (config) => {
-        config.module.rules.push({
-            test: /\.md$/,
-            type: 'asset/source',
-        });
-
+    // Next.js 16 から Turbopack が dev/build の既定になったため、
+    // webpack のカスタム設定を Turbopack の同等機能へ移行している。
+    turbopack: {
+        rules: {
+            // webpack の `type: 'asset/source'` 相当（Markdown を文字列として import する）
+            '*.md': {
+                loaders: ['./loaders/markdown-raw-loader.cjs'],
+                as: '*.js',
+            },
+        },
         // 本番ビルドでは @libsql/client (Node.js版) をバンドルから除外
         // ローカル開発時のみ require() で読み込まれる
-        // $ 付きで完全一致のみマッチし、@libsql/client/web には影響しない
-        if (process.env.NODE_ENV === 'production') {
-            config.resolve.alias = {
-                ...config.resolve.alias,
-                '@libsql/client$': false,
-            };
-        }
-
-        return config;
+        // `@libsql/client/web` は別キー扱いなので影響しない
+        ...(isProduction
+            ? {
+                resolveAlias: {
+                    '@libsql/client': './loaders/empty-module.js',
+                },
+            }
+            : {}),
     },
 };
 export default nextConfig;
