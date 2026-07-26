@@ -7,7 +7,7 @@ interface PagerProps {
 
 const Arrow = ({ rotated = false }: { rotated?: boolean }) => (
     <div
-        className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-accent text-white transition-transform duration-[300ms] group-hover:scale-110"
+        className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-accent text-white transition-transform duration-300 group-hover:scale-110"
         style={rotated ? { transform: "rotate(180deg)" } : undefined}
     >
         <svg
@@ -29,7 +29,7 @@ export function Pager({ prev, next }: PagerProps) {
             {prev ? (
                 <Link
                     href={`/portfolio/${prev.id}`}
-                    className="group flex items-center justify-between rounded-[var(--radius-lg)] border border-hairline-strong bg-surface px-7 py-6 text-left transition-all duration-[250ms] hover:-translate-y-0.5 hover:border-accent"
+                    className="group flex items-center justify-between rounded-[var(--radius-lg)] border border-hairline-strong bg-surface-solid px-7 py-6 text-left transition-all duration-250 hover:-translate-y-0.5 hover:border-accent"
                 >
                     <Arrow rotated />
                     <div>
@@ -44,7 +44,7 @@ export function Pager({ prev, next }: PagerProps) {
             ) : (
                 <Link
                     href="/portfolio"
-                    className="group flex items-center justify-between rounded-[var(--radius-lg)] border border-hairline-strong bg-surface px-7 py-6 text-left transition-all duration-[250ms] hover:-translate-y-0.5 hover:border-accent"
+                    className="group flex items-center justify-between rounded-[var(--radius-lg)] border border-hairline-strong bg-surface-solid px-7 py-6 text-left transition-all duration-250 hover:-translate-y-0.5 hover:border-accent"
                 >
                     <Arrow rotated />
                     <div>
@@ -60,7 +60,7 @@ export function Pager({ prev, next }: PagerProps) {
             {next && (
                 <Link
                     href={`/portfolio/${next.id}`}
-                    className="group flex flex-row-reverse items-center justify-between rounded-[var(--radius-lg)] border border-hairline-strong bg-surface px-7 py-6 text-right transition-all duration-[250ms] hover:-translate-y-0.5 hover:border-accent"
+                    className="group flex flex-row-reverse items-center justify-between rounded-[var(--radius-lg)] border border-hairline-strong bg-surface-solid px-7 py-6 text-right transition-all duration-250 hover:-translate-y-0.5 hover:border-accent"
                 >
                     <Arrow />
                     <div>

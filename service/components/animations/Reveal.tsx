@@ -1,7 +1,6 @@
 "use client"
 
 import {
-    createElement,
     useEffect,
     useRef,
     type CSSProperties,
@@ -54,15 +53,20 @@ export function Reveal({
         return () => io.disconnect()
     }, [delay])
 
-    return createElement(
-        as,
-        {
-            ref,
-            "data-reveal": "",
-            "data-reveal-delay": delay,
-            className,
-            style,
-        },
-        children,
+    // React 19 では ref は通常の prop なので、createElement に props オブジェクトを
+    // 組み立てて渡すより JSX で直接渡す（react-hooks/refs はレンダー中に ref を
+    // 含むオブジェクトを作る形を「値を読みうる」と判定する）。
+    const Element = as
+
+    return (
+        <Element
+            ref={ref}
+            data-reveal=""
+            data-reveal-delay={delay}
+            className={className}
+            style={style}
+        >
+            {children}
+        </Element>
     )
 }

@@ -19,7 +19,7 @@ export default async function ProfilePage() {
                     </Reveal>
                     <Reveal
                         delay={80}
-                        className="mb-7 inline-flex items-center gap-2.5 rounded-full border border-hairline-strong bg-surface px-3.5 py-1.5 font-mono text-[13px] text-fg-muted"
+                        className="mb-7 inline-flex items-center gap-2.5 rounded-full border border-hairline-strong bg-surface-solid px-3.5 py-1.5 font-mono text-[13px] text-fg-muted"
                     >
                         <span
                             aria-hidden="true"
@@ -50,16 +50,16 @@ export default async function ProfilePage() {
             <div className="mx-auto max-w-[820px] px-6">
                 <Reveal
                     as="section"
-                    className="my-14 grid grid-cols-1 items-center gap-8 rounded-[var(--radius-lg)] border border-hairline p-10 backdrop-blur-[10px] [@media(min-width:720px)]:grid-cols-[200px_1fr] [@media(min-width:720px)]:gap-12"
+                    className="my-14 grid grid-cols-1 items-center gap-8 rounded-[var(--radius-lg)] border border-hairline-solid p-10 shadow-card [@media(min-width:720px)]:grid-cols-[200px_1fr] [@media(min-width:720px)]:gap-12"
                     style={{
-                        background:
-                            "radial-gradient(circle at 90% 0%, var(--accent-soft), transparent 60%), var(--surface)",
+                        // グラデーション廃止・単色化: 放射状グラデーションを単色サーフェスに置換
+                        background: "var(--surface-solid)",
                     }}
                 >
                     <div className="relative h-[200px] w-[200px] rounded-full p-[3px]"
                         style={{
-                            background:
-                                "linear-gradient(135deg, var(--accent), var(--indigo))",
+                            // グラデーション廃止・単色化: 線形グラデーションのリングを単色アクセントに置換
+                            background: "var(--accent)",
                         }}
                     >
                         <span
@@ -287,7 +287,7 @@ export default async function ProfilePage() {
                 <Reveal>
                     <Link
                         href="/skills"
-                        className="my-14 flex items-center justify-between rounded-[var(--radius-lg)] border border-hairline-strong bg-surface px-8 py-7 transition-all duration-[250ms] hover:-translate-y-0.5 hover:border-accent"
+                        className="my-14 flex items-center justify-between rounded-[var(--radius-lg)] border border-hairline-strong bg-surface-solid px-8 py-7 transition-all duration-250 hover:-translate-y-0.5 hover:border-accent"
                     >
                         <div>
                             <div className="mb-1 font-mono text-[11px] tracking-[0.16em] text-fg-dim">
@@ -297,7 +297,7 @@ export default async function ProfilePage() {
                                 使ってきた技術スタックを見る
                             </div>
                         </div>
-                        <div className="grid h-11 w-11 place-items-center rounded-full bg-accent text-white transition-transform duration-[300ms] [.group:hover_&]:translate-x-1.5">
+                        <div className="grid h-11 w-11 place-items-center rounded-full bg-accent text-white transition-transform duration-300 [.group:hover_&]:translate-x-1.5">
                             <svg
                                 width="18"
                                 height="18"

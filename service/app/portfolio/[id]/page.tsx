@@ -73,8 +73,8 @@ export default async function ProjectDetailPage({
                     aria-hidden="true"
                     className="pointer-events-none absolute inset-0 -z-[1]"
                     style={{
-                        background:
-                            "radial-gradient(circle at 80% 20%, var(--accent-soft), transparent 55%), radial-gradient(circle at 10% 90%, color-mix(in oklch, var(--cyan), transparent 80%), transparent 60%)",
+                        // グラデーション廃止・単色化: 放射状グラデーションの背面装飾を単色パネルに置換
+                        background: "var(--bg-elev)",
                     }}
                 />
                 <div className="mx-auto max-w-[980px] px-6">
@@ -106,10 +106,13 @@ export default async function ProjectDetailPage({
                             {project.period}
                         </span>
                         <span
-                            className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 font-mono text-[11px]"
+                            className="inline-flex items-center gap-1.5 rounded-full border border-hairline-solid px-2.5 py-0.5 font-mono text-[11px] text-fg-strong"
                             style={{
-                                background: "var(--accent-soft)",
-                                color: "var(--accent)",
+                                // ASSUMPTION: --accent-soft は accent の低不透明度ティント（透明度 1.0 未満）の
+                                // 可能性があり、かつ accent 文字×accent ティントは同系色で 4.5:1 を割る恐れがあるため、
+                                // 不透明の --surface-solid 背景 + text-fg-strong に置換し WCAG 2.2 AA を保証。
+                                // アクセント色の視覚的合図はステータスドット（下記）で維持する。
+                                background: "var(--surface-solid)",
                             }}
                         >
                             <span
@@ -200,8 +203,13 @@ export default async function ProjectDetailPage({
                     <div className="bg-bg-elev px-6 py-5 transition-colors duration-200 hover:bg-bg-elev-2">
                         <div className="mb-3.5 flex items-center gap-2.5">
                             <div
-                                className="grid h-8 w-8 place-items-center rounded-md text-accent"
-                                style={{ background: "var(--accent-soft)" }}
+                                className="grid h-8 w-8 place-items-center rounded-md border border-hairline-solid text-accent"
+                                style={{
+                                    // ASSUMPTION: --accent-soft は半透明ティント（透明度 1.0 未満）の可能性があるため、
+                                    // 不透明の --surface-solid + border に置換。内包する SVG は装飾（非テキスト）で
+                                    // accent アイコン×surface-solid は WCAG 1.4.11(3:1) を満たす前提。
+                                    background: "var(--surface-solid)",
+                                }}
                             >
                                 <svg
                                     width="16"
@@ -252,7 +260,7 @@ export default async function ProjectDetailPage({
                                     key={i}
                                     delay={i * 80}
                                     as="article"
-                                    className="craft relative overflow-hidden rounded-[var(--radius-lg)] border border-hairline bg-surface px-7 py-6 transition-all duration-[250ms] hover:-translate-y-0.5 hover:border-accent hover:shadow-card-soft"
+                                    className="craft relative overflow-hidden rounded-[var(--radius-lg)] border border-hairline-solid bg-surface-solid shadow-card px-7 py-6 transition-all duration-250 hover:-translate-y-0.5 hover:border-accent"
                                 >
                                     <div className="mb-2 font-mono text-[11px] tracking-[0.18em] text-accent">
                                         {String(i + 1).padStart(2, "0")}

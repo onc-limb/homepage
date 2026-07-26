@@ -39,8 +39,8 @@ export function BookGraph({ books }: { books: Book[] }) {
         <div
             className="relative h-[640px] overflow-hidden rounded-[var(--radius-lg)] border border-hairline"
             style={{
-                background:
-                    "radial-gradient(circle at 30% 30%, var(--accent-soft), transparent 50%), radial-gradient(circle at 70% 70%, color-mix(in oklch, var(--cyan), transparent 80%), transparent 60%), var(--surface)",
+                // グラデーション廃止・単色化: 放射状グラデーションの背景を単色サーフェスに置換
+                background: "var(--surface-solid)",
             }}
         >
             <svg
@@ -133,13 +133,13 @@ export function BookGraph({ books }: { books: Book[] }) {
             ))}
 
             <div
-                className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full border border-hairline bg-bg-elev px-3.5 py-2 font-mono text-[11px] tracking-[0.06em] text-fg-dim backdrop-blur-[8px]"
+                className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full border border-hairline bg-bg-elev px-3.5 py-2 font-mono text-[11px] tracking-[0.06em] text-fg-dim"
             >
                 click node to focus · hover to highlight
             </div>
 
             <div
-                className="absolute bottom-4 left-4 inline-flex gap-4 rounded-full border border-hairline bg-bg-elev px-4 py-2 font-mono text-[11px] backdrop-blur-[10px]"
+                className="absolute bottom-4 left-4 inline-flex gap-4 rounded-full border border-hairline bg-bg-elev px-4 py-2 font-mono text-[11px]"
             >
                 <Legend dotClassName="bg-accent">read</Legend>
                 <Legend dotClassName="bg-amber">reading</Legend>
@@ -150,7 +150,7 @@ export function BookGraph({ books }: { books: Book[] }) {
                 <div
                     role="dialog"
                     aria-label={active.title}
-                    className="absolute right-4 top-4 z-20 w-[min(340px,calc(100%-32px))] rounded-[var(--radius-lg)] border border-accent bg-bg-elev p-5 text-[13.5px] backdrop-blur-[12px] shadow-card-lg"
+                    className="absolute right-4 top-4 z-20 w-[min(340px,calc(100%-32px))] rounded-[var(--radius-lg)] border border-accent bg-bg-elev p-5 text-[13.5px] shadow-card-lg"
                 >
                     <button
                         type="button"
@@ -301,7 +301,7 @@ function BookNode({
     return (
         <div
             className={
-                "absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer select-none transition-transform duration-[250ms] hover:z-10 hover:scale-[1.4] " +
+                "absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer select-none transition-transform duration-250 hover:z-10 hover:scale-[1.4] " +
                 (faded ? "opacity-20" : "opacity-100") +
                 (active ? " z-20 scale-[1.5]" : "")
             }

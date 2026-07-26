@@ -31,7 +31,7 @@ function BookCard({
     onOpenMemo: (book: Book) => void
 }) {
     return (
-        <div className="overflow-hidden rounded-[var(--radius-lg)] border border-hairline bg-surface backdrop-blur-[8px] transition-all duration-200 hover:border-accent hover:shadow-card-soft">
+        <div className="overflow-hidden rounded-[var(--radius-lg)] border border-hairline-solid bg-surface-solid shadow-card transition-all duration-200 hover:border-accent">
             <div className="flex flex-row">
                 <div
                     className="relative flex w-28 shrink-0 items-center justify-center border-r border-hairline md:w-32"
@@ -83,7 +83,7 @@ function BookCard({
                     )}
                     {book.memo && (
                         <div className="mt-auto">
-                            <div className="prose prose-sm prose-invert line-clamp-3 max-w-none text-[13px] leading-relaxed text-fg-muted">
+                            <div className="prose prose-sm dark:prose-invert line-clamp-3 max-w-none text-[13px] leading-relaxed text-fg-muted">
                                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                     {book.memo}
                                 </ReactMarkdown>
@@ -144,7 +144,11 @@ export default function BooksContent({
             } else {
                 params.delete(key)
             }
-            router.push(`/books?${params.toString()}`, { scroll: false })
+            // 同じ URL への push は searchParams の参照だけを変えて
+            // updateParam → effect → push の無限ループになるため打ち切る。
+            const next = params.toString()
+            if (next === searchParams.toString()) return
+            router.push(`/books?${next}`, { scroll: false })
         },
         [searchParams, router],
     )
@@ -153,8 +157,11 @@ export default function BooksContent({
 
     useEffect(() => {
         if (isInitialRender.current) return
+        // updateParam は searchParams に依存するので push のたびに参照が変わり、
+        // この effect が再実行される。入力値が URL と一致していれば何もしない。
+        if (debouncedQuery === q) return
         updateParam("q", debouncedQuery)
-    }, [debouncedQuery, updateParam])
+    }, [debouncedQuery, q, updateParam])
 
     useEffect(() => {
         if (isInitialRender.current) {
@@ -210,7 +217,7 @@ export default function BooksContent({
                         ) : (
                             <div
                                 className="rounded-[var(--radius-lg)] border border-hairline px-6 py-10 text-center text-fg-muted"
-                                style={{ background: "var(--surface)" }}
+                                style={{ background: "var(--surface-solid)" }}
                             >
                                 グラフ表示にはタグ付きの書籍が必要です。
                             </div>
@@ -220,7 +227,7 @@ export default function BooksContent({
                     ) : (
                         <div
                             className="rounded-[var(--radius-lg)] border border-hairline px-6 py-10 text-center text-fg-muted"
-                            style={{ background: "var(--surface)" }}
+                            style={{ background: "var(--surface-solid)" }}
                         >
                             タグ付きの書籍がありません。
                         </div>
@@ -353,7 +360,7 @@ export default function BooksContent({
                                 ` (${memoBook.publishedYear})`}
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="prose prose-sm prose-invert max-w-none">
+                    <div className="prose prose-sm dark:prose-invert max-w-none">
                         <ReactMarkdown remarkPlugins={[remarkGfm]}>
                             {memoBook?.memo ?? ""}
                         </ReactMarkdown>

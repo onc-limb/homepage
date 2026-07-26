@@ -18,6 +18,9 @@ const DialogOverlay = React.forwardRef<
     React.ElementRef<typeof DialogPrimitive.Overlay>,
     React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
 >(({ className, ...props }, ref) => (
+    // ASSUMPTION: モーダルのスクリム（背面を暗くする遮蔽レイヤー）は機能上
+    // 半透明であることが必須のため、半透明禁止方針（docs/style/opaque-surfaces.md）の
+    // 例外として bg-black/80 を意図的に残す。装飾目的の半透明ではない。
     <DialogPrimitive.Overlay
         ref={ref}
         className={cn(

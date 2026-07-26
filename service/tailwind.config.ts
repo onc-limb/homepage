@@ -28,8 +28,15 @@ const config: Config = {
                 "bg-elev-2": "var(--bg-elev-2)",
                 surface: "var(--surface)",
                 "surface-strong": "var(--surface-strong)",
+                // Solid (opaque, gradient-free) surface fills for cards/panels.
+                // See docs/background-audit.md §(i).
+                "surface-solid": "var(--surface-solid)",
+                "surface-solid-strong": "var(--surface-solid-strong)",
                 hairline: "var(--hairline)",
                 "hairline-strong": "var(--hairline-strong)",
+                // Opaque border tokens for the glassmorphism removal.
+                "hairline-solid": "var(--hairline-solid)",
+                "hairline-solid-strong": "var(--hairline-solid-strong)",
                 fg: "var(--fg)",
                 "fg-strong": "var(--fg-strong)",
                 "fg-muted": "var(--fg-muted)",
@@ -90,6 +97,16 @@ const config: Config = {
             boxShadow: {
                 "card-soft": "var(--shadow-soft)",
                 "card-lg": "var(--shadow-lg)",
+                card: "var(--shadow-card)",
+            },
+            // Named durations instead of arbitrary values (duration-[250ms]).
+            // tailwindcss-animate also registers `duration-*` for
+            // animation-duration, so arbitrary values match two utilities and
+            // Tailwind warns that the class is ambiguous.
+            // Kept in parity with tailwind.config.js.
+            transitionDuration: {
+                "250": "250ms",
+                "350": "350ms",
             },
             keyframes: {
                 "accordion-down": {

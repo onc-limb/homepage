@@ -44,11 +44,11 @@ export function FloatingShapes() {
             {SHAPES.map((s, i) => (
                 <div
                     key={i}
-                    className={`shape absolute rounded-[var(--radius-lg)] border border-hairline-strong shadow-card-soft backdrop-blur-[6px] ${s.className}`}
+                    className={`shape absolute rounded-[var(--radius-lg)] border border-hairline-strong shadow-card-soft ${s.className}`}
                     style={
                         {
-                            background:
-                                "linear-gradient(135deg, color-mix(in srgb, var(--accent) 12%, transparent), color-mix(in srgb, var(--indigo) 6%, transparent))",
+                            // グラデーション廃止・単色化: 線形グラデーションを単色のアクセント面に置換
+                            background: "var(--accent-soft)",
                             // CSS animation defined in globals.css uses `--r`
                             ["--r" as never]: s.rotate,
                         } as React.CSSProperties

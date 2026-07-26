@@ -6,8 +6,8 @@ export default function Footer() {
         <footer
             className="relative z-[1] mt-20 border-t border-hairline px-0 pb-10 pt-[60px]"
             style={{
-                background:
-                    "linear-gradient(180deg, transparent, color-mix(in srgb, var(--accent-soft) 60%, transparent))",
+                // グラデーション廃止・単色化: 線形グラデーションのフェード背景を単色に置換
+                background: "var(--bg-elev)",
             }}
         >
             <div className="mx-auto grid max-w-[var(--container)] grid-cols-1 gap-8 px-6 md:px-10 [@media(min-width:720px)]:grid-cols-4">

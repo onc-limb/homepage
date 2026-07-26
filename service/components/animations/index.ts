@@ -1,4 +1,3 @@
-export { ParticleBackground } from "./ParticleBackground"
 export { Reveal } from "./Reveal"
 export { FloatingShapes } from "./FloatingShapes"
 export { HeroSpotlight } from "./HeroSpotlight"

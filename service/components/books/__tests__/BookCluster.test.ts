@@ -64,7 +64,7 @@ describe("deriveTopClusters()", () => {
         expect(clusters.find((c) => c.label === "echo")).toBeUndefined()
     })
 
-    it("breaks ties using lexical (locale) ascending order on label", () => {
+    it("breaks ties using code point ascending order on label", () => {
         // Given two tags share the same count
         // When clusters are derived
         // Then the alphabetically earlier label comes first
@@ -74,6 +74,19 @@ describe("deriveTopClusters()", () => {
         ]
         const clusters = deriveTopClusters(books, 2)
         expect(clusters.map((c) => c.label)).toEqual(["alpha", "zeta"])
+    })
+
+    it("orders tied non-ASCII labels independently of the runtime locale", () => {
+        // Given tied Japanese labels whose locale collation differs between
+        // Node.js and browsers
+        // When clusters are derived
+        // Then the order follows code points, so server and client agree
+        const books: Book[] = [
+            factoryBook({ id: 1, tags: ["詳細", "本質"] }),
+            factoryBook({ id: 2, tags: ["詳細", "本質"] }),
+        ]
+        const clusters = deriveTopClusters(books, 2)
+        expect(clusters.map((c) => c.label)).toEqual(["本質", "詳細"])
     })
 
     it("respects an explicit limit smaller than the number of distinct tags", () => {

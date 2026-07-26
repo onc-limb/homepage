@@ -1,6 +1,11 @@
 "use client"
 
-import { createContext, useCallback, useContext, useEffect, useState } from "react"
+import {
+    createContext,
+    useCallback,
+    useContext,
+    useSyncExternalStore,
+} from "react"
 import {
     DEFAULT_THEME,
     THEME_STORAGE_KEY,
@@ -16,22 +21,39 @@ interface ThemeContextValue {
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined)
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
-    const [theme, setThemeState] = useState<Theme>(DEFAULT_THEME)
+/**
+ * `<html data-theme>` を唯一の情報源として購読する。
+ * 属性は hydration 前に themeBootScript が localStorage から復元しているので、
+ * effect で state を同期し直す必要がない（React 19 の
+ * react-hooks/set-state-in-effect が禁じるカスケードレンダーを避ける）。
+ */
+function subscribeToTheme(onStoreChange: () => void): () => void {
+    document.addEventListener("themechange", onStoreChange)
+    window.addEventListener("storage", onStoreChange)
+    return () => {
+        document.removeEventListener("themechange", onStoreChange)
+        window.removeEventListener("storage", onStoreChange)
+    }
+}
 
-    // Sync client state with what the inline boot script already wrote to <html>.
-    useEffect(() => {
-        const stored =
-            typeof window !== "undefined"
-                ? window.localStorage.getItem(THEME_STORAGE_KEY)
-                : null
-        const initial: Theme = isTheme(stored) ? stored : DEFAULT_THEME
-        setThemeState(initial)
-        applyTheme(initial)
-    }, [])
+function getThemeSnapshot(): Theme {
+    const applied = document.documentElement.getAttribute("data-theme")
+    return isTheme(applied) ? applied : DEFAULT_THEME
+}
+
+function getThemeServerSnapshot(): Theme {
+    return DEFAULT_THEME
+}
+
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+    const theme = useSyncExternalStore(
+        subscribeToTheme,
+        getThemeSnapshot,
+        getThemeServerSnapshot,
+    )
 
     const setTheme = useCallback((next: Theme) => {
-        setThemeState(next)
+        // applyTheme が themechange を発火し、購読側が再レンダーを起こす。
         applyTheme(next)
         window.localStorage.setItem(THEME_STORAGE_KEY, next)
     }, [])

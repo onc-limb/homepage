@@ -1,14 +1,27 @@
 export const dynamic = "force-dynamic"
 
 import Link from "next/link"
-import { signOut } from "@/lib/auth"
+import { redirect } from "next/navigation"
+import { auth, signOut } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
 import { LogOut, Home } from "lucide-react"
 
 export default async function StudioLayout({ children }: { children: React.ReactNode }) {
+    // /studio 配下の入口ガード。以前は middleware がセッションクッキーの
+    // 有無だけを見ていたが、Next.js 16 で middleware は deprecated であり、
+    // 後継の proxy は Node.js ランタイム固定で @opennextjs/cloudflare が
+    // まだ対応していない（opennextjs-cloudflare#1309）。
+    // ここで auth() を呼ぶとクッキーの存在ではなくセッションの有効性を検証できる。
+    // 書き込み系（Server Actions・Route Handlers）は各所で auth() を通しており、
+    // このガードはあくまで画面表示の入口。
+    const session = await auth()
+    if (!session) {
+        redirect(`/api/auth/signin?callbackUrl=${encodeURIComponent("/studio")}`)
+    }
+
     return (
         <div className="min-h-screen bg-slate-50">
-            <header className="sticky top-0 z-50 border-b bg-white/80 backdrop-blur">
+            <header className="sticky top-0 z-50 border-b bg-white">
                 <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
                     <div className="flex items-center gap-4">
                         <Link

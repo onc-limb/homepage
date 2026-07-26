@@ -9,8 +9,8 @@ export function ArchDiagram() {
         <div
             className="overflow-hidden rounded-[var(--radius-lg)] border border-hairline px-5 py-8"
             style={{
-                background:
-                    "radial-gradient(circle at 50% 30%, var(--accent-soft), transparent 55%), var(--surface)",
+                // グラデーション廃止・単色化: 放射状グラデーションの背景を単色サーフェスに置換
+                background: "var(--surface-solid)",
             }}
         >
             <svg
