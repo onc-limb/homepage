@@ -48,8 +48,11 @@ export function deriveTopClusters(books: Book[], limit = 4): BookCluster[] {
             counts.set(t, (counts.get(t) ?? 0) + 1)
         }
     }
+    // 同数タグの並びはコードポイント順で決める。localeCompare は Node.js と
+    // ブラウザで ICU の照合順序が食い違うことがあり、日本語タグでサーバーと
+    // クライアントのクラスタ順序がずれて hydration mismatch を起こす。
     const sorted = [...counts.entries()]
-        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+        .sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0))
         .slice(0, limit)
     return sorted.map(([label], i) => ({
         id: slugify(label) || `c${i}`,
