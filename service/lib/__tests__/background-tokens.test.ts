@@ -49,9 +49,11 @@ const darkVars = parseThemeVars(
     globalsCss,
     /:root,\s*:root\[data-theme="dark"\]\s*\{([^}]*)\}/
 )
+// The light block also matches non-root elements (see globals.css), so the
+// selector list is matched loosely up to the opening brace.
 const lightVars = parseThemeVars(
     globalsCss,
-    /:root\[data-theme="light"\]\s*\{([^}]*)\}/
+    /:root\[data-theme="light"\][^{]*\{([^}]*)\}/
 )
 
 function hexToRgb(hex: string): [number, number, number] {
