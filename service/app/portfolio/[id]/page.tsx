@@ -260,7 +260,7 @@ export default async function ProjectDetailPage({
                                     key={i}
                                     delay={i * 80}
                                     as="article"
-                                    className="craft relative overflow-hidden rounded-[var(--radius-lg)] border border-hairline-solid bg-surface-solid shadow-card px-7 py-6 transition-all duration-[250ms] hover:-translate-y-0.5 hover:border-accent"
+                                    className="craft relative overflow-hidden rounded-[var(--radius-lg)] border border-hairline-solid bg-surface-solid shadow-card px-7 py-6 transition-all duration-250 hover:-translate-y-0.5 hover:border-accent"
                                 >
                                     <div className="mb-2 font-mono text-[11px] tracking-[0.18em] text-accent">
                                         {String(i + 1).padStart(2, "0")}

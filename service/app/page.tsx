@@ -199,13 +199,13 @@ export default async function TopPage() {
                                 key={cap.title}
                                 delay={i * 100}
                                 as="article"
-                                className="cap-cell relative overflow-hidden bg-bg-elev px-8 py-9 transition-colors duration-[250ms] hover:bg-bg-elev-2"
+                                className="cap-cell relative overflow-hidden bg-bg-elev px-8 py-9 transition-colors duration-250 hover:bg-bg-elev-2"
                             >
                                 <div className="mb-6 font-mono text-[11px] uppercase tracking-[0.18em] text-fg-dim">
                                     {cap.num}
                                 </div>
                                 <div
-                                    className="mb-6 grid h-11 w-11 place-items-center rounded-md border border-hairline-strong text-accent transition-all duration-[300ms]"
+                                    className="mb-6 grid h-11 w-11 place-items-center rounded-md border border-hairline-strong text-accent transition-all duration-300"
                                     style={{ background: "var(--accent-soft)" }}
                                 >
                                     {cap.icon}
@@ -273,14 +273,14 @@ export default async function TopPage() {
                             <Reveal key={item.href} delay={i * 60}>
                                 <Link
                                     href={item.href}
-                                    className="explore relative block overflow-hidden rounded-[var(--radius-lg)] border border-hairline-solid bg-surface-solid p-7 shadow-card transition-all duration-[350ms] hover:-translate-y-1 hover:border-accent"
+                                    className="explore relative block overflow-hidden rounded-[var(--radius-lg)] border border-hairline-solid bg-surface-solid p-7 shadow-card transition-all duration-350 hover:-translate-y-1 hover:border-accent"
                                 >
                                     <span className="mb-4 block font-mono text-[11px] tracking-[0.2em] text-fg-dim">
                                         → {item.href}
                                     </span>
                                     <div className="mb-1.5 flex items-center gap-2 text-[22px] font-semibold">
                                         {item.label}
-                                        <span className="explore__arrow inline-block transition-transform duration-[300ms]">
+                                        <span className="explore__arrow inline-block transition-transform duration-300">
                                             ↗
                                         </span>
                                     </div>
@@ -288,7 +288,7 @@ export default async function TopPage() {
                                         {item.description}
                                     </div>
                                     <span
-                                        className="pointer-events-none absolute -bottom-5 -right-5 h-[100px] w-[100px] rounded-md opacity-[0.05] transition-opacity duration-[350ms]"
+                                        className="pointer-events-none absolute -bottom-5 -right-5 h-[100px] w-[100px] rounded-md opacity-[0.05] transition-opacity duration-350"
                                         style={{
                                             background: "var(--accent)",
                                         }}

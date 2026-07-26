@@ -99,6 +99,15 @@ const config: Config = {
                 "card-lg": "var(--shadow-lg)",
                 card: "var(--shadow-card)",
             },
+            // Named durations instead of arbitrary values (duration-[250ms]).
+            // tailwindcss-animate also registers `duration-*` for
+            // animation-duration, so arbitrary values match two utilities and
+            // Tailwind warns that the class is ambiguous.
+            // Kept in parity with tailwind.config.js.
+            transitionDuration: {
+                "250": "250ms",
+                "350": "350ms",
+            },
             keyframes: {
                 "accordion-down": {
                     from: { height: "0" },

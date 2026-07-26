@@ -287,7 +287,7 @@ export default async function ProfilePage() {
                 <Reveal>
                     <Link
                         href="/skills"
-                        className="my-14 flex items-center justify-between rounded-[var(--radius-lg)] border border-hairline-strong bg-surface-solid px-8 py-7 transition-all duration-[250ms] hover:-translate-y-0.5 hover:border-accent"
+                        className="my-14 flex items-center justify-between rounded-[var(--radius-lg)] border border-hairline-strong bg-surface-solid px-8 py-7 transition-all duration-250 hover:-translate-y-0.5 hover:border-accent"
                     >
                         <div>
                             <div className="mb-1 font-mono text-[11px] tracking-[0.16em] text-fg-dim">
@@ -297,7 +297,7 @@ export default async function ProfilePage() {
                                 使ってきた技術スタックを見る
                             </div>
                         </div>
-                        <div className="grid h-11 w-11 place-items-center rounded-full bg-accent text-white transition-transform duration-[300ms] [.group:hover_&]:translate-x-1.5">
+                        <div className="grid h-11 w-11 place-items-center rounded-full bg-accent text-white transition-transform duration-300 [.group:hover_&]:translate-x-1.5">
                             <svg
                                 width="18"
                                 height="18"

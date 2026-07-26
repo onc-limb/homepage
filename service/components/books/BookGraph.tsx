@@ -301,7 +301,7 @@ function BookNode({
     return (
         <div
             className={
-                "absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer select-none transition-transform duration-[250ms] hover:z-10 hover:scale-[1.4] " +
+                "absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer select-none transition-transform duration-250 hover:z-10 hover:scale-[1.4] " +
                 (faded ? "opacity-20" : "opacity-100") +
                 (active ? " z-20 scale-[1.5]" : "")
             }
