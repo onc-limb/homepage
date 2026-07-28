@@ -5,6 +5,15 @@
     // opennextjs-cloudflare が古い日付だとビルドのたびに更新を促す。
     "compatibility_date": "2026-07-22",
     "compatibility_flags": ["nodejs_compat"],
+    // コンタクトフォームの受信通知を Cloudflare Email Routing 経由で自分宛に送る。
+    // 送信先は allowed_destination_addresses に列挙したアドレスに限定され、
+    // かつ Email Routing 側で検証済みである必要がある（docs/contact-form-design.md）。
+    "send_email": [
+        {
+            "name": "SEND_EMAIL",
+            "allowed_destination_addresses": ["satoshi-onga@onc-limb.com"]
+        }
+    ],
     "minify": true,
     "keep_vars": true,
     "build": {
