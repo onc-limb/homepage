@@ -78,7 +78,11 @@ const CAPS = [
     },
 ]
 
-const EXPLORE_ITEMS = NAV_ITEMS.filter((n) => n.href !== "/")
+// Explore は「深掘りする読み物を選ぶ」セクションなので、Home と、
+// 場所ではなく行動導線である Contact を除く（Contact はヒーローと CTA バンドで拾う）。
+const EXPLORE_ITEMS = NAV_ITEMS.filter(
+    (n) => n.href !== "/" && n.href !== "/contact"
+)
 
 // STATS はリクエスト毎に DB 集計するため、ページを動的レンダリングにする（#127）。
 // /studio で本を読了にしたり記事を公開すると、再デプロイなしで次回アクセスに反映される。

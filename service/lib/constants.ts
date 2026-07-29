@@ -75,4 +75,9 @@ export const NAV_ITEMS: NavItem[] = [
         label: "Blog",
         description: "技術記事、学んだことを言葉にして残す",
     },
+    {
+        href: "/contact",
+        label: "Contact",
+        description: "仕事のご相談・お問い合わせ",
+    },
 ]

@@ -12,15 +12,18 @@ import { NAV_ITEMS, SOCIAL_LINKS } from "@/lib/constants"
  *   ニュース機能撤去に伴い、まず導線として News エントリを NAV_ITEMS から削除。
  *   これによりヘッダー / トップ 02 カード / フッター Sitemap の 3 箇所すべてから
  *   News リンクが一括で消える（機能本体の撤去は #141）。
+ *   コンタクトページ新設に伴い Contact を末尾に追加し、ヘッダー / フッターへ
+ *   一括で載せる。ただしトップ 02 カード（Explore）は「深掘りする読み物」を選ぶ
+ *   セクションなので、app/page.tsx 側で Home と併せて除外している。
  *
  * Reference: docs/design/shared/shell.js:34-41
  */
 describe("NAV_ITEMS", () => {
-    it("has the 6 entries remaining after News removal (Blog added in #124)", () => {
-        // Given the design draft NAV plus Blog (#124), minus the removed News entry
+    it("has the 7 entries remaining after News removal (Blog added in #124, Contact appended)", () => {
+        // Given the design draft NAV plus Blog (#124) and Contact, minus the removed News entry
         // When NAV_ITEMS is loaded
-        // Then it provides exactly 6 entries
-        expect(NAV_ITEMS).toHaveLength(6)
+        // Then it provides exactly 7 entries
+        expect(NAV_ITEMS).toHaveLength(7)
     })
 
     it("starts with the Home entry pointing at the site root", () => {
@@ -34,7 +37,7 @@ describe("NAV_ITEMS", () => {
     })
 
     it("orders entries to match the design draft sequence without News", () => {
-        // Given the draft NAV order minus News: Home / Profile / Skills / Portfolio / Books / Blog
+        // Given the draft NAV order minus News, with Contact last as the action entry
         // When labels are extracted
         // Then they appear in that exact order
         const labels = NAV_ITEMS.map((item) => item.label)
@@ -45,6 +48,7 @@ describe("NAV_ITEMS", () => {
             "Portfolio",
             "Books",
             "Blog",
+            "Contact",
         ])
     })
 
@@ -62,6 +66,7 @@ describe("NAV_ITEMS", () => {
             Portfolio: "/portfolio",
             Books: "/books",
             Blog: "/blog",
+            Contact: "/contact",
         })
     })
 

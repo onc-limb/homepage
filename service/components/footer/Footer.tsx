@@ -32,14 +32,6 @@ export default function Footer() {
                             {item.label}
                         </Link>
                     ))}
-                    {/* Contact は「コンテンツの探索先」ではなく行動導線なので NAV_ITEMS には
-                        入れていない。こことトップの CTA からたどれるようにする。 */}
-                    <Link
-                        href="/contact"
-                        className="py-0.5 text-fg-muted transition-colors duration-150 hover:text-accent"
-                    >
-                        Contact
-                    </Link>
                 </div>
                 <div className="flex flex-col gap-1.5 text-[13px]">
                     <div className="mb-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-fg-dim">
