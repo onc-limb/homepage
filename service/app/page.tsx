@@ -78,7 +78,11 @@ const CAPS = [
     },
 ]
 
-const EXPLORE_ITEMS = NAV_ITEMS.filter((n) => n.href !== "/")
+// Explore は「深掘りする読み物を選ぶ」セクションなので、Home と、
+// 場所ではなく行動導線である Contact を除く（Contact はヒーローと CTA バンドで拾う）。
+const EXPLORE_ITEMS = NAV_ITEMS.filter(
+    (n) => n.href !== "/" && n.href !== "/contact"
+)
 
 // STATS はリクエスト毎に DB 集計するため、ページを動的レンダリングにする（#127）。
 // /studio で本を読了にしたり記事を公開すると、再デプロイなしで次回アクセスに反映される。
@@ -149,8 +153,10 @@ export default async function TopPage() {
                         delay={420}
                         className="inline-flex flex-wrap justify-center gap-3"
                     >
-                        <Link className="btn btn-primary" href="/profile">
-                            Profileを見る
+                        {/* 最初に目に入る行動導線を問い合わせにする。
+                            Profile / Portfolio は探索の導線なので ghost に下げる。 */}
+                        <Link className="btn btn-primary" href="/contact">
+                            仕事のお問い合わせはこちら
                             <svg
                                 width="14"
                                 height="14"
@@ -161,6 +167,9 @@ export default async function TopPage() {
                             >
                                 <path d="M5 12h14M13 5l7 7-7 7" />
                             </svg>
+                        </Link>
+                        <Link className="btn btn-ghost" href="/profile">
+                            Profileを見る
                         </Link>
                         <Link className="btn btn-ghost" href="/portfolio">
                             作ったものを見る
@@ -316,12 +325,11 @@ export default async function TopPage() {
                             作ると決まったプロダクトの実装・運用、技術相談、雑談まで。気軽に連絡してください。
                         </p>
                         <div className="relative inline-flex flex-wrap justify-center gap-3">
-                            <a
-                                className="btn btn-primary"
-                                href="mailto:satoshi-onga@onc-limb.com"
-                            >
-                                satoshi-onga@onc-limb.com
-                            </a>
+                            {/* メールアドレスの直リンクからコンタクトページへ差し替え。
+                                アドレス自体は /contact のメール経路で表示している。 */}
+                            <Link className="btn btn-primary" href="/contact">
+                                お問い合わせ / ご相談
+                            </Link>
                             <a
                                 className="btn btn-ghost"
                                 href={GITHUB_URL}

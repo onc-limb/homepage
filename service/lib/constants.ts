@@ -19,6 +19,13 @@ export interface SocialLink {
     username: string
 }
 
+/**
+ * 公開する連絡先メールアドレス。
+ * コンタクトページの mailto 経路とトップの導線から参照する。
+ * アドレスを変更する場合はこの 1 箇所だけを更新すること。
+ */
+export const CONTACT_EMAIL = "satoshi-onga@onc-limb.com"
+
 export const SOCIAL_LINKS: SocialLink[] = [
     {
         name: "GitHub",
@@ -67,5 +74,10 @@ export const NAV_ITEMS: NavItem[] = [
         href: "/blog",
         label: "Blog",
         description: "技術記事、学んだことを言葉にして残す",
+    },
+    {
+        href: "/contact",
+        label: "Contact",
+        description: "仕事のご相談・お問い合わせ",
     },
 ]
