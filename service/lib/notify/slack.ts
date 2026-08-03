@@ -28,20 +28,46 @@ function truncate(text: string, max: number): string {
     return text.length <= max ? text : `${text.slice(0, max)}…（省略）`
 }
 
+/**
+ * 通知に添えるメンション。Slack のメンション記法をそのまま設定する。
+ *
+ *   個人       `<@U01ABCDEFGH>`（表示名ではなくメンバー ID）
+ *   グループ   `<!subteam^S012ABCDEF>`
+ *   チャンネル `<!here>` / `<!channel>`
+ *
+ * `@onclimb` のような表示名を書いてもリンクにならず、ただの文字列として出るだけで
+ * 通知も飛ばない。未設定ならメンションなしで送る。
+ */
+function mentionPrefix(): string {
+    return process.env.SLACK_MENTION?.trim() ?? ""
+}
+
 function buildPayload(contact: ContactNotification) {
     const field = (label: string, value: string) => ({
         type: "mrkdwn",
         text: `*${label}*\n${escapeMrkdwn(value)}`,
     })
 
+    const mention = mentionPrefix()
+    const summary = `新しいお問い合わせ: ${contact.name} 様（${contact.categoryLabel}）`
+
     return {
         // blocks を表示できないクライアント（通知バナーなど）向けのフォールバック。
-        text: `新しいお問い合わせ: ${contact.name} 様（${contact.categoryLabel}）`,
+        text: mention ? `${mention} ${summary}` : summary,
         blocks: [
             {
                 type: "header",
                 text: { type: "plain_text", text: "新しいお問い合わせ" },
             },
+            // header は plain_text でメンションを解釈しないため、独立した section で添える。
+            ...(mention
+                ? [
+                      {
+                          type: "section",
+                          text: { type: "mrkdwn", text: mention },
+                      },
+                  ]
+                : []),
             {
                 type: "section",
                 fields: [

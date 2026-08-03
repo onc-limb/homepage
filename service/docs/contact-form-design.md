@@ -71,6 +71,12 @@ Incoming Webhook へ `fetch` で POST するだけ。SDK は入れない。
 
 環境変数 `SLACK_WEBHOOK_URL`（未設定なら通知をスキップ）。
 
+`SLACK_MENTION` を設定すると、通知バナー（`text`）と本文の両方でメンションする。
+値は Slack のメンション記法をそのまま入れる — 個人なら `<@U01ABCDEFGH>`、
+グループなら `<!subteam^S012ABCDEF>`、チャンネル全体なら `<!here>` / `<!channel>`。
+**表示名（`@onclimb`）ではメンションにならない**ためメンバー ID を使う。
+`text` 側にも入れるのは、blocks を展開しない通知バナーからメンションが落ちないようにするため。
+
 ### メール（Cloudflare Email Routing）
 
 Workers の `send_email` バインディング経由で自分宛に送る。外部メール送信サービスは使わない。
@@ -121,6 +127,7 @@ Slack・DB 保存はローカルでも動く。
 1. **DB** — `pnpm db:push` で `contacts` を本番の Turso に反映する
 2. **Worker の環境変数 / シークレット**
    - `SLACK_WEBHOOK_URL` — Slack Incoming Webhook の URL（シークレット扱い）
+   - `SLACK_MENTION` — 任意。通知でメンションしたい相手（`<@メンバーID>` 等）
    - `CONTACT_MAIL_FROM` — 差出人。Email Routing で検証済みドメインのアドレス
    - `CONTACT_MAIL_TO` — 通知先。Email Routing の検証済み destination
 3. **Cloudflare Email Routing** — 対象ゾーンで有効化し、通知先アドレスを検証する

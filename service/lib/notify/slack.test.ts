@@ -30,6 +30,8 @@ function sentPayload(fetchMock: ReturnType<typeof mockFetch>) {
 
 beforeEach(() => {
     vi.stubEnv("SLACK_WEBHOOK_URL", WEBHOOK)
+    // メンションは既定では付けない（実行環境の設定にテストを左右されないよう明示する）
+    vi.stubEnv("SLACK_MENTION", "")
 })
 
 afterEach(() => {
@@ -91,6 +93,43 @@ describe("notifySlack", () => {
         await notifySlack({ ...contact, company: null })
 
         expect(JSON.stringify(sentPayload(fetchMock))).toContain("（未記入）")
+    })
+
+    it("SLACK_MENTION が未設定ならメンションを付けない", async () => {
+        const fetchMock = mockFetch()
+
+        await notifySlack(contact)
+
+        const payload = sentPayload(fetchMock)
+        expect(payload.text).toBe(
+            `新しいお問い合わせ: ${contact.name} 様（${contact.categoryLabel}）`
+        )
+        expect(JSON.stringify(payload)).not.toContain("<@")
+    })
+
+    it("SLACK_MENTION を設定すると通知バナーと本文の両方でメンションする", async () => {
+        vi.stubEnv("SLACK_MENTION", "<@U01ABCDEFGH>")
+        const fetchMock = mockFetch()
+
+        await notifySlack(contact)
+
+        const payload = sentPayload(fetchMock)
+        // text 側に無いと通知バナーからメンションが落ちる
+        expect(payload.text.startsWith("<@U01ABCDEFGH> ")).toBe(true)
+        // header は plain_text なのでメンションを解釈しない。独立した section が要る
+        expect(payload.blocks).toContainEqual({
+            type: "section",
+            text: { type: "mrkdwn", text: "<@U01ABCDEFGH>" },
+        })
+    })
+
+    it("here などのチャンネル向けメンション記法もそのまま通す", async () => {
+        vi.stubEnv("SLACK_MENTION", "<!here>")
+        const fetchMock = mockFetch()
+
+        await notifySlack(contact)
+
+        expect(sentPayload(fetchMock).text.startsWith("<!here> ")).toBe(true)
     })
 
     it("Webhook が 2xx 以外を返したら失敗として扱う", async () => {
