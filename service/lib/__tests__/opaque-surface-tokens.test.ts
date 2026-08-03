@@ -44,7 +44,9 @@ const darkVars = parseThemeVars(
 )
 const lightVars = parseThemeVars(
     globalsCss,
-    /:root\[data-theme="light"\]\s*\{([^}]*)\}/
+    // The light block also matches non-root elements (see globals.css), so the
+    // selector list is matched loosely up to the opening brace.
+    /:root\[data-theme="light"\][^{]*\{([^}]*)\}/
 )
 
 const isSolidHex = (v: string) => /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(v)

@@ -20,7 +20,12 @@ export default async function StudioLayout({ children }: { children: React.React
     }
 
     return (
-        <div className="min-h-screen bg-slate-50">
+        // 管理画面はライト配色で固定する。data-theme でこのサブツリーだけ
+        // ライトのカスタムプロパティに差し替え、text-fg でその値を使って
+        // color を引き直す（<body> の color はサイトのテーマで解決済みのため、
+        // 変数を上書きするだけでは文字色が変わらない）。
+        // これが無いとダークテーマ時に、白い面へ明るい文字が乗って読めなくなる。
+        <div className="min-h-screen bg-slate-50 text-fg" data-theme="light">
             <header className="sticky top-0 z-50 border-b bg-white">
                 <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
                     <div className="flex items-center gap-4">

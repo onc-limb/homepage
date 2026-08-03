@@ -83,3 +83,37 @@ export const articleTags = sqliteTable(
         primaryKey({ columns: [table.articleId, table.tagId] }),
     ]
 )
+
+// /contact のフォームから届いた問い合わせ。
+// 通知（Slack / メール）より先にここへ保存することで、通知が全滅しても内容は失われない。
+export const contacts = sqliteTable(
+    "contacts",
+    {
+        // ASSUMPTION: 主キー・タイムスタンプの持ち方は既存 books / articles に合わせる
+        id: integer().primaryKey({ autoIncrement: true }),
+        name: text().notNull(),
+        email: text().notNull(),
+        // 会社・組織名。個人からの問い合わせもあるため任意。
+        company: text(),
+        // 相談種別。DB レベルは下記 check() で 3 値に制約する。
+        category: text().notNull().default("work"),
+        message: text().notNull(),
+        // 通知の到達状況。保存が先・通知が後なので、
+        // 「保存されたが通知が飛んでいない問い合わせ」をここから拾える。
+        notifiedSlack: integer("notified_slack", { mode: "boolean" })
+            .notNull()
+            .default(false),
+        notifiedEmail: integer("notified_email", { mode: "boolean" })
+            .notNull()
+            .default(false),
+        createdAt: text("created_at")
+            .notNull()
+            .default(sql`(datetime('now'))`),
+    },
+    (table) => [
+        check(
+            "contacts_category_check",
+            sql`${table.category} IN ('work', 'tech', 'other')`
+        ),
+    ]
+)
