@@ -3,6 +3,7 @@ import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import type { BlogArticle } from "./blog-utils"
 import { formatDate } from "./blog-utils"
+import { MarkdownPre } from "./MarkdownPre"
 
 /**
  * 記事詳細ページの本体。Markdown 本文を導入済みの
@@ -34,7 +35,10 @@ export function ArticleDetail({ article }: { article: BlogArticle }) {
             </header>
 
             <div className="prose max-w-none prose-headings:text-fg-strong prose-p:text-fg prose-li:text-fg prose-a:text-accent prose-strong:text-fg-strong prose-code:text-accent prose-blockquote:text-fg-muted prose-blockquote:border-accent">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{ pre: MarkdownPre }}
+                >
                     {article.body}
                 </ReactMarkdown>
             </div>

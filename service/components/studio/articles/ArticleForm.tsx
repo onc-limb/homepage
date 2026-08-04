@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { MarkdownPre } from "@/components/blog/MarkdownPre"
 import type { ArticleFormValues, TagOption } from "./types"
 
 type Props = {
@@ -119,7 +120,10 @@ export function ArticleForm({
                 {showPreview ? (
                     <>
                         <div className="prose min-h-[16rem] max-w-none rounded-md border border-input p-4 dark:prose-invert">
-                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            <ReactMarkdown
+                                remarkPlugins={[remarkGfm]}
+                                components={{ pre: MarkdownPre }}
+                            >
                                 {body || "_（本文がありません）_"}
                             </ReactMarkdown>
                         </div>
