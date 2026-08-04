@@ -34,7 +34,10 @@ export function ArticleDetail({ article }: { article: BlogArticle }) {
                 )}
             </header>
 
-            <div className="prose max-w-none prose-headings:text-fg-strong prose-p:text-fg prose-li:text-fg prose-a:text-accent prose-strong:text-fg-strong prose-code:text-accent prose-blockquote:text-fg-muted prose-blockquote:border-accent">
+            {/* インラインコードは accent-soft 背景 + accent-strong 文字のチップ表示。
+                無印 accent だと暗背景・コードブロック内で可読性が落ちる。
+                コードブロック（pre 内）は typography 既定の明色モノトーンに任せる。 */}
+            <div className="prose max-w-none prose-headings:text-fg-strong prose-p:text-fg prose-li:text-fg prose-a:text-accent prose-strong:text-fg-strong prose-code:before:content-none prose-code:after:content-none [&_:not(pre)>code]:rounded-[3px] [&_:not(pre)>code]:bg-accent-soft [&_:not(pre)>code]:px-1.5 [&_:not(pre)>code]:py-[2px] [&_:not(pre)>code]:text-accent-strong [&_:not(pre)>code]:text-[0.95em] prose-blockquote:text-fg-muted prose-blockquote:border-accent">
                 <ReactMarkdown
                     remarkPlugins={[remarkGfm]}
                     components={{ pre: MarkdownPre }}
