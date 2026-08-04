@@ -53,6 +53,34 @@ describe("ArticleDetail", () => {
         expect(html).toContain("<del>")
         expect(html).toContain("ts")
     })
+
+    it("replaces ```mermaid blocks with the MermaidDiagram component", () => {
+        const html = renderToStaticMarkup(
+            <ArticleDetail
+                article={make({
+                    body: "```mermaid\nflowchart LR\n    a --> b\n```",
+                })}
+            />,
+        )
+        // SSR 時点では動的 import 前のプレースホルダが出る（SVG 描画はクライアント側）
+        expect(html).toContain("mermaid-loading")
+        // 生のコードブロックとしては表示されないこと
+        expect(html).not.toContain("language-mermaid")
+    })
+
+    it("keeps non-mermaid code blocks as plain <pre><code>", () => {
+        const html = renderToStaticMarkup(
+            <ArticleDetail
+                article={make({
+                    body: '```bash\nterraform init -backend-config="backend.hcl"\n```',
+                })}
+            />,
+        )
+        expect(html).toContain("<pre>")
+        expect(html).toContain("language-bash")
+        expect(html).toContain("terraform init")
+        expect(html).not.toContain("mermaid-loading")
+    })
 })
 
 describe("BlogPage (公開一覧)", () => {
