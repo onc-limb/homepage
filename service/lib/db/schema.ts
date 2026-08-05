@@ -52,6 +52,8 @@ export const articles = sqliteTable(
         title: text().notNull(),
         // Markdown 長文本文。react-markdown + remark-gfm で表示する。
         body: text().notNull(),
+        // 外部媒体から再掲した記事の正規 URL。自サイト起点の記事は null。
+        canonicalUrl: text("canonical_url"),
         // 下書き / 公開の 2 状態。DB レベルは下記 check() で 'draft' | 'published' に制約する。
         status: text().notNull().default("draft"),
         // ASSUMPTION: タイムスタンプの持ち方は既存 books に合わせて text + datetime('now')

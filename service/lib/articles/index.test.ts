@@ -41,6 +41,7 @@ CREATE TABLE articles (
     slug TEXT NOT NULL UNIQUE,
     title TEXT NOT NULL,
     body TEXT NOT NULL,
+    canonical_url TEXT,
     status TEXT NOT NULL DEFAULT 'draft',
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at TEXT NOT NULL DEFAULT (datetime('now')),

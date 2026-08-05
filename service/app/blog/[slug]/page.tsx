@@ -9,6 +9,7 @@ import { getPublishedArticleBySlug } from "@/lib/articles"
 import { ArticleDetail, type BlogArticle } from "@/components/blog"
 
 export const dynamic = "force-dynamic"
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://onclimb.net"
 
 export async function generateMetadata({
     params,
@@ -20,7 +21,14 @@ export async function generateMetadata({
     if (!article) {
         return { title: "記事が見つかりません — onclimb" }
     }
-    return { title: `${article.title} — onclimb` }
+    return {
+        title: `${article.title} — onclimb`,
+        alternates: {
+            canonical:
+                article.canonicalUrl ??
+                new URL(`/blog/${article.slug}`, siteUrl).toString(),
+        },
+    }
 }
 
 export default async function ArticlePage({
