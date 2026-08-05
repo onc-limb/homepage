@@ -25,6 +25,12 @@ describe("articles schema", () => {
         expect(body?.notNull).toBe(true)
     })
 
+    it("canonical_url は外部媒体からの再掲記事だけが使う nullable カラム", () => {
+        const canonicalUrl = config.columns.find((c) => c.name === "canonical_url")
+        expect(canonicalUrl).toBeDefined()
+        expect(canonicalUrl!.notNull).toBe(false)
+    })
+
     it("status は default 'draft' の not null カラム", () => {
         const status = config.columns.find((c) => c.name === "status")
         expect(status).toBeDefined()

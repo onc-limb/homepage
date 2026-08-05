@@ -11,7 +11,7 @@ vi.mock("@/lib/articles", () => ({
 import { listPublishedArticles, getPublishedArticleBySlug } from "@/lib/articles"
 import { ArticleDetail, BlogListContent, type BlogArticle } from "@/components/blog"
 import BlogPage from "@/app/blog/page"
-import ArticlePage from "@/app/blog/[slug]/page"
+import ArticlePage, { generateMetadata } from "@/app/blog/[slug]/page"
 
 const listMock = listPublishedArticles as unknown as Mock
 const slugMock = getPublishedArticleBySlug as unknown as Mock
@@ -110,6 +110,36 @@ describe("BlogPage (公開一覧)", () => {
 })
 
 describe("ArticlePage (slug 詳細)", () => {
+    it("uses the original Zenn URL as canonical for a republished article", async () => {
+        slugMock.mockResolvedValue({
+            ...make({ slug: "republished-post", title: "Republished" }),
+            canonicalUrl: "https://zenn.dev/onclimb/articles/republished-post",
+        })
+
+        const metadata = await generateMetadata({
+            params: Promise.resolve({ slug: "republished-post" }),
+        })
+
+        expect(metadata.alternates?.canonical).toBe(
+            "https://zenn.dev/onclimb/articles/republished-post",
+        )
+    })
+
+    it("uses the homepage article URL as canonical for an original article", async () => {
+        slugMock.mockResolvedValue({
+            ...make({ slug: "original-post", title: "Original" }),
+            canonicalUrl: null,
+        })
+
+        const metadata = await generateMetadata({
+            params: Promise.resolve({ slug: "original-post" }),
+        })
+
+        expect(metadata.alternates?.canonical).toBe(
+            "https://onclimb.net/blog/original-post",
+        )
+    })
+
     it("renders the article body on direct URL access", async () => {
         slugMock.mockResolvedValue(
             make({
