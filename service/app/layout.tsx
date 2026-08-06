@@ -1,7 +1,12 @@
 import { AdSense } from "@/components/AdSense"
 import SiteShell from "@/components/SiteShell"
 import { ThemeProvider, themeBootScript } from "@/components/theme"
-import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/seo"
+import {
+    getGoogleSiteVerification,
+    SITE_DESCRIPTION,
+    SITE_NAME,
+    SITE_URL,
+} from "@/lib/seo"
 import type { Metadata } from "next"
 import {
     Geist,
@@ -28,6 +33,8 @@ const jetbrainsMono = JetBrains_Mono({
     subsets: ["latin"],
     variable: "--font-jetbrains-mono",
 })
+
+const googleSiteVerification = getGoogleSiteVerification()
 
 export const metadata: Metadata = {
     metadataBase: SITE_URL,
@@ -61,6 +68,7 @@ export const metadata: Metadata = {
     icons: {
         icon: "/favicon.ico",
     },
+    ...(googleSiteVerification ? { verification: googleSiteVerification } : {}),
 }
 
 export default function RootLayout({
