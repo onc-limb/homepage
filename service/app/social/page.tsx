@@ -1,9 +1,18 @@
 import { BookOpen } from "lucide-react"
 import Link from "next/link"
+import type { Metadata } from "next"
 import type { ReactNode } from "react"
 import { Reveal } from "@/components/animations"
 import { GitHubIcon, XIcon } from "@/components/icons"
 import { SOCIAL_LINKS, type SocialLink } from "@/lib/constants"
+import { createPageMetadata } from "@/lib/seo"
+
+export const metadata: Metadata = createPageMetadata({
+    title: "Social",
+    description:
+        "onclimbのGitHub、Zenn、Xでの開発活動や技術発信へのリンクをまとめています。",
+    path: "/social",
+})
 
 interface SocialPresentation {
     icon: ReactNode

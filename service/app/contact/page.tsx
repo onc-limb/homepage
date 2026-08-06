@@ -3,13 +3,15 @@ import { Mail } from "lucide-react"
 import { Reveal } from "@/components/animations"
 import { CONTACT_EMAIL } from "@/lib/constants"
 import { CONTACT_CATEGORIES } from "@/lib/validations/contact"
+import { createPageMetadata } from "@/lib/seo"
 import { ContactForm } from "./ContactForm"
 
-export const metadata: Metadata = {
-    title: "Contact — onclimb",
+export const metadata: Metadata = createPageMetadata({
+    title: "Contact",
     description:
         "仕事のご相談・技術的なご相談の窓口。メールとフォームの2つの経路で受け付けています。",
-}
+    path: "/contact",
+})
 
 export default function ContactPage() {
     return (
@@ -51,7 +53,8 @@ export default function ContactPage() {
                                 </div>
                                 <p className="mb-5 text-sm leading-[1.8] text-fg-muted">
                                     普段お使いのメールソフトからそのまま送れます。
-                                    資料の添付が必要なときや、社内の関係者を CC に入れたいときはこちらが確実です。
+                                    資料の添付が必要なときや、社内の関係者を CC
+                                    に入れたいときはこちらが確実です。
                                 </p>
                                 <a
                                     className="btn btn-ghost w-full justify-center break-all font-mono text-[13px]"

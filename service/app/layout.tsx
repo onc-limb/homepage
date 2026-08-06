@@ -1,6 +1,7 @@
 import { AdSense } from "@/components/AdSense"
 import SiteShell from "@/components/SiteShell"
 import { ThemeProvider, themeBootScript } from "@/components/theme"
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/seo"
 import type { Metadata } from "next"
 import {
     Geist,
@@ -29,8 +30,34 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-    title: "onc-limb",
-    description: "onc-limb home page",
+    metadataBase: SITE_URL,
+    title: {
+        default: SITE_NAME,
+        template: `%s | ${SITE_NAME}`,
+    },
+    description: SITE_DESCRIPTION,
+    openGraph: {
+        type: "website",
+        title: SITE_NAME,
+        description: SITE_DESCRIPTION,
+        url: "/",
+        siteName: SITE_NAME,
+        locale: "ja_JP",
+        images: [
+            {
+                url: "/opengraph-image",
+                width: 1200,
+                height: 630,
+                alt: "onclimb — Fullstack Engineer / Software Architect",
+            },
+        ],
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: SITE_NAME,
+        description: SITE_DESCRIPTION,
+        images: ["/opengraph-image"],
+    },
     icons: {
         icon: "/favicon.ico",
     },
@@ -53,9 +80,7 @@ export default function RootLayout({
         <html lang="ja" data-theme="dark" suppressHydrationWarning>
             <head>
                 {/* Apply persisted theme before hydration to prevent FOUC. */}
-                <script
-                    dangerouslySetInnerHTML={{ __html: themeBootScript }}
-                />
+                <script dangerouslySetInnerHTML={{ __html: themeBootScript }} />
             </head>
             <body className={`${fontVars} min-h-screen antialiased`}>
                 <ThemeProvider>

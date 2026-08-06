@@ -7,9 +7,11 @@ import { notFound } from "next/navigation"
 // id ルーティングは不採用。返り値は articles テーブル形状 + 関連タグ (ArticleTag[]) を想定する。
 import { getPublishedArticleBySlug } from "@/lib/articles"
 import { ArticleDetail, type BlogArticle } from "@/components/blog"
+import { excerpt } from "@/components/blog/blog-utils"
+import { JsonLd } from "@/components/seo"
+import { absoluteUrl, breadcrumbJsonLd, createPageMetadata, SITE_NAME } from "@/lib/seo"
 
 export const dynamic = "force-dynamic"
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://onclimb.net"
 
 export async function generateMetadata({
     params,
@@ -19,16 +21,15 @@ export async function generateMetadata({
     const { slug } = await params
     const article = await getPublishedArticleBySlug(slug)
     if (!article) {
-        return { title: "記事が見つかりません — onclimb" }
+        return { title: "記事が見つかりません" }
     }
-    return {
-        title: `${article.title} — onclimb`,
-        alternates: {
-            canonical:
-                article.canonicalUrl ??
-                new URL(`/blog/${article.slug}`, siteUrl).toString(),
-        },
-    }
+    return createPageMetadata({
+        title: article.title,
+        description: excerpt(article.body, 160),
+        path: `/blog/${article.slug}`,
+        canonical: article.canonicalUrl ?? absoluteUrl(`/blog/${article.slug}`),
+        type: "article",
+    })
 }
 
 export default async function ArticlePage({
@@ -56,5 +57,43 @@ export default async function ArticlePage({
         updatedAt: article.updatedAt,
     }
 
-    return <ArticleDetail article={mapped} />
+    const description = excerpt(article.body, 160)
+    const canonical = article.canonicalUrl ?? absoluteUrl(`/blog/${article.slug}`)
+
+    return (
+        <>
+            <JsonLd
+                data={[
+                    {
+                        "@context": "https://schema.org",
+                        "@type": "BlogPosting",
+                        headline: article.title,
+                        description,
+                        datePublished: article.createdAt,
+                        dateModified: article.updatedAt,
+                        mainEntityOfPage: canonical,
+                        url: canonical,
+                        author: {
+                            "@type": "Person",
+                            name: SITE_NAME,
+                            url: absoluteUrl("/profile"),
+                        },
+                        publisher: {
+                            "@type": "Person",
+                            name: SITE_NAME,
+                            url: absoluteUrl("/profile"),
+                        },
+                        image: absoluteUrl("/opengraph-image"),
+                        inLanguage: "ja-JP",
+                    },
+                    breadcrumbJsonLd([
+                        { name: "Home", path: "/" },
+                        { name: "Blog", path: "/blog" },
+                        { name: article.title, path: `/blog/${article.slug}` },
+                    ]),
+                ]}
+            />
+            <ArticleDetail article={mapped} />
+        </>
+    )
 }
