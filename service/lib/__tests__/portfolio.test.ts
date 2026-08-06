@@ -1,5 +1,17 @@
 import { describe, it, expect } from "vitest"
-import { findAdjacentProjectIds, formatProjectNumber } from "@/lib/portfolio"
+import {
+    findAdjacentProjectIds,
+    formatProjectNumber,
+    getProjects,
+} from "@/lib/portfolio"
+
+describe("portfolio metadata", () => {
+    it("has a valid updatedAt timestamp for every project", () => {
+        for (const project of getProjects()) {
+            expect(Number.isFinite(Date.parse(project.updatedAt))).toBe(true)
+        }
+    })
+})
 
 /**
  * findAdjacentProjectIds contract tests.

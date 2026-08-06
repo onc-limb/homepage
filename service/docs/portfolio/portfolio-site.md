@@ -1,5 +1,6 @@
 ---
 id: portfolio-site
+updatedAt: "2025-12-26T20:10:09+09:00"
 title: ポートフォリオサイト
 description: Next.js と Tailwind CSS で構築した個人ポートフォリオサイト
 longDescription: フルスタックエンジニアとしての技術力をアピールするためのポートフォリオサイト。毎日の技術ニュースをAIで要約する機能も搭載。
