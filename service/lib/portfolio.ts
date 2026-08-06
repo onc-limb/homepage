@@ -30,6 +30,7 @@ export interface Challenge {
 }
 export interface ProjectMeta {
     id: string
+    updatedAt: string
     title: string
     description: string
     longDescription?: string
@@ -151,6 +152,7 @@ function parsePortfolioMarkdown(rawContent: string): Project {
     )
     return {
         id: meta.id,
+        updatedAt: meta.updatedAt,
         title: meta.title,
         description: meta.description,
         longDescription: meta.longDescription,
