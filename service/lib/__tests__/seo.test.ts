@@ -16,12 +16,19 @@ describe("SEO metadata", () => {
             title: "Profile | onclimb",
             description: "Profile description",
             url: "https://onclimb.net/profile",
-            images: [expect.objectContaining({ width: 1200, height: 630 })],
+            images: [
+                expect.objectContaining({
+                    url: "/og-default.png",
+                    width: 1200,
+                    height: 630,
+                }),
+            ],
         })
         expect(metadata.twitter).toMatchObject({
             card: "summary_large_image",
             title: "Profile | onclimb",
             description: "Profile description",
+            images: ["/og-default.png"],
         })
     })
 

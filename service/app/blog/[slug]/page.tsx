@@ -83,7 +83,7 @@ export default async function ArticlePage({
                             name: SITE_NAME,
                             url: absoluteUrl("/profile"),
                         },
-                        image: absoluteUrl("/opengraph-image"),
+                        image: absoluteUrl("/og-default.png"),
                         inLanguage: "ja-JP",
                     },
                     breadcrumbJsonLd([

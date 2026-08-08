@@ -45,7 +45,7 @@ export const metadata: Metadata = {
         locale: "ja_JP",
         images: [
             {
-                url: "/opengraph-image",
+                url: "/og-default.png",
                 width: 1200,
                 height: 630,
                 alt: "onclimb — Fullstack Engineer / Software Architect",
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
         card: "summary_large_image",
         title: SITE_NAME,
         description: SITE_DESCRIPTION,
-        images: ["/opengraph-image"],
+        images: ["/og-default.png"],
     },
     icons: {
         icon: "/favicon.ico",

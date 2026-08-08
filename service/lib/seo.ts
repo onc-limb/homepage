@@ -6,7 +6,7 @@ export const SITE_DESCRIPTION =
 export const SITE_URL = new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://onclimb.net")
 
 const OG_IMAGE = {
-    url: "/opengraph-image",
+    url: "/og-default.png",
     width: 1200,
     height: 630,
     alt: "onclimb — Fullstack Engineer / Software Architect",
