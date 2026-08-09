@@ -16,6 +16,11 @@ export function absoluteUrl(path: string): string {
     return new URL(path, SITE_URL).toString()
 }
 
+export function getGoogleSiteVerification(): Metadata["verification"] | undefined {
+    const token = process.env.GOOGLE_SITE_VERIFICATION?.trim()
+    return token ? { google: token } : undefined
+}
+
 interface PageMetadataInput {
     title: string
     description: string
