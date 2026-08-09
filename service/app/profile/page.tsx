@@ -1,7 +1,20 @@
 import Image from "next/image"
 import Link from "next/link"
+import type { Metadata } from "next"
+import { JsonLd } from "@/components/seo"
+import { SOCIAL_LINKS } from "@/lib/constants"
 import { getProfile, getParsedProfile } from "@/lib/profile"
+import { absoluteUrl, createPageMetadata } from "@/lib/seo"
 import { Reveal } from "@/components/animations"
+
+const description =
+    "フルスタックエンジニア onclimb の経歴、価値観、資格、ソフトウェア開発への向き合い方を紹介します。"
+
+export const metadata: Metadata = createPageMetadata({
+    title: "Profile",
+    description,
+    path: "/profile",
+})
 
 export default async function ProfilePage() {
     const profile = await getProfile()
@@ -9,6 +22,18 @@ export default async function ProfilePage() {
 
     return (
         <main className="page flex-1">
+            <JsonLd
+                data={{
+                    "@context": "https://schema.org",
+                    "@type": "Person",
+                    name: profile.data.name,
+                    url: absoluteUrl("/profile"),
+                    image: absoluteUrl(profile.data.avatar),
+                    jobTitle: profile.data.title,
+                    description,
+                    sameAs: SOCIAL_LINKS.map((link) => link.url),
+                }}
+            />
             {/* page-hero */}
             <section className="px-0 pb-10 pt-20">
                 <div className="mx-auto max-w-[820px] px-6">
@@ -56,7 +81,8 @@ export default async function ProfilePage() {
                         background: "var(--surface-solid)",
                     }}
                 >
-                    <div className="relative h-[200px] w-[200px] rounded-full p-[3px]"
+                    <div
+                        className="relative h-[200px] w-[200px] rounded-full p-[3px]"
                         style={{
                             // グラデーション廃止・単色化: 線形グラデーションのリングを単色アクセントに置換
                             background: "var(--accent)",
@@ -137,7 +163,7 @@ export default async function ProfilePage() {
                                     <p key={i} className="mb-[18px]">
                                         {block.text}
                                     </p>
-                                ),
+                                )
                             )}
                         </Reveal>
                     </div>

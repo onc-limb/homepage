@@ -6,11 +6,13 @@ import type { Metadata } from "next"
 // 返り値は articles テーブル形状 + 関連タグ (ArticleTag[]) を想定する。
 import { listPublishedArticles } from "@/lib/articles"
 import { BlogListContent, type BlogArticle } from "@/components/blog"
+import { createPageMetadata } from "@/lib/seo"
 
-export const metadata: Metadata = {
-    title: "Blog — onclimb",
+export const metadata: Metadata = createPageMetadata({
+    title: "Blog",
     description: "学んだ技術知識をまとめた記事の一覧。",
-}
+    path: "/blog",
+})
 
 // 公開/下書きの切り替えを即時反映させるため動的レンダリングにする。
 export const dynamic = "force-dynamic"

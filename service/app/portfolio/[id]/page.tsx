@@ -1,4 +1,5 @@
 import Link from "next/link"
+import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import {
     findAdjacentProjectIds,
@@ -10,6 +11,8 @@ import {
 import { Reveal } from "@/components/animations"
 import { ExternalIcon, GitHubIcon } from "@/components/icons"
 import { ArchDiagram, Pager } from "@/components/portfolio"
+import { JsonLd } from "@/components/seo"
+import { absoluteUrl, breadcrumbJsonLd, createPageMetadata } from "@/lib/seo"
 
 export function generateStaticParams() {
     return getProjectIds().map((id) => ({ id }))
@@ -19,14 +22,15 @@ export async function generateMetadata({
     params,
 }: {
     params: Promise<{ id: string }>
-}) {
+}): Promise<Metadata> {
     const { id } = await params
     const project = getProjectById(id)
     if (!project) return { title: "Project Not Found" }
-    return {
-        title: `${project.title} | Portfolio`,
+    return createPageMetadata({
+        title: project.title,
         description: project.description,
-    }
+        path: `/portfolio/${project.id}`,
+    })
 }
 
 function inferStatus(period: string): string {
@@ -39,7 +43,7 @@ function statusVisual(period: string): string {
 
 function projectNumber(
     project: { id: string; category: "personal" },
-    all: { id: string; category: "personal" }[],
+    all: { id: string; category: "personal" }[]
 ): string {
     const sameList = all.filter((p) => p.category === project.category)
     const indexInList = sameList.findIndex((p) => p.id === project.id)
@@ -67,6 +71,32 @@ export default async function ProjectDetailPage({
 
     return (
         <main className="page flex-1">
+            <JsonLd
+                data={[
+                    {
+                        "@context": "https://schema.org",
+                        "@type": "CreativeWork",
+                        name: project.title,
+                        description: project.longDescription || project.description,
+                        url: absoluteUrl(`/portfolio/${project.id}`),
+                        creator: {
+                            "@type": "Person",
+                            name: "onclimb",
+                            url: absoluteUrl("/profile"),
+                        },
+                        keywords: project.technologies.join(", "),
+                        inLanguage: "ja-JP",
+                    },
+                    breadcrumbJsonLd([
+                        { name: "Home", path: "/" },
+                        { name: "Portfolio", path: "/portfolio" },
+                        {
+                            name: project.title,
+                            path: `/portfolio/${project.id}`,
+                        },
+                    ]),
+                ]}
+            />
             {/* HERO */}
             <section className="relative overflow-hidden border-b border-hairline px-0 pb-12 pt-[72px]">
                 <div
@@ -136,10 +166,7 @@ export default async function ProjectDetailPage({
                             {project.longDescription || project.description}
                         </p>
                     </Reveal>
-                    <Reveal
-                        delay={240}
-                        className="flex flex-wrap gap-2.5"
-                    >
+                    <Reveal delay={240} className="flex flex-wrap gap-2.5">
                         {project.links?.demo && (
                             <a
                                 href={project.links.demo}
@@ -253,7 +280,11 @@ export default async function ProjectDetailPage({
             {/* 04 CRAFTS */}
             {project.detail?.technicalPoints &&
                 project.detail.technicalPoints.length > 0 && (
-                    <DetailSection num="/04" title="工夫した点" sub="— what I obsessed over">
+                    <DetailSection
+                        num="/04"
+                        title="工夫した点"
+                        sub="— what I obsessed over"
+                    >
                         <div className="grid grid-cols-1 gap-4 [@media(min-width:720px)]:grid-cols-2">
                             {project.detail.technicalPoints.map((pt, i) => (
                                 <Reveal
@@ -317,7 +348,9 @@ function Fact({
             </div>
             <div
                 className="text-[15px] font-semibold leading-[1.3]"
-                style={accent ? { color: "var(--accent)" } : { color: "var(--fg-strong)" }}
+                style={
+                    accent ? { color: "var(--accent)" } : { color: "var(--fg-strong)" }
+                }
             >
                 {children}
             </div>

@@ -44,7 +44,7 @@ describe("ArticleDetail", () => {
                     body: "## Heading\n\nHello world with ~~strike~~.",
                     tags: ["ts"],
                 })}
-            />,
+            />
         )
         expect(html).toContain("My Post")
         expect(html).toContain("Heading")
@@ -60,7 +60,7 @@ describe("ArticleDetail", () => {
                 article={make({
                     body: "```mermaid\nflowchart LR\n    a --> b\n```",
                 })}
-            />,
+            />
         )
         // SSR 時点では動的 import 前のプレースホルダが出る（SVG 描画はクライアント側）
         expect(html).toContain("mermaid-loading")
@@ -74,7 +74,7 @@ describe("ArticleDetail", () => {
                 article={make({
                     body: '```bash\nterraform init -backend-config="backend.hcl"\n```',
                 })}
-            />,
+            />
         )
         expect(html).toContain("<pre>")
         expect(html).toContain("language-bash")
@@ -93,9 +93,7 @@ describe("BlogPage (公開一覧)", () => {
         expect(el.type).toBe(BlogListContent)
         expect(el.props.articles).toHaveLength(2)
         expect(
-            el.props.articles.every(
-                (a: BlogArticle) => a.status === "published",
-            ),
+            el.props.articles.every((a: BlogArticle) => a.status === "published")
         ).toBe(true)
         expect(el.props.selectedTag).toBeUndefined()
     })
@@ -121,7 +119,7 @@ describe("ArticlePage (slug 詳細)", () => {
         })
 
         expect(metadata.alternates?.canonical).toBe(
-            "https://zenn.dev/onclimb/articles/republished-post",
+            "https://zenn.dev/onclimb/articles/republished-post"
         )
     })
 
@@ -136,8 +134,18 @@ describe("ArticlePage (slug 詳細)", () => {
         })
 
         expect(metadata.alternates?.canonical).toBe(
-            "https://onclimb.net/blog/original-post",
+            "https://onclimb.net/blog/original-post"
         )
+        expect(metadata.description).toBe("b")
+        expect(metadata.openGraph).toMatchObject({
+            type: "article",
+            title: "Original | onclimb",
+            url: "https://onclimb.net/blog/original-post",
+        })
+        expect(metadata.twitter).toMatchObject({
+            card: "summary_large_image",
+            title: "Original | onclimb",
+        })
     })
 
     it("renders the article body on direct URL access", async () => {
@@ -146,7 +154,7 @@ describe("ArticlePage (slug 詳細)", () => {
                 slug: "my-post",
                 title: "Direct Title",
                 body: "# Direct Body\n\nAccessible via URL.",
-            }),
+            })
         )
         const el = await ArticlePage({
             params: Promise.resolve({ slug: "my-post" }),
@@ -155,13 +163,16 @@ describe("ArticlePage (slug 詳細)", () => {
         expect(html).toContain("Direct Title")
         expect(html).toContain("Direct Body")
         expect(html).toContain("Accessible via URL.")
+        expect(html).toContain('type="application/ld+json"')
+        expect(html).toContain('"@type":"BlogPosting"')
+        expect(html).toContain('"@type":"BreadcrumbList"')
         expect(slugMock).toHaveBeenCalledWith("my-post")
     })
 
     it("calls notFound() when no published article matches the slug", async () => {
         slugMock.mockResolvedValue(null)
         await expect(
-            ArticlePage({ params: Promise.resolve({ slug: "missing" }) }),
+            ArticlePage({ params: Promise.resolve({ slug: "missing" }) })
         ).rejects.toThrow()
     })
 })

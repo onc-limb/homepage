@@ -1,6 +1,15 @@
+import type { Metadata } from "next"
 import { getProjects } from "@/lib/portfolio"
+import { createPageMetadata } from "@/lib/seo"
 import { Reveal } from "@/components/animations"
 import { PortfolioListClient } from "@/components/portfolio"
+
+export const metadata: Metadata = createPageMetadata({
+    title: "Portfolio",
+    description:
+        "設計・実装・運用に携わったWebアプリケーションや、個人開発プロジェクトの実績を紹介します。",
+    path: "/portfolio",
+})
 
 export default function PortfolioPage() {
     const projects = getProjects()

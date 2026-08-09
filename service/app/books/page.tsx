@@ -1,7 +1,16 @@
 import { Suspense } from "react"
+import type { Metadata } from "next"
 import BooksContent from "./BooksContent"
 import { getBooks, getBookTags } from "@/lib/books"
 import { Reveal } from "@/components/animations"
+import { createPageMetadata } from "@/lib/seo"
+
+export const metadata: Metadata = createPageMetadata({
+    title: "Books",
+    description:
+        "技術書を中心に、読んだ本と読みたい本を記録し、関連するテーマや知識のつながりを紹介します。",
+    path: "/books",
+})
 
 export const revalidate = 60
 
