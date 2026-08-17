@@ -47,3 +47,10 @@ pnpm add -D <package-name>
 3. `pnpm dev` で開発サーバーを起動
 4. コード変更後は `pnpm lint` でエラーチェック
 5. `pnpm build` でビルドが通ることを確認
+
+## worklog / ToDo の記録
+
+- worklog・ToDo の記録ルールはグローバル `~/.codex/AGENTS.md` の
+  「worklog イベント記録」「ToDo 台帳との突き合わせ」に従う。
+- このリポジトリの project id は `homepage`。`record_milestone` / `record_blocker` /
+  `todo.py` の `--project` にはこの id を使う。
