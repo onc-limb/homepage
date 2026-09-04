@@ -2,13 +2,9 @@
 name: Tailwind CSS
 category: frontend
 level: 2
-publish: false
+publish: true
 ---
 
 ## 経験
 
-- 記載中
-
-## 知識
-
-- 記載中
+- 運用中の個人サイト・個人サービスのスタイリングに利用

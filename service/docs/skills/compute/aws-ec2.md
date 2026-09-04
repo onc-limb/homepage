@@ -2,13 +2,9 @@
 name: AWS EC2
 category: compute
 level: 3
-publish: false
+publish: true
 ---
 
 ## 経験
 
-- 記載中
-
-## 知識
-
-- 記載中
+- LLM チャットサービスの検証環境の構築と、RDS 接続用の踏み台サーバーの運用

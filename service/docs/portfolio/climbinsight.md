@@ -1,5 +1,6 @@
 ---
 id: climbinsight
+updatedAt: "2026-07-14T19:55:38+09:00"
 title: ClimbInsight
 description: Segment Anything Model を活用したクライミング画像解析 Web アプリ
 longDescription: クライミング画像の解析・セグメンテーション機能を持つ Web アプリケーション。SAM（Segment Anything Model）でクライミングルートやホールドを自動認識する。

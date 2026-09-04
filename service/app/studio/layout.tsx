@@ -1,10 +1,18 @@
-export const dynamic = "force-dynamic"
-
+import type { Metadata } from "next"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 import { auth, signOut } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
 import { LogOut, Home } from "lucide-react"
+
+export const dynamic = "force-dynamic"
+
+export const metadata: Metadata = {
+    robots: {
+        index: false,
+        follow: false,
+    },
+}
 
 export default async function StudioLayout({ children }: { children: React.ReactNode }) {
     // /studio 配下の入口ガード。以前は middleware がセッションクッキーの

@@ -2,13 +2,9 @@
 name: Elixir
 category: language
 level: 1
-publish: false
+publish: true
 ---
 
 ## 経験
 
-- 記載中
-
-## 知識
-
-- 記載中
+- 言語の概念（プロセス・OTP など）の学習と簡単なツールの作成

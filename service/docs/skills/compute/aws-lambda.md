@@ -1,14 +1,10 @@
 ---
 name: AWS Lambda
 category: compute
-level: 4
-publish: false
+level: 3
+publish: true
 ---
 
 ## 経験
 
-- 記載中
-
-## 知識
-
-- 記載中
+- 単発のバッチ処理・スケジュール実行処理の実装と、CI/CD パイプラインとの連携処理の構築

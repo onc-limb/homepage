@@ -1,14 +1,10 @@
 ---
 name: OpenSearch
 category: storage
-level: 4
-publish: false
+level: 3
+publish: true
 ---
 
 ## 経験
 
-- 記載中
-
-## 知識
-
-- 記載中
+- 複数サービス間のデータ連携基盤および検索エンジンとして業務で利用

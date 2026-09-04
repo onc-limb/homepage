@@ -1,5 +1,6 @@
 ---
 id: iron-legion
+updatedAt: "2026-07-14T19:55:38+09:00"
 title: iron-legion
 description: GitHub issue から実装・PR・マージまで自律実行する開発ワークフロー群
 longDescription: 人が張り付かなくても自律的に働く AI 開発ワークフロー群。エンジニアリングループ extremis（Elixir/OTP + Rust）と、ディスカバリーループ veronica（Python）で構成される。

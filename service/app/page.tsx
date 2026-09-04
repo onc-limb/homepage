@@ -1,5 +1,8 @@
 import Link from "next/link"
+import type { Metadata } from "next"
+import { JsonLd } from "@/components/seo"
 import { NAV_ITEMS, SOCIAL_LINKS } from "@/lib/constants"
+import { absoluteUrl, createPageMetadata, SITE_DESCRIPTION, SITE_NAME } from "@/lib/seo"
 import { getHomeStats } from "@/lib/stats"
 import {
     FloatingShapes,
@@ -13,6 +16,12 @@ if (!githubLink) {
     throw new Error("SOCIAL_LINKS must include a GitHub entry")
 }
 const GITHUB_URL = githubLink.url
+
+export const metadata: Metadata = createPageMetadata({
+    title: "Home",
+    description: SITE_DESCRIPTION,
+    path: "/",
+})
 
 const CAPS = [
     {
@@ -80,9 +89,7 @@ const CAPS = [
 
 // Explore は「深掘りする読み物を選ぶ」セクションなので、Home と、
 // 場所ではなく行動導線である Contact を除く（Contact はヒーローと CTA バンドで拾う）。
-const EXPLORE_ITEMS = NAV_ITEMS.filter(
-    (n) => n.href !== "/" && n.href !== "/contact"
-)
+const EXPLORE_ITEMS = NAV_ITEMS.filter((n) => n.href !== "/" && n.href !== "/contact")
 
 // STATS はリクエスト毎に DB 集計するため、ページを動的レンダリングにする（#127）。
 // /studio で本を読了にしたり記事を公開すると、再デプロイなしで次回アクセスに反映される。
@@ -102,6 +109,16 @@ export default async function TopPage() {
 
     return (
         <main className="page flex-1">
+            <JsonLd
+                data={{
+                    "@context": "https://schema.org",
+                    "@type": "WebSite",
+                    name: SITE_NAME,
+                    url: absoluteUrl("/"),
+                    description: SITE_DESCRIPTION,
+                    inLanguage: "ja-JP",
+                }}
+            />
             {/* HERO */}
             <section className="relative grid min-h-screen place-items-center overflow-hidden px-0 pb-20 pt-[120px]">
                 <HeroSpotlight />
@@ -109,9 +126,7 @@ export default async function TopPage() {
 
                 <div className="relative z-[2] mx-auto max-w-[980px] px-6 text-center">
                     <Reveal as="div">
-                        <span
-                            className="pulse-dot mb-8 inline-flex items-center gap-2 rounded-full border border-hairline-strong bg-surface-solid px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.22em] text-fg-muted"
-                        >
+                        <span className="pulse-dot mb-8 inline-flex items-center gap-2 rounded-full border border-hairline-strong bg-surface-solid px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.22em] text-fg-muted">
                             <span
                                 aria-hidden="true"
                                 className="block h-[7px] w-[7px] rounded-full"
@@ -185,7 +200,10 @@ export default async function TopPage() {
             {/* STACK / WHAT I DO */}
             <section className="relative py-[120px]">
                 <div className="container-design">
-                    <Reveal as="header" className="mb-14 flex max-w-[720px] flex-col gap-3">
+                    <Reveal
+                        as="header"
+                        className="mb-14 flex max-w-[720px] flex-col gap-3"
+                    >
                         <span className="font-mono text-xs uppercase tracking-[0.2em] text-accent">
                             01 / What I do
                         </span>
@@ -195,7 +213,9 @@ export default async function TopPage() {
                             地続きで責任を持つ。
                         </h2>
                         <p className="max-w-[560px] text-base leading-[1.7] text-fg-muted">
-                            ドメインを深く理解したモデリングを起点に、高保守性なアプリケーションを組み立てるフルスタックエンジニア。「何を作るか」の決定を尊重し、「作ると決まったもの」を正しく設計・運用し続けることに責任を持ちます。生成 AI で 0→1 が速くなった今こそ、それを拡大し長期運用へ導く「理解に基づく設計」の価値を磨き続けています。
+                            ドメインを深く理解したモデリングを起点に、高保守性なアプリケーションを組み立てるフルスタックエンジニア。「何を作るか」の決定を尊重し、「作ると決まったもの」を正しく設計・運用し続けることに責任を持ちます。生成
+                            AI で 0→1
+                            が速くなった今こそ、それを拡大し長期運用へ導く「理解に基づく設計」の価値を磨き続けています。
                         </p>
                     </Reveal>
 
@@ -265,7 +285,10 @@ export default async function TopPage() {
             {/* EXPLORE */}
             <section className="relative pb-[120px] pt-10">
                 <div className="container-design">
-                    <Reveal as="header" className="mb-14 flex max-w-[720px] flex-col gap-3">
+                    <Reveal
+                        as="header"
+                        className="mb-14 flex max-w-[720px] flex-col gap-3"
+                    >
                         <span className="font-mono text-xs uppercase tracking-[0.2em] text-accent">
                             02 / Explore
                         </span>

@@ -1,5 +1,6 @@
 ---
 id: onclimb-industries
+updatedAt: "2026-07-14T19:55:38+09:00"
 title: onclimb-industries
 description: Claude Code のスキル群で個人業務を自動化する AI Agent Skills リポジトリ
 longDescription: 作業記録・報告書・請求書・コードレビュー・設計支援など 40 超のスキルを体系化した、Claude Code の Agent Skills 管理リポジトリ。日本語の指示だけで対応スキルが起動する。

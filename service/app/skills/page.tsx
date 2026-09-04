@@ -1,14 +1,15 @@
-import {
-    categoryOrder,
-    getRadarAxes,
-    getSkills,
-    getSkillsByCategory,
-} from "@/lib/skills"
+import type { Metadata } from "next"
+import { categoryOrder, getRadarAxes, getSkills, getSkillsByCategory } from "@/lib/skills"
 import { Reveal } from "@/components/animations"
-import {
-    RadarChart,
-    SkillCategorySection,
-} from "@/components/skills"
+import { RadarChart, SkillCategorySection } from "@/components/skills"
+import { createPageMetadata } from "@/lib/seo"
+
+export const metadata: Metadata = createPageMetadata({
+    title: "Skills",
+    description:
+        "フロントエンド、バックエンド、クラウド、設計など、実務で使ってきた技術スタックと習熟度を紹介します。",
+    path: "/skills",
+})
 
 const LEVEL_LEGEND = [
     { value: 5, label: "5 — 専門", color: "#4ADE80", opacity: 1 },
@@ -51,9 +52,7 @@ export default function SkillsPage() {
             {/* Radar */}
             <section className="py-14">
                 <div className="mx-auto max-w-[1100px] px-6">
-                    <Reveal
-                        className="grid grid-cols-1 items-center gap-8 [@media(min-width:900px)]:grid-cols-[minmax(0,1fr)_320px] [@media(min-width:900px)]:gap-14"
-                    >
+                    <Reveal className="grid grid-cols-1 items-center gap-8 [@media(min-width:900px)]:grid-cols-[minmax(0,1fr)_320px] [@media(min-width:900px)]:gap-14">
                         <div className="relative mx-auto aspect-square w-full max-w-[600px]">
                             <RadarChart axes={axes} />
                         </div>

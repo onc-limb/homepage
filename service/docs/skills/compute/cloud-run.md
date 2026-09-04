@@ -2,13 +2,9 @@
 name: Cloud Run
 category: compute
 level: 2
-publish: false
+publish: true
 ---
 
 ## 経験
 
-- 記載中
-
-## 知識
-
-- 記載中
+- 個人サービスの API サーバーの実行基盤として利用

@@ -2,13 +2,9 @@
 name: Amazon VPC
 category: networking
 level: 3
-publish: false
+publish: true
 ---
 
 ## 経験
 
-- 記載中
-
-## 知識
-
-- 記載中
+- 業務案件での標準的なネットワーク環境の構築（サブネット設計・インターネットゲートウェイ・VPC ピアリング）
