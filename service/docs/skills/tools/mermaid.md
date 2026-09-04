@@ -1,6 +1,6 @@
 ---
-name: zod
-category: framework
+name: Mermaid
+category: tools
 level: 3
 publish: false
 ---

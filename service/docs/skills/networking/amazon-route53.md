@@ -2,13 +2,9 @@
 name: Amazon Route53
 category: networking
 level: 3
-publish: false
+publish: true
 ---
 
 ## 経験
 
-- 記載中
-
-## 知識
-
-- 記載中
+- 転職サービスのドメイン設定と、メール配信向けのレコード（SPF / DKIM / DMARC）の設定

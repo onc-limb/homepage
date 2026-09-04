@@ -1,7 +1,7 @@
 ---
-name: HTML5
-category: frontend
-level: 3
+name: Strands Agents
+category: ai-llm
+level: 1
 publish: false
 ---
 

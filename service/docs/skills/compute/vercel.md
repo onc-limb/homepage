@@ -1,14 +1,10 @@
 ---
 name: Vercel
 category: compute
-level: 4
-publish: false
+level: 3
+publish: true
 ---
 
 ## 経験
 
-- 記載中
-
-## 知識
-
-- 記載中
+- 転職サービスのフロントエンドのホスティングで利用し、キャッシュと画像最適化を活用

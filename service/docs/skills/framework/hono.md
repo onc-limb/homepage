@@ -1,14 +1,10 @@
 ---
 name: Hono
 category: framework
-level: 1
-publish: false
+level: 2
+publish: true
 ---
 
 ## 経験
 
-- 記載中
-
-## 知識
-
-- 記載中
+- 個人開発のバックエンド API の大半を Hono で構築（Cloudflare Workers 上で運用）

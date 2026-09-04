@@ -2,13 +2,9 @@
 name: MinIO
 category: storage
 level: 4
-publish: false
+publish: true
 ---
 
 ## 経験
 
-- 記載中
-
-## 知識
-
-- 記載中
+- S3 互換のローカルストレージとして、業務のローカル開発環境で継続利用
