@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
-import { categoryOrder, getRadarAxes, getSkills, getSkillsByCategory } from "@/lib/skills"
+import { getRadarAxes, getSkills, getSkillsByCategory } from "@/lib/skills"
 import { Reveal } from "@/components/animations"
-import { RadarChart, SkillCategorySection } from "@/components/skills"
+import { RadarChart, SkillsList } from "@/components/skills"
 import { createPageMetadata } from "@/lib/seo"
 
 export const metadata: Metadata = createPageMetadata({
@@ -105,16 +105,7 @@ export default function SkillsPage() {
             {/* Category sections */}
             <section className="py-20">
                 <div className="mx-auto max-w-[1100px] px-6">
-                    {categoryOrder
-                        .filter((c) => skillsByCategory[c].length > 0)
-                        .map((category, idx) => (
-                            <SkillCategorySection
-                                key={category}
-                                category={category}
-                                skills={skillsByCategory[category]}
-                                index={idx}
-                            />
-                        ))}
+                    <SkillsList skillsByCategory={skillsByCategory} />
                 </div>
             </section>
         </main>

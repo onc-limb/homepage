@@ -1,4 +1,4 @@
-import type { Skill } from "@/lib/skills"
+import type { Skill } from "@/lib/skills-meta"
 
 // グラデーション廃止・単色化: レベル別のバー色を線形グラデーションから単色へ置換。
 // 色はすべて既存テーマ機構（globals.css のトークン）で定義し、コンポーネント内に
