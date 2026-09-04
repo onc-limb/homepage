@@ -7,8 +7,8 @@ import type { Skill, SkillCategory, SkillLevel } from "@/lib/skills"
  *
  * Plan: lib/skills.ts に getRadarAxes(skills: Skill[]): RadarAxis[] を追加し、
  *   docs/design/skill.html のレーダーチャートに必要な 8 軸を生成する。
- *   軸キー / ラベル / 値 (0-5) を返し、軸ごとに対応する SkillCategory の
- *   level 平均を集計する。
+ *   軸キー / ラベル / level 合計 / 件数 / 正規化値 (0-1) を返し、
+ *   軸ごとに対応する SkillCategory の level 合計を集計する。
  *
  * Reference: docs/design/skill.html:217-224 (axis definitions)
  */
@@ -56,18 +56,21 @@ describe("getRadarAxes()", () => {
         }
     })
 
-    it("clamps every axis value to the inclusive 0..5 range", () => {
-        // Given level values are between 1 and 5
+    it("keeps every axis ratio in the inclusive 0..1 range", () => {
+        // Given skills contribute different totals to the axes
         // When axes are aggregated
-        // Then values stay within 0..5 even if no skills feed an axis
-        const axes = getRadarAxes([])
+        // Then normalized ratios stay within 0..1
+        const axes = getRadarAxes([
+            factorySkill({ name: "Express", category: "framework", level: 5 }),
+            factorySkill({ name: "React", category: "frontend", level: 3 }),
+        ])
         for (const axis of axes) {
-            expect(axis.value).toBeGreaterThanOrEqual(0)
-            expect(axis.value).toBeLessThanOrEqual(5)
+            expect(axis.ratio).toBeGreaterThanOrEqual(0)
+            expect(axis.ratio).toBeLessThanOrEqual(1)
         }
     })
 
-    it("returns 0 for axes with no contributing skills", () => {
+    it("returns zero totals, counts, and ratios for axes with no contributing skills", () => {
         // Given a skill list that only contributes to the 'ai' axis
         // When axes are aggregated
         // Then non-contributing axes are 0
@@ -77,53 +80,58 @@ describe("getRadarAxes()", () => {
         const axes = getRadarAxes(skills)
         const nonAi = axes.filter((a) => a.key !== "ai")
         for (const axis of nonAi) {
-            expect(axis.value).toBe(0)
+            expect(axis.total).toBe(0)
+            expect(axis.count).toBe(0)
+            expect(axis.ratio).toBe(0)
         }
     })
 
-    it("aggregates ml and ai-llm skills onto the 'ai' axis as an average", () => {
+    it("aggregates ml and ai-llm skill levels onto the 'ai' axis as a total", () => {
         // Given an ml skill and an ai-llm skill with levels 2 and 4
         // When axes are aggregated
-        // Then the 'ai' axis equals their average (3)
+        // Then the 'ai' axis has their total (6) and count (2)
         const skills: Skill[] = [
             factorySkill({ name: "PyTorch", category: "ml", level: 2 }),
             factorySkill({ name: "LLM", category: "ai-llm", level: 4 }),
         ]
         const axes = getRadarAxes(skills)
         const ai = axes.find((a) => a.key === "ai")
-        expect(ai?.value).toBe(3)
+        expect(ai?.total).toBe(6)
+        expect(ai?.count).toBe(2)
     })
 
     it("aggregates security and auth categories onto the 'sec' axis", () => {
         // Given one security skill and one auth skill at levels 4 and 2
         // When axes are aggregated
-        // Then 'sec' averages them to 3
+        // Then 'sec' totals them to 6
         const skills: Skill[] = [
             factorySkill({ name: "Vault", category: "security", level: 4 }),
             factorySkill({ name: "OAuth", category: "auth", level: 2 }),
         ]
         const axes = getRadarAxes(skills)
         const sec = axes.find((a) => a.key === "sec")
-        expect(sec?.value).toBe(3)
+        expect(sec?.total).toBe(6)
+        expect(sec?.count).toBe(2)
     })
 
     it("aggregates framework and api categories onto the 'backend' axis", () => {
         // Given one framework skill and one api skill at level 5 each
         // When axes are aggregated
-        // Then the 'backend' axis is 5 (average of two 5s)
+        // Then the 'backend' axis totals both levels to 10
         const skills: Skill[] = [
             factorySkill({ name: "Express", category: "framework", level: 5 }),
             factorySkill({ name: "GraphQL", category: "api", level: 5 }),
         ]
         const axes = getRadarAxes(skills)
         const backend = axes.find((a) => a.key === "backend")
-        expect(backend?.value).toBe(5)
+        expect(backend?.total).toBe(10)
+        expect(backend?.count).toBe(2)
     })
 
     it("aggregates infra-related categories onto the 'infra' axis", () => {
         // Given mixed compute / storage / networking / IaC / container skills
         // When axes are aggregated
-        // Then the 'infra' axis is greater than zero
+        // Then the 'infra' axis totals every contributing level
         const skills: Skill[] = [
             factorySkill({ name: "EC2", category: "compute", level: 4 }),
             factorySkill({ name: "S3", category: "storage", level: 4 }),
@@ -133,21 +141,22 @@ describe("getRadarAxes()", () => {
         ]
         const axes = getRadarAxes(skills)
         const infra = axes.find((a) => a.key === "infra")
-        expect(infra?.value).toBeGreaterThan(0)
-        expect(infra?.value).toBeLessThanOrEqual(5)
+        expect(infra?.total).toBe(18)
+        expect(infra?.count).toBe(5)
     })
 
     it("aggregates devops-sre and tools categories onto the 'devops' axis", () => {
         // Given a devops-sre and a tools skill at level 4 each
         // When axes are aggregated
-        // Then the 'devops' axis is 4 (average)
+        // Then the 'devops' axis totals both levels to 8
         const skills: Skill[] = [
             factorySkill({ name: "Datadog", category: "devops-sre", level: 4 }),
             factorySkill({ name: "GitHub Actions", category: "tools", level: 4 }),
         ]
         const axes = getRadarAxes(skills)
         const devops = axes.find((a) => a.key === "devops")
-        expect(devops?.value).toBe(4)
+        expect(devops?.total).toBe(8)
+        expect(devops?.count).toBe(2)
     })
 
     it("aggregates language category onto the 'low' axis", () => {
@@ -159,7 +168,8 @@ describe("getRadarAxes()", () => {
         ]
         const axes = getRadarAxes(skills)
         const low = axes.find((a) => a.key === "low")
-        expect(low?.value).toBe(3)
+        expect(low?.total).toBe(3)
+        expect(low?.count).toBe(1)
     })
 
     it("aggregates architecture category onto the 'arch' axis", () => {
@@ -171,7 +181,8 @@ describe("getRadarAxes()", () => {
         ]
         const axes = getRadarAxes(skills)
         const arch = axes.find((a) => a.key === "arch")
-        expect(arch?.value).toBe(4)
+        expect(arch?.total).toBe(4)
+        expect(arch?.count).toBe(1)
     })
 
     it("does not aggregate process methodology onto the 'arch' axis", () => {
@@ -183,25 +194,27 @@ describe("getRadarAxes()", () => {
         ]
         const axes = getRadarAxes(skills)
         const arch = axes.find((a) => a.key === "arch")
-        expect(arch?.value).toBe(0)
+        expect(arch?.total).toBe(0)
+        expect(arch?.count).toBe(0)
     })
 
     it("aggregates frontend category onto the 'frontend' axis", () => {
         // Given one frontend skill at level 4
         // When axes are aggregated
-        // Then the 'frontend' axis includes its level
+        // Then the 'frontend' axis includes its level as the total
         const skills: Skill[] = [
             factorySkill({ name: "React", category: "frontend", level: 4 }),
         ]
         const axes = getRadarAxes(skills)
         const frontend = axes.find((a) => a.key === "frontend")
-        expect(frontend?.value).toBeGreaterThan(0)
+        expect(frontend?.total).toBe(4)
+        expect(frontend?.count).toBe(1)
     })
 
     it("treats publish=false skills the same as publish=true (caller pre-filters)", () => {
         // Given the function accepts an explicit Skill[] (caller's responsibility)
         // When the input includes any Skill regardless of publish flag
-        // Then it is averaged in (the caller is expected to pass filtered data)
+        // Then it is totaled in (the caller is expected to pass filtered data)
         const skills: Skill[] = [
             factorySkill({
                 name: "Hidden",
@@ -212,6 +225,45 @@ describe("getRadarAxes()", () => {
         ]
         const axes = getRadarAxes(skills)
         const ai = axes.find((a) => a.key === "ai")
-        expect(ai?.value).toBe(5)
+        expect(ai?.total).toBe(5)
+        expect(ai?.count).toBe(1)
+    })
+
+    it("normalizes the largest total to a ratio of 1", () => {
+        // Given backend has a larger total than frontend
+        // When axes are aggregated
+        // Then backend reaches the outer ring and frontend is relative to it
+        const axes = getRadarAxes([
+            factorySkill({ name: "Express", category: "framework", level: 5 }),
+            factorySkill({ name: "GraphQL", category: "api", level: 3 }),
+            factorySkill({ name: "React", category: "frontend", level: 4 }),
+        ])
+        const backend = axes.find((a) => a.key === "backend")
+        const frontend = axes.find((a) => a.key === "frontend")
+        expect(backend?.ratio).toBe(1)
+        expect(frontend?.ratio).toBe(0.5)
+    })
+
+    it("returns zero ratios when every axis total is zero", () => {
+        // Given no skills contribute to any radar axis
+        // When axes are aggregated
+        // Then every normalized ratio is zero
+        const axes = getRadarAxes([])
+        expect(axes.every((axis) => axis.ratio === 0)).toBe(true)
+    })
+
+    it("increases an axis total when one contributing skill is added", () => {
+        // Given an initial backend skill list
+        const initialSkills: Skill[] = [
+            factorySkill({ name: "Express", category: "framework", level: 3 }),
+        ]
+        // When another backend skill is added
+        const before = getRadarAxes(initialSkills).find((a) => a.key === "backend")
+        const after = getRadarAxes([
+            ...initialSkills,
+            factorySkill({ name: "GraphQL", category: "api", level: 4 }),
+        ]).find((a) => a.key === "backend")
+        // Then the backend total increases by the added skill's level
+        expect(after?.total).toBe((before?.total ?? 0) + 4)
     })
 })

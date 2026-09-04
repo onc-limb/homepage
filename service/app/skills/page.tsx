@@ -66,7 +66,7 @@ export default function SkillsPage() {
                                         className="w-1 self-stretch rounded"
                                         style={{
                                             background: "var(--accent)",
-                                            opacity: (a.value / 5).toFixed(2),
+                                            opacity: Math.max(0.15, a.ratio),
                                         }}
                                     />
                                     <div className="flex-1">
@@ -74,7 +74,7 @@ export default function SkillsPage() {
                                             {a.label}
                                         </div>
                                         <div className="font-mono text-[11px] text-fg-dim">
-                                            {a.value.toFixed(1)} / 5.0
+                                            total {a.total} · {a.count} skills
                                         </div>
                                     </div>
                                 </div>
