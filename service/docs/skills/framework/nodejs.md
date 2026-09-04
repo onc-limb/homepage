@@ -1,14 +1,10 @@
 ---
 name: Node.js
 category: framework
-level: 1
-publish: false
+level: 4
+publish: true
 ---
 
 ## 経験
 
-- 記載中
-
-## 知識
-
-- 記載中
+- 業務・個人ともに TypeScript 製バックエンドの実行環境として継続利用（Express / Fastify / NestJS 等）

@@ -1,14 +1,10 @@
 ---
 name: Amazon CloudFront
 category: networking
-level: 1
-publish: false
+level: 4
+publish: true
 ---
 
 ## 経験
 
-- 記載中
-
-## 知識
-
-- 記載中
+- 転職サービス・LLM チャットサービスで、VPC オリジン・WAF 連携・CloudFront Functions（エッジ関数）を含む配信構成の構築と運用

@@ -1,7 +1,7 @@
 ---
-name: Compute Engine
-category: compute
-level: 1
+name: Xcode / App Store Connect
+category: tools
+level: 2
 publish: false
 ---
 
