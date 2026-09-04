@@ -18,6 +18,7 @@ export function RadarChart({ axes, radius = 160 }: RadarChartProps) {
     }
 
     const rings: string[] = []
+    // 5 段のリングは、正規化された外周から 20% 刻みを表す。
     for (let level = 1; level <= 5; level++) {
         const r = (radius * level) / 5
         let d = ""
@@ -31,7 +32,8 @@ export function RadarChart({ axes, radius = 160 }: RadarChartProps) {
 
     let polyD = ""
     axes.forEach((a, i) => {
-        const [x, y] = point(i, (radius * a.value) / 5)
+        const ratio = Math.min(1, Math.max(0, a.ratio))
+        const [x, y] = point(i, radius * ratio)
         polyD += (i === 0 ? "M" : "L") + x.toFixed(1) + "," + y.toFixed(1)
     })
     polyD += "Z"
@@ -85,7 +87,8 @@ export function RadarChart({ axes, radius = 160 }: RadarChartProps) {
                 strokeWidth={2}
             />
             {axes.map((a, i) => {
-                const [x, y] = point(i, (radius * a.value) / 5)
+                const ratio = Math.min(1, Math.max(0, a.ratio))
+                const [x, y] = point(i, radius * ratio)
                 return (
                     <circle
                         key={`dot-${a.key}`}
@@ -96,7 +99,7 @@ export function RadarChart({ axes, radius = 160 }: RadarChartProps) {
                         stroke="var(--accent)"
                         strokeWidth={2}
                     >
-                        <title>{`${a.label} ${a.value.toFixed(1)}/5`}</title>
+                        <title>{`${a.label} ${a.total} (${a.count} skills)`}</title>
                     </circle>
                 )
             })}

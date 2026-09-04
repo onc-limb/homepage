@@ -218,7 +218,9 @@ export type RadarAxisKey = (typeof RADAR_AXIS_KEYS)[number]
 export interface RadarAxis {
     key: RadarAxisKey
     label: string
-    value: number
+    total: number
+    count: number
+    ratio: number
 }
 
 const RADAR_AXIS_LABELS: Record<RadarAxisKey, string> = {
@@ -244,25 +246,22 @@ const AXIS_TO_CATEGORIES: Record<RadarAxisKey, SkillCategory[]> = {
 }
 
 /**
- * 各軸に紐付くカテゴリの level を平均し 0..5 で返す。
- * 寄与スキルが 0 件の軸は 0 を返す。
+ * 各軸に紐付くカテゴリの level 合計と件数、描画用の相対値を返す。
+ * 寄与スキルが 0 件の軸は total = 0, count = 0, ratio = 0 を返す。
  */
 export function getRadarAxes(skills: Skill[]): RadarAxis[] {
-    return RADAR_AXIS_KEYS.map((key) => {
+    const totals = RADAR_AXIS_KEYS.map((key) => {
         const categories = AXIS_TO_CATEGORIES[key]
         const matched = skills.filter((s) => categories.includes(s.category))
-        const value =
-            matched.length === 0
-                ? 0
-                : clamp(
-                      matched.reduce((sum, s) => sum + s.level, 0) / matched.length,
-                      0,
-                      5,
-                  )
-        return { key, label: RADAR_AXIS_LABELS[key], value }
+        const total = matched.reduce((sum, s) => sum + s.level, 0)
+        return { key, label: RADAR_AXIS_LABELS[key], total, count: matched.length }
     })
-}
 
-function clamp(value: number, min: number, max: number): number {
-    return Math.min(max, Math.max(min, value))
+    const maxTotal = Math.max(0, ...totals.map((axis) => axis.total))
+
+    // スキル数の厚みを軸の大きさに反映しつつ外周内に収めるため、最大合計を 1 とする。
+    return totals.map((axis) => ({
+        ...axis,
+        ratio: maxTotal === 0 ? 0 : axis.total / maxTotal,
+    }))
 }
