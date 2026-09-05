@@ -1,5 +1,25 @@
 import matter from "gray-matter"
 import { extractFlatListItems } from "./markdown-utils"
+import {
+    categoryOrder,
+    sortSkillsByLevel,
+    type ListItem,
+    type Skill,
+    type SkillCategory,
+    type SkillMeta,
+} from "./skills-meta"
+
+export {
+    categoryLabels,
+    categoryOrder,
+    levelLabels,
+    sortSkillsByLevel,
+    type ListItem,
+    type Skill,
+    type SkillCategory,
+    type SkillLevel,
+    type SkillMeta,
+} from "./skills-meta"
 
 // docs/skills配下のすべての.mdファイルを動的にimport
 // @ts-expect-error require.context is webpack specific
@@ -9,100 +29,6 @@ const skillMarkdowns: string[] = requireContext.keys().map((key: string) => {
     // raw-loaderはデフォルトエクスポートとして文字列を返す
     return typeof mdModule === "string" ? mdModule : mdModule.default || mdModule
 })
-export type SkillCategory =
-    | "language" // プログラミング言語
-    | "frontend" // フロントエンド
-    | "framework" // バックエンド・フレームワーク
-    | "compute" // コンピューティング
-    | "networking" // ネットワーキング
-    | "storage" // ストレージ
-    | "database" // データベース
-    | "integration" // 統合サービス
-    | "IaC" // インフラ構成管理・IaC
-    | "container" // コンテナ・オーケストレーション
-    | "tools" // ツール・SaaS
-    | "architecture" // 設計・アーキテクチャ
-    | "methodology" // 開発手法・プロセス
-    | "api" // API
-    | "ai-llm" // LLM・AIエージェント
-    | "ml" // 機械学習
-    | "devops-sre" // DevOps・SRE
-    | "testing" // テスト・品質保証
-    | "security" // セキュリティ
-    | "auth" // 認証・認可
-export type SkillLevel = 1 | 2 | 3 | 4 | 5
-export interface SkillMeta {
-    name: string
-    category: SkillCategory
-    level: SkillLevel
-    publish: boolean
-}
-export interface Skill extends SkillMeta {
-    experience: ListItem[] // やったこと（実績）
-    knowledge: ListItem[] // 知っていること（知識）
-    relatedTech: string[] // 関連技術
-    relatedBooks: string[] // 関連書籍
-}
-export const categoryLabels: Record<SkillCategory, string> = {
-    language: "プログラミング言語",
-    frontend: "フロントエンド",
-    framework: "バックエンド・フレームワーク",
-    compute: "コンピューティング",
-    networking: "ネットワーキング",
-    storage: "ストレージ",
-    database: "データベース",
-    integration: "統合サービス",
-    IaC: "インフラ構成管理・IaC",
-    container: "コンテナ・オーケストレーション",
-    tools: "ツール・SaaS",
-    architecture: "設計・アーキテクチャ",
-    methodology: "開発手法・プロセス",
-    api: "API",
-    "ai-llm": "LLM・AIエージェント",
-    ml: "機械学習",
-    "devops-sre": "DevOps・SRE",
-    testing: "テスト・品質保証",
-    security: "セキュリティ",
-    auth: "認証・認可",
-}
-export const levelLabels: Record<
-    SkillLevel,
-    { label: string; color: string; icon: string }
-> = {
-    1: { label: "学習中", color: "text-yellow-500", icon: "🟡" },
-    2: { label: "個人利用", color: "text-orange-500", icon: "🟠" },
-    3: { label: "実務経験あり", color: "text-red-500", icon: "🔴" },
-    4: { label: "実務継続利用", color: "text-blue-500", icon: "🔵" },
-    5: { label: "専門", color: "text-green-500", icon: "🟢" },
-}
-// カテゴリの表示順序
-export const categoryOrder: SkillCategory[] = [
-    "language",
-    "frontend",
-    "framework",
-    "compute",
-    "networking",
-    "storage",
-    "database",
-    "integration",
-    "IaC",
-    "container",
-    "tools",
-    "architecture",
-    "methodology",
-    "api",
-    "ai-llm",
-    "ml",
-    "devops-sre",
-    "testing",
-    "security",
-    "auth",
-]
-// ネストされたリストアイテムを表す型
-export interface ListItem {
-    text: string
-    children: ListItem[]
-}
 // Markdown から経験・知識を抽出するヘルパー関数（階層構造対応）
 function extractListItems(content: string, sectionTitle: string): ListItem[] {
     const regex = new RegExp(`## ${sectionTitle}\\s*\\n([\\s\\S]*?)(?=\\n## |$)`, "i")
@@ -187,12 +113,15 @@ export function getSkills(): Skill[] {
 
     return uniqueSkills
 }
+
 // カテゴリ別にグループ化されたスキルを取得
 export function getSkillsByCategory(): Record<SkillCategory, Skill[]> {
     const skills = getSkills()
     return categoryOrder.reduce(
         (acc, category) => {
-            acc[category] = skills.filter((skill) => skill.category === category)
+            acc[category] = sortSkillsByLevel(
+                skills.filter((skill) => skill.category === category)
+            )
             return acc
         },
         {} as Record<SkillCategory, Skill[]>
@@ -218,7 +147,9 @@ export type RadarAxisKey = (typeof RADAR_AXIS_KEYS)[number]
 export interface RadarAxis {
     key: RadarAxisKey
     label: string
-    value: number
+    total: number
+    count: number
+    ratio: number
 }
 
 const RADAR_AXIS_LABELS: Record<RadarAxisKey, string> = {
@@ -244,25 +175,22 @@ const AXIS_TO_CATEGORIES: Record<RadarAxisKey, SkillCategory[]> = {
 }
 
 /**
- * 各軸に紐付くカテゴリの level を平均し 0..5 で返す。
- * 寄与スキルが 0 件の軸は 0 を返す。
+ * 各軸に紐付くカテゴリの level 合計と件数、描画用の相対値を返す。
+ * 寄与スキルが 0 件の軸は total = 0, count = 0, ratio = 0 を返す。
  */
 export function getRadarAxes(skills: Skill[]): RadarAxis[] {
-    return RADAR_AXIS_KEYS.map((key) => {
+    const totals = RADAR_AXIS_KEYS.map((key) => {
         const categories = AXIS_TO_CATEGORIES[key]
         const matched = skills.filter((s) => categories.includes(s.category))
-        const value =
-            matched.length === 0
-                ? 0
-                : clamp(
-                      matched.reduce((sum, s) => sum + s.level, 0) / matched.length,
-                      0,
-                      5,
-                  )
-        return { key, label: RADAR_AXIS_LABELS[key], value }
+        const total = matched.reduce((sum, s) => sum + s.level, 0)
+        return { key, label: RADAR_AXIS_LABELS[key], total, count: matched.length }
     })
-}
 
-function clamp(value: number, min: number, max: number): number {
-    return Math.min(max, Math.max(min, value))
+    const maxTotal = Math.max(0, ...totals.map((axis) => axis.total))
+
+    // スキル数の厚みを軸の大きさに反映しつつ外周内に収めるため、最大合計を 1 とする。
+    return totals.map((axis) => ({
+        ...axis,
+        ratio: maxTotal === 0 ? 0 : axis.total / maxTotal,
+    }))
 }
