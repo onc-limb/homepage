@@ -1,5 +1,25 @@
 import matter from "gray-matter"
 import { extractFlatListItems } from "./markdown-utils"
+import {
+    categoryOrder,
+    sortSkillsByLevel,
+    type ListItem,
+    type Skill,
+    type SkillCategory,
+    type SkillMeta,
+} from "./skills-meta"
+
+export {
+    categoryLabels,
+    categoryOrder,
+    levelLabels,
+    sortSkillsByLevel,
+    type ListItem,
+    type Skill,
+    type SkillCategory,
+    type SkillLevel,
+    type SkillMeta,
+} from "./skills-meta"
 
 // docs/skills配下のすべての.mdファイルを動的にimport
 // @ts-expect-error require.context is webpack specific
@@ -9,100 +29,6 @@ const skillMarkdowns: string[] = requireContext.keys().map((key: string) => {
     // raw-loaderはデフォルトエクスポートとして文字列を返す
     return typeof mdModule === "string" ? mdModule : mdModule.default || mdModule
 })
-export type SkillCategory =
-    | "language" // プログラミング言語
-    | "frontend" // フロントエンド
-    | "framework" // バックエンド・フレームワーク
-    | "compute" // コンピューティング
-    | "networking" // ネットワーキング
-    | "storage" // ストレージ
-    | "database" // データベース
-    | "integration" // 統合サービス
-    | "IaC" // インフラ構成管理・IaC
-    | "container" // コンテナ・オーケストレーション
-    | "tools" // ツール・SaaS
-    | "architecture" // 設計・アーキテクチャ
-    | "methodology" // 開発手法・プロセス
-    | "api" // API
-    | "ai-llm" // LLM・AIエージェント
-    | "ml" // 機械学習
-    | "devops-sre" // DevOps・SRE
-    | "testing" // テスト・品質保証
-    | "security" // セキュリティ
-    | "auth" // 認証・認可
-export type SkillLevel = 1 | 2 | 3 | 4 | 5
-export interface SkillMeta {
-    name: string
-    category: SkillCategory
-    level: SkillLevel
-    publish: boolean
-}
-export interface Skill extends SkillMeta {
-    experience: ListItem[] // やったこと（実績）
-    knowledge: ListItem[] // 知っていること（知識）
-    relatedTech: string[] // 関連技術
-    relatedBooks: string[] // 関連書籍
-}
-export const categoryLabels: Record<SkillCategory, string> = {
-    language: "プログラミング言語",
-    frontend: "フロントエンド",
-    framework: "バックエンド・フレームワーク",
-    compute: "コンピューティング",
-    networking: "ネットワーキング",
-    storage: "ストレージ",
-    database: "データベース",
-    integration: "統合サービス",
-    IaC: "インフラ構成管理・IaC",
-    container: "コンテナ・オーケストレーション",
-    tools: "ツール・SaaS",
-    architecture: "設計・アーキテクチャ",
-    methodology: "開発手法・プロセス",
-    api: "API",
-    "ai-llm": "LLM・AIエージェント",
-    ml: "機械学習",
-    "devops-sre": "DevOps・SRE",
-    testing: "テスト・品質保証",
-    security: "セキュリティ",
-    auth: "認証・認可",
-}
-export const levelLabels: Record<
-    SkillLevel,
-    { label: string; color: string; icon: string }
-> = {
-    1: { label: "学習中", color: "text-yellow-500", icon: "🟡" },
-    2: { label: "個人利用", color: "text-orange-500", icon: "🟠" },
-    3: { label: "実務経験あり", color: "text-red-500", icon: "🔴" },
-    4: { label: "実務継続利用", color: "text-blue-500", icon: "🔵" },
-    5: { label: "専門", color: "text-green-500", icon: "🟢" },
-}
-// カテゴリの表示順序
-export const categoryOrder: SkillCategory[] = [
-    "language",
-    "frontend",
-    "framework",
-    "compute",
-    "networking",
-    "storage",
-    "database",
-    "integration",
-    "IaC",
-    "container",
-    "tools",
-    "architecture",
-    "methodology",
-    "api",
-    "ai-llm",
-    "ml",
-    "devops-sre",
-    "testing",
-    "security",
-    "auth",
-]
-// ネストされたリストアイテムを表す型
-export interface ListItem {
-    text: string
-    children: ListItem[]
-}
 // Markdown から経験・知識を抽出するヘルパー関数（階層構造対応）
 function extractListItems(content: string, sectionTitle: string): ListItem[] {
     const regex = new RegExp(`## ${sectionTitle}\\s*\\n([\\s\\S]*?)(?=\\n## |$)`, "i")
@@ -187,12 +113,15 @@ export function getSkills(): Skill[] {
 
     return uniqueSkills
 }
+
 // カテゴリ別にグループ化されたスキルを取得
 export function getSkillsByCategory(): Record<SkillCategory, Skill[]> {
     const skills = getSkills()
     return categoryOrder.reduce(
         (acc, category) => {
-            acc[category] = skills.filter((skill) => skill.category === category)
+            acc[category] = sortSkillsByLevel(
+                skills.filter((skill) => skill.category === category)
+            )
             return acc
         },
         {} as Record<SkillCategory, Skill[]>

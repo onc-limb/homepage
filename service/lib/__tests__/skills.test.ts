@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { getRadarAxes, RADAR_AXIS_KEYS } from "@/lib/skills"
+import { getRadarAxes, RADAR_AXIS_KEYS, sortSkillsByLevel } from "@/lib/skills"
 import type { Skill, SkillCategory, SkillLevel } from "@/lib/skills"
 
 /**
@@ -21,6 +21,51 @@ const factorySkill = (overrides: Partial<Skill> & { category: SkillCategory; lev
     relatedTech: [],
     relatedBooks: [],
     ...overrides,
+})
+
+describe("sortSkillsByLevel()", () => {
+    it("sorts skills by level in descending order", () => {
+        const skills = [
+            factorySkill({ name: "Low", category: "language", level: 1 }),
+            factorySkill({ name: "High", category: "language", level: 5 }),
+            factorySkill({ name: "Middle", category: "language", level: 3 }),
+        ]
+
+        expect(sortSkillsByLevel(skills).map((skill) => skill.level)).toEqual([
+            5, 3, 1,
+        ])
+    })
+
+    it("sorts skills with the same level by name in ascending order", () => {
+        const skills = [
+            factorySkill({ name: "TypeScript", category: "language", level: 4 }),
+            factorySkill({ name: "Go", category: "language", level: 4 }),
+            factorySkill({ name: "Rust", category: "language", level: 4 }),
+        ]
+
+        expect(sortSkillsByLevel(skills).map((skill) => skill.name)).toEqual([
+            "Go",
+            "Rust",
+            "TypeScript",
+        ])
+    })
+
+    it("does not mutate the input array", () => {
+        const skills = [
+            factorySkill({ name: "Low", category: "language", level: 1 }),
+            factorySkill({ name: "High", category: "language", level: 5 }),
+        ]
+        const original = [...skills]
+
+        const sorted = sortSkillsByLevel(skills)
+
+        expect(skills).toEqual(original)
+        expect(sorted).not.toBe(skills)
+    })
+
+    it("returns an empty array for an empty input", () => {
+        expect(sortSkillsByLevel([])).toEqual([])
+    })
 })
 
 describe("RADAR_AXIS_KEYS", () => {

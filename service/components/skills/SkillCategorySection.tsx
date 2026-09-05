@@ -1,5 +1,5 @@
-import type { Skill, SkillCategory } from "@/lib/skills"
-import { categoryLabels } from "@/lib/skills"
+import type { Skill, SkillCategory } from "@/lib/skills-meta"
+import { categoryLabels } from "@/lib/skills-meta"
 import { Reveal } from "@/components/animations"
 import { SkillBar } from "./SkillBar"
 
