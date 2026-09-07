@@ -2,13 +2,9 @@
 name: Prisma
 category: database
 level: 3
-publish: false
+publish: true
 ---
 
 ## 経験
 
-- 記載中
-
-## 知識
-
-- 記載中
+- スキーマ管理、クエリビルダーによるデータアクセス、スキーマファイルの複数ファイル運用

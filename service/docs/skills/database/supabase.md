@@ -1,7 +1,7 @@
 ---
 name: Supabase
 category: database
-level: 1
+level: 2
 publish: true
 ---
 
