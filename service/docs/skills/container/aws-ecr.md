@@ -2,13 +2,9 @@
 name: AWS ECR
 category: container
 level: 4
-publish: false
+publish: true
 ---
 
 ## 経験
 
-- 記載中
-
-## 知識
-
-- 記載中
+- コンテナイメージのホスティングとタグ設計、ライフサイクルを含む運用

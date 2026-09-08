@@ -2,13 +2,9 @@
 name: Drizzle ORM
 category: database
 level: 2
-publish: false
+publish: true
 ---
 
 ## 経験
 
-- 記載中
-
-## 知識
-
-- 記載中
+- 個人サービスで利用（クエリビルダーによるデータアクセスとスキーマ管理）

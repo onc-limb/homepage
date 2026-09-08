@@ -2,13 +2,7 @@
 name: Android Studio
 category: tools
 level: 1
-publish: false
+publish: true
 ---
 
 ## 経験
-
-- 記載中
-
-## 知識
-
-- 記載中
