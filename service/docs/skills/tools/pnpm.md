@@ -1,14 +1,8 @@
 ---
 name: pnpm
 category: tools
-level: 1
-publish: false
+level: 2
+publish: true
 ---
 
 ## 経験
-
-- 記載中
-
-## 知識
-
-- 記載中

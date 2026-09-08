@@ -1,7 +1,7 @@
 ---
-name: Stripe
+name: npm
 category: tools
-level: 2
+level: 3
 publish: true
 ---
 
