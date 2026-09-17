@@ -1,14 +1,8 @@
 ---
 name: mise
 category: tools
-level: 2
-publish: false
+level: 1
+publish: true
 ---
 
 ## 経験
-
-- 記載中
-
-## 知識
-
-- 記載中

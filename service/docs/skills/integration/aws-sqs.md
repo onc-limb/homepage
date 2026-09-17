@@ -2,13 +2,9 @@
 name: AWS SQS
 category: integration
 level: 3
-publish: false
+publish: true
 ---
 
 ## 経験
 
-- 記載中
-
-## 知識
-
-- 記載中
+- エラーイベントの通知処理と、サービス間データ連携のキューとして利用

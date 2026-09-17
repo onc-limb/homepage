@@ -2,13 +2,7 @@
 name: Xcode / App Store Connect
 category: tools
 level: 2
-publish: false
+publish: true
 ---
 
 ## 経験
-
-- 記載中
-
-## 知識
-
-- 記載中
