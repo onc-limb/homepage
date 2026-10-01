@@ -116,7 +116,7 @@ Slack・DB 保存はローカルでも動く。
 
 ## 公開アドレスの扱い
 
-トップページに直書きされていた `satoshi-onga@onc-limb.com` を `lib/constants.ts` の
+トップページに直書きされていた連絡先アドレス（現在は `satoshi.onga@onc-limb.com`）を `lib/constants.ts` の
 `CONTACT_EMAIL` に集約する。表示箇所が増えても 1 箇所の変更で済む。
 
 ## デプロイ前に必要な設定

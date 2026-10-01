@@ -1,14 +1,8 @@
 ---
 name: Git
 category: tools
-level: 1
-publish: false
+level: 4
+publish: true
 ---
 
 ## 経験
-
-- 記載中
-
-## 知識
-
-- 記載中

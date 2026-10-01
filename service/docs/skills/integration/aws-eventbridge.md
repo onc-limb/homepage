@@ -2,13 +2,9 @@
 name: AWS EventBridge
 category: integration
 level: 4
-publish: false
+publish: true
 ---
 
 ## 経験
 
-- 記載中
-
-## 知識
-
-- 記載中
+- スケジュールルールによるバッチ起動と、AWS サービスのイベントを捕捉して通知する仕組みの構築・運用
