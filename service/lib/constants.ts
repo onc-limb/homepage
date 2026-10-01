@@ -24,7 +24,7 @@ export interface SocialLink {
  * コンタクトページの mailto 経路とトップの導線から参照する。
  * アドレスを変更する場合はこの 1 箇所だけを更新すること。
  */
-export const CONTACT_EMAIL = "satoshi-onga@onc-limb.com"
+export const CONTACT_EMAIL = "satoshi.onga@onc-limb.com"
 
 export const SOCIAL_LINKS: SocialLink[] = [
     {
