@@ -35,18 +35,18 @@ describe("sitemap", () => {
         const urls = entries.map((entry) => entry.url)
 
         expect(urls).toEqual([
-            "https://onclimb.net",
-            "https://onclimb.net/profile",
-            "https://onclimb.net/skills",
-            "https://onclimb.net/portfolio",
-            "https://onclimb.net/social",
-            "https://onclimb.net/contact",
-            "https://onclimb.net/books",
-            "https://onclimb.net/blog",
-            "https://onclimb.net/portfolio/project-a",
-            "https://onclimb.net/portfolio/project-b",
-            "https://onclimb.net/blog/published-a",
-            "https://onclimb.net/blog/published-b",
+            "https://onc-limb.com",
+            "https://onc-limb.com/profile",
+            "https://onc-limb.com/skills",
+            "https://onc-limb.com/portfolio",
+            "https://onc-limb.com/social",
+            "https://onc-limb.com/contact",
+            "https://onc-limb.com/books",
+            "https://onc-limb.com/blog",
+            "https://onc-limb.com/portfolio/project-a",
+            "https://onc-limb.com/portfolio/project-b",
+            "https://onc-limb.com/blog/published-a",
+            "https://onc-limb.com/blog/published-b",
         ])
         expect(mocks.listPublishedArticles).toHaveBeenCalledOnce()
     })
@@ -55,17 +55,17 @@ describe("sitemap", () => {
         const entries = await sitemap()
         const byUrl = new Map(entries.map((entry) => [entry.url, entry]))
 
-        expect(byUrl.get("https://onclimb.net")?.lastModified).toBeUndefined()
-        expect(byUrl.get("https://onclimb.net/portfolio")?.lastModified).toEqual(
+        expect(byUrl.get("https://onc-limb.com")?.lastModified).toBeUndefined()
+        expect(byUrl.get("https://onc-limb.com/portfolio")?.lastModified).toEqual(
             new Date("2026-02-03T04:05:06+09:00"),
         )
-        expect(byUrl.get("https://onclimb.net/blog")?.lastModified).toEqual(
+        expect(byUrl.get("https://onc-limb.com/blog")?.lastModified).toEqual(
             new Date("2026-04-05T06:07:08+09:00"),
         )
-        expect(byUrl.get("https://onclimb.net/portfolio/project-a")?.lastModified).toEqual(
+        expect(byUrl.get("https://onc-limb.com/portfolio/project-a")?.lastModified).toEqual(
             new Date("2026-01-02T03:04:05+09:00"),
         )
-        expect(byUrl.get("https://onclimb.net/blog/published-a")?.lastModified).toEqual(
+        expect(byUrl.get("https://onc-limb.com/blog/published-a")?.lastModified).toEqual(
             new Date("2026-03-04T05:06:07+09:00"),
         )
     })
