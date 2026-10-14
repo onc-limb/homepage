@@ -63,6 +63,17 @@ describe("profile page", () => {
         expect(html).toContain("使ってきた技術スタックを見る")
     })
 
+    it("renders all populated section headings without decorative numbers", async () => {
+        const html = renderToStaticMarkup(await ProfilePage())
+        const headers = html.match(/<header\b[^>]*>[\s\S]*?<\/header>/g) ?? []
+
+        expect(headers).toHaveLength(4)
+        for (const header of headers) {
+            expect(header).toContain("<h2")
+            expect(header).not.toMatch(/>\s*0[1-4]\s*</)
+        }
+    })
+
     it("omits empty sections instead of leaving decorative numbers or placeholder facts", async () => {
         mocks.getParsedProfile.mockResolvedValue({
             selfIntroduction: [],
