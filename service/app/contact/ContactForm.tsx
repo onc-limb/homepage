@@ -7,6 +7,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { initialContactFormState } from "@/lib/contact-form-state"
 import {
     CONTACT_CATEGORIES,
+    CONTACT_MESSAGE_MAX_LENGTH,
+    CONTACT_MESSAGE_MIN_LENGTH,
     FORM_STARTED_AT_FIELD,
     HONEYPOT_FIELD,
 } from "@/lib/validations/contact"
@@ -32,10 +34,12 @@ export function ContactForm() {
     const startedAtRef = useRef<HTMLInputElement>(null)
     const uid = useId()
 
-    // 種別だけは制御コンポーネントにする。React 19 の form action は送信後にフォームを
+    // 種別は制御コンポーネントにする。React 19 の form action は送信後にフォームを
     // リセットするが、input / textarea と違って select は defaultValue が復元されず、
     // エラーで戻ってきたときに選択が先頭へ巻き戻ってしまうため。
     const [category, setCategory] = useState<string>(CONTACT_CATEGORIES[0].value)
+    // 本文と文字数表示を同じ値から描画し、エラー時は返却された本文を復元する。
+    const [message, setMessage] = useState("")
 
     // 送信結果が返ってきたら、サーバーが実際に受け取った種別に合わせ直す。
     // レンダー中に前回値と比較して調整する React 公式のパターン（effect にすると
@@ -43,6 +47,7 @@ export function ContactForm() {
     const [lastState, setLastState] = useState(state)
     if (state !== lastState) {
         setLastState(state)
+        setMessage(state.status === "error" ? state.values.message : "")
         if (state.status === "error" && state.values.category) {
             setCategory(state.values.category)
         }
@@ -124,9 +129,7 @@ export function ContactForm() {
                     autoComplete="email"
                     defaultValue={values?.email}
                     aria-invalid={Boolean(errorOf("email"))}
-                    aria-describedby={
-                        errorOf("email") ? `${uid}-email-error` : undefined
-                    }
+                    aria-describedby={errorOf("email") ? `${uid}-email-error` : undefined}
                     className={FIELD_CLASS}
                 />
                 <FieldError id={`${uid}-email-error`} message={errorOf("email")} />
@@ -176,10 +179,7 @@ export function ContactForm() {
                         </option>
                     ))}
                 </select>
-                <FieldError
-                    id={`${uid}-category-error`}
-                    message={errorOf("category")}
-                />
+                <FieldError id={`${uid}-category-error`} message={errorOf("category")} />
             </div>
 
             <div className="flex flex-col gap-2">
@@ -191,15 +191,37 @@ export function ContactForm() {
                     name="message"
                     required
                     rows={8}
-                    maxLength={2000}
+                    maxLength={CONTACT_MESSAGE_MAX_LENGTH}
                     placeholder="ご相談の背景や、実現したいことをお書きください。分かる範囲で構いません。"
-                    defaultValue={values?.message}
+                    value={message}
+                    onChange={(event) => setMessage(event.target.value)}
                     aria-invalid={Boolean(errorOf("message"))}
-                    aria-describedby={
-                        errorOf("message") ? `${uid}-message-error` : undefined
-                    }
+                    aria-describedby={`${uid}-message-hint ${uid}-message-count${errorOf("message") ? ` ${uid}-message-error` : ""}`}
                     className={FIELD_CLASS}
                 />
+                <p
+                    id={`${uid}-message-hint`}
+                    className="text-xs leading-relaxed text-fg-muted"
+                >
+                    {CONTACT_MESSAGE_MIN_LENGTH}〜{CONTACT_MESSAGE_MAX_LENGTH}
+                    文字で入力してください。
+                    絵文字などは複数文字として数える場合があります。
+                </p>
+                <p id={`${uid}-message-count`} className="text-xs text-fg-muted">
+                    入力文字数: {message.length} / {CONTACT_MESSAGE_MAX_LENGTH}
+                </p>
+                <p
+                    role="status"
+                    className={
+                        message.length >= CONTACT_MESSAGE_MAX_LENGTH
+                            ? "text-xs text-fg-muted"
+                            : "sr-only"
+                    }
+                >
+                    {message.length >= CONTACT_MESSAGE_MAX_LENGTH
+                        ? "上限に達しました。追加するには内容を短くしてください。"
+                        : ""}
+                </p>
                 <FieldError id={`${uid}-message-error`} message={errorOf("message")} />
             </div>
 
