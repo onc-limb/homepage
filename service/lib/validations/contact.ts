@@ -1,5 +1,8 @@
 import { z } from "zod"
 
+export const CONTACT_MESSAGE_MIN_LENGTH = 10
+export const CONTACT_MESSAGE_MAX_LENGTH = 2000
+
 /**
  * 相談種別。DB の contacts.category に入る値で、
  * lib/db/schema.ts の contacts_category_check と対応する（変更時は両方を直すこと）。
@@ -46,8 +49,11 @@ export const contactFormSchema = z.object({
     message: z
         .string()
         .trim()
-        .min(10, "お問い合わせ内容は10文字以上で入力してください")
-        .max(2000, "お問い合わせ内容は2000文字以内で入力してください"),
+        .min(CONTACT_MESSAGE_MIN_LENGTH, "お問い合わせ内容は10文字以上で入力してください")
+        .max(
+            CONTACT_MESSAGE_MAX_LENGTH,
+            "お問い合わせ内容は2000文字以内で入力してください"
+        ),
 })
 
 export type ContactFormValues = z.infer<typeof contactFormSchema>
