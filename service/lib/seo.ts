@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 export const SITE_NAME = "onclimb"
 export const SITE_DESCRIPTION =
     "ソフトウェアアーキテクトの視点で、設計から実装・運用まで担うフルスタックエンジニア onclimb のポートフォリオ。"
-export const SITE_URL = new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://onclimb.net")
+export const SITE_URL = new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://onc-limb.com")
 
 const OG_IMAGE = {
     url: "/og-default.png",

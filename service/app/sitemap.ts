@@ -11,7 +11,7 @@ function latestDate(values: string[]): Date | undefined {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://onclimb.net").replace(/\/$/, "")
+    const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://onc-limb.com").replace(/\/$/, "")
     const projects = getProjects()
     const publishedArticles = await listPublishedArticles()
     const portfolioLastModified = latestDate(projects.map((project) => project.updatedAt))

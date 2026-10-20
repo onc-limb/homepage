@@ -21,7 +21,7 @@ describe("robots", () => {
                 allow: "/",
                 disallow: ["/studio", "/api"],
             },
-            sitemap: "https://onclimb.net/sitemap.xml",
+            sitemap: "https://onc-limb.com/sitemap.xml",
         })
     })
 
