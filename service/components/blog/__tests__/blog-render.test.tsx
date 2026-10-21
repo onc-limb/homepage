@@ -134,13 +134,13 @@ describe("ArticlePage (slug 詳細)", () => {
         })
 
         expect(metadata.alternates?.canonical).toBe(
-            "https://onclimb.net/blog/original-post"
+            "https://onc-limb.com/blog/original-post"
         )
         expect(metadata.description).toBe("b")
         expect(metadata.openGraph).toMatchObject({
             type: "article",
             title: "Original | onclimb",
-            url: "https://onclimb.net/blog/original-post",
+            url: "https://onc-limb.com/blog/original-post",
         })
         expect(metadata.twitter).toMatchObject({
             card: "summary_large_image",

@@ -42,20 +42,6 @@ export default async function ProfilePage() {
                         <span>/</span>
                         <b className="font-medium text-accent">profile</b>
                     </Reveal>
-                    <Reveal
-                        delay={80}
-                        className="mb-7 inline-flex items-center gap-2.5 rounded-full border border-hairline-strong bg-surface-solid px-3.5 py-1.5 font-mono text-[13px] text-fg-muted"
-                    >
-                        <span
-                            aria-hidden="true"
-                            className="block h-1.5 w-1.5 rounded-full"
-                            style={{
-                                background: "var(--accent)",
-                                boxShadow: "0 0 8px var(--accent)",
-                            }}
-                        />
-                        <span className="font-mono">available for new projects</span>
-                    </Reveal>
                     <Reveal delay={160}>
                         <h1 className="mb-5 text-[clamp(40px,5.6vw,64px)] font-semibold leading-[1.05] tracking-[-0.03em]">
                             動く理由を知り、
@@ -107,26 +93,8 @@ export default async function ProfilePage() {
                         <div className="mb-1.5 text-[28px] font-semibold tracking-[-0.02em]">
                             {profile.data.name}
                         </div>
-                        <div className="mb-5 text-sm leading-[1.5] text-fg-muted">
+                        <div className="text-sm leading-[1.5] text-fg-muted">
                             {profile.data.title}
-                        </div>
-                        <div className="flex flex-wrap gap-5 font-mono text-xs text-fg-dim">
-                            <span>
-                                📍 <b className="font-medium text-fg">Tokyo</b>
-                            </span>
-                            <span>
-                                EXP <b className="font-medium text-fg">5+ years</b>
-                            </span>
-                            <span>
-                                FOCUS{" "}
-                                <b className="font-medium text-fg">
-                                    Backend / Software Architecture
-                                </b>
-                            </span>
-                            <span>
-                                STATUS{" "}
-                                <b className="font-medium text-accent">open to work</b>
-                            </span>
                         </div>
                     </div>
                 </Reveal>
@@ -140,9 +108,6 @@ export default async function ProfilePage() {
                             as="header"
                             className="mb-8 flex items-baseline gap-4 border-b border-hairline pb-4"
                         >
-                            <span className="font-mono text-xs tracking-[0.18em] text-accent">
-                                01
-                            </span>
                             <h2 className="text-[28px] font-semibold tracking-[-0.02em]">
                                 自己紹介
                             </h2>
@@ -178,9 +143,6 @@ export default async function ProfilePage() {
                             as="header"
                             className="mb-8 flex items-baseline gap-4 border-b border-hairline pb-4"
                         >
-                            <span className="font-mono text-xs tracking-[0.18em] text-accent">
-                                02
-                            </span>
                             <h2 className="text-[28px] font-semibold tracking-[-0.02em]">
                                 経歴
                             </h2>
@@ -226,9 +188,6 @@ export default async function ProfilePage() {
                             as="header"
                             className="mb-8 flex items-baseline gap-4 border-b border-hairline pb-4"
                         >
-                            <span className="font-mono text-xs tracking-[0.18em] text-accent">
-                                03
-                            </span>
                             <h2 className="text-[28px] font-semibold tracking-[-0.02em]">
                                 エンジニアとしての今 — 関心
                             </h2>
@@ -264,9 +223,6 @@ export default async function ProfilePage() {
                             as="header"
                             className="mb-8 flex items-baseline gap-4 border-b border-hairline pb-4"
                         >
-                            <span className="font-mono text-xs tracking-[0.18em] text-accent">
-                                04
-                            </span>
                             <h2 className="text-[28px] font-semibold tracking-[-0.02em]">
                                 資格
                             </h2>
@@ -316,9 +272,6 @@ export default async function ProfilePage() {
                         className="my-14 flex items-center justify-between rounded-[var(--radius-lg)] border border-hairline-strong bg-surface-solid px-8 py-7 transition-all duration-250 hover:-translate-y-0.5 hover:border-accent"
                     >
                         <div>
-                            <div className="mb-1 font-mono text-[11px] tracking-[0.16em] text-fg-dim">
-                                NEXT — 02
-                            </div>
                             <div className="text-xl font-semibold">
                                 使ってきた技術スタックを見る
                             </div>
