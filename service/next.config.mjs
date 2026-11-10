@@ -38,6 +38,10 @@ const nextConfig = {
             ? {
                 resolveAlias: {
                     '@libsql/client': './loaders/empty-module.js',
+                    // mermaid はクライアントの useEffect 内の動的 import でしか使わないが、
+                    // Turbopack は SSR 側にもチャンクを出力し、Worker のバンドルが約 1MB（gzip）増えるため、
+                    // サーバー側だけ空のモジュールに差し替える。
+                    mermaid: { browser: 'mermaid', default: './loaders/empty-module.js' },
                 },
             }
             : {}),
