@@ -44,7 +44,7 @@ export const contactFormSchema = z.object({
         .optional()
         .or(z.literal("")),
     category: z.enum(categoryValues, {
-        errorMap: () => ({ message: "相談内容の種別を選択してください" }),
+        error: "相談内容の種別を選択してください",
     }),
     message: z
         .string()
