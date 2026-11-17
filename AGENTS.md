@@ -12,8 +12,9 @@ cd service
 pnpm dev      # 開発サーバー起動
 pnpm build    # プロダクションビルド
 pnpm lint     # Lint チェック
-pnpm preview  # Cloudflare Pages プレビュー
-pnpm deploy   # Cloudflare Pages デプロイ
+pnpm test     # vitest
+pnpm preview  # OpenNext でビルドして Cloudflare Workers のプレビュー
+pnpm deploy   # Cloudflare Workers へデプロイ（本番。エージェントは実行しない）
 ```
 
 **注意**: ルートディレクトリからではなく、必ず `service/` ディレクトリ内でコマンドを実行してください。
@@ -45,7 +46,7 @@ pnpm add -D <package-name>
 1. `cd service` でサービスディレクトリに移動
 2. `pnpm install` で依存関係をインストール
 3. `pnpm dev` で開発サーバーを起動
-4. コード変更後は `pnpm lint` でエラーチェック
+4. コード変更後は `pnpm exec tsc --noEmit`・`pnpm test`・`pnpm lint` を通す
 5. `pnpm build` でビルドが通ることを確認
 
 ## worklog / ToDo の記録
