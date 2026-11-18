@@ -57,7 +57,7 @@ export default defineConfig({
     test: {
         environment: "node",
         globals: true,
-        include: ["lib/**/*.test.ts", "components/**/*.test.{ts,tsx}"],
+        include: ["app/**/*.test.{ts,tsx}", "lib/**/*.test.ts", "components/**/*.test.{ts,tsx}"],
         css: false,
     },
 })

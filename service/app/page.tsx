@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 import { JsonLd } from "@/components/seo"
 import { NAV_ITEMS, SOCIAL_LINKS } from "@/lib/constants"
 import { absoluteUrl, createPageMetadata, SITE_DESCRIPTION, SITE_NAME } from "@/lib/seo"
-import { getHomeStats } from "@/lib/stats"
+import { getHomeStats, type HomeStats } from "@/lib/stats"
 import {
     FloatingShapes,
     HeroParticleTitle,
@@ -95,17 +95,17 @@ const EXPLORE_ITEMS = NAV_ITEMS.filter((n) => n.href !== "/" && n.href !== "/con
 // /studio で本を読了にしたり記事を公開すると、再デプロイなしで次回アクセスに反映される。
 export const dynamic = "force-dynamic"
 
-export default async function TopPage() {
-    // トップ STATS 4 枠を、私的指標（書籍予算・curiosity）から
-    // DB 裏付けの実績指標に刷新する（#127）。
-    const { readBooksCount, publishedArticlesCount, usedTagCount, totalBooksCount } =
-        await getHomeStats()
-    const stats = [
-        { value: String(readBooksCount), sup: "", label: "books read" },
-        { value: String(publishedArticlesCount), sup: "", label: "articles published" },
-        { value: String(usedTagCount), sup: "", label: "topics covered" },
-        { value: String(totalBooksCount), sup: "", label: "books logged" },
+function toStatItems(stats: HomeStats): Array<{ value: string; label: string }> {
+    return [
+        { value: String(stats.readBooksCount), label: "books read" },
+        { value: String(stats.publishedArticlesCount), label: "articles published" },
+        { value: String(stats.usedTagCount), label: "topics covered" },
+        { value: String(stats.totalBooksCount), label: "books logged" },
     ]
+}
+
+export default async function TopPage() {
+    const stats = toStatItems(await getHomeStats())
 
     return (
         <main className="page flex-1">
@@ -267,11 +267,6 @@ export default async function TopPage() {
                             <div key={s.label} className="bg-bg-elev p-8 text-left">
                                 <span className="block font-mono text-[36px] font-semibold tracking-[-0.03em] text-fg-strong">
                                     {s.value}
-                                    {s.sup && (
-                                        <sup className="ml-0.5 text-base text-accent">
-                                            {s.sup}
-                                        </sup>
-                                    )}
                                 </span>
                                 <div className="mt-1.5 text-xs tracking-[0.05em] text-fg-muted">
                                     {s.label}
