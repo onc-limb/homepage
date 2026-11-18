@@ -8,6 +8,7 @@ import {
     countUsedTags,
     getHomeStats,
 } from "../stats"
+import { countFromRows } from "../stats"
 
 // `../db`（drizzle + libsql インスタンス）を差し替える。stats.ts は `db` の
 // live binding を参照するので、getter 経由で毎回 mockRef.db を返す。
@@ -167,5 +168,20 @@ describe("stats aggregation", () => {
             usedTagCount: 0,
             totalBooksCount: 0,
         })
+    })
+})
+
+// 集計結果の行から件数を取り出す規則を、DB（I/O）を介さずに確かめる。
+describe("countFromRows", () => {
+    it("集計結果が空配列のときは 0 を返す", () => {
+        expect(countFromRows([])).toBe(0)
+    })
+
+    it("集計結果の 1 行目の value を返す", () => {
+        expect(countFromRows([{ value: 3 }])).toBe(3)
+    })
+
+    it("1 行目の value が 0 のときは 0 を返す", () => {
+        expect(countFromRows([{ value: 0 }])).toBe(0)
     })
 })

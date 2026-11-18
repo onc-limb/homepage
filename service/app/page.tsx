@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { JsonLd } from "@/components/seo"
 import { NAV_ITEMS, SOCIAL_LINKS } from "@/lib/constants"
 import { absoluteUrl, createPageMetadata, SITE_DESCRIPTION, SITE_NAME } from "@/lib/seo"
+import { findSocialLink, toHomeStatItems } from "@/lib/home"
 import { getHomeStats } from "@/lib/stats"
 import {
     FloatingShapes,
@@ -11,11 +12,7 @@ import {
     Reveal,
 } from "@/components/animations"
 
-const githubLink = SOCIAL_LINKS.find((s) => s.name === "GitHub")
-if (!githubLink) {
-    throw new Error("SOCIAL_LINKS must include a GitHub entry")
-}
-const GITHUB_URL = githubLink.url
+const GITHUB_URL = findSocialLink(SOCIAL_LINKS, "GitHub").url
 
 export const metadata: Metadata = createPageMetadata({
     title: "Home",
@@ -98,14 +95,7 @@ export const dynamic = "force-dynamic"
 export default async function TopPage() {
     // トップ STATS 4 枠を、私的指標（書籍予算・curiosity）から
     // DB 裏付けの実績指標に刷新する（#127）。
-    const { readBooksCount, publishedArticlesCount, usedTagCount, totalBooksCount } =
-        await getHomeStats()
-    const stats = [
-        { value: String(readBooksCount), sup: "", label: "books read" },
-        { value: String(publishedArticlesCount), sup: "", label: "articles published" },
-        { value: String(usedTagCount), sup: "", label: "topics covered" },
-        { value: String(totalBooksCount), sup: "", label: "books logged" },
-    ]
+    const stats = toHomeStatItems(await getHomeStats())
 
     return (
         <main className="page flex-1">

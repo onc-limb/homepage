@@ -23,9 +23,12 @@ export type HomeStats = {
  * `select({ value: count()/countDistinct() })` の結果（1 行）から数値を取り出す。
  * 対象が 0 件のときは空配列になり得るため 0 にフォールバックする。
  */
-async function scalar(query: PromiseLike<Array<{ value: number }>>): Promise<number> {
-    const rows = await query
+export function countFromRows(rows: ReadonlyArray<{ value: number }>): number {
     return rows[0]?.value ?? 0
+}
+
+async function scalar(query: PromiseLike<Array<{ value: number }>>): Promise<number> {
+    return countFromRows(await query)
 }
 
 /** 読了書籍数。未読（is_read = false）はカウントしない。 */

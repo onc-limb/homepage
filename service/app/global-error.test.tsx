@@ -1,6 +1,8 @@
+/** @vitest-environment jsdom */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { act } from "react-dom/test-utils"
 import { createRoot, type Root } from "react-dom/client"
+import { renderToStaticMarkup } from "react-dom/server"
 
 import GlobalError from "./global-error"
 
@@ -35,8 +37,11 @@ describe("GlobalError", () => {
         })
 
         // ルートレイアウトを置き換えるため、コンポーネント自身が html/body を描画する。
-        expect(container.querySelector("html")).not.toBeNull()
-        expect(container.querySelector("body")).not.toBeNull()
+        // React 19 のクライアント描画は <html>/<body> を document 側の要素へ割り当て、
+        // container の下には置かないため、コンポーネント自身の出力（静的マークアップ）で確かめる。
+        const markup = renderToStaticMarkup(<GlobalError error={error} reset={reset} />)
+        expect(markup).toMatch(/^<html lang="ja">/)
+        expect(markup).toMatch(/<body[\s>][\s\S]*<\/body><\/html>$/)
         expect(container.textContent).toContain("問題が発生しました")
         // digest が渡された場合は Error ID として表示される。
         expect(container.textContent).toContain("abc123")
