@@ -1,0 +1,37 @@
+# TAKT project config for homepage.
+#
+# Reviewer steps cannot run pnpm themselves: TAKT drops Bash from the
+# allowed tools of non-edit steps, and task worktrees are untrusted
+# workspaces, so .claude/settings.json allow rules are not read there.
+# Instead TAKT runs the checks mechanically at the end of the coder steps
+# that change code (implement, fix, reimplement, fix-retry). A failing check
+# sends the step back with the exit code and a log path. Commands run from the
+# worktree root and stay quiet so the output stays under TAKT's 64KB cap.
+workflow_overrides:
+  steps:
+    implement:
+      quality_gates: &pnpm_checks
+        - type: command
+          name: pnpm-install
+          command: pnpm --dir service install --frozen-lockfile --silent
+          timeout_ms: 600000
+        - type: command
+          name: typecheck
+          command: pnpm --dir service exec tsc --noEmit
+          timeout_ms: 600000
+        - type: command
+          name: test
+          command: pnpm --dir service test --silent
+          timeout_ms: 600000
+        - type: command
+          name: lint
+          command: pnpm --dir service lint --quiet
+          timeout_ms: 600000
+    fix:
+      quality_gates: *pnpm_checks
+    reimplement:
+      quality_gates: *pnpm_checks
+    fix-retry:
+      quality_gates: *pnpm_checks
+    # write_tests is left out on purpose: it writes tests before the code,
+    # so a failing test there is expected.
