@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { act } from "react-dom/test-utils"
 import { createRoot, type Root } from "react-dom/client"
@@ -30,16 +31,27 @@ describe("GlobalError", () => {
         const error = Object.assign(new Error("boom"), { digest: "abc123" })
         const reset = vi.fn()
 
+        // jsdom の既定の文書は最初から html と body を持つ。存在の確認では
+        // コンポーネントの出力を区別できないため、描画前は属性がないことを確かめる。
+        expect(document.documentElement.getAttribute("lang")).toBeNull()
+        expect(document.body.getAttribute("style")).toBeNull()
+
+        // <html> は div の子として DOM に置けないため、document 全体を React の root にする。
+        const documentRoot = createRoot(document)
         act(() => {
-            root.render(<GlobalError error={error} reset={reset} />)
+            documentRoot.render(<GlobalError error={error} reset={reset} />)
         })
 
         // ルートレイアウトを置き換えるため、コンポーネント自身が html/body を描画する。
-        expect(container.querySelector("html")).not.toBeNull()
-        expect(container.querySelector("body")).not.toBeNull()
-        expect(container.textContent).toContain("問題が発生しました")
+        expect(document.documentElement.getAttribute("lang")).toBe("ja")
+        expect(document.body.style.minHeight).toBe("100vh")
+        expect(document.body.textContent).toContain("問題が発生しました")
         // digest が渡された場合は Error ID として表示される。
-        expect(container.textContent).toContain("abc123")
+        expect(document.body.textContent).toContain("abc123")
+
+        act(() => {
+            documentRoot.unmount()
+        })
     })
 
     it("再試行ボタンのクリックで reset() が呼ばれる", () => {

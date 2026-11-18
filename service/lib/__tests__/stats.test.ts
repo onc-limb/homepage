@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { articles, bookTags, books } from "../db/schema"
 import {
+    countFromRows,
     countPublishedArticles,
     countReadBooks,
     countTotalBooks,
@@ -96,6 +97,20 @@ function emptyDb() {
     }
     return { db }
 }
+
+describe("countFromRows", () => {
+    it("returns 0 when there are no rows", () => {
+        expect(countFromRows([])).toBe(0)
+    })
+
+    it("returns the value of the first row", () => {
+        expect(countFromRows([{ value: 7 }])).toBe(7)
+    })
+
+    it("keeps a counted value of 0 as 0", () => {
+        expect(countFromRows([{ value: 0 }])).toBe(0)
+    })
+})
 
 describe("stats aggregation", () => {
     beforeEach(() => {

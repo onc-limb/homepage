@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 import { JsonLd } from "@/components/seo"
 import { NAV_ITEMS, SOCIAL_LINKS } from "@/lib/constants"
 import { absoluteUrl, createPageMetadata, SITE_DESCRIPTION, SITE_NAME } from "@/lib/seo"
-import { getHomeStats } from "@/lib/stats"
+import { getHomeStats, type HomeStats } from "@/lib/stats"
 import {
     FloatingShapes,
     HeroParticleTitle,
@@ -11,9 +11,20 @@ import {
     Reveal,
 } from "@/components/animations"
 
+// Next.js のページファイルは決まった名前しか export できないため、この型は export しない。
+class MissingSocialLinkError extends Error {
+    readonly linkName: string
+
+    constructor(linkName: string) {
+        super(`SOCIAL_LINKS must include a ${linkName} entry`)
+        this.name = "MissingSocialLinkError"
+        this.linkName = linkName
+    }
+}
+
 const githubLink = SOCIAL_LINKS.find((s) => s.name === "GitHub")
 if (!githubLink) {
-    throw new Error("SOCIAL_LINKS must include a GitHub entry")
+    throw new MissingSocialLinkError("GitHub")
 }
 const GITHUB_URL = githubLink.url
 
@@ -91,6 +102,14 @@ const CAPS = [
 // 場所ではなく行動導線である Contact を除く（Contact はヒーローと CTA バンドで拾う）。
 const EXPLORE_ITEMS = NAV_ITEMS.filter((n) => n.href !== "/" && n.href !== "/contact")
 
+// STATS 4 枠の表示順とラベル。値は getHomeStats() の同名キーから取る。
+const STAT_SLOTS: ReadonlyArray<{ key: keyof HomeStats; label: string }> = [
+    { key: "readBooksCount", label: "books read" },
+    { key: "publishedArticlesCount", label: "articles published" },
+    { key: "usedTagCount", label: "topics covered" },
+    { key: "totalBooksCount", label: "books logged" },
+]
+
 // STATS はリクエスト毎に DB 集計するため、ページを動的レンダリングにする（#127）。
 // /studio で本を読了にしたり記事を公開すると、再デプロイなしで次回アクセスに反映される。
 export const dynamic = "force-dynamic"
@@ -98,14 +117,7 @@ export const dynamic = "force-dynamic"
 export default async function TopPage() {
     // トップ STATS 4 枠を、私的指標（書籍予算・curiosity）から
     // DB 裏付けの実績指標に刷新する（#127）。
-    const { readBooksCount, publishedArticlesCount, usedTagCount, totalBooksCount } =
-        await getHomeStats()
-    const stats = [
-        { value: String(readBooksCount), sup: "", label: "books read" },
-        { value: String(publishedArticlesCount), sup: "", label: "articles published" },
-        { value: String(usedTagCount), sup: "", label: "topics covered" },
-        { value: String(totalBooksCount), sup: "", label: "books logged" },
-    ]
+    const stats = await getHomeStats()
 
     return (
         <main className="page flex-1">
@@ -263,18 +275,13 @@ export default async function TopPage() {
                         className="mt-16 grid grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-lg)] border border-hairline [@media(min-width:720px)]:grid-cols-4"
                         style={{ background: "var(--hairline)" }}
                     >
-                        {stats.map((s) => (
-                            <div key={s.label} className="bg-bg-elev p-8 text-left">
+                        {STAT_SLOTS.map((slot) => (
+                            <div key={slot.label} className="bg-bg-elev p-8 text-left">
                                 <span className="block font-mono text-[36px] font-semibold tracking-[-0.03em] text-fg-strong">
-                                    {s.value}
-                                    {s.sup && (
-                                        <sup className="ml-0.5 text-base text-accent">
-                                            {s.sup}
-                                        </sup>
-                                    )}
+                                    {String(stats[slot.key])}
                                 </span>
                                 <div className="mt-1.5 text-xs tracking-[0.05em] text-fg-muted">
-                                    {s.label}
+                                    {slot.label}
                                 </div>
                             </div>
                         ))}
