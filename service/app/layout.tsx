@@ -14,6 +14,8 @@ import {
     Noto_Sans_JP,
     Space_Grotesk,
     JetBrains_Mono,
+    M_PLUS_1,
+    M_PLUS_1_Code,
 } from "next/font/google"
 import "./globals.css"
 
@@ -32,6 +34,19 @@ const spaceGrotesk = Space_Grotesk({
 const jetbrainsMono = JetBrains_Mono({
     subsets: ["latin"],
     variable: "--font-jetbrains-mono",
+})
+
+// Design system fonts (docs/design-system.md §3). Their variables are put on
+// the root element so --ds-font / --ds-font-prose, declared on :root, can resolve them.
+const mPlus1Code = M_PLUS_1_Code({
+    subsets: ["latin"],
+    variable: "--font-m-plus-1-code",
+    weight: ["400", "700"],
+})
+const mPlus1 = M_PLUS_1({
+    subsets: ["latin"],
+    variable: "--font-m-plus-1",
+    weight: ["400", "700"],
 })
 
 const googleSiteVerification = getGoogleSiteVerification()
@@ -85,7 +100,12 @@ export default function RootLayout({
     ].join(" ")
 
     return (
-        <html lang="ja" data-theme="dark" suppressHydrationWarning>
+        <html
+            lang="ja"
+            data-theme="dark"
+            className={`${mPlus1Code.variable} ${mPlus1.variable}`}
+            suppressHydrationWarning
+        >
             <head>
                 {/* Apply persisted theme before hydration to prevent FOUC. */}
                 <script dangerouslySetInnerHTML={{ __html: themeBootScript }} />

@@ -70,6 +70,15 @@ describe("sitemap", () => {
         )
     })
 
+    it("does not list the /design token showcase", async () => {
+        const entries = await sitemap()
+        const paths = entries.map((entry) => new URL(entry.url).pathname)
+
+        expect(paths.filter((path) => path === "/design" || path.startsWith("/design/"))).toEqual(
+            [],
+        )
+    })
+
     it("uses NEXT_PUBLIC_SITE_URL and removes a trailing slash", async () => {
         vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://preview.example.com/")
 

@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>トークンと書体</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+1:wght@400;700&amp;family=M+PLUS+1+Code:wght@400;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#1c4c9c}a:hover{color:#1e2a1a}
+</style>
+</helmet>
+<div style="width: 1440px; height: 1240px; box-sizing: border-box; padding: 48px; background: #e6efcf; color: #1e2a1a; font-family: 'M PLUS 1 Code', monospace; font-size: 16px; line-height: 1.7; display: flex; flex-direction: column; gap: 32px">
+  <div style="display: flex; flex-direction: column; gap: 4px">
+    <p style="margin: 0; font-size: 0.875rem; color: #4c5c40">$ <span style="color: #1e2a1a">cat ~/design-system.md</span></p>
+    <h1 style="margin: 0; font-size: 1.75rem; line-height: 1.4">デザイントークン v3 — 山の中の山荘。昼は黄緑、夕方は深い緑</h1>
+    <p style="margin: 0; font-family: 'M PLUS 1', sans-serif; color: #4c5c40">読むのは主に「エンジニアに仕事を頼む側」の人。ターミナルの文法（プロンプト・コマンド・パス）は残し、色・文字・行間は一般の読み物の水準にそろえる。既定のテーマは OS の設定に従う。</p>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px">
+    <section style="border: 1px solid #c2cfa5; padding: 16px 24px; background: #e6efcf; color: #1e2a1a">
+      <h2 style="margin: 0 0 8px; font-size: 1rem">色 / ライト（昼の山荘）</h2>
+      <div style="display: grid; grid-template-columns: 32px 150px 100px minmax(0, 1fr); gap: 8px 16px; align-items: center; font-size: 0.875rem">
+        <span style="width: 32px; height: 32px; background: #e6efcf; border: 1px solid #4c5c40"></span><span>bg</span><span>#e6efcf</span><span style="color: #4c5c40">地（黄緑）</span>
+        <span style="width: 32px; height: 32px; background: #f6f9ea; border: 1px solid #4c5c40"></span><span>surface</span><span>#f6f9ea</span><span style="color: #4c5c40">断片・表の見出し・入力欄</span>
+        <span style="width: 32px; height: 32px; background: #1e2a1a"></span><span>fg</span><span>#1e2a1a</span><span style="color: #4c5c40">本文 12.6:1</span>
+        <span style="width: 32px; height: 32px; background: #4c5c40"></span><span>fg-muted</span><span>#4c5c40</span><span style="color: #4c5c40">補足 6.0:1</span>
+        <span style="width: 32px; height: 32px; background: #c2cfa5"></span><span>border</span><span>#c2cfa5</span><span style="color: #4c5c40">区切り線</span>
+        <span style="width: 32px; height: 32px; background: #8a4a06"></span><span>accent</span><span>#8a4a06</span><span style="color: #4c5c40">現在地・光る・主な扉 5.8:1</span>
+        <span style="width: 32px; height: 32px; background: #1d6a33"></span><span>prompt</span><span>#1d6a33</span><span style="color: #4c5c40">guest@onclimb 5.6:1</span>
+        <span style="width: 32px; height: 32px; background: #1c4c9c"></span><span>link</span><span>#1c4c9c</span><span style="color: #4c5c40">リンク・パス 6.9:1</span>
+      </div>
+    </section>
+    <section style="border: 1px solid #30503b; padding: 16px 24px; background: #12241a; color: #e9ecdd">
+      <h2 style="margin: 0 0 8px; font-size: 1rem">色 / ダーク（夕方の山荘）</h2>
+      <div style="display: grid; grid-template-columns: 32px 150px 100px minmax(0, 1fr); gap: 8px 16px; align-items: center; font-size: 0.875rem">
+        <span style="width: 32px; height: 32px; background: #12241a; border: 1px solid #a6b59b"></span><span>bg</span><span>#12241a</span><span style="color: #a6b59b">地（深い緑）</span>
+        <span style="width: 32px; height: 32px; background: #1a3125; border: 1px solid #a6b59b"></span><span>surface</span><span>#1a3125</span><span style="color: #a6b59b">断片・表の見出し・入力欄</span>
+        <span style="width: 32px; height: 32px; background: #e9ecdd"></span><span>fg</span><span>#e9ecdd</span><span style="color: #a6b59b">本文 13.5:1</span>
+        <span style="width: 32px; height: 32px; background: #a6b59b"></span><span>fg-muted</span><span>#a6b59b</span><span style="color: #a6b59b">補足 7.5:1</span>
+        <span style="width: 32px; height: 32px; background: #30503b"></span><span>border</span><span>#30503b</span><span style="color: #a6b59b">区切り線</span>
+        <span style="width: 32px; height: 32px; background: #f5b95c"></span><span>accent</span><span>#f5b95c</span><span style="color: #a6b59b">現在地・光る・主な扉（窓の明かりの色） 9.3:1</span>
+        <span style="width: 32px; height: 32px; background: #8fd6a2"></span><span>prompt</span><span>#8fd6a2</span><span style="color: #a6b59b">guest@onclimb 9.5:1</span>
+        <span style="width: 32px; height: 32px; background: #a6caff"></span><span>link</span><span>#a6caff</span><span style="color: #a6b59b">リンク・パス 9.7:1</span>
+      </div>
+    </section>
+  </div>
+
+  <section style="display: flex; flex-direction: column; gap: 12px">
+    <h2 style="margin: 0; font-size: 1rem">文字 — 見出し・コマンド・表は M PLUS 1 Code、長い本文は同じ系統の M PLUS 1（Tweaks で切替可）</h2>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px">
+      <div style="border: 1px solid #8a4a06; padding: 16px 20px; display: flex; flex-direction: column; gap: 8px; background: #f6f9ea">
+        <p style="margin: 0; font-size: 0.875rem; color: #8a4a06">本文 = M PLUS 1（推奨）</p>
+        <p style="margin: 0; font-family: 'M PLUS 1', sans-serif; line-height: 1.9">ライブラリもフレームワークも、ブラックボックスのまま使うのは落ち着かない。「動けばよい」で済ませず、「なぜそれが最適か」「なぜその挙動になるのか」を、公式ドキュメントやソースコード、技術書といった一次情報から確かめてから使いたい。</p>
+      </div>
+      <div style="border: 1px solid #c2cfa5; padding: 16px 20px; display: flex; flex-direction: column; gap: 8px; background: #f6f9ea">
+        <p style="margin: 0; font-size: 0.875rem; color: #4c5c40">本文 = M PLUS 1 Code（すべて等幅）</p>
+        <p style="margin: 0; font-family: 'M PLUS 1 Code', monospace; line-height: 1.9">ライブラリもフレームワークも、ブラックボックスのまま使うのは落ち着かない。「動けばよい」で済ませず、「なぜそれが最適か」「なぜその挙動になるのか」を、公式ドキュメントやソースコード、技術書といった一次情報から確かめてから使いたい。</p>
+      </div>
+    </div>
+    <p style="margin: 0; font-size: 0.875rem; color: #4c5c40">サイズ 0.875 / 1 / 1.25 / 1.75rem。本文の行間 1.9、本文の幅は 720px まで（和文 45 字前後）。余白は 4px 単位</p>
+  </section>
+
+  <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px">
+    <section style="display: flex; flex-direction: column; gap: 12px">
+      <h2 style="margin: 0; font-size: 1rem">プロンプトと見出し</h2>
+      <p style="margin: 0; font-size: 0.875rem"><span style="color: #1d6a33">guest@onclimb</span>:<span style="color: #1c4c9c">~/skills</span>$</p>
+      <div>
+        <p style="margin: 0; font-size: 0.875rem; color: #4c5c40">$ <span style="color: #1e2a1a">ls -l ~/skills | sort -k level</span></p>
+        <p style="margin: 4px 0 0; font-size: 1.75rem; line-height: 1.4; font-weight: 700">スキル</p>
+      </div>
+      <p style="margin: 0; font-size: 0.875rem; color: #4c5c40">コマンドは小さく添えるだけ。見出しは日本語で大きく</p>
+    </section>
+    <section style="display: flex; flex-direction: column; gap: 12px">
+      <h2 style="margin: 0; font-size: 1rem">コマンドのボタン（早見表）</h2>
+      <div style="width: 300px; border: 1px solid #4c5c40; background: #f6f9ea; padding: 8px 14px; display: flex; flex-direction: column; gap: 2px">
+        <span style="font-family: 'M PLUS 1', sans-serif">AI に関わるもの</span>
+        <span style="font-size: 0.875rem; color: #1c4c9c">$ grep -rl ai ~</span>
+      </div>
+      <p style="margin: 0; font-size: 0.875rem; color: #4c5c40">何をするかを日本語で先に書き、コマンドは下に添える</p>
+    </section>
+    <section style="display: flex; flex-direction: column; gap: 12px">
+      <h2 style="margin: 0; font-size: 1rem">断片の 3 つの状態</h2>
+      <div style="display: flex; gap: 12px">
+        <div style="width: 130px; border: 1px solid #4c5c40; background: #f6f9ea; padding: 6px 8px; font-size: 0.875rem"><span style="color: #4c5c40">スキル</span><br><span style="font-family: 'M PLUS 1', sans-serif; font-size: 1rem; font-weight: 700">Terraform</span><br><span style="color: #4c5c40">通常</span></div>
+        <div style="width: 130px; border: 1px solid #8a4a06; background: #f6f9ea; padding: 6px 8px; font-size: 0.875rem"><span style="color: #8a4a06">スキル</span><br><span style="font-family: 'M PLUS 1', sans-serif; font-size: 1rem; font-weight: 700">Terraform</span><br><span style="color: #4c5c40">光る</span></div>
+        <div style="width: 130px; border: 1px solid #c2cfa5; background: #e6efcf; padding: 6px 8px; font-size: 0.875rem; color: #4c5c40">スキル<br><span style="font-family: 'M PLUS 1', sans-serif; font-size: 1rem">Terraform</span><br>薄い</div>
+      </div>
+      <p style="margin: 0; font-size: 0.875rem; color: #4c5c40">リンクは <a href="#" style="color: #1c4c9c; text-decoration: underline; text-underline-offset: 3px">下線付きの青</a> にして、押せるものだと分かるようにする</p>
+    </section>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1240}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

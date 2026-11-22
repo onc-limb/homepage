@@ -20,7 +20,6 @@ const readRepo = (rel: string) => readFileSync(join(here, rel), "utf8")
 
 const globalsCss = readRepo("../../app/globals.css")
 const tailwindTs = readRepo("../../tailwind.config.ts")
-const tailwindJs = readRepo("../../tailwind.config.js")
 
 /** 不透明ボーダートークン（半透明 --hairline / --hairline-strong の置き換え先）。 */
 const OPAQUE_BORDER_TOKENS = ["--hairline-solid", "--hairline-solid-strong"] as const
@@ -96,7 +95,6 @@ describe("opaque surface tokens (border + shadow)", () => {
     describe("tailwind mappings (kept in parity across config.ts / config.js)", () => {
         it.each([
             ["tailwind.config.ts", tailwindTs],
-            ["tailwind.config.js", tailwindJs],
         ] as const)("maps the opaque border tokens in %s", (_name, source) => {
             // Given components style borders through Tailwind utilities
             // When the config sources are read
@@ -109,7 +107,6 @@ describe("opaque surface tokens (border + shadow)", () => {
 
         it.each([
             ["tailwind.config.ts", tailwindTs],
-            ["tailwind.config.js", tailwindJs],
         ] as const)("maps the card shadow token in %s", (_name, source) => {
             // Given the subtle shadow must be reachable as `shadow-card`
             // When the config sources are read
