@@ -68,6 +68,29 @@ export const categoryLabels: Record<SkillCategory, string> = {
     security: "セキュリティ",
     auth: "認証・認可",
 }
+// 地図の部屋のラベルに出す短い名前
+export const categoryShortLabels: Record<SkillCategory, string> = {
+    language: "言語",
+    frontend: "フロントエンド",
+    framework: "バックエンド",
+    compute: "コンピューティング",
+    networking: "ネットワーク",
+    storage: "ストレージ",
+    database: "データベース",
+    integration: "統合サービス",
+    IaC: "IaC",
+    container: "コンテナ",
+    tools: "ツール",
+    architecture: "設計",
+    methodology: "開発手法",
+    api: "API",
+    "ai-llm": "AI・LLM",
+    ml: "機械学習",
+    "devops-sre": "DevOps",
+    testing: "テスト",
+    security: "セキュリティ",
+    auth: "認証",
+}
 export const levelLabels: Record<
     SkillLevel,
     { label: string; color: string; icon: string }

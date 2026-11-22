@@ -9,6 +9,7 @@ export interface FloorGroup {
     floor: FloorId // この分類が属する階
     slug: GroupSlug
     name: string
+    roomName: string | null // 地図の部屋の名前。null は分野ごとに部屋を分ける分類（スキル・自己学習）
     command: string // 見出しに添えるコマンド（`$ ` は付けない）
     url: string // 最終の URL（/<階>/<slug>）
     href: string // 移行中のリンク先（今の URL）
@@ -26,9 +27,10 @@ const group = (
     floor: FloorId,
     slug: GroupSlug,
     name: string,
+    roomName: string | null,
     command: string,
     href: string,
-): FloorGroup => ({ floor, slug, name, command, url: `/${floor}/${slug}`, href })
+): FloorGroup => ({ floor, slug, name, roomName, command, url: `/${floor}/${slug}`, href })
 
 export const FLOORS: Floor[] = [
     {
@@ -36,7 +38,7 @@ export const FLOORS: Floor[] = [
         label: "B1",
         name: "自己学習",
         url: "/b1",
-        groups: [group("b1", "studies", "自己学習", "ls -l ~/b1/studies | sort -k level", "/skills")],
+        groups: [group("b1", "studies", "自己学習", null, "ls -l ~/b1/studies | sort -k level", "/skills")],
     },
     {
         id: "1f",
@@ -44,8 +46,8 @@ export const FLOORS: Floor[] = [
         name: "プロフィール・連絡先",
         url: "/1f",
         groups: [
-            group("1f", "profile", "プロフィール", "man onclimb", "/profile"),
-            group("1f", "contact", "連絡先", "finger onclimb", "/contact"),
+            group("1f", "profile", "プロフィール", "プロフィール", "man onclimb", "/profile"),
+            group("1f", "contact", "連絡先", "受付・連絡先", "finger onclimb", "/contact"),
         ],
     },
     {
@@ -54,8 +56,8 @@ export const FLOORS: Floor[] = [
         name: "経歴・業務の技術",
         url: "/2f",
         groups: [
-            group("2f", "histories", "経歴", "ls -tr ~/2f/histories", "/profile"),
-            group("2f", "skills", "スキル", "ls -l ~/2f/skills | sort -k level", "/skills"),
+            group("2f", "histories", "経歴", "経歴", "ls -tr ~/2f/histories", "/profile"),
+            group("2f", "skills", "スキル", null, "ls -l ~/2f/skills | sort -k level", "/skills"),
         ],
     },
     {
@@ -63,7 +65,7 @@ export const FLOORS: Floor[] = [
         label: "3F",
         name: "作ったもの・考え",
         url: "/3f",
-        groups: [group("3f", "portfolios", "ポートフォリオ", "git log --oneline ~/3f/portfolios", "/portfolio")],
+        groups: [group("3f", "portfolios", "ポートフォリオ", "作ったもの", "git log --oneline ~/3f/portfolios", "/portfolio")],
     },
     {
         id: "rf",
