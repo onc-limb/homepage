@@ -135,6 +135,21 @@ module.exports = {
             },
             gridTemplateColumns: {
                 "ds-kv": "max-content minmax(0, 1fr)",
+                // LogList row: date, identifier, title.
+                "ds-log": "7.5em 11em minmax(0, 1fr)",
+            },
+            // Door sizes (150x210 desktop, 104x150 narrow) and frame widths.
+            width: {
+                "ds-door": "150px",
+                "ds-door-narrow": "104px",
+            },
+            height: {
+                "ds-door": "210px",
+                "ds-door-narrow": "150px",
+            },
+            borderWidth: {
+                "ds-door": "3px",
+                "ds-door-lg": "6px",
             },
             borderRadius: {
                 lg: "var(--radius-lg)",
