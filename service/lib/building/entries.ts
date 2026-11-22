@@ -1,0 +1,134 @@
+// 建物の中身（「紙」）の一覧を作るモジュール。サーバー側専用。
+// getSkills / getProfile / getProjects が md を読み込むため、Client Component から import しない。
+// クライアントで使う定数と変換は lib/building/floors.ts にある。
+
+import { SOCIAL_LINKS } from "../constants"
+import { getParsedProfile, getProfile } from "../profile"
+import { getProjects } from "../portfolio"
+import { getSkills, levelLabels, type SkillLevel } from "../skills"
+import { getSkillFloor } from "../skills-meta"
+import { findFloor, findGroup, toVirtualPath, type FloorId, type GroupSlug } from "./floors"
+
+export interface Entry {
+    path: string // 仮想パス（~/2f/skills/language/typescript.md）
+    floor: FloorId
+    group: GroupSlug | null // 屋上の紙は分類を持たない
+    room: string | null // スキルは分野、ほかは分類の slug。屋上の紙は部屋を持たない
+    title: string
+    excerpt: string
+    href: string // 最終の URL（移行中の FLOORS の href は使わない）
+    tags: string[]
+    date?: string
+    level?: SkillLevel
+}
+
+const groupDir = (slug: GroupSlug): string => toVirtualPath(findGroup(slug).url)
+
+// 題名から仮想パスの名前を作る。"/" と空白だけを "-" に置き換える
+const toFileName = (title: string): string => title.replace(/[/\s]/g, "-")
+
+const toNumbered = (index: number, title: string): string =>
+    `${String(index + 1).padStart(2, "0")}-${toFileName(title)}.md`
+
+export async function getEntries(): Promise<Entry[]> {
+    const [profile, parsed] = await Promise.all([getProfile(), getParsedProfile()])
+    return [
+        ...skillEntries(),
+        ...historyEntries(parsed.career),
+        ...profileEntries(profile.data.title, parsed.interests, parsed.certs),
+        ...portfolioEntries(),
+        ...rooftopEntries(),
+    ]
+}
+
+function skillEntries(): Entry[] {
+    return getSkills().map((skill) => {
+        const group: GroupSlug = getSkillFloor(skill) === "2f" ? "skills" : "studies"
+        return {
+            path: `${groupDir(group)}/${skill.category}/${skill.slug}.md`,
+            floor: findGroup(group).floor,
+            group,
+            room: skill.category,
+            title: skill.name,
+            excerpt: `level ${skill.level}（${levelLabels[skill.level].label}）`,
+            href: `${findGroup(group).url}/${skill.slug}`,
+            tags: [skill.category],
+            level: skill.level,
+        }
+    })
+}
+
+// 経歴は profile.md で新しい順に並ぶ。古い順に 01 から振るため、最後の項目が 01 になる
+function historyEntries(career: { role: string; bullets: string[] }[]): Entry[] {
+    const total = career.length
+    return career.map((item, index) => ({
+        path: `${groupDir("histories")}/${toNumbered(total - 1 - index, item.role)}`,
+        floor: findGroup("histories").floor,
+        group: "histories",
+        room: "histories",
+        title: item.role,
+        excerpt: item.bullets[0] ?? "",
+        href: findGroup("histories").url,
+        tags: [],
+    }))
+}
+
+function profileEntries(
+    jobTitle: string,
+    interests: { title: string; description: string }[],
+    certs: { title: string; year: string }[],
+): Entry[] {
+    const dir = groupDir("profile")
+    const href = findGroup("profile").url
+    const base = { floor: findGroup("profile").floor, group: "profile", room: "profile", href } as const
+    return [
+        { ...base, tags: [], path: `${dir}/README.md`, title: "自己紹介", excerpt: jobTitle },
+        ...interests.map((item, index) => ({
+            ...base,
+            tags: [],
+            path: `${dir}/interests/${toNumbered(index, item.title)}`,
+            title: item.title,
+            excerpt: item.description,
+        })),
+        ...certs.map((item, index) => ({
+            ...base,
+            tags: [],
+            path: `${dir}/certs/${toNumbered(index, item.title)}`,
+            title: item.title,
+            excerpt: item.year,
+        })),
+    ]
+}
+
+function portfolioEntries(): Entry[] {
+    return getProjects().map((project) => ({
+        path: `${groupDir("portfolios")}/${project.id}.md`,
+        floor: findGroup("portfolios").floor,
+        group: "portfolios",
+        room: "portfolios",
+        title: project.title,
+        excerpt: project.description,
+        href: `${findGroup("portfolios").url}/${project.id}`,
+        tags: project.technologies,
+        date: project.updatedAt,
+    }))
+}
+
+// 外部リンクの名前は、名前の最初の英単語を小文字にしたもの（"X (Twitter)" → x）
+function rooftopEntries(): Entry[] {
+    const rooftop = findFloor("rf")
+    return SOCIAL_LINKS.map((link) => {
+        const word = link.name.match(/[A-Za-z]+/)
+        if (!word) throw new Error(`Cannot derive a file name from link name: ${link.name}`)
+        return {
+            path: `${toVirtualPath(rooftop.url)}/${word[0].toLowerCase()}.url`,
+            floor: rooftop.id,
+            group: null,
+            room: null,
+            title: link.name,
+            excerpt: link.username,
+            href: link.url,
+            tags: [],
+        }
+    })
+}

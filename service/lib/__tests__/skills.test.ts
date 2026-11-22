@@ -15,6 +15,7 @@ import type { Skill, SkillCategory, SkillLevel } from "@/lib/skills"
 
 const factorySkill = (overrides: Partial<Skill> & { category: SkillCategory; level: SkillLevel }): Skill => ({
     name: "fixture",
+    slug: "fixture",
     publish: true,
     experience: [],
     knowledge: [],
