@@ -21,13 +21,18 @@ export {
     type SkillMeta,
 } from "./skills-meta"
 
+export interface SkillSource {
+    key: string // require.context のキー（./<category>/<file>.md）
+    raw: string
+}
+
 // docs/skills配下のすべての.mdファイルを動的にimport
 // @ts-expect-error require.context is webpack specific
 const requireContext = require.context("../docs/skills", true, /\.md$/)
-const skillMarkdowns: string[] = requireContext.keys().map((key: string) => {
+const skillSources: SkillSource[] = requireContext.keys().map((key: string) => {
     const mdModule = requireContext(key)
     // raw-loaderはデフォルトエクスポートとして文字列を返す
-    return typeof mdModule === "string" ? mdModule : mdModule.default || mdModule
+    return { key, raw: typeof mdModule === "string" ? mdModule : mdModule.default || mdModule }
 })
 // Markdown から経験・知識を抽出するヘルパー関数（階層構造対応）
 function extractListItems(content: string, sectionTitle: string): ListItem[] {
@@ -83,35 +88,40 @@ function extractListItems(content: string, sectionTitle: string): ListItem[] {
     return result
 }
 
-function parseSkillMarkdown(rawContent: string): Skill {
-    const { data, content } = matter(rawContent)
+function parseSkillMarkdown({ key, raw }: SkillSource): Skill {
+    const { data, content } = matter(raw)
     const meta = data as SkillMeta
     return {
         name: meta.name,
+        slug: key.replace(/^.*\//, "").replace(/\.md$/, ""),
         category: meta.category,
         level: meta.level,
         publish: meta.publish,
+        // work / study 以外の値は無視し、階は level で決める
+        context: meta.context === "work" || meta.context === "study" ? meta.context : undefined,
         experience: extractListItems(content, "経験"),
         knowledge: extractListItems(content, "知識"),
         relatedTech: extractFlatListItems(content, "関連技術"),
         relatedBooks: extractFlatListItems(content, "関連書籍"),
     }
 }
-// すべてのスキルを取得
-export function getSkills(): Skill[] {
-    const allSkills = skillMarkdowns
+
+// md の本文とキーから公開スキルの一覧を作る（getSkills から分けた純粋関数）
+export function parseSkillSources(sources: SkillSource[]): Skill[] {
+    const allSkills = sources
         .map(parseSkillMarkdown)
         .filter((skill) => skill.publish)
 
     // スキル名でユニーク化
     // Note: Webpackの require.context() がビルド時に Server/Client 両方のバンドルで評価され、
-    // skillMarkdowns 配列に同じファイルが複数回含まれる場合があるため、
+    // sources に同じファイルが複数回含まれる場合があるため、
     // スキル名をキーとして重複を除去する
-    const uniqueSkills = Array.from(
-        new Map(allSkills.map((skill) => [skill.name, skill])).values()
-    )
+    return Array.from(new Map(allSkills.map((skill) => [skill.name, skill])).values())
+}
 
-    return uniqueSkills
+// すべてのスキルを取得
+export function getSkills(): Skill[] {
+    return parseSkillSources(skillSources)
 }
 
 // カテゴリ別にグループ化されたスキルを取得

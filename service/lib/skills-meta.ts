@@ -30,13 +30,17 @@ export type SkillCategory =
     | "security" // セキュリティ
     | "auth" // 認証・認可
 export type SkillLevel = 1 | 2 | 3 | 4 | 5
+// スキルを使った文脈。work = 業務で使った、study = 自己学習
+export type SkillContext = "work" | "study"
 export interface SkillMeta {
     name: string
     category: SkillCategory
     level: SkillLevel
     publish: boolean
+    context?: SkillContext
 }
 export interface Skill extends SkillMeta {
+    slug: string // md のファイル名（拡張子なし）。仮想パスと URL に使う
     experience: ListItem[] // やったこと（実績）
     knowledge: ListItem[] // 知っていること（知識）
     relatedTech: string[] // 関連技術
@@ -101,4 +105,12 @@ export const categoryOrder: SkillCategory[] = [
 // level 降順、同 level はスキル名の昇順で並べる
 export function sortSkillsByLevel(skills: Skill[]): Skill[] {
     return [...skills].sort((a, b) => b.level - a.level || a.name.localeCompare(b.name))
+}
+
+export type SkillFloor = "2f" | "b1"
+
+// 業務のスキルは 2F、自己学習は B1。context があればその値で、無ければ level で決める（3 以上 = 業務）
+export function getSkillFloor(skill: Pick<SkillMeta, "context" | "level">): SkillFloor {
+    if (skill.context) return skill.context === "work" ? "2f" : "b1"
+    return skill.level >= 3 ? "2f" : "b1"
 }
