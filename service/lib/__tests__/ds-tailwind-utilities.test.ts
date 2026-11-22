@@ -76,4 +76,44 @@ describe("tailwind ds namespace", () => {
             expect(rules.get(`.w-ds-${n}`)).toMatchObject({ width: value })
         }
     )
+
+    it.each([
+        ["max-w-ds-page", "max-width", "var(--ds-page-max)"],
+        ["max-w-ds-measure", "max-width", "var(--ds-measure)"],
+        ["px-ds-page-gutter", "padding-left", "calc(var(--ds-space-4) + var(--ds-space-3))"],
+        ["px-ds-page-gutter", "padding-right", "calc(var(--ds-space-4) + var(--ds-space-3))"],
+        ["grid-cols-ds-kv", "grid-template-columns", "max-content minmax(0, 1fr)"],
+    ] as const)("generates the layout utility %s as %s: %s", async (cls, prop, value) => {
+        const rules = await generate([cls])
+        expect(rules.get(`.${cls}`), `.${cls}`).toMatchObject({ [prop]: value })
+    })
+
+    it("switches the page gutter and the key-value columns at the md breakpoint", async () => {
+        const result = await postcss([
+            tailwindcss({
+                ...config,
+                content: [{ raw: "md:px-ds-page-gutter md:grid-cols-ds-kv", extension: "html" }],
+            }),
+        ]).process("@tailwind utilities", { from: undefined })
+        const found: Record<string, { media: string; decls: Record<string, string> }> = {}
+        result.root.walkAtRules("media", (media) => {
+            media.walkRules((rule) => {
+                const decls: Record<string, string> = {}
+                rule.walkDecls((decl) => {
+                    decls[decl.prop] = decl.value
+                })
+                found[rule.selector] = { media: media.params, decls }
+            })
+        })
+        const gutter = found[".md\\:px-ds-page-gutter"]
+        expect(gutter, "md:px-ds-page-gutter").toBeDefined()
+        expect(gutter.media).toContain("768px")
+        expect(gutter.decls).toMatchObject({
+            "padding-left": "calc(var(--ds-space-4) + var(--ds-space-3))",
+        })
+        const kv = found[".md\\:grid-cols-ds-kv"]
+        expect(kv, "md:grid-cols-ds-kv").toBeDefined()
+        expect(kv.media).toContain("768px")
+        expect(kv.decls).toMatchObject({ "grid-template-columns": "max-content minmax(0, 1fr)" })
+    })
 })
