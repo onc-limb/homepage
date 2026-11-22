@@ -64,7 +64,7 @@ function collectFiles(dir: string): string[] {
 // Tailwind 設定は単色トークンのマッピング先なので明示的に含める）。
 const files = [
     ...SCAN_DIRS.flatMap((d) => collectFiles(join(serviceRoot, d))),
-    join(serviceRoot, "tailwind.config.js"),
+    join(serviceRoot, "tailwind.config.ts"),
 ]
 
 describe("solid background — no gradient decorations remain", () => {
