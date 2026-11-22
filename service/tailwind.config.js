@@ -126,6 +126,15 @@ module.exports = {
                 "ds-3": "var(--ds-space-3)",
                 "ds-4": "var(--ds-space-4)",
                 "ds-5": "var(--ds-space-5)",
+                // 40px page gutter built from existing tokens (24px + 16px).
+                "ds-page-gutter": "calc(var(--ds-space-4) + var(--ds-space-3))",
+            },
+            maxWidth: {
+                "ds-page": "var(--ds-page-max)",
+                "ds-measure": "var(--ds-measure)",
+            },
+            gridTemplateColumns: {
+                "ds-kv": "max-content minmax(0, 1fr)",
             },
             borderRadius: {
                 lg: "var(--radius-lg)",
