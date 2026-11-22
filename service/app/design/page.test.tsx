@@ -1,5 +1,4 @@
 // @vitest-environment jsdom
-import { createRequire } from "node:module"
 import { renderToStaticMarkup } from "react-dom/server"
 import { beforeAll, describe, expect, it } from "vitest"
 
@@ -8,6 +7,8 @@ import {
     parseValueTokens,
     readSpec,
 } from "@/lib/__tests__/design-system-spec"
+
+import tailwindConfig from "../../tailwind.config"
 
 import DesignPage, { metadata } from "./page"
 import { DESIGN_SAMPLES } from "./samples"
@@ -125,11 +126,9 @@ describe("/design page", () => {
     })
 
     describe("styling rules", () => {
-        const requireCjs = createRequire(import.meta.url)
-        const config = requireCjs("../../tailwind.config.js") as {
-            theme: { extend: { colors: Record<string, unknown> } }
-        }
-        const legacyColorKeys = Object.keys(config.theme.extend.colors).filter((k) => k !== "ds")
+        const legacyColorKeys = Object.keys(tailwindConfig.theme?.extend?.colors ?? {}).filter(
+            (k) => k !== "ds"
+        )
         const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
         const legacyColorRe = new RegExp(
             `^(bg|text|border|ring|fill|stroke|outline|divide)-(${legacyColorKeys
