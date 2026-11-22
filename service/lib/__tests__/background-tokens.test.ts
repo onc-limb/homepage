@@ -20,7 +20,7 @@ const here = dirname(fileURLToPath(import.meta.url))
 const readRepo = (rel: string) => readFileSync(join(here, rel), "utf8")
 
 const globalsCss = readRepo("../../app/globals.css")
-const tailwindJs = readRepo("../../tailwind.config.js")
+const tailwindTs = readRepo("../../tailwind.config.ts")
 
 /** ページ/セクション/サーフェスの単色（不透明 hex）背景トークン。 */
 const SOLID_BG_TOKENS = [
@@ -151,7 +151,7 @@ describe("solid background tokens", () => {
 
     describe("tailwind mapping (both configs stay in sync)", () => {
         it.each([
-            ["tailwind.config.js", tailwindJs],
+            ["tailwind.config.ts", tailwindTs],
         ] as const)("maps the solid surface tokens in %s", (_name, config) => {
             // Given components reference background tokens via bg-* utility classes
             // When the tailwind color map is inspected
