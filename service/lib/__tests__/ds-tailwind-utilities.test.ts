@@ -1,20 +1,16 @@
 import { describe, it, expect } from "vitest"
-import { createRequire } from "node:module"
 import postcss from "postcss"
 import tailwindcss from "tailwindcss"
-import type { Config } from "tailwindcss"
+import config from "../../tailwind.config"
 import { parseColorTokens, readSpec } from "./design-system-spec"
 
 /**
  * Tailwind `ds` namespace contract tests.
  *
- * Runs the real tailwind.config.js through tailwindcss with a raw content
+ * Runs the real tailwind.config.ts through tailwindcss with a raw content
  * source and checks that the ds utilities are generated and point at the
  * --ds-* custom properties (never at hard-coded values).
  */
-
-const requireCjs = createRequire(import.meta.url)
-const config = requireCjs("../../tailwind.config.js") as Config
 
 const colorNames = parseColorTokens(readSpec()).map((t) => t.name.replace(/^--ds-/, ""))
 

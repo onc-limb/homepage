@@ -1,5 +1,12 @@
-/** @type {import('tailwindcss').Config} */
-module.exports = {
+import type { Config } from "tailwindcss"
+import typography from "@tailwindcss/typography"
+import tailwindcssAnimate from "tailwindcss-animate"
+
+/**
+ * The only Tailwind config. `darkMode: ["selector", '[data-theme="dark"]']` lets
+ * the `dark:` variants follow the same data attribute the theme toggle sets.
+ */
+const config: Config = {
     darkMode: ["selector", '[data-theme="dark"]'],
     content: [
         "./pages/**/*.{ts,tsx}",
@@ -157,16 +164,12 @@ module.exports = {
                 sm: "calc(var(--radius) - 2px)",
             },
             boxShadow: {
-                // Kept in parity with tailwind.config.ts (which also maps
-                // card-soft / card-lg). Only the opaque-surface token is added
-                // here to avoid changing pre-existing behaviour of this config.
                 card: "var(--shadow-card)",
             },
             // Named durations instead of arbitrary values (duration-[250ms]).
             // tailwindcss-animate also registers `duration-*` for
             // animation-duration, so arbitrary values match two utilities and
             // Tailwind warns that the class is ambiguous.
-            // Kept in parity with tailwind.config.ts.
             transitionDuration: {
                 250: "250ms",
                 350: "350ms",
@@ -187,5 +190,6 @@ module.exports = {
             },
         },
     },
-    plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
+    plugins: [tailwindcssAnimate, typography],
 }
+export default config
