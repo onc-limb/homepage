@@ -83,9 +83,55 @@ describe("tailwind ds namespace", () => {
         ["px-ds-page-gutter", "padding-left", "calc(var(--ds-space-4) + var(--ds-space-3))"],
         ["px-ds-page-gutter", "padding-right", "calc(var(--ds-space-4) + var(--ds-space-3))"],
         ["grid-cols-ds-kv", "grid-template-columns", "max-content minmax(0, 1fr)"],
+        ["grid-cols-ds-log", "grid-template-columns", "7.5em 11em minmax(0, 1fr)"],
     ] as const)("generates the layout utility %s as %s: %s", async (cls, prop, value) => {
         const rules = await generate([cls])
         expect(rules.get(`.${cls}`), `.${cls}`).toMatchObject({ [prop]: value })
+    })
+
+    // Door sizes from the mock (Maze.dc.html): 150x210 desktop, 104x150 narrow.
+    it.each([
+        ["w-ds-door", "width", "150px"],
+        ["w-ds-door-narrow", "width", "104px"],
+        ["h-ds-door", "height", "210px"],
+        ["h-ds-door-narrow", "height", "150px"],
+        ["border-ds-door", "border-width", "3px"],
+        ["border-ds-door-lg", "border-width", "6px"],
+    ] as const)("generates the door utility %s as %s: %s", async (cls, prop, value) => {
+        const rules = await generate([cls])
+        expect(rules.get(`.${cls}`), `.${cls}`).toMatchObject({ [prop]: value })
+    })
+
+    it("switches the door size and the log columns at the md breakpoint", async () => {
+        const result = await postcss([
+            tailwindcss({
+                ...config,
+                content: [
+                    { raw: "md:w-ds-door md:h-ds-door md:grid-cols-ds-log", extension: "html" },
+                ],
+            }),
+        ]).process("@tailwind utilities", { from: undefined })
+        const found: Record<string, { media: string; decls: Record<string, string> }> = {}
+        result.root.walkAtRules("media", (media) => {
+            media.walkRules((rule) => {
+                const decls: Record<string, string> = {}
+                rule.walkDecls((decl) => {
+                    decls[decl.prop] = decl.value
+                })
+                found[rule.selector] = { media: media.params, decls }
+            })
+        })
+        const expected: Array<[string, string, string]> = [
+            [".md\\:w-ds-door", "width", "150px"],
+            [".md\\:h-ds-door", "height", "210px"],
+            [".md\\:grid-cols-ds-log", "grid-template-columns", "7.5em 11em minmax(0, 1fr)"],
+        ]
+        for (const [selector, prop, value] of expected) {
+            const rule = found[selector]
+            expect(rule, selector).toBeDefined()
+            expect(rule.media).toContain("768px")
+            expect(rule.decls).toMatchObject({ [prop]: value })
+        }
     })
 
     it("switches the page gutter and the key-value columns at the md breakpoint", async () => {
