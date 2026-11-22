@@ -1,0 +1,771 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>サイト全体</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+1:wght@400;700&amp;family=M+PLUS+1+Code:wght@400;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="min-height: 100%; box-sizing: border-box; background: {{c.bg}}; color: {{c.fg}}; font-family: {{mf}}; font-size: 16px; line-height: 1.7; display: flex; flex-direction: column">
+
+  <header style="border-bottom: 1px solid {{c.bd}}; background: {{c.bg}}">
+    <div style="max-width: {{L.max}}px; margin: 0 auto; padding: 0 {{L.pad}}px; box-sizing: border-box; min-height: 60px; display: flex; flex-wrap: wrap; align-items: center; gap: 0 24px">
+      <button type="button" onClick="{{goHome}}" style="min-height: 44px; padding: 0; background: transparent; border: 0; font: inherit; font-size: 0.875rem; color: {{c.fg}}; cursor: pointer; white-space: nowrap"><span style="color: {{c.gr}}">guest@onclimb</span>:<span style="color: {{c.bl}}">{{promptPath}}</span>$</button>
+      <sc-if value="{{desk}}" hint-placeholder-val="{{true}}">
+        <nav aria-label="サイト" style="display: flex; flex-wrap: wrap; gap: 0 4px; flex: 1 1 auto">
+          <sc-for list="{{nav}}" as="n" hint-placeholder-count="6">
+            <button type="button" onClick="{{n.go}}" aria-current="{{n.cur}}" style="min-height: 44px; padding: 0 10px; background: transparent; border: 0; border-bottom: 2px solid {{n.ul}}; font-family: {{pf}}; font-size: 0.875rem; font-weight: {{n.fw}}; color: {{c.fg}}; cursor: pointer">{{n.label}}</button>
+          </sc-for>
+        </nav>
+      </sc-if>
+      <sc-if value="{{phone}}" hint-placeholder-val="{{false}}">
+        <span style="flex: 1 1 auto"></span>
+      </sc-if>
+      <button type="button" onClick="{{toggleTheme}}" style="position: relative; background: {{B.leaf}}; outline: 1px solid {{c.fg}}; min-height: 40px; padding: 0 26px 0 10px; border: 3px solid {{B.frame}}; font-family: {{pf}}; font-size: 0.875rem; color: {{c.fg}}; cursor: pointer">{{themeLabel}}<span aria-hidden="true" style="position: absolute; right: 8px; top: 50%; width: 8px; height: 8px; margin-top: -4px; box-sizing: border-box; background: {{c.ac}}; border: 1px solid {{c.fg}}"></span></button>
+      <sc-if value="{{phone}}" hint-placeholder-val="{{false}}">
+        <button type="button" onClick="{{toggleMenu}}" aria-expanded="{{menuExpanded}}" style="position: relative; background: {{B.leaf}}; outline: 1px solid {{c.fg}}; min-height: 40px; padding: 0 26px 0 10px; border: 3px solid {{B.frame}}; font-family: {{pf}}; font-size: 0.875rem; color: {{c.fg}}; cursor: pointer">メニュー<span aria-hidden="true" style="position: absolute; right: 8px; top: 50%; width: 8px; height: 8px; margin-top: -4px; box-sizing: border-box; background: {{c.ac}}; border: 1px solid {{c.fg}}"></span></button>
+      </sc-if>
+    </div>
+    <sc-if value="{{menuShown}}" hint-placeholder-val="{{false}}">
+      <nav aria-label="サイト" style="border-top: 1px solid {{c.bd}}; padding: 4px {{L.pad}}px 12px; display: flex; flex-direction: column">
+        <sc-for list="{{nav}}" as="n" hint-placeholder-count="6">
+          <button type="button" onClick="{{n.go}}" aria-current="{{n.cur}}" style="min-height: 48px; padding: 0; background: transparent; border: 0; border-bottom: 1px solid {{c.bd}}; display: flex; justify-content: space-between; align-items: center; font: inherit; color: {{c.fg}}; cursor: pointer; text-align: left">
+            <span style="font-family: {{pf}}; font-weight: {{n.fw}}">{{n.label}}</span>
+            <span style="font-size: 0.875rem; color: {{c.bl}}">{{n.path}}</span>
+          </button>
+        </sc-for>
+      </nav>
+    </sc-if>
+  </header>
+
+  <main style="flex: 1 0 auto; width: 100%; max-width: {{L.max}}px; margin: 0 auto; padding: 40px {{L.pad}}px 64px; box-sizing: border-box">
+    <sc-if value="{{peekShow}}" hint-placeholder-val="{{true}}">
+      <div style="margin: -8px 0 32px; padding: 16px 0; border-top: 1px solid {{c.bd}}; border-bottom: 1px solid {{c.bd}}; display: flex; flex-wrap: wrap; gap: 16px 32px; align-items: center">
+        <div style="flex: 0 0 auto; width: {{L.peekW}}px; height: {{L.peekH}}px; overflow: hidden">
+          <dc-import name="Maze" mode="peek" floor="{{peekFloor}}" group="{{peekGroup}}" room="{{peekRoom}}" theme="{{theme}}" layout="{{layoutName}}" hint-size="600px,230px"></dc-import>
+        </div>
+        <div style="flex: 1 1 220px; min-width: 0; display: flex; flex-direction: column; gap: 12px; align-items: flex-start">
+          <p style="margin: 0; font-family: {{pf}}; font-weight: 700">{{peekWhere}}</p>
+          <div style="display: flex; flex-wrap: wrap; gap: 10px">
+            <sc-for list="{{peekDoors}}" as="d" hint-placeholder-count="2">
+              <button type="button" onClick="{{d.go}}" style="position: relative; background: {{B.leaf}}; outline: 1px solid {{c.fg}}; min-height: 40px; padding: 0 28px 0 12px; border: 3px solid {{B.frame}}; color: {{c.fg}}; font-family: {{pf}}; font-size: 0.875rem; font-weight: 700; cursor: pointer">{{d.label}}<span aria-hidden="true" style="position: absolute; right: 8px; top: 50%; width: 8px; height: 8px; margin-top: -4px; box-sizing: border-box; background: {{c.ac}}; border: 1px solid {{c.fg}}"></span></button>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+    <p style="margin: 0; font-size: 0.875rem; color: {{c.mu}}">$ <span style="color: {{c.fg}}">{{head.cmd}}</span></p>
+    <h1 style="margin: 8px 0 0; font-size: 1.75rem; line-height: 1.4; font-weight: 700">{{head.title}}</h1>
+
+
+    <sc-if value="{{isProfile}}" hint-placeholder-val="{{false}}">
+      <div style="max-width: 760px">
+        <div style="margin-top: 32px; display: grid; grid-template-columns: {{L.kv}}; gap: 6px 24px; padding: 16px 20px; background: {{c.sf}}; border: 1px solid {{c.bd}}">
+          <span style="color: {{c.mu}}; font-size: 0.875rem">名前</span><span style="font-family: {{pf}}">onclimb（おんりむ）</span>
+          <span style="color: {{c.mu}}; font-size: 0.875rem">役割</span><span style="font-family: {{pf}}">ソフトウェアアーキテクト / フルスタックエンジニア</span>
+          <span style="color: {{c.mu}}; font-size: 0.875rem">主な技術</span><span style="font-family: {{pf}}">TypeScript / Node.js（NestJS・Fastify）、Go・Python、AWS・GCP、Terraform</span>
+          <span style="color: {{c.mu}}; font-size: 0.875rem">GitHub</span><a href="https://github.com/onc-limb" style="color: {{c.bl}}; text-decoration: underline; text-underline-offset: 3px">github.com/onc-limb</a>
+        </div>
+
+        <h2 style="margin: 40px 0 12px; font-size: 1.25rem"><span style="color: {{c.mu}}"># </span>自己紹介</h2>
+        <div style="display: flex; flex-direction: column; gap: 16px; font-family: {{pf}}; line-height: 1.9">
+          <p style="margin: 0">「作る」と決まったプロダクトを、動き続けるソフトウェアとして実装し、運用し続ける当事者でありたい。ソフトウェアアーキテクトとしてモジュール分割・依存関係・システム間連携を設計しながら、その設計を自らの手でコードに落とし込む。設計と実装を分けずに往復できることを、自分の立ち位置だと考えている。</p>
+          <p style="margin: 0">ライブラリもフレームワークも、ブラックボックスのまま使うのは落ち着かない。「動けばよい」で済ませず、「なぜそれが最適か」「なぜその挙動になるのか」を、公式ドキュメントやソースコード、技術書といった一次情報から確かめてから使いたい。根拠のある技術選定こそが、後になって効いてくると思っている。</p>
+          <p style="margin: 0">同時に、書いたコードが特定の誰か——とりわけ自分——に依存し続ける状態は避けたい。クリーンアーキテクチャや設計原則、CI/CD を用いて、誰でもメンテナンス・拡張できる「親離れできる」コードを目指す。スケールしても品質が劣化しない保守性を、最初から織り込んで作りたい。</p>
+          <p style="margin: 0; padding: 14px 18px; background: {{c.sf}}; border: 1px solid {{c.bd}}">最も大切にしているのは、作ったものがユーザーに届き、課題を解決し、安定して動き続けること。技術はあくまで手段であり、ドメインを深く理解するのは「システムを正しく設計し、運用し続けるため」。</p>
+          <p style="margin: 0">「何を作るか」はビジネス側の判断を尊重し、「作ると決まったもの」を最適な形で実現することに集中する。そのうえで、現場で見つけた課題は自分から改善提案として持ち込む。生成 AI によって 0→1 が速くなった今こそ、それを拡大し長期運用へと導く「ドメインを理解したモデリングと設計」の価値は高まっていく。この核を、自分の提供価値として磨き続けたい。</p>
+        </div>
+
+        <h2 style="margin: 40px 0 12px; font-size: 1.25rem"><span style="color: {{c.mu}}"># </span>関心</h2>
+        <div style="display: flex; flex-direction: column; gap: 12px; font-family: {{pf}}; line-height: 1.8">
+          <sc-for list="{{interests}}" as="i" hint-placeholder-count="5">
+            <div>
+              <p style="margin: 0; font-weight: 700">{{i.t}}</p>
+              <p style="margin: 0; color: {{c.mu}}">{{i.d}}</p>
+            </div>
+          </sc-for>
+        </div>
+
+        <h2 style="margin: 40px 0 12px; font-size: 1.25rem"><span style="color: {{c.mu}}"># </span>資格</h2>
+        <div style="display: flex; flex-direction: column">
+          <sc-for list="{{certs}}" as="x" hint-placeholder-count="6">
+            <div style="display: grid; grid-template-columns: 4em minmax(0, 1fr); gap: 0 12px; padding: 8px 0; border-top: 1px solid {{c.bd}}">
+              <span style="color: {{c.mu}}; font-size: 0.875rem; line-height: 1.8">{{x.y}}</span>
+              <span style="font-family: {{pf}}">{{x.t}}</span>
+            </div>
+          </sc-for>
+        </div>
+
+        <h2 style="margin: 40px 0 12px; font-size: 1.25rem"><span style="color: {{c.mu}}"># </span>関連ページ</h2>
+        <div style="display: flex; flex-wrap: wrap; gap: 4px 20px; font-family: {{pf}}">
+          <sc-for list="{{related}}" as="r" hint-placeholder-count="4">
+            <button type="button" onClick="{{r.go}}" style="min-height: 44px; padding: 0; background: transparent; border: 0; font: inherit; color: {{c.bl}}; text-decoration: underline; text-underline-offset: 3px; cursor: pointer">{{r.label}}</button>
+          </sc-for>
+          <a href="https://github.com/onc-limb" style="display: inline-flex; align-items: center; min-height: 44px; color: {{c.bl}}; text-decoration: underline; text-underline-offset: 3px">GitHub ↗</a>
+          <a href="https://zenn.dev/onclimb" style="display: inline-flex; align-items: center; min-height: 44px; color: {{c.bl}}; text-decoration: underline; text-underline-offset: 3px">Zenn の記事 ↗</a>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{isHistories}}" hint-placeholder-val="{{false}}">
+      <div style="margin-top: 24px">
+        <div style="display: flex; flex-direction: column">
+          <sc-for list="{{history}}" as="h" hint-placeholder-count="5">
+            <div style="display: grid; grid-template-columns: 3em minmax(0, 1fr); gap: 0 12px; padding: 14px 0; border-top: 1px solid {{c.bd}}">
+              <span style="color: {{c.mu}}; font-size: 0.875rem; line-height: 1.9">{{h.n}}</span>
+              <div>
+                <p style="margin: 0; font-family: {{pf}}; font-weight: 700">{{h.t}}</p>
+                <ul style="margin: 4px 0 0; padding-left: 1.25em; font-family: {{pf}}; line-height: 1.8">
+                  <sc-for list="{{h.b}}" as="x" hint-placeholder-count="2">
+                    <li>{{x}}</li>
+                  </sc-for>
+                </ul>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+      </div>
+    </sc-if>
+    <sc-if value="{{isSkills}}" hint-placeholder-val="{{false}}">
+      <div style="max-width: 760px">
+        <div style="margin-top: 24px; display: flex; flex-wrap: wrap; gap: 4px 20px; font-size: 0.875rem">
+          <sc-for list="{{legend}}" as="g" hint-placeholder-count="5">
+            <span><span style="color: {{c.ac}}">{{g.on}}</span><span style="color: {{c.bd}}">{{g.off}}</span> <span style="font-family: {{pf}}">{{g.label}}</span></span>
+          </sc-for>
+        </div>
+        <sc-for list="{{skills}}" as="s" hint-placeholder-count="3">
+          <section>
+            <h2 style="margin: 40px 0 0; font-size: 1.25rem"><span style="color: {{c.mu}}"># </span>{{s.label}}</h2>
+            <p style="margin: 0 0 8px; font-size: 0.875rem; color: {{c.bl}}">{{s.dir}}</p>
+            <div style="border-top: 1px solid {{c.bd}}">
+              <sc-for list="{{s.rows}}" as="r" hint-placeholder-count="3">
+                <div style="display: grid; grid-template-columns: {{L.srow}}; align-items: center; gap: 0 16px; min-height: 44px; padding: 4px 0; border-bottom: 1px solid {{c.bd}}">
+                  <button type="button" onClick="{{r.open}}" style="min-height: 32px; padding: 0; background: transparent; border: 0; font-family: {{pf}}; font-size: 1rem; color: {{c.bl}}; text-decoration: underline; text-underline-offset: 3px; text-align: left; cursor: pointer">{{r.name}}</button>
+                  <span style="display: flex; flex-wrap: wrap; gap: 0 10px; justify-content: flex-end; font-size: 0.875rem"><span><span style="color: {{c.ac}}">{{r.on}}</span><span style="color: {{c.bd}}">{{r.off}}</span></span><span style="font-family: {{pf}}; color: {{c.mu}}">{{r.lv}}</span></span>
+                </div>
+              </sc-for>
+            </div>
+          </section>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{isSkillDetail}}" hint-placeholder-val="{{false}}">
+      <div style="max-width: 760px">
+        <div style="margin-top: 32px; display: grid; grid-template-columns: {{L.kv}}; gap: 6px 24px; padding: 16px 20px; background: {{c.sf}}; border: 1px solid {{c.bd}}">
+          <span style="color: {{c.mu}}; font-size: 0.875rem">分野</span><span style="font-family: {{pf}}">{{sk.cat}}</span>
+          <span style="color: {{c.mu}}; font-size: 0.875rem">レベル</span><span><span style="color: {{c.ac}}">{{sk.on}}</span><span style="color: {{c.mu}}">{{sk.off}}</span> <span style="font-family: {{pf}}">{{sk.lv}}</span></span>
+          <span style="color: {{c.mu}}; font-size: 0.875rem">置いてある階</span><span style="font-family: {{pf}}">{{sk.floor}}</span>
+        </div>
+        <sc-if value="{{sk.isTS}}" hint-placeholder-val="{{false}}">
+          <div>
+            <h2 style="margin: 40px 0 12px; font-size: 1.25rem"><span style="color: {{c.mu}}"># </span>経験</h2>
+            <h3 style="margin: 20px 0 6px; font-size: 1rem"><span style="color: {{c.mu}}">## </span>業務</h3>
+            <ul style="margin: 0; padding-left: 1.4em; font-family: {{pf}}; line-height: 1.9">
+              <li>フレームワークを利用した API サーバー実装（NestJS, Express, Fastify）</li>
+              <li>フロントエンドの不具合対応（API 通信周り）</li>
+              <li>DDD に基づくドメインモデルの型定義</li>
+              <li>ジェネリクスを利用したユーティリティクラスの作成</li>
+              <li>JS へのトランスパイルから本番環境へのデプロイフロー構築</li>
+            </ul>
+            <h3 style="margin: 20px 0 6px; font-size: 1rem"><span style="color: {{c.mu}}">## </span>個人</h3>
+            <ul style="margin: 0; padding-left: 1.4em; font-family: {{pf}}; line-height: 1.9">
+              <li>フレームワークを利用した Web フロントエンド実装（Next.js, SolidStart）</li>
+            </ul>
+            <h2 style="margin: 40px 0 12px; font-size: 1.25rem"><span style="color: {{c.mu}}"># </span>知識</h2>
+            <ul style="margin: 0; padding-left: 1.4em; font-family: {{pf}}; line-height: 1.9">
+              <li>基本文法</li>
+              <li>JavaScript へのトランスパイル</li>
+            </ul>
+          </div>
+        </sc-if>
+        <sc-if value="{{sk.notTS}}" hint-placeholder-val="{{false}}">
+          <p style="margin: 32px 0 0; font-family: {{pf}}; font-size: 0.875rem; color: {{c.mu}}">※ モックでは TypeScript だけ本文を入れています。実際は、それぞれの md に書いた経験と知識が入ります。</p>
+        </sc-if>
+      </div>
+    </sc-if>
+    <sc-if value="{{isPortList}}" hint-placeholder-val="{{false}}">
+      <div style="margin-top: 32px; max-width: 960px; border-top: 1px solid {{c.bd}}">
+        <sc-for list="{{plist}}" as="p" hint-placeholder-count="5">
+          <button type="button" onClick="{{p.open}}" style="width: 100%; margin: 0; padding: 16px 0; display: grid; grid-template-columns: {{L.prow}}; gap: 4px 20px; background: transparent; border: 0; border-bottom: 1px solid {{c.bd}}; font: inherit; color: {{c.fg}}; text-align: left; cursor: pointer">
+            <span style="font-size: 0.875rem; color: {{c.mu}}">{{p.date}}</span>
+            <span style="font-size: 0.875rem; color: {{c.bl}}">{{p.id}}</span>
+            <span style="display: flex; flex-direction: column; gap: 2px">
+              <span style="font-family: {{pf}}; font-size: 1.25rem; font-weight: 700; color: {{c.bl}}; text-decoration: underline; text-underline-offset: 4px">{{p.title}}</span>
+              <span style="font-family: {{pf}}; line-height: 1.8">{{p.desc}}</span>
+              <span style="font-size: 0.875rem; color: {{c.mu}}">{{p.techs}}</span>
+            </span>
+          </button>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{isPortDetail}}" hint-placeholder-val="{{false}}">
+      <div style="max-width: 760px">
+        <div style="margin-top: 32px; display: grid; grid-template-columns: {{L.kv}}; gap: 6px 24px; padding: 16px 20px; background: {{c.sf}}; border: 1px solid {{c.bd}}">
+          <span style="color: {{c.mu}}; font-size: 0.875rem">役割</span><span style="font-family: {{pf}}">{{pd.role}}</span>
+          <span style="color: {{c.mu}}; font-size: 0.875rem">期間</span><span style="font-family: {{pf}}">{{pd.period}}</span>
+          <span style="color: {{c.mu}}; font-size: 0.875rem">種別</span><span style="font-family: {{pf}}">個人開発</span>
+          <span style="color: {{c.mu}}; font-size: 0.875rem">技術</span><span>{{pd.techs}}</span>
+        </div>
+        <h2 style="margin: 40px 0 12px; font-size: 1.25rem"><span style="color: {{c.mu}}"># </span>概要</h2>
+        <p style="margin: 0; font-family: {{pf}}; line-height: 1.9">{{pd.long}}</p>
+        <sc-if value="{{pd.isCI}}" hint-placeholder-val="{{true}}">
+          <div>
+            <h2 style="margin: 40px 0 12px; font-size: 1.25rem"><span style="color: {{c.mu}}"># </span>見どころ</h2>
+            <ul style="margin: 0; padding-left: 1.25em; font-family: {{pf}}; line-height: 1.9">
+              <li>SAM によるホールド・ルートの自動セグメンテーション</li>
+              <li>Next.js / Go / Python のポリグロット 3 層構成</li>
+              <li>S3 互換ストレージによるローカル・本番の環境差吸収</li>
+            </ul>
+            <h2 style="margin: 40px 0 12px; font-size: 1.25rem"><span style="color: {{c.mu}}"># </span>背景・課題</h2>
+            <p style="margin: 0; font-family: {{pf}}; line-height: 1.9">クライミング画像からホールドを人手でマークするのは手間が大きい。汎用のセグメンテーションモデルである SAM をクライミング画像に適用することで、ルート・ホールド認識を自動化できないかを検証・実装するために開発した。</p>
+            <h2 style="margin: 40px 0 12px; font-size: 1.25rem"><span style="color: {{c.mu}}"># </span>アーキテクチャ</h2>
+            <p style="margin: 0 0 12px; font-family: {{pf}}; line-height: 1.9">ブラウザ → Next.js フロントエンド → Go API サーバー → Python AI サービスという 3 層構成。永続化は Supabase PostgreSQL、認証は Supabase Auth（Google OAuth）、画像ストレージは S3 互換の MinIO / R2 を利用する。</p>
+            <div style="overflow-x: auto; padding: 14px 18px; background: {{c.sf}}; border: 1px solid {{c.bd}}">
+              <pre style="margin: 0; font-family: {{mf}}; font-size: 0.875rem; line-height: 1.8; color: {{c.fg}}">ブラウザ ─▶ Next.js ─▶ Go API ─▶ Python AI（SAM）
+                      │
+                      ├─ 永続化  Supabase PostgreSQL
+                      ├─ 認証    Supabase Auth
+                      └─ 画像    MinIO / Cloudflare R2</pre>
+            </div>
+            <div style="margin-top: 16px; border-top: 1px solid {{c.bd}}">
+              <sc-for list="{{ciComp}}" as="k" hint-placeholder-count="4">
+                <div style="display: grid; grid-template-columns: {{L.kv}}; gap: 2px 24px; padding: 10px 0; border-bottom: 1px solid {{c.bd}}">
+                  <span style="font-weight: 700">{{k.n}}</span>
+                  <span style="display: flex; flex-direction: column"><span style="font-family: {{pf}}">{{k.d}}</span><span style="font-size: 0.875rem; color: {{c.mu}}">{{k.t}}</span></span>
+                </div>
+              </sc-for>
+            </div>
+            <h2 style="margin: 40px 0 12px; font-size: 1.25rem"><span style="color: {{c.mu}}"># </span>技術的な工夫</h2>
+            <p style="margin: 0; font-family: {{pf}}; font-weight: 700">レイヤーごとの言語最適化</p>
+            <p style="margin: 4px 0 0; font-family: {{pf}}; line-height: 1.9">Web フロントは Next.js、API は Go、機械学習推論は Python と、各レイヤーに適した言語・エコシステムを選択。サービス間は HTTP で疎結合に連携させ、AI サービスの差し替えを容易にした。</p>
+            <p style="margin: 20px 0 0; font-family: {{pf}}; font-weight: 700">S3 互換ストレージによる環境差の吸収</p>
+            <p style="margin: 4px 0 0; font-family: {{pf}}; line-height: 1.9">画像ストレージを S3 互換 API に統一し、ローカル開発は MinIO、本番は Cloudflare R2 という構成でコードを変えずに環境を切り替えられるようにした。</p>
+          </div>
+        </sc-if>
+        <sc-if value="{{pd.notCI}}" hint-placeholder-val="{{false}}">
+          <p style="margin: 24px 0 0; font-family: {{pf}}; font-size: 0.875rem; color: {{c.mu}}">※ モックでは ClimbInsight だけ詳細を入れています。実際は各 README（docs/portfolio/{{pd.id}}.md）の内容が入ります。</p>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{isNotesList}}" hint-placeholder-val="{{false}}">
+      <div style="max-width: 960px">
+        <p style="margin: 16px 0 0; font-family: {{pf}}; font-size: 0.875rem; color: {{c.mu}}">※ [ ] で囲んだものは仮置きです。本文は本人が書きます。</p>
+        <div style="margin-top: 24px; border-top: 1px solid {{c.bd}}">
+          <sc-for list="{{nlist}}" as="n" hint-placeholder-count="5">
+            <button type="button" onClick="{{n.open}}" style="width: 100%; margin: 0; padding: 14px 0; display: grid; grid-template-columns: {{L.nrow}}; gap: 2px 20px; background: transparent; border: 0; border-bottom: 1px solid {{c.bd}}; font: inherit; color: {{c.fg}}; text-align: left; cursor: pointer">
+              <span style="font-size: 0.875rem; color: {{c.mu}}">{{n.date}}</span>
+              <span style="font-family: {{pf}}; font-size: 0.875rem; color: {{c.mu}}">{{n.kindJa}}</span>
+              <span style="display: flex; flex-direction: column; gap: 2px">
+                <span style="font-family: {{pf}}; font-size: 1.25rem; font-weight: 700; color: {{c.bl}}; text-decoration: underline; text-underline-offset: 4px">{{n.title}}</span>
+                <span style="font-size: 0.875rem; color: {{c.mu}}">{{n.path}}  {{n.tags}}</span>
+              </span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{isNoteDetail}}" hint-placeholder-val="{{false}}">
+      <div style="max-width: 720px">
+        <sc-if value="{{nd.isBook}}" hint-placeholder-val="{{false}}">
+          <div style="margin-top: 24px; display: grid; grid-template-columns: {{L.kv}}; gap: 6px 24px; padding: 16px 20px; background: {{c.sf}}; border: 1px solid {{c.bd}}">
+            <span style="color: {{c.mu}}; font-size: 0.875rem">著者</span><span style="font-family: {{pf}}">[著者]</span>
+            <span style="color: {{c.mu}}; font-size: 0.875rem">出版</span><span style="font-family: {{pf}}">[出版社・年]</span>
+            <span style="color: {{c.mu}}; font-size: 0.875rem">ISBN</span><span>[ISBN]</span>
+            <span style="color: {{c.mu}}; font-size: 0.875rem">公式サイト</span><span style="color: {{c.bl}}">[URL]</span>
+            <span style="color: {{c.mu}}; font-size: 0.875rem">読んだ日</span><span>[YYYY-MM-DD]</span>
+          </div>
+        </sc-if>
+        <p style="margin: 16px 0 0; font-size: 0.875rem; color: {{c.mu}}">{{nd.date}}  {{nd.tags}}</p>
+        <div style="margin-top: 24px; font-family: {{pf}}; line-height: 1.9; display: flex; flex-direction: column; gap: 16px">
+          <p style="margin: 0">[本文。Markdown で書いた段落がここに入る。本人が書く]</p>
+          <h2 style="margin: 16px 0 0; font-family: {{mf}}; font-size: 1.25rem"><span style="color: {{c.mu}}"># </span>[見出し]</h2>
+          <ul style="margin: 0; padding-left: 1.25em">
+            <li>[箇条書き]</li>
+            <li>[箇条書き]</li>
+          </ul>
+          <p style="margin: 0; padding: 14px 18px; background: {{c.sf}}; border: 1px solid {{c.bd}}">[引用]</p>
+          <pre style="margin: 0; padding: 14px 18px; background: {{c.sf}}; border: 1px solid {{c.bd}}; font-family: {{mf}}; font-size: 0.875rem; line-height: 1.8; overflow-x: auto">[コード]</pre>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{isContact}}" hint-placeholder-val="{{false}}">
+      <div style="max-width: 640px">
+        <div style="margin-top: 32px; display: grid; grid-template-columns: {{L.kv}}; gap: 6px 24px; padding: 16px 20px; background: {{c.sf}}; border: 1px solid {{c.bd}}">
+          <span style="color: {{c.mu}}; font-size: 0.875rem">名前</span><span style="font-family: {{pf}}">onclimb（おんりむ）</span>
+          <span style="color: {{c.mu}}; font-size: 0.875rem">メール</span><a href="mailto:satoshi.onga@onc-limb.com" style="color: {{c.bl}}; text-decoration: underline; text-underline-offset: 3px; overflow-wrap: anywhere">satoshi.onga@onc-limb.com</a>
+          <span style="color: {{c.mu}}; font-size: 0.875rem">外部リンク</span><span style="font-family: {{pf}}">屋上（/rf）にあります</span>
+        </div>
+
+        <h2 style="margin: 40px 0 16px; font-size: 1.25rem"><span style="color: {{c.mu}}"># </span>フォームで送る</h2>
+        <form style="display: flex; flex-direction: column; gap: 20px; font-family: {{pf}}">
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <label for="{{fid.name}}">お名前 <span style="color: {{c.ac}}">*</span></label>
+            <input id="{{fid.name}}" name="name" type="text" style="min-height: 44px; padding: 0 12px; background: {{c.sf}}; color: {{c.fg}}; border: 1px solid {{c.mu}}; font: inherit">
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <label for="{{fid.email}}">メールアドレス <span style="color: {{c.ac}}">*</span></label>
+            <input id="{{fid.email}}" name="email" type="email" style="min-height: 44px; padding: 0 12px; background: {{c.sf}}; color: {{c.fg}}; border: 1px solid {{c.mu}}; font: inherit">
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <label for="{{fid.company}}">会社名・所属 <span style="font-size: 0.875rem; color: {{c.mu}}">（任意）</span></label>
+            <input id="{{fid.company}}" name="company" type="text" style="min-height: 44px; padding: 0 12px; background: {{c.sf}}; color: {{c.fg}}; border: 1px solid {{c.mu}}; font: inherit">
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <label for="{{fid.category}}">ご相談の種別 <span style="color: {{c.ac}}">*</span></label>
+            <select id="{{fid.category}}" name="category" style="min-height: 44px; padding: 0 12px; background: {{c.sf}}; color: {{c.fg}}; border: 1px solid {{c.mu}}; font: inherit">
+              <option value="work">お仕事のご相談</option>
+              <option value="tech">技術的なご相談・壁打ち</option>
+              <option value="other">その他</option>
+            </select>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <label for="{{fid.message}}">お問い合わせ内容 <span style="color: {{c.ac}}">*</span></label>
+            <textarea id="{{fid.message}}" name="message" rows="6" placeholder="ご相談の背景や、実現したいことをお書きください。分かる範囲で構いません。" style="padding: 10px 12px; background: {{c.sf}}; color: {{c.fg}}; border: 1px solid {{c.mu}}; font: inherit; line-height: 1.8; resize: vertical"></textarea>
+          </div>
+          <div>
+            <button type="button" style="position: relative; background: {{B.leaf}}; outline: 1px solid {{c.fg}}; min-height: 48px; padding: 0 34px 0 18px; border: 3px solid {{c.ac}}; color: {{c.fg}}; font: inherit; font-weight: 700; cursor: pointer">送信する<span aria-hidden="true" style="position: absolute; right: 8px; top: 50%; width: 8px; height: 8px; margin-top: -4px; box-sizing: border-box; background: {{c.ac}}; border: 1px solid {{c.fg}}"></span></button>
+          </div>
+        </form>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{isDetail}}" hint-placeholder-val="{{false}}">
+      <nav aria-label="前後のページ" style="margin-top: 56px; display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: center">
+        <sc-if value="{{pager.hasPrev}}" hint-placeholder-val="{{true}}">
+          <button type="button" onClick="{{pager.prev.go}}" style="position: relative; background: {{B.leaf}}; outline: 1px solid {{c.fg}}; min-height: 44px; padding: 0 30px 0 14px; border: 3px solid {{B.frame}}; color: {{c.fg}}; font-family: {{pf}}; font-size: 0.9375rem; font-weight: 700; cursor: pointer">← 前: {{pager.prev.t}}<span aria-hidden="true" style="position: absolute; right: 8px; top: 50%; width: 8px; height: 8px; margin-top: -4px; box-sizing: border-box; background: {{c.ac}}; border: 1px solid {{c.fg}}"></span></button>
+        </sc-if>
+        <button type="button" onClick="{{pager.back}}" style="position: relative; background: {{B.leaf}}; outline: 1px solid {{c.fg}}; min-height: 44px; padding: 0 30px 0 14px; border: 3px solid {{B.frame}}; color: {{c.fg}}; font-family: {{pf}}; font-size: 0.9375rem; font-weight: 700; cursor: pointer">{{pager.backLabel}}<span aria-hidden="true" style="position: absolute; right: 8px; top: 50%; width: 8px; height: 8px; margin-top: -4px; box-sizing: border-box; background: {{c.ac}}; border: 1px solid {{c.fg}}"></span></button>
+        <sc-if value="{{pager.hasNext}}" hint-placeholder-val="{{true}}">
+          <button type="button" onClick="{{pager.next.go}}" style="position: relative; background: {{B.leaf}}; outline: 1px solid {{c.fg}}; min-height: 44px; padding: 0 30px 0 14px; border: 3px solid {{B.frame}}; color: {{c.fg}}; font-family: {{pf}}; font-size: 0.9375rem; font-weight: 700; cursor: pointer">次: {{pager.next.t}} →<span aria-hidden="true" style="position: absolute; right: 8px; top: 50%; width: 8px; height: 8px; margin-top: -4px; box-sizing: border-box; background: {{c.ac}}; border: 1px solid {{c.fg}}"></span></button>
+        </sc-if>
+      </nav>
+    </sc-if>
+    <sc-if value="{{showAd}}" hint-placeholder-val="{{false}}">
+      <div style="margin-top: 64px; max-width: 760px; min-height: 120px; border: 1px solid {{c.bd}}; display: flex; align-items: center; justify-content: center; font-size: 0.875rem; color: {{c.mu}}">広告（AdSense）</div>
+    </sc-if>
+  </main>
+
+  <footer style="border-top: 1px solid {{c.bd}}">
+    <div style="max-width: {{L.max}}px; margin: 0 auto; padding: 20px {{L.pad}}px; box-sizing: border-box; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; font-size: 0.875rem; color: {{c.mu}}">
+      <span>© 2026 onclimb</span>
+      <span style="display: flex; flex-wrap: wrap; gap: 0 16px">
+        <a href="https://github.com/onc-limb" style="color: {{c.bl}}; text-decoration: underline; text-underline-offset: 3px">GitHub</a>
+        <a href="https://zenn.dev/onclimb" style="color: {{c.bl}}; text-decoration: underline; text-underline-offset: 3px">Zenn</a>
+        <a href="https://twitter.com/onc_limb" style="color: {{c.bl}}; text-decoration: underline; text-underline-offset: 3px">X</a>
+      </span>
+    </div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"page":{"editor":"enum","options":["profile","contact","histories","skills","studies","portfolio","notes","books"],"default":"skills"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"layout":{"editor":"enum","options":["desktop","phone"],"default":"desktop"},"prose":{"editor":"enum","options":["M PLUS 1","M PLUS 1 Code"],"default":"M PLUS 1"},"$preview":{"width":1440,"height":1240}}'>
+const T = {
+  light: { bg: '#e6efcf', sf: '#f6f9ea', fg: '#1e2a1a', mu: '#4c5c40', bd: '#c2cfa5', ac: '#8a4a06', onac: '#ffffff', gr: '#1d6a33', bl: '#1c4c9c' },
+  dark: { bg: '#12241a', sf: '#1a3125', fg: '#e9ecdd', mu: '#a6b59b', bd: '#30503b', ac: '#f5b95c', onac: '#12241a', gr: '#8fd6a2', bl: '#a6caff' }
+};
+const LVL = { 5: '専門', 4: '実務継続利用', 3: '実務経験あり', 2: '個人利用', 1: '学習中' };
+const KIND = { history: '経歴', skills: 'スキル', portfolio: '作品', notes: 'ノート', books: '本', interests: '関心', certs: '資格' };
+Object.assign(T.light, { wd: '#f3e2c0', wdl: '#dcc497', wdw: '#b98b56' });
+Object.assign(T.dark, { wd: '#3b2f21', wdl: '#4c3d2a', wdw: '#7d5c37' });
+// [page, 名前, 仮想パス, 階, 分類（のぞき窓で光らせる部屋のまとまり）]
+const PAGES = [
+  ['profile', 'プロフィール', '~/1f/profile', '1F', 'profile'], ['contact', '連絡先', '~/1f/contact', '1F', 'contact'],
+  ['histories', '経歴', '~/2f/histories', '2F', 'histories'], ['skills', 'スキル', '~/2f/skills', '2F', 'skills'],
+  ['studies', '自己学習', '~/b1/studies', 'B1', 'studies'],
+  ['portfolio', 'ポートフォリオ', '~/3f/portfolios', '3F', 'portfolios'], ['notes', 'ノート', '~/3f/notes', '3F', 'notes'], ['books', '本棚', '~/3f/books', '3F', 'books']
+];
+const FLN = [['B1', 'B1 自己学習', '自己学習', 'studies'], ['1F', '1F プロフィール', 'プロフィール・連絡先', 'profile'], ['2F', '2F 経歴・技術', '経歴・業務の技術', 'histories'], ['3F', '3F 作品・考え', '作ったもの・考え', 'portfolio'], ['RF', '屋上 リンク', '屋上テラス・外部リンク', null]];
+function gauge(n) { return { on: '●●●●●'.slice(0, n), off: '○○○○○'.slice(0, 5 - n) }; }
+
+const WORK_ROWS = [
+  { k: 'language', label: 'プログラミング言語', rows: [['TypeScript', 5], ['JavaScript', 5], ['Python', 4], ['C言語', 3], ['Go', 3], ['Shell Script', 3]] },
+  { k: 'frontend', label: 'フロントエンド', rows: [['Next.js', 4], ['React', 3], ['HTML / CSS', 3]] },
+  { k: 'framework', label: 'バックエンド・フレームワーク', rows: [['NestJS', 4], ['Node.js', 4], ['Express.js', 3], ['FastAPI', 3], ['Fastify', 3], ['Gin', 3]] },
+  { k: 'database', label: 'データベース', rows: [['PostgreSQL', 4], ['Amazon RDS', 3], ['Prisma', 3], ['TypeORM', 3]] },
+  { k: 'storage', label: 'ストレージ', rows: [['AWS S3', 4], ['MinIO', 4], ['OpenSearch', 3], ['Redis', 3]] },
+  { k: 'compute', label: 'コンピューティング', rows: [['AWS ECS', 4], ['AWS Batch', 3], ['AWS EC2', 3], ['AWS Lambda', 3], ['Vercel', 3]] },
+  { k: 'container', label: 'コンテナ・オーケストレーション', rows: [['AWS ECR', 4], ['Docker', 4], ['GitHub Container Registry', 3]] },
+  { k: 'networking', label: 'ネットワーキング', rows: [['Amazon CloudFront', 4], ['AWS ELB', 4], ['HTTP/HTTPS', 4], ['Amazon Route53', 3], ['Amazon VPC', 3], ['Amazon API Gateway', 3], ['TLS / 証明書 (ACM)', 3]] },
+  { k: 'IaC', label: 'インフラ構成管理・IaC', rows: [['Terraform', 4], ['AWS CDK', 3], ['AWS CloudFormation', 3]] },
+  { k: 'integration', label: '統合サービス', rows: [['AWS EventBridge', 4], ['AWS SNS', 3], ['AWS SQS', 3], ['AWS Step Functions', 3]] },
+  { k: 'devops-sre', label: 'DevOps・SRE', rows: [['GitHub Actions', 5]] },
+  { k: 'security', label: 'セキュリティ', rows: [['AWS WAF', 3]] },
+  { k: 'architecture', label: '設計・アーキテクチャ', rows: [['Clean Architecture', 3], ['DDD', 3], ['OOP / SOLID', 3]] },
+  { k: 'methodology', label: '開発手法・プロセス', rows: [['要件定義', 3], ['Scrum', 3], ['User Story', 3]] },
+  { k: 'tools', label: 'ツール・SaaS', rows: [['Git', 4], ['ESLint / Prettier', 3], ['GitHub', 3], ['Mermaid', 3], ['npm', 3], ['SendGrid', 3], ['Slack', 3], ['uv', 3], ['Yarn', 3]] }
+];
+const STUDY_ROWS = [
+  { k: 'language', label: 'プログラミング言語', rows: [['Elixir', 1], ['Haskell', 1], ['Kotlin', 1], ['OCaml', 1], ['Rust', 1], ['Swift', 1]] },
+  { k: 'frontend', label: 'フロントエンド', rows: [['shadcn/ui (Radix UI)', 2], ['Tailwind CSS', 2], ['Vite', 2], ['Jetpack Compose', 1], ['Phoenix LiveView', 1], ['React Hook Form', 1], ['SolidJS', 1], ['Storybook', 1], ['SwiftUI', 1], ['TanStack Start', 1], ['Three.js', 1]] },
+  { k: 'framework', label: 'バックエンド・フレームワーク', rows: [['Django', 2], ['Hono', 2], ['Echo', 1], ['Phoenix', 1]] },
+  { k: 'database', label: 'データベース', rows: [['Drizzle ORM', 2], ['GORM', 2], ['pgvector', 2], ['SQLite', 2], ['Supabase', 2], ['Turso / libSQL', 2], ['ChromaDB', 1]] },
+  { k: 'storage', label: 'ストレージ', rows: [['BigQuery', 2], ['Cloudflare R2', 2]] },
+  { k: 'compute', label: 'コンピューティング', rows: [['Cloud Run', 2], ['Cloudflare Workers', 2], ['AWS Lightsail', 1], ['Modal', 1], ['Railway', 1], ['Render', 1]] },
+  { k: 'networking', label: 'ネットワーキング', rows: [['Cloudflare DNS', 2]] },
+  { k: 'IaC', label: 'インフラ構成管理・IaC', rows: [['Wrangler', 2]] },
+  { k: 'architecture', label: '設計・アーキテクチャ', rows: [['Event-Driven Architecture', 2], ['Functional Programming', 2]] },
+  { k: 'methodology', label: '開発手法・プロセス', rows: [['ADR', 2], ['Event Storming', 2], ['プロダクトディスカバリー', 2]] },
+  { k: 'tools', label: 'ツール・SaaS', rows: [['Obsidian', 2], ['pnpm', 2], ['Stripe', 2], ['Xcode / App Store Connect', 2], ['Android Studio', 1], ['mise', 1]] }
+];
+
+const PORT = [
+  { id: 'climbinsight', title: 'ClimbInsight', date: '2026-07-14', period: '2025年〜', role: '設計・開発', desc: 'Segment Anything Model を活用したクライミング画像解析 Web アプリ', long: 'クライミング画像の解析・セグメンテーション機能を持つ Web アプリケーション。SAM（Segment Anything Model）でクライミングルートやホールドを自動認識する。', tech: ['Next.js', 'Go', 'Python', 'SAM', 'Supabase', 'MinIO / R2', 'Docker'] },
+  { id: 'iron-legion', title: 'iron-legion', date: '2026-07-14', period: '2026年〜', role: '設計・開発・運用', desc: 'GitHub issue から実装・PR・マージまで自律実行する開発ワークフロー群', long: '人が張り付かなくても自律的に働く AI 開発ワークフロー群。エンジニアリングループ extremis（Elixir/OTP + Rust）と、ディスカバリーループ veronica（Python）で構成される。', tech: ['Elixir', 'OTP', 'Rust', 'Python', 'Claude Code'] },
+  { id: 'noboru-note', title: 'のぼるノート', date: '2026-07-14', period: '2026年〜', role: '設計・開発・運用', desc: 'ボルダリングの課題を記録・分析するクライミングノートアプリ', long: 'ボルダリング課題の記録アプリ「のぼるノート」。写真からのホールド抽出や、LLM によるオブザベーション生成・課題生成を備えたクライマー向けプロダクト。', tech: ['TypeScript', 'Hono', 'TanStack Start', 'Cloudflare Workers', 'Turso', 'Clerk', 'Swift', 'LLM'] },
+  { id: 'onclimb-industries', title: 'onclimb-industries', date: '2026-07-14', period: '2026年〜', role: '設計・開発・運用', desc: 'Claude Code のスキル群で個人業務を自動化する AI Agent Skills リポジトリ', long: '作業記録・報告書・請求書・コードレビュー・設計支援など 40 超のスキルを体系化した、Claude Code の Agent Skills 管理リポジトリ。日本語の指示だけで対応スキルが起動する。', tech: ['Claude Code', 'Agent Skills', 'Python', 'Markdown'] },
+  { id: 'portfolio-site', title: 'ポートフォリオサイト', date: '2025-12-26', period: '2024年〜', role: '設計・開発・運用', desc: 'Next.js と Tailwind CSS で構築した個人ポートフォリオサイト', long: 'フルスタックエンジニアとしての技術力をアピールするためのポートフォリオサイト。毎日の技術ニュースをAIで要約する機能も搭載。', tech: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Cloudflare Pages', 'OpenAI API'] }
+];
+const CI_COMP = [
+  { n: 'Frontend', d: 'Next.js による Web フロントエンド', t: 'Next.js 15 · React 19 · Tailwind CSS 4' },
+  { n: 'API Server', d: 'ビジネスロジックと永続化を担う Go サーバー', t: 'Go · Gin · GORM · Supabase PostgreSQL' },
+  { n: 'AI Service', d: 'SAM を動かす Python 推論サービス', t: 'Python 3.13 · Quart · SAM' },
+  { n: 'Storage / Auth', d: '画像ストレージと認証基盤', t: 'MinIO / Cloudflare R2 · Supabase Auth' }
+];
+const NOTES = [
+  { id: '[ai-era]', kind: 'note', title: '[AI 時代に考えていること]', topics: ['ai'] },
+  { id: '[architect]', kind: 'note', title: '[アーキテクトとしての考え方]', topics: ['architecture'] },
+  { id: '[thought]', kind: 'note', title: '[考えたこと]', topics: [] },
+  { id: '[book-1]', kind: 'book', title: '[読んだ本の題名]', topics: [] },
+  { id: '[book-2]', kind: 'book', title: '[読んだ本の題名]', topics: ['architecture'] }
+];
+function notePath(n) { return n.kind === 'book' ? '~/3f/books/' + n.id + '.md' : '~/3f/notes/' + n.id + '.md'; }
+
+const HISTORY = [
+  { n: '05', t: 'AIドキュメント検索サービス', b: ['RAG 構成によるドキュメント検索基盤の設計・実装', 'Agentic Search による複数ステップの探索・回答生成機構の構築', 'ベクトル検索と LLM を組み合わせた回答生成機構の構築'] },
+  { n: '04', t: 'MLOps（推薦系）', b: ['学習パイプラインの構築', 'モデル評価機構の設計・実装'] },
+  { n: '03', t: 'Web開発（人材系）', b: ['サービス統合に向けたアーキテクチャ提案・設計', '社内システムの新規開発', '自社サービスの機能開発', '自社サービスの運用・保守'] },
+  { n: '02', t: 'リバースエンジニアリング（車載ソフトウェア）', b: ['既存ソフトウェアの解析・AUTOSAR準拠ドキュメント作成', 'CANalyzerによるテスト'] },
+  { n: '01', t: '組み込み開発（車載ソフトウェア）', b: ['AUTOSARプラットフォームの製品向けカスタマイズ', 'C言語による機能開発'] }
+];
+const INTERESTS = [
+  { t: 'ドメインモデリング', d: 'ドメインを深く理解し、モデルへ落とし込む。高保守性なアプリケーションは、ここを起点に生まれると考えている' },
+  { t: 'アーキテクチャ', d: 'モジュール分割・依存関係・システム間連携。スケールしても破綻しない構造の設計思想' },
+  { t: '保守性とクリーンなコード', d: '読みやすさ・変更しやすさ・正しさ。「親離れできる」コードを何が支えるのか' },
+  { t: '仕組みの理解', d: '表面的な使い方の下で何が起きているのか。低レイヤー、プロトコル、仕様といった根本にある取り決め' },
+  { t: '開発者体験（DevOps）', d: 'CI/CD や自動化で開発基盤を整え、本質的な開発に集中できる環境をつくる' }
+];
+const CERTS = [
+  { y: '2025', t: 'AWS Certified Solutions Architect - Associate' },
+  { y: '2024', t: 'AWS Certified Cloud Practitioner' },
+  { y: '2022', t: '情報処理安全確保支援士試験 合格（登録資格保有、未登録）' },
+  { y: '2022', t: '画像処理エンジニア検定 ベーシック' },
+  { y: '2021', t: '応用情報技術者試験' },
+  { y: '2021', t: '基本情報技術者試験' }
+];
+
+function sk(dir, file, name, lv, ph) {
+  return { g: 'skills', path: '~/skills/' + dir + '/' + file + '.md', title: name, ex: 'レベル ' + lv + '（' + LVL[lv] + '）', lv: lv, tags: [], ph: ph, to: { page: 'skills' } };
+}
+const FR = [
+  { g: 'history', path: '~/history/01-embedded.md', title: '組み込み開発（車載）', ex: 'AUTOSAR のカスタマイズ・C 言語の機能開発', ord: 1, tags: [], ph: true, to: { page: 'profile' } },
+  { g: 'history', path: '~/history/02-reverse-engineering.md', title: 'リバースエンジニアリング（車載）', ex: '既存ソフトの解析・CANalyzer でのテスト', ord: 2, tags: [], ph: false, to: { page: 'profile' } },
+  { g: 'history', path: '~/history/03-web.md', title: 'Web 開発（人材系）', ex: 'サービス統合のアーキテクチャ提案・設計', ord: 3, tags: ['architecture'], ph: true, to: { page: 'profile' } },
+  { g: 'history', path: '~/history/04-mlops.md', title: 'MLOps（推薦系）', ex: '学習パイプライン・モデル評価機構', ord: 4, tags: ['ai'], ph: false, to: { page: 'profile' } },
+  { g: 'history', path: '~/history/05-ai-doc-search.md', title: 'AI ドキュメント検索', ex: 'RAG・Agentic Search の設計・実装', ord: 5, tags: ['ai'], ph: true, to: { page: 'profile' } },
+  sk('language', 'typescript', 'TypeScript', 5, true),
+  sk('devops-sre', 'github-actions', 'GitHub Actions', 5, false),
+  sk('framework', 'nestjs', 'NestJS', 4, true),
+  sk('frontend', 'nextjs', 'Next.js', 4, false),
+  sk('IaC', 'terraform', 'Terraform', 4, true),
+  sk('database', 'postgresql', 'PostgreSQL', 4, true),
+  sk('language', 'python', 'Python', 4, false),
+  sk('language', 'go', 'Go', 3, false),
+  sk('language', 'c', 'C言語', 3, false),
+  sk('framework', 'hono', 'Hono', 2, false),
+  { g: 'portfolio', path: '~/portfolio/climbinsight.md', title: 'ClimbInsight', ex: 'SAM を使ったクライミング画像解析', tags: ['ai'], ph: true, to: { page: 'portfolio', pid: 'climbinsight' } },
+  { g: 'portfolio', path: '~/portfolio/noboru-note.md', title: 'のぼるノート', ex: 'ボルダリングの課題を記録・分析する', tags: ['ai'], ph: true, to: { page: 'portfolio', pid: 'noboru-note' } },
+  { g: 'portfolio', path: '~/portfolio/iron-legion.md', title: 'iron-legion', ex: 'issue から PR・マージまで自律実行', tags: ['ai'], ph: true, to: { page: 'portfolio', pid: 'iron-legion' } },
+  { g: 'portfolio', path: '~/portfolio/onclimb-industries.md', title: 'onclimb-industries', ex: 'スキル群で個人業務を自動化', tags: ['ai'], ph: false, to: { page: 'portfolio', pid: 'onclimb-industries' } },
+  { g: 'portfolio', path: '~/portfolio/portfolio-site.md', title: 'ポートフォリオサイト', ex: 'Next.js と Tailwind CSS の個人サイト', tags: [], ph: false, to: { page: 'portfolio', pid: 'portfolio-site' } },
+  { g: 'notes', path: '~/notes/[ai-era].md', title: '[AI 時代に考えていること]', ex: '本人が書く（仮置き）', tags: ['ai'], ph: true, to: { page: 'notes', nid: '[ai-era]' } },
+  { g: 'notes', path: '~/notes/[architect].md', title: '[アーキテクトとしての考え方]', ex: '本人が書く（仮置き）', tags: ['architecture'], ph: true, to: { page: 'notes', nid: '[architect]' } },
+  { g: 'notes', path: '~/notes/[thought].md', title: '[考えたこと]', ex: '本人が書く（仮置き）', tags: [], ph: false, to: { page: 'notes', nid: '[thought]' } },
+  { g: 'books', path: '~/notes/books/[book-1].md', title: '[読んだ本の題名]', ex: '[著者]（仮置き）', tags: [], ph: true, to: { page: 'notes', nid: '[book-1]' } },
+  { g: 'books', path: '~/notes/books/[book-2].md', title: '[読んだ本の題名]', ex: '[著者]（仮置き）', tags: ['architecture'], ph: false, to: { page: 'notes', nid: '[book-2]' } },
+  { g: 'interests', path: '~/interests/domain-modeling.md', title: 'ドメインモデリング', ex: 'ドメインを理解し、モデルへ落とし込む', tags: ['architecture'], ph: false, to: { page: 'profile' } },
+  { g: 'interests', path: '~/interests/architecture.md', title: 'アーキテクチャ', ex: 'スケールしても破綻しない構造', tags: ['architecture'], ph: true, to: { page: 'profile' } },
+  { g: 'interests', path: '~/interests/maintainability.md', title: '保守性とクリーンなコード', ex: '「親離れできる」コード', tags: ['architecture'], ph: false, to: { page: 'profile' } },
+  { g: 'interests', path: '~/interests/internals.md', title: '仕組みの理解', ex: '低レイヤー・プロトコル・仕様', tags: [], ph: false, to: { page: 'profile' } },
+  { g: 'interests', path: '~/interests/devops.md', title: '開発者体験（DevOps）', ex: 'CI/CD と自動化で開発基盤を整える', tags: [], ph: false, to: { page: 'profile' } },
+  { g: 'certs', path: '~/certs/aws-saa.md', title: 'AWS SAA', ex: 'Solutions Architect - Associate (2025)', tags: [], ph: true, to: { page: 'profile' } },
+  { g: 'certs', path: '~/certs/sc.md', title: '情報処理安全確保支援士', ex: '試験合格 (2022)', tags: [], ph: false, to: { page: 'profile' } }
+];
+const GROUPS = [
+  { k: 'certs', t: '├── certs/', ja: '  資格' },
+  { k: 'history', t: '├── history/', ja: '  経歴' },
+  { k: 'interests', t: '├── interests/', ja: '  関心' },
+  { k: 'notes', t: '├── notes/', ja: '  ノート' },
+  { k: 'books', t: '│   └── books/', ja: '  本', sub: true },
+  { k: 'portfolio', t: '├── portfolio/', ja: '  作品' },
+  { k: 'skills', t: '└── skills/', ja: '  スキル' }
+];
+const CMDS = [
+  { id: 'grep-ai', ja: 'AI に関わるもの', label: 'grep -rl ai ~', sum: '件。AI に関わる断片を集めました' },
+  { id: 'grep-arch', ja: '設計に関わるもの', label: 'grep -rl architecture ~', sum: '件。設計（アーキテクチャ）に関わる断片を集めました' },
+  { id: 'history', ja: '経歴を古い順に', label: 'ls ~/history', sum: '件。経歴を古い順に並べました' },
+  { id: 'level', ja: 'スキルを得意な順に', label: 'ls -l ~/skills | sort -k level', sum: '件。スキルをレベルの高い順に並べました' },
+  { id: 'tree', ja: '全体の構成を見る', label: 'tree ~', sum: '' },
+  { id: 'shuf', ja: '散らかす', label: 'shuf ~', sum: '' }
+];
+
+function rng(seed) {
+  return function () {
+    seed = (seed + 0x6D2B79F5) | 0;
+    var t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function arrange(list, mode, L) {
+  var r = rng(L.seed);
+  var base = list.map(function () {
+    return { x: Math.round(r() * (L.W - L.w)), y: Math.round(r() * (L.chaosH - L.h)), rot: Math.round((r() * 5 - 2.5) * 10) / 10, z: Math.floor(r() * 40) + 1 };
+  });
+  var res = { pos: [], labels: [], line: null, H: L.chaosH, out: null };
+  if (mode === 'shuf') {
+    res.pos = base.map(function (b) { return { x: b.x, y: b.y, rot: b.rot, z: b.z, state: 'idle' }; });
+    return res;
+  }
+  var cmd = CMDS.filter(function (c) { return c.id === mode; })[0];
+  var pos = new Array(list.length);
+  function cell(k, x0, y0, cc) {
+    return { x: x0 + (k % cc) * (L.w + L.gap), y: y0 + Math.floor(k / cc) * (L.h + L.gap) };
+  }
+  if (mode === 'tree') {
+    res.labels.push({ x: 0, y: 0, t: '~', ja: '  onclimb のホーム' });
+    var y = 32;
+    var dirs = 0;
+    GROUPS.forEach(function (g) {
+      var idx = [];
+      list.forEach(function (f, i) { if (f.g === g.k) idx.push(i); });
+      if (!idx.length) return;
+      dirs += 1;
+      res.labels.push({ x: 0, y: y, t: g.t, ja: g.ja });
+      y += 32;
+      var x0 = g.sub ? L.ind * 2 : L.ind;
+      var cc = Math.max(1, Math.floor((L.W - x0 + L.gap) / (L.w + L.gap)));
+      idx.forEach(function (i, k) {
+        var p = cell(k, x0, y, cc);
+        pos[i] = { x: p.x, y: p.y, rot: 0, z: 2, state: 'idle' };
+      });
+      y += Math.ceil(idx.length / cc) * (L.h + L.gap) + 16;
+    });
+    res.pos = pos;
+    res.H = y;
+    res.out = [cmd.label, dirs + ' directories, ' + list.length + ' files（' + dirs + ' 分類・' + list.length + ' 件）'];
+    return res;
+  }
+  var m = [];
+  list.forEach(function (f, i) {
+    if (mode === 'grep-ai' && f.tags.indexOf('ai') >= 0) m.push(i);
+    if (mode === 'grep-arch' && f.tags.indexOf('architecture') >= 0) m.push(i);
+    if (mode === 'history' && f.g === 'history') m.push(i);
+    if (mode === 'level' && f.g === 'skills') m.push(i);
+  });
+  if (mode === 'history') m.sort(function (a, b) { return list[a].ord - list[b].ord; });
+  if (mode === 'level') m.sort(function (a, b) { return list[b].lv - list[a].lv || list[a].title.localeCompare(list[b].title); });
+  var gcols = Math.max(1, Math.floor((L.W + L.gap) / (L.w + L.gap)));
+  var step = L.w + 20;
+  var timeline = mode === 'history' && m.length * step - 20 <= L.W;
+  m.forEach(function (i, k) {
+    var p = timeline ? { x: k * step, y: 0 } : cell(k, 0, 0, gcols);
+    pos[i] = { x: p.x, y: p.y, rot: 0, z: 50, state: 'idle' };
+  });
+  var rows = timeline ? 1 : Math.ceil(m.length / gcols);
+  var band = rows * (L.h + L.gap) + 48;
+  if (timeline) res.line = { w: m.length * step - 20, y: Math.round(L.h / 2) };
+  list.forEach(function (f, i) {
+    if (!pos[i]) {
+      var b = base[i];
+      pos[i] = { x: b.x, y: band + Math.round(b.y * 0.5), rot: b.rot, z: b.z % 10 + 1, state: 'dim' };
+    }
+  });
+  res.pos = pos;
+  res.H = band + Math.round((L.chaosH - L.h) * 0.5) + L.h + 16;
+  res.out = [cmd.label, m.length + ' ' + cmd.sum];
+  return res;
+}
+
+class Component extends DCLogic {
+  renderVals() {
+    var self = this;
+    var st = this.state || {};
+    var page = st.page || this.props.page || 'skills';
+    if (!PAGES.some(function (p) { return p[0] === page; })) page = 'skills';
+    var theme = st.theme || this.props.theme || 'light';
+    var desk = (this.props.layout || 'desktop') !== 'phone';
+    var prose = this.props.prose || 'M PLUS 1';
+    var c = T[theme] || T.light;
+    var pid = st.pid || null;
+    var nid = st.nid || null;
+    var sid = st.sid || null;
+    function go(to) {
+      return function () { self.setState({ page: to.page, pid: to.pid || null, nid: to.nid || null, sid: to.sid || null, menu: false }); };
+    }
+    var L = desk
+      ? { max: 1240, pad: 40, peekW: 600, peekH: 230, W: 1160, w: 270, h: 96, gap: 12, ind: 24, chaosH: 1100, seed: 20261121, kv: '9em minmax(0, 1fr)', srow: 'minmax(0, 1fr) 16em', prow: '7.5em 11em minmax(0, 1fr)', nrow: '8em 3em minmax(0, 1fr)', cmdCols: 'repeat(3, minmax(0, 1fr))' }
+      : { max: 390, pad: 16, peekW: 358, peekH: 190, W: 358, w: 172, h: 96, gap: 12, ind: 12, chaosH: 1150, seed: 1121, kv: 'minmax(0, 1fr)', srow: 'minmax(0, 1fr) auto', prow: 'minmax(0, 1fr)', nrow: 'minmax(0, 1fr)', cmdCols: 'minmax(0, 1fr)' };
+
+    var pIdx = pid ? PORT.map(function (p) { return p.id; }).indexOf(pid) : -1;
+    var note = nid ? NOTES.filter(function (n) { return n.id === nid; })[0] : null;
+    var curPath = PAGES.filter(function (p) { return p[0] === page; })[0][2];
+    if (pIdx >= 0) curPath = '~/3f/portfolios/' + pid;
+    var PG = PAGES.filter(function (p) { return p[0] === page; })[0];
+    var FL = FLN.filter(function (f) { return f[0] === PG[3]; })[0];
+    var leaf = 'repeating-linear-gradient(90deg, ' + c.wd + ' 0 22px, ' + c.wdl + ' 22px 24px)';
+
+    var SR = page === 'studies' ? STUDY_ROWS : WORK_ROWS;
+    var flat = [];
+    SR.forEach(function (x) { x.rows.forEach(function (r) { flat.push({ name: r[0], lv: r[1], k: x.k, label: x.label }); }); });
+    var skill = (sid && (page === 'skills' || page === 'studies')) ? flat.filter(function (x) { return x.name === sid; })[0] : null;
+    function slug(n) { return n.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'skill'; }
+    var skillPath = skill ? (page === 'studies' ? '~/b1/studies/' : '~/2f/skills/') + skill.k + '/' + slug(skill.name) + '.md' : '';
+    var head;
+    if (skill) head = { cmd: 'cat ' + skillPath, title: skill.name };
+    else if (page === 'profile') head = { cmd: 'man onclimb', title: 'プロフィール' };
+    else if (page === 'contact') head = { cmd: 'finger onclimb', title: '連絡先' };
+    else if (page === 'histories') head = { cmd: 'ls -tr ~/2f/histories', title: '経歴' };
+    else if (page === 'skills') head = { cmd: 'ls -l ~/2f/skills | sort -k level', title: 'スキル' };
+    else if (page === 'studies') head = { cmd: 'ls -l ~/b1/studies | sort -k level', title: '自己学習' };
+    else if (page === 'portfolio' && pIdx >= 0) head = { cmd: 'cat ~/3f/portfolios/' + pid + '.md', title: PORT[pIdx].title };
+    else if (page === 'portfolio') head = { cmd: 'git log --oneline ~/3f/portfolios', title: 'ポートフォリオ' };
+    else if (note) head = { cmd: 'cat ' + notePath(note), title: note.title };
+    else if (page === 'books') head = { cmd: 'ls ~/3f/books', title: '本棚' };
+    else head = { cmd: 'ls ~/3f/notes', title: 'ノート' };
+    var isList = pIdx < 0 && !note && !skill;
+    if (skill) curPath = skillPath.replace('.md', '');
+    if (note) curPath = notePath(note).replace('.md', '');
+    var seq = [], at = -1;
+    if (skill) { seq = flat.map(function (x) { return { t: x.name, go: go({ page: page, sid: x.name }) }; }); at = flat.indexOf(skill); }
+    else if (pIdx >= 0) { seq = PORT.map(function (p) { return { t: p.title, go: go({ page: 'portfolio', pid: p.id }) }; }); at = pIdx; }
+    else if (note) { var nl = NOTES.filter(function (n) { return (n.kind === 'book') === (page === 'books'); }); seq = nl.map(function (n) { return { t: n.title, go: go({ page: page, nid: n.id }) }; }); at = nl.indexOf(note); }
+    var none = { t: '', go: function () {} };
+    var pager = { back: go({ page: page }), backLabel: PG[1] + 'の一覧へ戻る', hasPrev: at > 0, hasNext: at >= 0 && at < seq.length - 1, prev: at > 0 ? seq[at - 1] : none, next: (at >= 0 && at < seq.length - 1) ? seq[at + 1] : none };
+
+    var list = desk ? FR : FR.filter(function (f) { return f.ph; });
+    var mode = st.mode || 'shuf';
+    var res = arrange(list, mode, L);
+    var reduce = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var ease = ' .6s cubic-bezier(.2,.7,.2,1)';
+
+    var pd = { role: '', period: '', techs: '', long: '', isCI: false, notCI: false, id: '', nextTitle: '', goNext: function () {} };
+    if (pIdx >= 0) {
+      var P = PORT[pIdx];
+      var N = PORT[(pIdx + 1) % PORT.length];
+      pd = { id: P.id, role: P.role, period: P.period, techs: P.tech.join(' · '), long: P.long, isCI: P.id === 'climbinsight', notCI: P.id !== 'climbinsight', nextTitle: N.title, goNext: go({ page: 'portfolio', pid: N.id }) };
+    }
+    var nd = { isBook: false, date: '', tags: '' };
+    if (note) nd = { isBook: note.kind === 'book', date: '[YYYY-MM-DD]', tags: note.topics.map(function (t) { return '#' + t; }).join(' ') };
+
+    return {
+      c: c, L: L, desk: desk, phone: !desk,
+      mf: "'M PLUS 1 Code', monospace",
+      pf: prose === 'M PLUS 1' ? "'M PLUS 1', sans-serif" : "'M PLUS 1 Code', monospace",
+      themeLabel: desk ? (theme === 'light' ? '表示: ライト' : '表示: ダーク') : (theme === 'light' ? 'ライト' : 'ダーク'),
+      toggleTheme: function () { self.setState({ theme: theme === 'light' ? 'dark' : 'light' }); },
+      menuShown: !desk && !!st.menu,
+      menuExpanded: (!desk && !!st.menu) ? 'true' : 'false',
+      toggleMenu: function () { self.setState({ menu: !st.menu }); },
+      goHome: function () {},
+      promptPath: curPath,
+      nav: [{ label: '案内', path: '~', go: function () {}, cur: undefined, ul: 'transparent', fw: 400 }].concat(FLN.map(function (f) {
+        var on = f[0] === PG[3];
+        return { label: f[1], path: '~/' + f[0].toLowerCase(), go: f[3] ? go({ page: f[3] }) : function () {}, cur: on ? 'page' : undefined, ul: on ? c.ac : 'transparent', fw: on ? 700 : 400 };
+      })),
+      theme: theme, layoutName: desk ? 'desktop' : 'phone',
+      B: { leaf: leaf, frame: c.wdw },
+      peekShow: true, peekFloor: PG[3], peekGroup: isList ? PG[4] : '',
+      peekRoom: skill ? (page === 'studies' ? 'u:' : 'w:') + skill.k : (pIdx >= 0 ? 'portfolio' : (note ? (note.kind === 'book' ? 'books' : 'notes') : '')),
+      peekWhere: isList ? FL[0] + ' ' + FL[2] + ' › ' + PG[1] : FL[0] + ' › ' + PG[1] + (skill ? ' › ' + skill.label : '') + ' › ' + head.title,
+      peekDoors: isList
+        ? [{ label: FL[0] + ' へ戻る', go: function () {} }].concat(PAGES.filter(function (p) { return p[3] === PG[3] && p[0] !== page; }).map(function (p) { return { label: p[1], go: go({ page: p[0] }) }; }))
+        : [{ label: PG[1] + 'の一覧へ', go: go({ page: page }) }, { label: FL[0] + ' へ戻る', go: function () {} }],
+      isDetail: !isList, pager: pager,
+      isSkillDetail: !!skill,
+      sk: skill ? { cat: skill.label, on: gauge(skill.lv).on, off: gauge(skill.lv).off, lv: LVL[skill.lv], floor: page === 'studies' ? 'B1 自己学習' : '2F 経歴・業務の技術', isTS: skill.name === 'TypeScript', notTS: skill.name !== 'TypeScript' } : { cat: '', on: '', off: '', lv: '', floor: '', isTS: false, notTS: false },
+      isHistories: page === 'histories',
+      head: head,
+      isHome: false, isProfile: page === 'profile', isSkills: (page === 'skills' || page === 'studies') && !skill,
+      isPortList: page === 'portfolio' && pIdx < 0, isPortDetail: page === 'portfolio' && pIdx >= 0,
+      isNotesList: (page === 'notes' || page === 'books') && !note, isNoteDetail: !!note,
+      isContact: page === 'contact',
+      showAd: page !== 'contact',
+
+      cmds: CMDS.map(function (b) {
+        var on = b.id === mode;
+        return { ja: b.ja, label: b.label, pressed: on ? 'true' : 'false', fg: on ? c.ac : c.fg, fw: on ? 700 : 400, bd: on ? c.ac : c.mu, run: function () { self.setState({ mode: b.id }); } };
+      }),
+      hasOut: !!res.out,
+      out0: res.out ? res.out[0] : '',
+      out1: res.out ? res.out[1] : '',
+      fieldH: res.H,
+      showLine: !!res.line,
+      lineW: res.line ? res.line.w : 0,
+      lineY: res.line ? res.line.y : 0,
+      labels: res.labels,
+      count: list.length,
+      frags: list.map(function (f, i) {
+        var p = res.pos[i];
+        var dim = p.state === 'dim';
+        var lit = p.state === 'lit';
+        return {
+          kind: KIND[f.g], path: f.path, title: f.title, ex: f.ex, open: go(f.to),
+          x: p.x, y: p.y, rot: p.rot, z: p.z,
+          bg: dim ? c.bg : c.sf,
+          bd: dim ? c.bd : (lit ? c.ac : c.mu),
+          fg: dim ? c.mu : c.fg,
+          kc: lit ? c.ac : c.mu,
+          pc: dim ? c.mu : c.bl
+        };
+      }),
+      tr: reduce ? 'none' : 'left' + ease + ', top' + ease + ', transform' + ease + ', border-color .3s, color .3s, background-color .3s',
+      trH: reduce ? 'none' : 'height' + ease,
+
+      history: HISTORY, interests: INTERESTS, certs: CERTS,
+      related: [
+        { label: '経歴', go: go({ page: 'histories' }) },
+        { label: 'スキル', go: go({ page: 'skills' }) },
+        { label: 'ポートフォリオ', go: go({ page: 'portfolio' }) },
+        { label: '連絡先', go: go({ page: 'contact' }) }
+      ],
+
+      legend: [5, 4, 3, 2, 1].map(function (n) { var g = gauge(n); return { on: g.on, off: g.off, label: n + ' ' + LVL[n] }; }),
+      skills: (page === 'studies' ? STUDY_ROWS : WORK_ROWS).map(function (s) {
+        return {
+          label: s.label, dir: (page === 'studies' ? '~/b1/studies/' : '~/2f/skills/') + s.k + '/',
+          rows: s.rows.map(function (r) { var g = gauge(r[1]); return { name: r[0], on: g.on, off: g.off, lv: LVL[r[1]], open: go({ page: page, sid: r[0] }) }; })
+        };
+      }),
+
+      plist: PORT.map(function (p) {
+        return { id: p.id, date: p.date, title: p.title, desc: p.desc, techs: p.tech.join(' · '), open: go({ page: 'portfolio', pid: p.id }) };
+      }),
+      pd: pd, ciComp: CI_COMP,
+      backPort: go({ page: 'portfolio' }),
+
+      nlist: NOTES.filter(function (n) { return (n.kind === 'book') === (page === 'books'); }).map(function (n) {
+        return { title: n.title, date: '[YYYY-MM-DD]', kindJa: n.kind === 'book' ? '本' : 'メモ', path: notePath(n), tags: n.topics.map(function (t) { return '#' + t; }).join(' '), open: go({ page: page, nid: n.id }) };
+      }),
+      nd: nd,
+      backNotes: go({ page: page }),
+
+      fid: { name: 'f-name-' + theme + (desk ? 'd' : 'p'), email: 'f-email-' + theme + (desk ? 'd' : 'p'), company: 'f-company-' + theme + (desk ? 'd' : 'p'), category: 'f-cat-' + theme + (desk ? 'd' : 'p'), message: 'f-msg-' + theme + (desk ? 'd' : 'p') }
+    };
+  }
+}
+</script>
+</body>
+</html>
