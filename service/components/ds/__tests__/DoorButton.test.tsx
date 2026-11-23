@@ -1,5 +1,7 @@
 // @vitest-environment jsdom
 import * as React from "react"
+import { act } from "react"
+import { createRoot } from "react-dom/client"
 import { renderToStaticMarkup } from "react-dom/server"
 import { describe, expect, it, vi } from "vitest"
 
@@ -49,6 +51,47 @@ describe("DoorButton", () => {
             const el = control(render(<DoorButton type="submit">送信</DoorButton>))
             expect(el.tagName).toBe("BUTTON")
             expect(el.getAttribute("type")).toBe("submit")
+        })
+
+        it.each([true, false])("passes aria-expanded=%s and aria-controls through", (expanded) => {
+            const el = control(
+                render(
+                    <DoorButton aria-expanded={expanded} aria-controls="menu-panel">
+                        メニュー
+                    </DoorButton>
+                )
+            )
+            expect(el.getAttribute("aria-expanded")).toBe(String(expanded))
+            expect(el.getAttribute("aria-controls")).toBe("menu-panel")
+        })
+
+        it("omits aria-expanded and aria-controls when not given", () => {
+            const el = control(render(<DoorButton>開く</DoorButton>))
+            expect(el.hasAttribute("aria-expanded")).toBe(false)
+            expect(el.hasAttribute("aria-controls")).toBe(false)
+        })
+
+        it("forwards ref to the button element", async () => {
+            vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true)
+            const container = document.createElement("div")
+            document.body.append(container)
+            const root = createRoot(container)
+            const ref = React.createRef<HTMLButtonElement>()
+            try {
+                await act(async () => root.render(<DoorButton ref={ref}>メニュー</DoorButton>))
+                expect(ref.current).toBeInstanceOf(HTMLButtonElement)
+                expect(ref.current).toBe(container.querySelector("button"))
+            } finally {
+                await act(async () => root.unmount())
+                container.remove()
+                vi.unstubAllGlobals()
+            }
+        })
+
+        it("does not accept the disclosure props on a link", () => {
+            // @ts-expect-error aria-expanded is only for the button form
+            const el = <DoorButton href="/contact" aria-expanded={true}>Contact</DoorButton>
+            expect(el).toBeDefined()
         })
     })
 

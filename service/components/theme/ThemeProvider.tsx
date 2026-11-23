@@ -8,8 +8,11 @@ import {
 } from "react"
 import {
     DEFAULT_THEME,
+    PREFERS_DARK_QUERY,
+    THEMES,
     THEME_STORAGE_KEY,
     isTheme,
+    resolveTheme,
     type Theme,
 } from "@/lib/theme"
 
@@ -22,8 +25,8 @@ interface ThemeContextValue {
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined)
 
 /**
- * `<html data-theme>` を唯一の情報源として購読する。
- * 属性は hydration 前に themeBootScript が localStorage から復元しているので、
+ * `<html data-theme>` に適用済みのテーマを購読する。
+ * themeBootScript が hydration 前に初期テーマを適用するので、
  * effect で state を同期し直す必要がない（React 19 の
  * react-hooks/set-state-in-effect が禁じるカスケードレンダーを避ける）。
  */
@@ -36,9 +39,21 @@ function subscribeToTheme(onStoreChange: () => void): () => void {
     }
 }
 
+function readSavedTheme(): Theme | null {
+    try {
+        const saved = window.localStorage.getItem(THEME_STORAGE_KEY)
+        return isTheme(saved) ? saved : null
+    } catch {
+        // Storage may be blocked; the OS preference still supplies a default.
+        return null
+    }
+}
+
 function getThemeSnapshot(): Theme {
     const applied = document.documentElement.getAttribute("data-theme")
-    return isTheme(applied) ? applied : DEFAULT_THEME
+    return isTheme(applied)
+        ? applied
+        : resolveTheme(readSavedTheme(), window.matchMedia(PREFERS_DARK_QUERY).matches)
 }
 
 function getThemeServerSnapshot(): Theme {
@@ -84,6 +99,17 @@ function applyTheme(theme: Theme): void {
 
 /**
  * `<head>` に直接埋め込む inline script。
- * SSR 直後 (React hydration 前) に `<html data-theme>` を設定して FOUC を防ぐ。
+ * React hydration 前に保存値または OS 設定で `<html data-theme>` を設定して FOUC を防ぐ。
  */
-export const themeBootScript = `(function(){try{var k='${THEME_STORAGE_KEY}';var s=localStorage.getItem(k);var t=(s==='dark'||s==='light')?s:'${DEFAULT_THEME}';document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','${DEFAULT_THEME}');}})();`
+export const themeBootScript = `(function () {
+    var resolveTheme = ${resolveTheme.toString()};
+    var saved = null;
+    try {
+        saved = localStorage.getItem(${JSON.stringify(THEME_STORAGE_KEY)});
+    } catch {
+        // Storage may be blocked; the OS preference still supplies a default.
+    }
+    if (${JSON.stringify(THEMES)}.indexOf(saved) < 0) saved = null;
+    var prefersDark = window.matchMedia(${JSON.stringify(PREFERS_DARK_QUERY)}).matches;
+    document.documentElement.setAttribute("data-theme", resolveTheme(saved, prefersDark));
+})();`
