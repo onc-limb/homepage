@@ -139,6 +139,8 @@ const config: Config = {
             maxWidth: {
                 "ds-page": "var(--ds-page-max)",
                 "ds-measure": "var(--ds-measure)",
+                "ds-map": "762px",
+                "ds-map-small": "358px",
             },
             gridTemplateColumns: {
                 "ds-kv": "max-content minmax(0, 1fr)",

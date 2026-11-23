@@ -239,10 +239,13 @@ function groundOf(rooms: RoomLayout[]): GroundLayout {
     }
 }
 
+const TOP_DOWN_VERTICAL_SCALE = 0.5
+export const TOP_DOWN_TRANSFORM = `scaleY(${TOP_DOWN_VERTICAL_SCALE}) rotate(45deg)`
+
 // 上から見下ろす投影（45° 回して縦を 1/2）。建物の中心を原点にした座標を返す。
-// CSS の scaleY(0.5) rotate(45deg)（transform-origin は中心）と同じ変換
+// TOP_DOWN_TRANSFORM（transform-origin は中心）と同じ変換
 export function projectTopDown(point: Point): Point {
     const dx = point.x - (BUILDING.x + BUILDING.w / 2)
     const dy = point.y - (BUILDING.y + BUILDING.h / 2)
-    return { x: (dx - dy) * Math.SQRT1_2, y: (dx + dy) * Math.SQRT1_2 * 0.5 }
+    return { x: (dx - dy) * Math.SQRT1_2, y: (dx + dy) * Math.SQRT1_2 * TOP_DOWN_VERTICAL_SCALE }
 }

@@ -72,6 +72,25 @@ describe("/design component samples", () => {
             expect(block.querySelectorAll('button[aria-pressed="true"]'), "pressed").toHaveLength(2)
         })
 
+        it("shows FloorMap on wood, stone and terrace floors, with selected, lit and small maps", () => {
+            const block = sampleBlock(theme, "floor-map")
+            const maps = Array.from(block.querySelectorAll<HTMLElement>("[data-floor]"))
+            const materials = new Set(maps.map((m) => m.getAttribute("data-material")))
+            for (const material of ["wood", "stone", "deck"]) {
+                expect(materials.has(material), material).toBe(true)
+            }
+            expect(maps.filter((m) => m.getAttribute("data-size") === "normal").length, "normal").toBeGreaterThan(0)
+            const small = maps.filter((m) => m.getAttribute("data-size") === "small")
+            expect(small.length, "small").toBeGreaterThan(0)
+            expect(
+                small.some((m) => m.querySelector('[data-part="mark"]') !== null),
+                "small map with a mark"
+            ).toBe(true)
+            expect(block.querySelectorAll('button[aria-pressed="true"]').length, "selected").toBeGreaterThan(0)
+            expect(block.querySelectorAll('[data-lit="true"]').length, "lit").toBeGreaterThan(0)
+            expect(block.querySelectorAll('[data-part="label"]').length, "labels").toBeGreaterThan(0)
+        })
+
         it("shows PagerDoors in the middle, on the first and on the last page", () => {
             const navs = Array.from(sampleBlock(theme, "pager-doors").querySelectorAll("nav"))
             expect(navs).toHaveLength(3)

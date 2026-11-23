@@ -1,6 +1,7 @@
 import Link from "next/link"
 import type { MouseEventHandler, ReactNode } from "react"
 
+import { Planks } from "./Planks"
 import { FOCUS_RING } from "./focus-styles"
 import { EXTERNAL_LINK_ATTRS, isExternalHref } from "./href"
 
@@ -29,19 +30,6 @@ type DoorActionProps = DoorCommonProps & {
 }
 
 export type DoorButtonProps = DoorLinkProps | DoorActionProps
-
-const PLANK_COUNT = 24
-
-/** Wood planks drawn as joint-bordered elements (no CSS gradients), clipped by the door face. */
-function Planks() {
-    return (
-        <span aria-hidden="true" className="absolute flex h-full w-full overflow-hidden">
-            {Array.from({ length: PLANK_COUNT }, (_, i) => (
-                <span key={i} className="h-full w-ds-4 shrink-0 border-r-2 border-ds-map-wood-joint" />
-            ))}
-        </span>
-    )
-}
 
 function Handle() {
     return <span aria-hidden="true" className="relative h-ds-2 w-ds-2 shrink-0 border border-ds-fg bg-ds-accent" />

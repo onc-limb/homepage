@@ -84,6 +84,17 @@ describe("FLOORS", () => {
         ])
     })
 
+    // 地図の素材（order.md: 1F〜3F = 木、B1 = 石、屋上 = 板張りのテラス）
+    it("gives each floor the material its map is drawn in", () => {
+        expect(FLOORS.map((floor) => ({ id: floor.id, material: floor.material }))).toEqual([
+            { id: "b1", material: "stone" },
+            { id: "1f", material: "wood" },
+            { id: "2f", material: "wood" },
+            { id: "3f", material: "wood" },
+            { id: "rf", material: "deck" },
+        ])
+    })
+
     it("defines exactly 6 groups with unique slugs and no notes / books", () => {
         const slugs = allGroups().map(({ group }) => group.slug)
 
