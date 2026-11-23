@@ -13,7 +13,10 @@ workflow_overrides:
       quality_gates: &pnpm_checks
         - type: command
           name: pnpm-install
-          command: pnpm --dir service install --frozen-lockfile --silent
+          # CI=true: the gate has no TTY. When pnpm has to rebuild
+          # node_modules it asks for confirmation and aborts without one
+          # (ERR_PNPM_ABORTED_REMOVE_MODULES_DIR_NO_TTY); CI=true skips the prompt.
+          command: CI=true pnpm --dir service install --frozen-lockfile --silent
           timeout_ms: 600000
         - type: command
           name: typecheck
