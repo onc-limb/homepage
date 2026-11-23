@@ -1,3 +1,5 @@
+import { FLOORS } from "./building/floors"
+
 /**
  * サイト全体で使用するナビゲーション項目の定義。
  * ヘッダー・フッター・トップの一覧で共有する。
@@ -17,6 +19,7 @@ export interface SocialLink {
     name: string
     url: string
     username: string
+    note: string
 }
 
 /**
@@ -31,43 +34,31 @@ export const SOCIAL_LINKS: SocialLink[] = [
         name: "GitHub",
         url: "https://github.com/onc-limb",
         username: "@onc-limb",
+        note: "ソースコード",
     },
     {
         name: "Zenn",
         url: "https://zenn.dev/onclimb",
         username: "@onclimb",
+        note: "技術記事",
     },
     {
         name: "X (Twitter)",
         url: "https://twitter.com/onc_limb",
         username: "@onc_limb",
+        note: "近況",
     },
 ]
 
 export const NAV_ITEMS: NavItem[] = [
     {
         href: "/",
-        label: "ホーム",
-        description: "トップページ",
+        label: "案内",
+        description: "案内所",
     },
-    {
-        href: "/profile",
-        label: "プロフィール",
-        description: "経歴と価値観、エンジニアとしての今",
-    },
-    {
-        href: "/skills",
-        label: "スキル",
-        description: "技術スタックと習熟度を可視化",
-    },
-    {
-        href: "/portfolio",
-        label: "ポートフォリオ",
-        description: "制作したアプリケーションとプロジェクト",
-    },
-    {
-        href: "/contact",
-        label: "連絡先",
-        description: "仕事のご相談・お問い合わせ",
-    },
+    ...FLOORS.map((floor) => ({
+        href: floor.url,
+        label: `${floor.label} ${floor.navName}`,
+        description: floor.name,
+    })),
 ]

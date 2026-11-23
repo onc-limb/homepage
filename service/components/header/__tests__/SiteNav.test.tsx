@@ -40,13 +40,14 @@ describe("SiteNav items", () => {
         )
     })
 
-    it("shows the five Japanese labels", () => {
-        expect(linksOf("/skills").map((a) => a.textContent)).toEqual([
-            "ホーム",
-            "プロフィール",
-            "スキル",
-            "ポートフォリオ",
-            "連絡先",
+    it("shows 案内 and the five floors", () => {
+        expect(linksOf("/skills").map((a) => [a.getAttribute("href"), a.textContent])).toEqual([
+            ["/", "案内"],
+            ["/b1", "B1 自己学習"],
+            ["/1f", "1F プロフィール"],
+            ["/2f", "2F 経歴・技術"],
+            ["/3f", "3F 作品・考え"],
+            ["/rf", "屋上 リンク"],
         ])
     })
 
@@ -72,11 +73,16 @@ describe("SiteNav items", () => {
 
 describe("SiteNav current page", () => {
     it.each([
-        ["/skills", ["スキル"]],
-        ["/portfolio/onc-limb", ["ポートフォリオ"]],
-        ["/", ["ホーム"]],
+        ["/skills", ["2F 経歴・技術"]],
+        ["/skills/typescript", ["2F 経歴・技術"]],
+        ["/2f/skills", ["2F 経歴・技術"]],
+        ["/portfolio/onc-limb", ["3F 作品・考え"]],
+        ["/contact", ["1F プロフィール"]],
+        ["/b1", ["B1 自己学習"]],
+        ["/rf", ["屋上 リンク"]],
+        ["/", ["案内"]],
         ["/books", []],
-    ])("marks only the matching item as current on %s", (pathname, expected) => {
+    ])("marks only the floor the page belongs to as current on %s", (pathname, expected) => {
         expect(currentLabels(pathname)).toEqual(expected)
     })
 

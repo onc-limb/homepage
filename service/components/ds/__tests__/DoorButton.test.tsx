@@ -196,6 +196,39 @@ describe("DoorButton", () => {
             }
         })
 
+        it("shows the caption below the door in place of the URL", () => {
+            const root = render(
+                <DoorButton size="large" href="/2f/skills" count="3 件" caption="スキルの一覧">
+                    Skills
+                </DoorButton>
+            )
+            const el = control(root)
+            const f = frame(root, "large")
+            expect(el.getAttribute("href")).toBe("/2f/skills")
+            const caption = elementWithText(el, "スキルの一覧")
+            expect(caption, "caption under the door").toBeDefined()
+            expect(f.contains(caption!), "caption is outside the door face").toBe(false)
+            expect(precedes(f, caption!), "caption below the door").toBe(true)
+            expect(el.textContent, "no URL text").not.toContain("/2f/skills")
+        })
+
+        it("adds the ↗ mark after the caption of an external door", () => {
+            const root = render(
+                <DoorButton size="large" href="https://github.com/onc-limb" count="ソースコード" caption="外のサイトへ">
+                    GitHub
+                </DoorButton>
+            )
+            const el = control(root)
+            expect(el.getAttribute("href")).toBe("https://github.com/onc-limb")
+            expect(el.getAttribute("target")).toBe("_blank")
+            expect(el.getAttribute("rel")).toBe("noopener noreferrer")
+            const f = frame(root, "large")
+            expect(f.contains(elementWithText(el, "ソースコード")!), "note on the nameplate").toBe(true)
+            const below = Array.from(el.children).filter((child) => child !== f)
+            expect(below.map((child) => child.textContent)).toEqual(["外のサイトへ ↗"])
+            expect(el.textContent, "no URL text").not.toContain("github.com")
+        })
+
         it("shows no URL when used as a button", () => {
             const root = render(
                 <DoorButton size="large" count="3">

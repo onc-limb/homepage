@@ -22,14 +22,17 @@ function promptLink(pathname: string): HTMLAnchorElement {
 }
 
 describe("SiteBrand prompt", () => {
-    it("shows the current URL under ~ as `guest@onclimb:~/skills$`", () => {
-        expect(promptLink("/skills").textContent).toBe("guest@onclimb:~/skills$")
+    it("shows a transitional URL as the virtual path of its floor: `guest@onclimb:~/2f/skills$`", () => {
+        expect(promptLink("/skills").textContent).toBe("guest@onclimb:~/2f/skills$")
     })
 
     it.each([
         ["/", `${USER_HOST}:~$`],
-        ["/skills", `${USER_HOST}:~/skills$`],
-        ["/portfolio/onc-limb", `${USER_HOST}:~/portfolio/onc-limb$`],
+        ["/skills", `${USER_HOST}:~/2f/skills$`],
+        ["/2f/skills", `${USER_HOST}:~/2f/skills$`],
+        ["/2f", `${USER_HOST}:~/2f$`],
+        ["/portfolio/onc-limb", `${USER_HOST}:~/3f/portfolios/onc-limb$`],
+        ["/books", `${USER_HOST}:~/books$`],
     ])("renders the prompt for %s", (pathname, expected) => {
         expect(promptLink(pathname).textContent).toBe(expected)
     })
@@ -43,9 +46,9 @@ describe("SiteBrand prompt", () => {
     it("colors guest@onclimb with the prompt color and the path with the link color", () => {
         const a = promptLink("/skills")
         const user = elementWithText(a, USER_HOST)
-        const path = elementWithText(a, "~/skills")
+        const path = elementWithText(a, "~/2f/skills")
         expect(user, "element with guest@onclimb").toBeDefined()
-        expect(path, "element with ~/skills").toBeDefined()
+        expect(path, "element with ~/2f/skills").toBeDefined()
         expect(closestClass(user!, TEXT_COLOR, a.parentElement!)).toBe("text-ds-prompt")
         expect(closestClass(path!, TEXT_COLOR, a.parentElement!)).toBe("text-ds-link")
     })

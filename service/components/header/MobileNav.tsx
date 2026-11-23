@@ -5,8 +5,10 @@ import { useId, useRef, useState, type KeyboardEvent } from "react"
 import { DoorButton } from "@/components/ds/DoorButton"
 import { FOCUS_RING } from "@/components/ds/focus-styles"
 import { NARROW_SCREEN_ONLY } from "@/components/ds/screen-styles"
+import { toPromptPath } from "@/lib/building/floors"
 import { NAV_ITEMS } from "@/lib/constants"
-import { isNavItemActive, toPromptPath } from "./nav-utils"
+import { CURRENT_NAV_ITEM } from "./nav-styles"
+import { isNavItemActive } from "./nav-utils"
 
 export function MobileNav({ pathname }: { pathname: string }) {
     const [open, setOpen] = useState(false)
@@ -47,7 +49,7 @@ export function MobileNav({ pathname }: { pathname: string }) {
                                 onClick={() => setOpen(false)}
                                 className={`flex items-center justify-between gap-ds-3 border-b border-ds-border py-ds-2 text-ds-fg ${FOCUS_RING}`}
                             >
-                                <span className={`font-ds-prose underline underline-offset-4${active ? " font-bold" : ""}`}>
+                                <span className={`font-ds-prose underline underline-offset-4${active ? ` ${CURRENT_NAV_ITEM}` : ""}`}>
                                     {item.label}
                                 </span>
                                 <span className="text-ds-sm text-ds-link">{toPromptPath(item.href)}</span>

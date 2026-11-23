@@ -88,19 +88,19 @@ describe("top page STATS", () => {
 })
 
 describe("top page Explore", () => {
-    it("links every NAV_ITEMS entry except Home and Contact, in order", async () => {
+    it("links every NAV_ITEMS entry except 案内, in order", async () => {
         const doc = await renderTopPage()
         const cards = Array.from(doc.querySelectorAll("a")).filter((a) =>
             a.textContent?.includes("→ /")
         )
-        const expected = NAV_ITEMS.filter(
-            (item) => item.href !== "/" && item.href !== "/contact"
-        )
+        const expected = NAV_ITEMS.filter((item) => item.href !== "/")
 
         expect(cards.map((a) => a.getAttribute("href"))).toEqual([
-            "/profile",
-            "/skills",
-            "/portfolio",
+            "/b1",
+            "/1f",
+            "/2f",
+            "/3f",
+            "/rf",
         ])
         expect(cards.map((a) => a.getAttribute("href"))).toEqual(
             expected.map((item) => item.href)
@@ -113,15 +113,17 @@ describe("top page Explore", () => {
         })
     })
 
-    it("has no card for Home or Contact", async () => {
+    it("has no card for 案内", async () => {
         const doc = await renderTopPage()
         const cards = Array.from(doc.querySelectorAll("a")).filter((a) =>
             a.textContent?.includes("→ /")
         )
+        const guide = NAV_ITEMS[0]
 
+        expect(guide.href).toBe("/")
         for (const card of cards) {
-            expect(card.textContent).not.toContain("トップページ")
-            expect(card.textContent).not.toContain("仕事のご相談・お問い合わせ")
+            expect(card.getAttribute("href")).not.toBe("/")
+            expect(card.textContent).not.toContain(guide.description)
         }
     })
 })
