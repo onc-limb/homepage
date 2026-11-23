@@ -2,7 +2,9 @@ import { codeBlockSample } from "./code-block"
 import { colorsSample } from "./colors"
 import { dataTableSample } from "./data-table"
 import { doorButtonSample } from "./door-button"
+import { floorGuideSample } from "./floor-guide"
 import { floorMapSample } from "./floor-map"
+import { guidePcSample } from "./guide-pc"
 import { keyValueSample } from "./key-value"
 import { logListSample } from "./log-list"
 import { pageFrameSample } from "./page-frame"
@@ -33,4 +35,6 @@ export const DESIGN_SAMPLES: readonly DesignSample[] = [
     doorButtonSample,
     pagerDoorsSample,
     floorMapSample,
+    floorGuideSample,
+    guidePcSample,
 ]
