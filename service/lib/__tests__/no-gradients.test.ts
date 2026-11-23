@@ -65,7 +65,6 @@ function collectFiles(dir: string): string[] {
 const files = [
     ...SCAN_DIRS.flatMap((d) => collectFiles(join(serviceRoot, d))),
     join(serviceRoot, "tailwind.config.ts"),
-    join(serviceRoot, "tailwind.config.js"),
 ]
 
 describe("solid background — no gradient decorations remain", () => {

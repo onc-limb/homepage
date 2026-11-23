@@ -1,0 +1,735 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>案内所と階のページ</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+1:wght@400;700&amp;family=M+PLUS+1+Code:wght@400;700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="min-height: {{rootMinH}}; box-sizing: border-box; background: {{c.bg}}; color: {{c.fg}}; font-family: {{mf}}; font-size: 16px; line-height: 1.7; display: flex; flex-direction: column; position: relative">
+  <sc-if value="{{isPeek}}" hint-placeholder-val="{{false}}">
+    <div style="display: flex; gap: 20px; align-items: center">
+      <sc-if value="{{isPeekDesk}}" hint-placeholder-val="{{false}}">
+        <div aria-hidden="true" style="width: 150px; flex: 0 0 auto; display: flex; flex-direction: column; gap: 3px">
+          <div style="height: 22px; margin: 0 -6px 1px; background: {{c.wdw}}; clip-path: polygon(50% 0, 100% 100%, 0 100%)"></div>
+          <sc-for list="{{peekGuide}}" as="g" hint-placeholder-count="5">
+            <span style="height: 26px; box-sizing: border-box; padding: 0 8px; display: flex; align-items: center; gap: 8px; font-size: 0.75rem; background: {{g.bg}}; border: {{g.bw}}px solid {{g.bd}}; font-weight: {{g.fw}}"><span>{{g.name}}</span><span style="font-family: {{pf}}; color: {{c.mu}}">{{g.ja}}</span></span>
+          </sc-for>
+        </div>
+      </sc-if>
+      <div style="position: relative; flex: 0 0 auto; width: {{M.bw}}px; height: {{M.bh}}px; overflow: hidden">
+        <sc-for list="{{floors}}" as="f" hint-placeholder-count="4">
+          <div style="position: absolute; left: {{M.pl}}px; top: {{f.top}}px; width: 762px; height: 522px; transform: {{M.planeT}}; transform-origin: 50% 50%; opacity: {{f.op}}; z-index: {{f.z}}; transition: {{trFloor}}">
+            <div style="position: absolute; left: -6px; top: -6px; width: 774px; height: 534px; background: {{f.slab}}; box-shadow: {{slabSh}}"></div>
+            <sc-for list="{{f.ext}}" as="e" hint-placeholder-count="0">
+              <div style="position: absolute; left: {{e.x}}px; top: {{e.y}}px; width: {{e.w}}px; height: {{e.h}}px; box-sizing: border-box; background: {{deckBg}}; border: 2px solid {{c.wdw}}"></div>
+            </sc-for>
+            <sc-for list="{{f.rooms}}" as="r" hint-placeholder-count="6">
+              <button type="button" onClick="{{r.go}}" aria-label="{{r.aria}}" tabindex="{{f.tab}}" style="position: absolute; left: {{r.x}}px; top: {{r.y}}px; width: {{r.w}}px; height: {{r.h}}px; box-sizing: border-box; margin: 0; padding: 0; background: {{r.bg}}; border: {{r.bw}}px {{r.bs}} {{r.bc}}; cursor: pointer; z-index: {{r.z}}; box-shadow: {{r.sh}}; transition: {{trRoom}}"></button>
+            </sc-for>
+            <sc-for list="{{f.items}}" as="e" hint-placeholder-count="0">
+              <div style="position: absolute; left: {{e.x}}px; top: {{e.y}}px; width: {{e.w}}px; height: {{e.h}}px; box-sizing: border-box; background: {{c.wl}}; border: 2px solid {{c.fg}}; z-index: 300; pointer-events: none"></div>
+            </sc-for>
+            <sc-for list="{{f.doors}}" as="d" hint-placeholder-count="6">
+              <div style="position: absolute; left: {{d.x}}px; top: {{d.y}}px; width: {{d.w}}px; height: {{d.h}}px; background: {{d.bg}}; z-index: 400; pointer-events: none"></div>
+            </sc-for>
+          </div>
+        </sc-for>
+        <sc-for list="{{tags}}" as="t" hint-placeholder-count="1">
+          <span data-role="peek-tags" style="position: absolute; left: {{t.x}}px; top: {{t.y}}px; transform: translate(-50%, -50%); z-index: 30; pointer-events: none; white-space: nowrap; padding: 0 5px; font-family: {{pf}}; font-size: 0.75rem; line-height: 1.5; font-weight: 700; color: {{c.gr}}; background: {{c.bg}}; border: 1px solid {{c.gr}}">{{t.text}}</span>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{isInfo}}" hint-placeholder-val="{{true}}">
+    <button type="button" onClick="{{X.enter}}" aria-label="onclimb 山荘の中に入る" tabindex="{{X.tab}}" style="position: {{S.pos}}; left: 0; top: 0; width: 100%; height: {{S.h}}; min-height: {{S.minH}}; flex: 1 0 auto; box-sizing: border-box; z-index: 100; display: flex; flex-direction: column; align-items: center; margin: 0; padding: {{S.pad}}; border: 0; overflow: hidden; background: {{c.bg}}; color: {{c.fg}}; font: inherit; cursor: pointer; opacity: {{X.op}}; pointer-events: {{X.pe}}; transition: {{S.tr}}">
+      <span style="display: block; font-size: {{S.fs}}; font-weight: 700; line-height: 1.3; letter-spacing: 0.04em">onclimb 山荘</span>
+      <span style="position: relative; display: block; flex: 0 0 auto; width: {{S.w}}px; height: {{S.hh}}px; margin-top: 16px; transform: {{X.tf}}; transform-origin: {{X.org}}; transition: {{X.tr}}">
+        <sc-for list="{{X.hills}}" as="h" hint-placeholder-count="3">
+          <span aria-hidden="true" style="position: absolute; display: block; left: {{h.x}}px; top: {{h.y}}px; width: {{h.w}}px; height: {{h.h}}px; background: {{c.hill}}; clip-path: polygon(50% 0, 100% 100%, 0 100%)"></span>
+        </sc-for>
+        <sc-for list="{{X.treesBack}}" as="t" hint-placeholder-count="8">
+          <span aria-hidden="true" style="position: absolute; display: block; left: {{t.x}}px; top: {{t.y}}px; width: {{t.w}}px; height: {{t.h}}px">
+            <span style="position: absolute; display: block; left: 43%; bottom: 0; width: 14%; height: 22%; background: {{c.trk}}"></span>
+            <span style="position: absolute; display: block; left: 0; top: 30%; width: 100%; height: 54%; background: {{t.c1}}; clip-path: polygon(50% 0, 100% 100%, 0 100%)"></span>
+            <span style="position: absolute; display: block; left: 12%; top: 0; width: 76%; height: 50%; background: {{t.c2}}; clip-path: polygon(50% 0, 100% 100%, 0 100%)"></span>
+          </span>
+        </sc-for>
+        <sc-for list="{{X.plates}}" as="p" hint-placeholder-count="1">
+          <span style="position: absolute; display: block; left: {{p.x}}px; top: {{p.y}}px; width: {{p.w}}px; height: {{p.h}}px; box-sizing: border-box; transform: scaleY(0.5) rotate(45deg); background: {{p.bg}}; border: 2px solid {{c.fg}}"></span>
+        </sc-for>
+        <sc-for list="{{X.faces}}" as="f" hint-placeholder-count="8">
+          <span style="position: absolute; display: block; left: {{f.x}}px; top: {{f.y}}px; width: {{f.w}}px; height: {{f.h}}px; box-sizing: border-box; transform-origin: 0 0; transform: skewY({{f.sk}}deg); background: {{f.bg}}; border: 2px solid {{c.fg}}">
+            <sc-for list="{{f.wins}}" as="w" hint-placeholder-count="3">
+              <span style="position: absolute; display: block; left: {{w.x}}px; top: {{w.y}}px; width: {{w.w}}px; height: {{w.h}}px; box-sizing: border-box; background: {{w.bg}}; border: 2px solid {{c.fg}}"></span>
+            </sc-for>
+          </span>
+        </sc-for>
+        <sc-for list="{{X.door}}" as="d" hint-placeholder-count="1">
+          <span style="position: absolute; display: block; left: {{d.x}}px; top: {{d.y}}px; width: {{d.w}}px; height: {{d.h}}px; box-sizing: border-box; transform-origin: 0 0; transform: skewY(-26.565deg); background: {{c.sf}}; border: 2px solid {{c.fg}}">
+            <span style="position: absolute; display: block; left: 0; top: 0; width: 100%; height: 100%; background: {{c.ac}}; transform-origin: 0 50%; transform: {{d.leaf}}; transition: {{d.tr}}"></span>
+          </span>
+        </sc-for>
+        <sc-for list="{{X.tops}}" as="p" hint-placeholder-count="1">
+          <span style="position: absolute; display: block; left: {{p.x}}px; top: {{p.y}}px; width: {{p.w}}px; height: {{p.h}}px; box-sizing: border-box; transform: scaleY(0.5) rotate(45deg); background: {{p.bg}}; border: 2px solid {{c.fg}}"></span>
+        </sc-for>
+        <sc-for list="{{X.treesFront}}" as="t" hint-placeholder-count="6">
+          <span aria-hidden="true" style="position: absolute; display: block; left: {{t.x}}px; top: {{t.y}}px; width: {{t.w}}px; height: {{t.h}}px">
+            <span style="position: absolute; display: block; left: 43%; bottom: 0; width: 14%; height: 22%; background: {{c.trk}}"></span>
+            <span style="position: absolute; display: block; left: 0; top: 30%; width: 100%; height: 54%; background: {{t.c1}}; clip-path: polygon(50% 0, 100% 100%, 0 100%)"></span>
+            <span style="position: absolute; display: block; left: 12%; top: 0; width: 76%; height: 50%; background: {{t.c2}}; clip-path: polygon(50% 0, 100% 100%, 0 100%)"></span>
+          </span>
+        </sc-for>
+      </span>
+      <span style="display: block; margin-top: 8px; font-family: {{pf}}; font-size: 0.875rem; color: {{c.mu}}">建物を押すと、中に入ります</span>
+    </button>
+  </sc-if>
+  <div style="display: {{homeDisp}}; flex-direction: column; flex: 1 0 auto; min-width: 0">
+
+  <header style="border-bottom: 1px solid {{c.bd}}; background: {{c.bg}}">
+    <div style="max-width: {{L.max}}px; margin: 0 auto; padding: 0 {{L.pad}}px; box-sizing: border-box; min-height: 60px; display: flex; flex-wrap: wrap; align-items: center; gap: 0 24px">
+      <span style="font-size: 0.875rem; white-space: nowrap"><span style="color: {{c.gr}}">guest@onclimb</span>:<span style="color: {{c.bl}}">{{promptPath}}</span>$</span>
+      <sc-if value="{{desk}}" hint-placeholder-val="{{true}}">
+        <nav aria-label="サイト" style="display: flex; flex-wrap: wrap; gap: 0 4px; flex: 1 1 auto">
+          <sc-for list="{{nav}}" as="n" hint-placeholder-count="6">
+            <button type="button" onClick="{{n.go}}" aria-current="{{n.cur}}" style="min-height: 44px; padding: 0 10px; background: transparent; border: 0; border-bottom: 2px solid {{n.ul}}; font-family: {{pf}}; font-size: 0.875rem; font-weight: {{n.fw}}; color: {{c.fg}}; cursor: pointer">{{n.label}}</button>
+          </sc-for>
+        </nav>
+      </sc-if>
+      <sc-if value="{{phone}}" hint-placeholder-val="{{false}}">
+        <span style="flex: 1 1 auto"></span>
+      </sc-if>
+      <button type="button" onClick="{{toggleTheme}}" style="position: relative; background: {{B.leaf}}; outline: 1px solid {{c.fg}}; min-height: 40px; padding: 0 26px 0 10px; border: 3px solid {{B.frame}}; font-family: {{pf}}; font-size: 0.875rem; color: {{c.fg}}; cursor: pointer">{{themeLabel}}<span aria-hidden="true" style="position: absolute; right: 8px; top: 50%; width: 8px; height: 8px; margin-top: -4px; box-sizing: border-box; background: {{c.ac}}; border: 1px solid {{c.fg}}"></span></button>
+      <sc-if value="{{phone}}" hint-placeholder-val="{{false}}">
+        <span style="position: relative; background: {{B.leaf}}; outline: 1px solid {{c.fg}}; min-height: 40px; box-sizing: border-box; padding: 0 26px 0 10px; display: inline-flex; align-items: center; border: 3px solid {{B.frame}}; font-family: {{pf}}; font-size: 0.875rem">メニュー<span aria-hidden="true" style="position: absolute; right: 8px; top: 50%; width: 8px; height: 8px; margin-top: -4px; box-sizing: border-box; background: {{c.ac}}; border: 1px solid {{c.fg}}"></span></span>
+      </sc-if>
+    </div>
+  </header>
+
+  <main style="flex: 1 0 auto; width: 100%; max-width: {{L.max}}px; margin: 0 auto; padding: 32px {{L.pad}}px 48px; box-sizing: border-box">
+    <h1 style="margin: 0; font-size: 1.75rem; line-height: 1.4; font-weight: 700">{{head.title}}</h1>
+    <sc-if value="{{isFloor}}" hint-placeholder-val="{{false}}">
+      <div style="margin-top: 16px; display: flex; flex-wrap: wrap; gap: 16px 24px">
+        <sc-for list="{{cls}}" as="k" hint-placeholder-count="2">
+          <button type="button" style="width: {{L.doorW}}px; margin: 0; padding: 0; background: transparent; border: 0; font: inherit; color: {{c.fg}}; text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: 6px">
+            <span style="position: relative; display: block; width: 100%; height: {{L.doorH}}px; box-sizing: border-box; border: 6px solid {{door.frame}}; border-bottom-width: 2px; outline: 2px solid {{c.fg}}; background: {{door.leaf}}">
+              <span style="position: absolute; left: 10px; right: 10px; top: 12px; box-sizing: border-box; padding: 4px 6px; background: {{c.sf}}; border: 1px solid {{c.fg}}; text-align: center; line-height: 1.4">
+                <span style="display: block; font-family: {{pf}}; font-weight: 700">{{k.ja}}</span>
+                <span style="display: block; font-family: {{pf}}; font-size: 0.75rem; color: {{c.mu}}">{{k.n}}</span>
+              </span>
+              <span style="position: absolute; left: 12px; right: 12px; top: 46%; bottom: 12px; box-sizing: border-box; border: 2px solid {{door.line}}"></span>
+              <span style="position: absolute; right: 8px; top: 40%; width: 10px; height: 10px; box-sizing: border-box; background: {{c.ac}}; border: 1px solid {{c.fg}}"></span>
+            </span>
+            <span style="font-size: 0.8125rem; color: {{c.bl}}; text-decoration: underline; text-underline-offset: 3px">{{k.url}}</span>
+          </button>
+        </sc-for>
+      </div>
+    </sc-if>
+    <sc-if value="{{isInfo}}" hint-placeholder-val="{{true}}">
+      <p style="margin: 12px 0 0; display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center">
+        <button type="button" onClick="{{goContact}}" style="position: relative; background: {{B.leaf}}; outline: 1px solid {{c.fg}}; min-height: 48px; padding: 0 34px 0 18px; border: 3px solid {{c.ac}}; color: {{c.fg}}; font: inherit; font-weight: 700; cursor: pointer">Contact<span aria-hidden="true" style="position: absolute; right: 8px; top: 50%; width: 8px; height: 8px; margin-top: -4px; box-sizing: border-box; background: {{c.ac}}; border: 1px solid {{c.fg}}"></span></button>
+        <span style="font-family: {{pf}}; font-size: 0.9375rem; color: {{c.mu}}">お仕事のご相談、技術的なご相談・壁打ちを受け付けています</span>
+      </p>
+    </sc-if>
+
+    <sc-if value="{{isInfo}}" hint-placeholder-val="{{true}}">
+    <div style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: center">
+      <div role="group" aria-label="モックの切替" style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 4px 8px; border: 1px dashed {{c.dl}}">
+        <span style="font-family: {{pf}}; font-size: 0.8125rem; color: {{c.mu}}">モックの切替（本番には出ません） PC:</span>
+        <sc-for list="{{stages}}" as="v" hint-placeholder-count="2">
+          <button type="button" onClick="{{v.set}}" aria-pressed="{{v.pressed}}" style="min-height: 32px; padding: 0 10px; background: {{v.bg}}; border: 1px solid {{v.bd}}; font-family: {{pf}}; font-size: 0.8125rem; font-weight: {{v.fw}}; color: {{c.fg}}; cursor: pointer">{{v.label}}</button>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+    <div style="margin-top: 16px; display: grid; grid-template-columns: {{L.cols}}; gap: 24px; align-items: start">
+
+      <div style="min-width: 0">
+        <p style="margin: 0 0 8px; font-size: 0.875rem"><span style="color: {{c.mu}}"># </span><span style="font-family: {{pf}}; font-weight: 700">{{crumb}}</span></p>
+        <div style="position: relative">
+          <sc-if value="{{isInfo}}" hint-placeholder-val="{{true}}">
+          <div style="position: {{L.flPos}}; left: 8px; top: 8px; z-index: 20; width: {{L.flW}}; margin-bottom: {{L.flMb}}px; visibility: {{M.guideVis}}">
+            <div aria-hidden="true" style="display: {{L.roof}}; height: 34px; margin: 0 -10px 2px; background: {{c.wdw}}; clip-path: polygon(50% 0, 100% 100%, 0 100%)"></div>
+          <div role="group" aria-label="階" style="display: flex; flex-direction: {{L.flDir}}; gap: 4px">
+            <sc-for list="{{floorBtns}}" as="f" hint-placeholder-count="4">
+              <button type="button" onClick="{{f.go}}" aria-pressed="{{f.pressed}}" style="flex: {{L.flFlex}}; min-height: 36px; padding: 0 10px; background: {{f.bg}}; border: 1px solid {{f.bd}}; color: {{c.fg}}; font: inherit; font-size: 0.8125rem; text-align: left; cursor: pointer; display: flex; align-items: center; gap: 8px">
+                <span style="font-weight: 700">{{f.name}}</span>
+                <span style="font-family: {{pf}}; color: {{c.mu}}">{{f.ja}}</span>
+                <span style="font-weight: 700; color: {{c.ac}}">{{f.lit}}</span>
+              </button>
+            </sc-for>
+          </div>
+          </div>
+          </sc-if>
+          <div style="position: relative; width: {{M.bw}}px; height: {{M.bh}}px; overflow: hidden; background: {{c.bg}}; outline: 1px solid {{c.bd}}">
+            <div style="position: absolute; left: 0; top: 0; width: {{M.bw}}px; height: {{M.bh}}px; opacity: {{M.inOp}}; transform: {{M.cam}}; transform-origin: 50% 50%; transition: {{trCam}}">
+              <sc-for list="{{floors}}" as="f" hint-placeholder-count="4">
+                <div style="position: absolute; left: {{M.pl}}px; top: {{f.top}}px; width: 762px; height: 522px; transform: {{M.planeT}}; transform-origin: 50% 50%; opacity: {{f.op}}; z-index: {{f.z}}; transition: {{trFloor}}">
+                  <div style="position: absolute; left: -6px; top: -6px; width: 774px; height: 534px; background: {{f.slab}}; box-shadow: {{slabSh}}"></div>
+                  <sc-for list="{{f.ext}}" as="e" hint-placeholder-count="0">
+                    <div style="position: absolute; left: {{e.x}}px; top: {{e.y}}px; width: {{e.w}}px; height: {{e.h}}px; box-sizing: border-box; background: {{deckBg}}; border: 2px solid {{c.wdw}}"></div>
+                  </sc-for>
+                  <sc-for list="{{f.rooms}}" as="r" hint-placeholder-count="6">
+                    <button type="button" onClick="{{r.go}}" aria-label="{{r.aria}}" tabindex="{{f.tab}}" style="position: absolute; left: {{r.x}}px; top: {{r.y}}px; width: {{r.w}}px; height: {{r.h}}px; box-sizing: border-box; margin: 0; padding: 0; background: {{r.bg}}; border: {{r.bw}}px {{r.bs}} {{r.bc}}; cursor: pointer; z-index: {{r.z}}; box-shadow: {{r.sh}}; transition: {{trRoom}}"></button>
+                  </sc-for>
+                  <sc-for list="{{f.items}}" as="e" hint-placeholder-count="0">
+                    <div style="position: absolute; left: {{e.x}}px; top: {{e.y}}px; width: {{e.w}}px; height: {{e.h}}px; box-sizing: border-box; background: {{c.wl}}; border: 2px solid {{c.fg}}; z-index: 300; pointer-events: none"></div>
+                  </sc-for>
+                  <sc-for list="{{f.doors}}" as="d" hint-placeholder-count="6">
+                    <div style="position: absolute; left: {{d.x}}px; top: {{d.y}}px; width: {{d.w}}px; height: {{d.h}}px; background: {{d.bg}}; z-index: 400; pointer-events: none"></div>
+                  </sc-for>
+                </div>
+              </sc-for>
+              <sc-for list="{{tags}}" as="t" hint-placeholder-count="6">
+                <span style="position: absolute; left: {{t.x}}px; top: {{t.y}}px; transform: translate(-50%, -50%); z-index: 30; pointer-events: none; white-space: nowrap; padding: 0 5px; font-family: {{pf}}; font-size: 0.75rem; line-height: 1.5; font-weight: {{t.fw}}; color: {{t.fg}}; background: {{t.bg}}; border: 1px {{t.bs}} {{t.bd}}">{{t.text}}</span>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="min-width: 0; display: flex; flex-direction: column; gap: 16px">
+
+        <section style="order: {{L.pcOrder}}; border: 1px solid {{c.mu}}; background: {{c.sf}}; padding: 16px">
+          <h2 style="margin: 0; font-size: 1rem">PC <span style="font-family: {{pf}}; font-weight: 400; font-size: 0.875rem; color: {{c.mu}}">— 案内人</span> <span style="float: right; font-family: {{pf}}; font-weight: 400; font-size: 0.75rem; color: {{c.mu}}">{{pcBadge}}</span></h2>
+          <div style="margin-top: 12px; border: 1px solid {{c.bd}}; background: {{c.bg}}; padding: 10px 12px">
+            <p style="margin: 0; font-size: 0.8125rem; color: {{c.mu}}">$ <span style="color: {{c.fg}}">docent</span></p>
+            <p style="margin: 4px 0 0; font-family: {{pf}}; font-size: 0.9375rem; line-height: 1.8">{{guide.text}}</p>
+            <sc-if value="{{room.hasPapers}}" hint-placeholder-val="{{true}}">
+              <ul style="margin: 12px 0 0; padding: 0; list-style: none; border-top: 1px solid {{c.bd}}">
+                <sc-for list="{{room.papers}}" as="p" hint-placeholder-count="4">
+                  <li style="padding: 8px 0; border-bottom: 1px solid {{c.bd}}; display: flex; flex-direction: column; line-height: 1.5">
+                    <span style="font-family: {{pf}}; font-weight: 700">{{p.t}}</span>
+                    <span style="font-family: {{pf}}; font-size: 0.8125rem; color: {{c.mu}}">{{p.ex}}</span>
+                    <span style="font-size: 0.75rem; color: {{c.bl}}; overflow-wrap: anywhere">{{p.p}}</span>
+                  </li>
+                </sc-for>
+              </ul>
+            </sc-if>
+            <sc-if value="{{room.hasMore}}" hint-placeholder-val="{{false}}">
+              <p style="margin: 8px 0 0; font-family: {{pf}}; font-size: 0.8125rem; color: {{c.mu}}">{{room.more}}</p>
+            </sc-if>
+            <div style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px">
+              <sc-for list="{{guide.acts}}" as="a" hint-placeholder-count="2">
+                <button type="button" onClick="{{a.go}}" style="position: relative; min-height: 40px; padding: 0 28px 0 12px; background: {{a.bg}}; outline: 1px solid {{c.fg}}; border: 3px solid {{a.bd}}; color: {{a.fg}}; font-family: {{pf}}; font-size: 0.875rem; font-weight: 700; cursor: pointer">{{a.label}}<span aria-hidden="true" style="position: absolute; right: 8px; top: 50%; width: 8px; height: 8px; margin-top: -4px; box-sizing: border-box; background: {{c.ac}}; border: 1px solid {{c.fg}}"></span></button>
+              </sc-for>
+            </div>
+          </div>
+          <h3 style="margin: 12px 0 6px; font-family: {{pf}}; font-size: 0.875rem; color: {{c.mu}}; font-weight: 400">{{exitsTitle}}</h3>
+          <div style="display: grid; gap: 6px">
+            <sc-for list="{{exits}}" as="d" hint-placeholder-count="3">
+              <button type="button" onClick="{{d.go}}" style="position: relative; min-height: 44px; padding: 4px 28px 4px 12px; background: {{d.bg}}; outline: 1px solid {{c.fg}}; border: 3px solid {{d.bd}}; color: {{c.fg}}; font: inherit; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 8px"><span aria-hidden="true" style="position: absolute; right: 8px; top: 50%; width: 8px; height: 8px; margin-top: -4px; box-sizing: border-box; background: {{c.ac}}; border: 1px solid {{c.fg}}"></span>
+                <span style="font-family: {{pf}}">{{d.ja}} <span style="font-size: 0.75rem; color: {{d.stC}}">{{d.st}}</span></span>
+                <span style="font-size: 0.75rem; color: {{c.bl}}; white-space: nowrap">{{d.path}}</span>
+              </button>
+            </sc-for>
+          </div>
+          <p style="margin: 16px 0 0; font-family: {{pf}}; font-size: 0.875rem; color: {{c.mu}}">探しもの</p>
+
+          <sc-if value="{{isBefore}}" hint-placeholder-val="{{true}}">
+            <div style="margin-top: 12px; display: grid; gap: 8px">
+              <sc-for list="{{cmds}}" as="b" hint-placeholder-count="5">
+                <button type="button" onClick="{{b.run}}" aria-pressed="{{b.pressed}}" style="position: relative; background: {{B.leaf}}; outline: 1px solid {{c.fg}}; min-height: 52px; padding: 6px 28px 6px 12px; border: 3px solid {{b.bd}}; color: {{c.fg}}; font: inherit; text-align: left; cursor: pointer; display: flex; flex-direction: column"><span aria-hidden="true" style="position: absolute; right: 8px; top: 50%; width: 8px; height: 8px; margin-top: -4px; box-sizing: border-box; background: {{c.ac}}; border: 1px solid {{c.fg}}"></span>
+                  <span style="font-family: {{pf}}; font-weight: {{b.fw}}">{{b.ja}}</span>
+                  <span style="font-size: 0.8125rem; color: {{c.bl}}">$ {{b.cmd}}</span>
+                </button>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{showOutBefore}}" hint-placeholder-val="{{false}}">
+            <div style="margin-top: 12px; border-top: 1px solid {{c.bd}}; padding-top: 12px">
+              <p style="margin: 0; font-size: 0.8125rem; color: {{c.mu}}">$ <span style="color: {{c.fg}}">{{out.cmd}}</span></p>
+              <p style="margin: 4px 0 6px; font-family: {{pf}}; font-size: 0.9375rem; font-weight: 700">{{out.sum}}</p>
+              <sc-for list="{{out.lines}}" as="o" hint-placeholder-count="4">
+                <button type="button" onClick="{{o.go}}" style="display: block; width: 100%; min-height: 28px; padding: 0; background: transparent; border: 0; font: inherit; font-size: 0.8125rem; color: {{c.bl}}; text-align: left; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; overflow-wrap: anywhere">{{o.text}}</button>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{isAfter}}" hint-placeholder-val="{{false}}">
+            <div>
+              <div style="margin-top: 12px; border: 1px solid {{c.bd}}; background: {{c.bg}}; padding: 10px 12px; min-height: 190px; font-size: 0.8125rem; line-height: 1.7; overflow-wrap: anywhere">
+                <div style="color: {{c.mu}}">Linux onclimb — ブラウザの中で起動しました</div>
+                <sc-if value="{{hasOut}}" hint-placeholder-val="{{false}}">
+                  <div>
+                    <div><span style="color: {{c.gr}}">guest@onclimb</span>:<span style="color: {{c.bl}}">{{promptPath}}</span>$ {{out.cmd}}</div>
+                    <sc-for list="{{out.lines}}" as="o" hint-placeholder-count="4">
+                      <button type="button" onClick="{{o.go}}" style="display: block; width: 100%; padding: 0; background: transparent; border: 0; font: inherit; color: {{c.bl}}; text-align: left; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; overflow-wrap: anywhere">{{o.text}}</button>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <div><span style="color: {{c.gr}}">guest@onclimb</span>:<span style="color: {{c.bl}}">{{promptPath}}</span>$ <span style="display: inline-block; width: 0.6em; height: 1.1em; background: {{c.fg}}; vertical-align: -2px"></span></div>
+              </div>
+              <p style="margin: 12px 0 6px; font-family: {{pf}}; font-size: 0.8125rem; color: {{c.mu}}">早見表（押すとコマンドが入力されます）</p>
+              <div style="display: flex; flex-wrap: wrap; gap: 6px">
+                <sc-for list="{{cmds}}" as="b" hint-placeholder-count="5">
+                  <button type="button" onClick="{{b.run}}" aria-pressed="{{b.pressed}}" style="position: relative; background: {{B.leaf}}; outline: 1px solid {{c.fg}}; min-height: 36px; padding: 0 26px 0 10px; border: 3px solid {{b.bd}}; color: {{c.fg}}; font-family: {{pf}}; font-size: 0.8125rem; font-weight: {{b.fw}}; cursor: pointer">{{b.ja}}<span aria-hidden="true" style="position: absolute; right: 8px; top: 50%; width: 8px; height: 8px; margin-top: -4px; box-sizing: border-box; background: {{c.ac}}; border: 1px solid {{c.fg}}"></span></button>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+
+        </section>
+
+
+      </div>
+    </div>
+  </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"layout":{"editor":"enum","options":["desktop","phone"],"default":"desktop"},"stage":{"editor":"enum","options":["before","after"],"default":"before"},"mode":{"editor":"enum","options":["info","floor","peek"],"default":"info"},"group":{"editor":"enum","options":["","profile","contact","histories","skills","studies","portfolios","notes","books"],"default":""},"view":{"editor":"enum","options":["outside","inside"],"default":"outside"},"floor":{"editor":"enum","options":["B1","1F","2F","3F","RF"],"default":"1F"},"room":{"editor":"enum","options":["","h:type","profile","exit","history","portfolio","notes","books","w:language","w:frontend","w:framework","w:database","w:storage","w:compute","w:container","w:networking","w:IaC","w:integration","w:devops-sre","w:security","w:architecture","w:methodology","w:tools","u:language","u:frontend","u:framework","u:database","u:storage","u:compute","u:container","u:networking","u:IaC","u:integration","u:devops-sre","u:security","u:architecture","u:methodology","u:tools"],"default":""},"$preview":{"width":1440,"height":1100}}'>
+const T = {
+  light: { bg: '#e6efcf', sf: '#f6f9ea', fg: '#1e2a1a', mu: '#4c5c40', bd: '#c2cfa5', dl: '#a3b383', ac: '#8a4a06', at: '#f9d893', onac: '#ffffff', gr: '#1d6a33', bl: '#1c4c9c', sh: '#7c5c36', wl: '#b98b56', hb: '#e9dcbe' },
+  dark: { bg: '#12241a', sf: '#1a3125', fg: '#e9ecdd', mu: '#a6b59b', bd: '#30503b', dl: '#46664f', ac: '#f5b95c', at: '#4f3c1b', onac: '#12241a', gr: '#8fd6a2', bl: '#a6caff', sh: '#241a0f', wl: '#7d5c37', hb: '#32281b' }
+};
+const LVL = { 5: '専門', 4: '実務継続利用', 3: '実務経験あり', 2: '個人利用', 1: '学習中' };
+function gauge(n) { return '●●●●●'.slice(0, n) + '○○○○○'.slice(0, 5 - n) + ' ' + LVL[n]; }
+function P(t, ex, p) { return { t: t, ex: ex, p: p || '' }; }
+const PG = {
+  profile: { ja: 'プロフィール', url: '/1f/profile', cmd: 'man onclimb' },
+  contact: { ja: '連絡先', url: '/1f/contact', cmd: 'finger onclimb' },
+  history: { ja: '経歴', url: '/2f/histories', cmd: 'ls -tr ~/2f/histories' },
+  portfolio: { ja: 'ポートフォリオ', url: '/3f/portfolios', cmd: 'git log --oneline ~/3f/portfolios' },
+  notes: { ja: 'ノート', url: '/3f/notes', cmd: 'ls ~/3f/notes' },
+  books: { ja: '本棚', url: '/3f/books', cmd: 'ls ~/3f/books' }
+};
+const CAT = {
+  language: ['言語', 'プログラミング言語'], frontend: ['フロントエンド', 'フロントエンド'], framework: ['バックエンド', 'バックエンド・フレームワーク'],
+  database: ['データベース', 'データベース'], storage: ['ストレージ', 'ストレージ'], compute: ['コンピューティング', 'コンピューティング'],
+  container: ['コンテナ', 'コンテナ・オーケストレーション'], networking: ['ネットワーク', 'ネットワーキング'], IaC: ['IaC', 'インフラ構成管理・IaC'],
+  integration: ['統合サービス', '統合サービス'], 'devops-sre': ['DevOps', 'DevOps・SRE'], security: ['セキュリティ', 'セキュリティ'],
+  architecture: ['設計', '設計・アーキテクチャ'], methodology: ['開発手法', '開発手法・プロセス'], tools: ['ツール', 'ツール・SaaS']
+};
+const WORK = {
+  language: [['TypeScript', 5], ['JavaScript', 5], ['Python', 4], ['C言語', 3], ['Go', 3], ['Shell Script', 3]],
+  frontend: [['Next.js', 4], ['React', 3], ['HTML / CSS', 3]],
+  framework: [['NestJS', 4], ['Node.js', 4], ['Express.js', 3], ['FastAPI', 3], ['Fastify', 3], ['Gin', 3]],
+  database: [['PostgreSQL', 4], ['Amazon RDS', 3], ['Prisma', 3], ['TypeORM', 3]],
+  storage: [['AWS S3', 4], ['MinIO', 4], ['OpenSearch', 3], ['Redis', 3]],
+  compute: [['AWS ECS', 4], ['AWS Batch', 3], ['AWS EC2', 3], ['AWS Lambda', 3], ['Vercel', 3]],
+  container: [['AWS ECR', 4], ['Docker', 4], ['GitHub Container Registry', 3]],
+  networking: [['Amazon CloudFront', 4], ['AWS ELB', 4], ['HTTP/HTTPS', 4], ['Amazon Route53', 3], ['Amazon VPC', 3], ['Amazon API Gateway', 3], ['TLS / 証明書 (ACM)', 3]],
+  IaC: [['Terraform', 4], ['AWS CDK', 3], ['AWS CloudFormation', 3]],
+  integration: [['AWS EventBridge', 4], ['AWS SNS', 3], ['AWS SQS', 3], ['AWS Step Functions', 3]],
+  'devops-sre': [['GitHub Actions', 5]],
+  security: [['AWS WAF', 3]],
+  architecture: [['Clean Architecture', 3], ['DDD', 3], ['OOP / SOLID', 3]],
+  methodology: [['要件定義', 3], ['Scrum', 3], ['User Story', 3]],
+  tools: [['Git', 4], ['ESLint / Prettier', 3], ['GitHub', 3], ['Mermaid', 3], ['npm', 3], ['SendGrid', 3], ['Slack', 3], ['uv', 3], ['Yarn', 3]]
+};
+const STUDY = {
+  language: [['Elixir', 1], ['Haskell', 1], ['Kotlin', 1], ['OCaml', 1], ['Rust', 1], ['Swift', 1]],
+  frontend: [['shadcn/ui (Radix UI)', 2], ['Tailwind CSS', 2], ['Vite', 2], ['Jetpack Compose', 1], ['Phoenix LiveView', 1], ['React Hook Form', 1], ['SolidJS', 1], ['Storybook', 1], ['SwiftUI', 1], ['TanStack Start', 1], ['Three.js', 1]],
+  framework: [['Django', 2], ['Hono', 2], ['Echo', 1], ['Phoenix', 1]],
+  database: [['Drizzle ORM', 2], ['GORM', 2], ['pgvector', 2], ['SQLite', 2], ['Supabase', 2], ['Turso / libSQL', 2], ['ChromaDB', 1]],
+  storage: [['BigQuery', 2], ['Cloudflare R2', 2]],
+  compute: [['Cloud Run', 2], ['Cloudflare Workers', 2], ['AWS Lightsail', 1], ['Modal', 1], ['Railway', 1], ['Render', 1]],
+  networking: [['Cloudflare DNS', 2]],
+  IaC: [['Wrangler', 2]],
+  architecture: [['Event-Driven Architecture', 2], ['Functional Programming', 2]],
+  methodology: [['ADR', 2], ['Event Storming', 2], ['プロダクトディスカバリー', 2]],
+  tools: [['Obsidian', 2], ['pnpm', 2], ['Stripe', 2], ['Xcode / App Store Connect', 2], ['Android Studio', 1], ['mise', 1]]
+};
+
+function R(id, ja, full, path, n, desc, papers, page, more) {
+  return { id: id, ja: ja, full: full || ja, path: path, n: n || 0, desc: desc, papers: papers || [], page: page || null, more: more || '', kind: 'room' };
+}
+function cat(prefix, src, k, page) {
+  var list = src[k];
+  return R(prefix + k, CAT[k][0], CAT[k][1], base(prefix) + '/' + k, list.length, CAT[k][1] + 'の技術を、経験の深い順に置いてあります。', list.slice(0, 6).map(function (t) { return P(t[0], gauge(t[1]), ''); }), page, list.length > 6 ? 'ほか ' + (list.length - 6) + ' 枚' : '');
+}
+function hub(id, ja, prefix, cats, items) {
+  var o = R('h:' + id, ja, '中間部屋「' + ja + '」', base(prefix), items.length, cats.map(function (k) { return '「' + CAT[k][1] + '」'; }).join('') + 'をつなぐ中間部屋です。ここに置いてある技術は複数の分野にまたがっていて、どの部屋からでも入れます。',
+    items.map(function (it) { return P(it[0], gauge(it[1]), '実体 ' + base(prefix) + '/' + it[2] + '/ ／ 別の入口 ' + it[3].map(function (k) { return k + '/'; }).join(' ')); }), null);
+  o.kind = 'hub';
+  o.links = cats.map(function (k) { return prefix + k; });
+  return o;
+}
+const PW = { ja: 'スキル', url: '/2f/skills', cmd: 'ls -l ~/2f/skills | sort -k level' };
+function base(p) { return p === 'w:' ? '~/2f/skills' : '~/b1/studies'; }
+const PS = { ja: '自己学習', url: '/b1/studies', cmd: 'ls -l ~/b1/studies | sort -k level' };
+function w(k) { return cat('w:', WORK, k, PW); }
+function u(k) { return cat('u:', STUDY, k, PS); }
+function ext(id, ja, desc) { var o = R(id, ja, ja, '~/rf', 0, desc, [], null); o.kind = 'ext'; o.wt = 5; return o; }
+function mod(o, patch) { Object.keys(patch).forEach(function (k) { o[k] = patch[k]; }); return o; }
+
+const FLOORS = [
+  { id: 'B1', ja: '自己学習', lead: '関心を持って、個人開発や勉強で身につけた技術の階です。',
+    top: [u('architecture'), u('language'), u('frontend'), u('tools')],
+    bottom: [u('methodology'), u('framework'), u('database'), u('storage'), u('compute'), u('IaC'), u('networking')],
+    hubs: [
+      hub('fp', '型と関数型', 'u:', ['architecture', 'language'], [['Haskell', 1, 'language', ['architecture']], ['OCaml', 1, 'language', ['architecture']], ['Functional Programming', 2, 'architecture', ['language']]]),
+      hub('mobile', 'スマホアプリ', 'u:', ['language', 'frontend', 'tools'], [['Swift', 1, 'language', ['frontend']], ['SwiftUI', 1, 'frontend', ['language']], ['Xcode / App Store Connect', 2, 'tools', ['frontend']], ['Kotlin', 1, 'language', ['frontend']]]),
+      hub('edge', 'Cloudflare で動かす', 'u:', ['storage', 'compute', 'IaC', 'networking'], [['Cloudflare Workers', 2, 'compute', ['networking']], ['Wrangler', 2, 'IaC', ['compute']], ['Cloudflare R2', 2, 'storage', ['compute']], ['Cloudflare DNS', 2, 'networking', ['compute']]])
+    ] },
+  { id: '1F', ja: 'プロフィール・連絡先', lead: '入口のある階です。自己紹介と、連絡先があります。',
+    top: [R('profile', 'プロフィール', 'プロフィール', '~/1f/profile', 12, '自己紹介と、変わらず持ち続けている関心、取得した資格です。', [P('自己紹介', '「動く理由を知り、使う人を想う」フルスタックエンジニア', '~/1f/profile/README.md'), P('ドメインモデリング', '関心 — ドメインを理解し、モデルへ落とし込む', '~/1f/profile/interests/domain-modeling.md'), P('アーキテクチャ', '関心 — スケールしても破綻しない構造', '~/1f/profile/interests/architecture.md'), P('AWS Certified Solutions Architect - Associate', '資格 — 2025', '~/1f/profile/certs/aws-saa.md'), P('情報処理安全確保支援士試験 合格', '資格 — 2022', '~/1f/profile/certs/sc.md')], PG.profile, 'ほか 7 枚')],
+    bottom: [mod(R('exit', '受付・連絡先', '受付（連絡先）', '~/1f/contact', 0, 'お仕事のご相談、技術的なご相談・壁打ちを受け付けています。帰る前に、ここで用件を伝えられます。', [P('お問い合わせフォーム', 'お名前・メールアドレス・ご相談の内容', ''), P('メール', 'satoshi.onga@onc-limb.com', '')], PG.contact), { door: 'out' })],
+    hubs: [] },
+  { id: '2F', ja: '経歴・業務の技術', lead: '実際に仕事で行ってきたことと、そこで使ってきた技術の階です。',
+    top: [w('language'), w('architecture'), w('methodology'), w('tools'), w('devops-sre'), w('IaC'), w('security')],
+    bottom: [R('history', '経歴', '経歴', '~/2f/histories', 5, '組み込みから Web、機械学習、AI まで。関わってきた仕事を古い順に置いてあります。', [P('組み込み開発（車載）', 'AUTOSAR のカスタマイズ・C 言語の機能開発', '~/2f/histories/01-embedded.md'), P('リバースエンジニアリング（車載）', '既存ソフトの解析・CANalyzer でのテスト', '~/2f/histories/02-reverse-engineering.md'), P('Web 開発（人材系）', 'サービス統合のアーキテクチャ提案・設計', '~/2f/histories/03-web.md'), P('MLOps（推薦系）', '学習パイプライン・モデル評価機構', '~/2f/histories/04-mlops.md'), P('AI ドキュメント検索', 'RAG・Agentic Search の設計・実装', '~/2f/histories/05-ai-doc-search.md')], PG.history),
+      w('frontend'), w('framework'), w('database'), w('storage'), w('integration'), w('networking'), w('compute'), w('container')],
+    hubs: [
+      hub('full', '画面からサーバーまで', 'w:', ['language', 'frontend', 'framework'], [['JavaScript', 5, 'language', ['frontend', 'framework']], ['Next.js', 4, 'frontend', ['framework']], ['Node.js', 4, 'framework', ['language']]]),
+      hub('type', '型と設計', 'w:', ['language', 'architecture', 'framework'], [['TypeScript', 5, 'language', ['architecture', 'framework']], ['DDD', 3, 'architecture', ['framework']], ['NestJS', 4, 'framework', ['architecture']]]),
+      hub('data', 'データとモデル', 'w:', ['architecture', 'framework', 'database'], [['Prisma', 3, 'database', ['framework']], ['TypeORM', 3, 'database', ['framework']], ['Clean Architecture', 3, 'architecture', ['framework', 'database']]]),
+      hub('code', '基盤をコードで', 'w:', ['tools', 'devops-sre', 'IaC'], [['GitHub Actions', 5, 'devops-sre', ['tools', 'IaC']], ['Terraform', 4, 'IaC', ['devops-sre']], ['GitHub', 3, 'tools', ['devops-sre']]]),
+      hub('aws', 'AWS で動かす', 'w:', ['networking', 'compute', 'container'], [['AWS ECS', 4, 'compute', ['container', 'networking']], ['AWS ECR', 4, 'container', ['compute']], ['AWS ELB', 4, 'networking', ['compute']]])
+    ] },
+  { id: '3F', ja: '作ったもの・考え', lead: '事実というより、考え方や思想に近いものを置いた階です。',
+    top: [R('notes', 'ノート', 'ノート', '~/3f/notes', 3, '考えたことのメモです（題名は仮置き。本文は本人が書きます）。', [P('[AI 時代に考えていること]', 'メモ', '~/3f/notes/[ai-era].md'), P('[アーキテクトとしての考え方]', 'メモ', '~/3f/notes/[architect].md'), P('[考えたこと]', 'メモ', '~/3f/notes/[thought].md')], PG.notes),
+      R('books', '本棚', '本棚（読んだ本）', '~/3f/books', 2, '読んだ本のメモです（題名は仮置き）。', [P('[読んだ本の題名]', '[著者]', '~/3f/books/[book-1].md'), P('[読んだ本の題名]', '[著者]', '~/3f/books/[book-2].md')], PG.books)],
+    bottom: [R('portfolio', '作ったもの', '作ったもの', '~/3f/portfolios', 5, '個人で設計・開発・運用しているプロダクトです。', [P('ClimbInsight', 'SAM を使ったクライミング画像解析', '~/3f/portfolios/climbinsight.md'), P('のぼるノート', 'ボルダリングの課題を記録・分析する', '~/3f/portfolios/noboru-note.md'), P('iron-legion', 'issue から PR・マージまで自律実行', '~/3f/portfolios/iron-legion.md'), P('onclimb-industries', 'スキル群で個人業務を自動化', '~/3f/portfolios/onclimb-industries.md'), P('ポートフォリオサイト', 'Next.js と Tailwind CSS の個人サイト', '~/3f/portfolios/portfolio-site.md')], PG.portfolio)],
+    hubs: [] },
+  { id: 'RF', ja: '屋上・外部リンク', lead: '屋上です。ここから外のサイトへ出られます。',
+    top: [],
+    bottom: [ext('github', 'GitHub', 'ソースコードを置いている GitHub へ出ます。'), ext('zenn', 'Zenn', '技術記事を書いている Zenn へ出ます。'), ext('x', 'X', 'X（@onc_limb）へ出ます。')],
+    hubs: [] }
+];
+
+const FMETA = {
+  B1: { dir: 'b1', cls: [{ ja: '自己学習', n: '49 件', url: '/b1/studies', cmd: 'ls -l ~/b1/studies | sort -k level' }] },
+  '1F': { dir: '1f', cls: [{ ja: 'プロフィール', n: '自己紹介・関心・資格', url: '/1f/profile', cmd: 'man onclimb' }, { ja: '連絡先', n: 'フォーム・メール', url: '/1f/contact', cmd: 'finger onclimb' }] },
+  '2F': { dir: '2f', cls: [{ ja: '経歴', n: '5 件', url: '/2f/histories', cmd: 'ls -tr ~/2f/histories' }, { ja: 'スキル', n: '62 件', url: '/2f/skills', cmd: 'ls -l ~/2f/skills | sort -k level' }] },
+  '3F': { dir: '3f', cls: [{ ja: 'ポートフォリオ', n: '5 件', url: '/3f/portfolios', cmd: 'git log --oneline ~/3f/portfolios' }, { ja: 'ノート', n: '3 件', url: '/3f/notes', cmd: 'ls ~/3f/notes' }, { ja: '本棚', n: '2 件', url: '/3f/books', cmd: 'ls ~/3f/books' }] },
+  RF: { dir: 'rf', cls: [{ ja: '外部リンク', n: '3 件', url: '/rf', cmd: 'ls ~/rf' }] }
+};
+// 部屋の位置と大きさは、階ごとのデータから自動で決める（手で座標を書かない）
+const BY = {};
+function place(list, total, y, h) {
+  var sum = 0, x = 0;
+  list.forEach(function (r) { sum += (r.wt || (r.n + 3)); });
+  list.forEach(function (r, i) {
+    var wd = i === list.length - 1 ? total - x : Math.round(total * (r.wt || (r.n + 3)) / sum);
+    r.x = x; r.y = y; r.w = wd; r.h = h; x += wd;
+  });
+}
+FLOORS.forEach(function (F, i) {
+  mod(F, FMETA[F.id]);
+  place(F.top, 640, 0, 230);
+  place(F.bottom, 760, 290, 230);
+  var st = mod(R('st:' + F.id, '階段', '階段（' + F.id + '）', '~/' + F.dir, 0, '階段です。ここから上の階と下の階へ行けます。', [], null), { kind: 'stairs', x: 640, y: 0, w: 120, h: 230 });
+  var co = mod(R('c:' + F.id, '廊下', '廊下（' + F.id + '）', '~/' + F.dir, 0, F.lead, F.cls.map(function (x) { return P(x.ja, x.n, x.url); }), null), { kind: 'corridor', x: 0, y: 230, w: 760, h: 60 });
+  F.rooms = [co].concat(F.top, F.bottom, [st]);
+  F.rooms.forEach(function (r) { r.fi = i; BY[r.id] = r; });
+  var hs = F.hubs.map(function (h) {
+    var cx = 0;
+    h.links.forEach(function (id) { cx += BY[id].x + BY[id].w / 2; });
+    return mod(h, { w: 100, h: 60, y: 230, x: Math.round(cx / h.links.length - 50) });
+  }).sort(function (a, b) { return a.x - b.x; });
+  var edge = 0;
+  hs.forEach(function (h) { h.x = Math.max(h.x, edge); edge = h.x + h.w; });
+  for (var k = hs.length - 1, lim = 640; k >= 0; k--) { hs[k].x = Math.min(hs[k].x, lim - hs[k].w); lim = hs[k].x; }
+  hs.forEach(function (h) { h.fi = i; BY[h.id] = h; F.rooms.push(h); });
+  F.drs = F.top.map(function (r) { return { x: r.x + r.w / 2 - 14, y: 228, w: 28, h: 6 }; })
+    .concat(F.bottom.map(function (r) { return { x: r.x + r.w / 2 - 14, y: 288, w: 28, h: 6 }; }), [{ x: 686, y: 228, w: 28, h: 6 }]);
+  F.ext = []; F.outTags = []; F.items = [];
+  F.bottom.forEach(function (r) {
+    var cx = r.x + r.w / 2;
+    if (r.door) {
+      F.drs.push({ x: cx - 14, y: 518, w: 28, h: 6 });
+      F.ext.push({ x: cx - 30, y: 522, w: 60, h: 80 });
+      F.outTags.push({ x: cx, y: 600, text: r.door === 'in' ? '入口' : '出口' });
+    }
+    if (r.pc) { F.items.push({ x: r.x + 50, y: r.y + 60, w: 80, h: 44 }); F.outTags.push({ x: r.x + 90, y: r.y + 82, text: 'PC' }); }
+    if (r.kind === 'ext') { F.drs.push({ x: cx - 14, y: 518, w: 28, h: 6 }); F.outTags.push({ x: cx, y: 570, text: '外へ ↗' }); }
+  });
+  if (F.id === '1F') { F.drs.push({ x: 758, y: 246, w: 6, h: 28 }); F.ext.push({ x: 762, y: 230, w: 60, h: 62 }); F.outTags.push({ x: 860, y: 262, text: '入口' }); }
+});
+const ALL = Object.keys(BY);
+
+function H(p, r, to) { return { p: p, r: r, to: to || null }; }
+const CMDS = [
+  { id: 'ai', ja: 'AI に関わるもの', cmd: 'grep -rl ai ~', sum: 'AI に関わる紙が見つかりました', hits: [
+    H('~/2f/histories/04-mlops.md', 'history'), H('~/2f/histories/05-ai-doc-search.md', 'history'), H('~/3f/portfolios/climbinsight.md', 'portfolio'),
+    H('~/3f/portfolios/noboru-note.md', 'portfolio'), H('~/3f/portfolios/iron-legion.md', 'portfolio'), H('~/3f/notes/[ai-era].md', 'notes')] },
+  { id: 'arch', ja: '設計に関わるもの', cmd: 'grep -rl architecture ~', sum: '設計に関わる紙が見つかりました', hits: [
+    H('~/1f/profile/interests/architecture.md', 'profile'), H('~/1f/profile/interests/domain-modeling.md', 'profile'), H('~/2f/histories/03-web.md', 'history'),
+    H('~/2f/skills/architecture/ddd.md', 'w:architecture'), H('~/2f/skills/architecture/clean-architecture.md', 'w:architecture'),
+    H('~/3f/notes/[architect].md', 'notes'), H('~/3f/books/[book-2].md', 'books')] },
+  { id: 'best', ja: 'いちばん得意な技術', cmd: "grep -rl 'level: 5' ~", sum: 'レベル 5（専門）の技術です', hits: [
+    H('~/2f/skills/language/typescript.md', 'w:language'), H('~/2f/skills/language/javascript.md', 'w:language'), H('~/2f/skills/devops-sre/github-actions.md', 'w:devops-sre')] },
+  { id: 'cross', ja: '分野をまたぐ技術', cmd: 'find ~ -type l', sum: '別の分野からの入口（リンク）です', hits: [
+    H('~/2f/skills/architecture/typescript.md', 'h:type', '../language/typescript.md'), H('~/2f/skills/framework/nextjs.md', 'h:full', '../frontend/nextjs.md'),
+    H('~/2f/skills/framework/prisma.md', 'h:data', '../database/prisma.md'), H('~/2f/skills/devops-sre/terraform.md', 'h:code', '../IaC/terraform.md'),
+    H('~/2f/skills/container/aws-ecs.md', 'h:aws', '../compute/aws-ecs.md'), H('~/b1/studies/architecture/haskell.md', 'h:fp', '../language/haskell.md'),
+    H('~/b1/studies/frontend/swift.md', 'h:mobile', '../language/swift.md'), H('~/b1/studies/compute/wrangler.md', 'h:edge', '../IaC/wrangler.md')] },
+  { id: 'tree', ja: '建物の構成を見る', cmd: 'tree -d -L 2 ~', sum: '階と分類の一覧です', hits: [
+    H('~/rf', 'c:RF'), H('~/3f/portfolios  ~/3f/notes  ~/3f/books', 'c:3F'), H('~/2f/histories  ~/2f/skills', 'c:2F'), H('~/1f/profile  ~/1f/contact', 'c:1F'), H('~/b1/studies', 'c:B1')], plain: true }
+];
+const NAVF = { B1: 'B1 自己学習', '1F': '1F プロフィール', '2F': '2F 経歴・技術', '3F': '3F 作品・考え', RF: '屋上 リンク' };
+const TITLE = 'onclimb 山荘';
+Object.assign(T.light, { tr1: '#4f7f3a', tr2: '#6c9f4c', trk: '#7a5a36', hill: '#d3e2b3' });
+Object.assign(T.dark, { tr1: '#1d4a32', tr2: '#2a6444', trk: '#4b3824', hill: '#182f22' });
+// 山荘のまわりの木 [x, y, 大きさ, 手前か]（最初の画面の幅・高さに対する割合）
+const TREES = [[0.06, 0.30, 1.0, 0], [0.14, 0.18, 0.8, 0], [0.22, 0.07, 0.9, 0], [0.31, 0.02, 0.7, 0], [0.66, 0.01, 0.75, 0], [0.76, 0.07, 0.95, 0], [0.86, 0.19, 0.8, 0], [0.92, 0.32, 1.0, 0], [0.01, 0.48, 0.85, 0], [0.93, 0.50, 0.9, 0],
+  [0.04, 0.70, 1.1, 1], [0.13, 0.80, 0.9, 1], [0.23, 0.86, 0.75, 1], [0.78, 0.86, 0.8, 1], [0.86, 0.76, 1.0, 1], [0.93, 0.68, 0.85, 1]];
+const HILLS = [[-0.06, 0.04, 0.52, 0.56], [0.28, -0.03, 0.5, 0.5], [0.6, 0.06, 0.5, 0.52]];
+const PEEKN = { RF: 'リンク', '3F': '作品・考え', '2F': '経歴・技術', '1F': 'プロフィール', B1: '自己学習' };
+// 山荘の素材: 木の床と丸太の壁、地下は石積み、屋上は板張りのテラス
+Object.assign(T.light, { wd: '#f3e2c0', wdl: '#dcc497', wdw: '#b98b56', stn: '#dddccf', stl: '#c5c3b3', stw: '#9d9a8b', dk: '#ead3a2', dkl: '#cfb57e' });
+Object.assign(T.dark, { wd: '#3b2f21', wdl: '#4c3d2a', wdw: '#7d5c37', stn: '#2b332d', stl: '#3a433c', stw: '#59635c', dk: '#43351f', dkl: '#57452b' });
+const MAT = { B1: 'stone', RF: 'deck' };
+Object.assign(T.light, { wdd: '#96703f', std: '#807d70' });
+Object.assign(T.dark, { wdd: '#5d4428', std: '#454e48' });
+FLOORS[1].ext.push({ x: 0, y: 522, w: 760, h: 56 });
+FLOORS[1].outTags.forEach(function (t) { if (t.text === '入口') t.text = '入口 — onclimb 山荘'; });
+FLOORS[4].ja = '屋上テラス・外部リンク';
+FLOORS[4].cls = [{ ja: 'GitHub', n: 'ソースコード', url: '外のサイトへ ↗' }, { ja: 'Zenn', n: '技術記事', url: '外のサイトへ ↗' }, { ja: 'X', n: '近況', url: '外のサイトへ ↗' }];
+
+class Component extends DCLogic {
+  renderVals() {
+    var self = this;
+    var st = this.state || {};
+    var theme = st.theme || this.props.theme || 'light';
+    var desk = (this.props.layout || 'desktop') !== 'phone';
+    var stage = st.stage || this.props.stage || 'before';
+    var mode = st.mode || this.props.mode || 'info';
+    var peek = mode === 'peek';
+    var info = mode === 'info';
+    var pg = this.props.group || '';
+    var pr = peek ? (this.props.room || '') : '';
+    var GRP = { history: 'histories', profile: 'profile', exit: 'contact', portfolio: 'portfolios', notes: 'notes', books: 'books' };
+    function grp(id) { return id.indexOf('w:') === 0 ? 'skills' : (id.indexOf('u:') === 0 ? 'studies' : (GRP[id] || '')); }
+    var cur = BY[st.room || this.props.room || ('c:' + (this.props.floor || '1F'))] || BY['c:1F'];
+    var cmdId = st.cmd || null;
+    var inside = info ? (st.inside !== undefined ? st.inside : this.props.view === 'inside') : true;
+    var c = T[theme] || T.light;
+    var leaf = 'repeating-linear-gradient(90deg, ' + c.wd + ' 0 22px, ' + c.wdl + ' 22px 24px)';
+    var fi = cur.fi;
+    var F0 = FLOORS[fi];
+
+    function go(id) { return function () { self.setState({ room: id }); }; }
+    var cmd = cmdId ? CMDS.filter(function (b) { return b.id === cmdId; })[0] : null;
+    var litN = {}, litF = [0, 0, 0, 0, 0];
+    if (cmd && !cmd.plain) cmd.hits.forEach(function (h) { litN[h.r] = (litN[h.r] || 0) + 1; litF[BY[h.r].fi] += 1; });
+
+    var s = peek ? (desk ? 0.44 : 0.36) : (desk ? 0.78 : 0.36);
+    var bw = peek ? (desk ? 430 : 358) : (desk ? 762 : 358), bh = peek ? (desk ? 230 : 190) : (desk ? (info ? 600 : 440) : (info ? 300 : 210)), cy = bh / 2, gap = desk ? 300 : 140;
+    function proj(x, y) {
+      var dx = (x - 381) * s, dy = (y - 261) * s;
+      return { x: bw / 2 + (dx - dy) * 0.7071, y: cy + (dx + dy) * 0.7071 * 0.5 };
+    }
+    var reduce = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    var linked = {};
+    if (cur.kind === 'hub') cur.links.forEach(function (id) { linked[id] = true; });
+    var floors = [];
+    FLOORS.forEach(function (F, i) {
+      var on = i === fi;
+      if (!info && !on) return;
+      var mt = MAT[F.id] === 'stone' ? { f: c.stn, l: c.stl, w: c.stw } : (MAT[F.id] === 'deck' ? { f: c.dk, l: c.dkl, w: c.dkl } : { f: c.wd, l: c.wdl, w: c.wdw });
+      floors.push({
+        slab: mt.w,
+        top: cy - 261 + (fi - i) * gap, op: on ? 1 : 0.3, z: on ? 3 : 1, tab: on ? 0 : -1,
+        ext: F.ext, items: F.items,
+        rooms: F.rooms.map(function (r) {
+          var isCur = peek ? (pr ? r.id === pr : (!!pg && grp(r.id) === pg)) : (r.id === cur.id && r.kind !== 'corridor'), lit = !!litN[r.id], flat = r.kind === 'hub' || r.kind === 'corridor';
+          var depth = Math.round((r.x + r.y) / 10);
+          var floorBg = lit ? c.at : mt.f;
+          var bg = 'repeating-linear-gradient(90deg, ' + floorBg + ' 0 22px, ' + mt.l + ' 22px 24px)';
+          if (r.kind === 'corridor') bg = c.hb;
+          if (r.kind === 'stairs') bg = 'repeating-linear-gradient(0deg, ' + floorBg + ' 0 14px, ' + mt.w + ' 14px 18px)';
+          return {
+            x: r.x, y: r.y, w: r.w + 2, h: r.h + 2,
+            go: on ? go(r.id) : go('c:' + F.id), aria: r.full + '（' + F.id + '）',
+            bg: bg, bc: (isCur || linked[r.id]) ? c.gr : (lit ? c.ac : c.fg), bw: isCur ? (peek ? 3 : 4) : 2, bs: r.kind === 'hub' ? 'dashed' : 'solid',
+            z: (r.kind === 'hub' ? 200 : ((isCur || lit || linked[r.id]) ? 150 : 10)) + depth,
+            sh: flat ? 'none' : (MAT[F.id] === 'deck' ? '-5px -5px 0 ' + mt.w : '-6px -6px 0 ' + mt.w + ', -12px -12px 0 ' + mt.w + ', -18px -18px 0 ' + mt.w)
+          };
+        }),
+        doors: F.drs.map(function (d) { return { x: d.x, y: d.y, w: d.w, h: d.h, bg: c.hb }; })
+      });
+    });
+
+    var tags = [];
+    F0.rooms.forEach(function (r) {
+      if (r.kind === 'corridor') return;
+      var isCur = r.id === cur.id, lit = !!litN[r.id];
+      var p = proj(r.x + r.w / 2 + 1, r.y + r.h / 2 + 1);
+      if (desk) {
+        tags.push({
+          id: r.id, x: Math.round(p.x), y: Math.round(p.y),
+          text: r.ja + (lit ? ' ●' : ''),
+          fw: (isCur || lit) ? 700 : 400, fg: isCur ? c.gr : (lit ? c.ac : c.fg), bg: c.bg,
+          bd: isCur ? c.gr : (lit ? c.ac : (r.kind === 'hub' ? c.mu : 'transparent')), bs: r.kind === 'hub' ? 'dashed' : 'solid'
+        });
+      } else if (isCur || lit) {
+        tags.push({ id: r.id, x: Math.round(p.x), y: Math.round(p.y), text: peek ? r.ja : '●', fw: 700, fg: isCur ? c.gr : c.ac, bg: 'transparent', bd: 'transparent', bs: 'solid' });
+      }
+    });
+    if (peek) tags = tags.filter(function (t) { return !!pr && t.id === pr; });
+    if (desk && !peek) F0.outTags.forEach(function (t) {
+      var p = proj(t.x, t.y);
+      tags.push({ x: Math.round(p.x), y: Math.round(p.y), text: t.text, fw: 700, fg: c.fg, bg: c.bg, bd: c.fg, bs: 'solid' });
+    });
+
+    var exits = [];
+    function pushExit(o, label) {
+      var lit = !!litN[o.id];
+      exits.push({ ja: label || o.full, path: (o.kind === 'room' || o.kind === 'ext') ? o.path : '', st: lit ? '光っています' : '', stC: c.ac, bg: lit ? c.at : leaf, bd: lit ? c.ac : c.wdw, go: go(o.id) });
+    }
+    var co = BY['c:' + F0.id];
+    if (cur.kind === 'corridor') {
+      F0.rooms.forEach(function (r) { if (r.kind === 'room' || r.kind === 'ext') pushExit(r); });
+      F0.rooms.forEach(function (r) { if (r.kind === 'hub' || r.kind === 'stairs') pushExit(r); });
+    } else if (cur.kind === 'hub') {
+      cur.links.forEach(function (id) { pushExit(BY[id]); });
+      pushExit(co, '廊下（この階の概要）');
+    } else {
+      pushExit(co, '廊下（この階の概要）');
+      F0.rooms.forEach(function (r) { if (r.kind === 'hub' && r.links.indexOf(cur.id) >= 0) pushExit(r); });
+    }
+    if (cur.kind === 'stairs') {
+      if (FLOORS[fi + 1]) pushExit(BY['c:' + FLOORS[fi + 1].id], '上の階へ — ' + FLOORS[fi + 1].id + ' ' + FLOORS[fi + 1].ja);
+      if (FLOORS[fi - 1]) pushExit(BY['c:' + FLOORS[fi - 1].id], '下の階へ — ' + FLOORS[fi - 1].id + ' ' + FLOORS[fi - 1].ja);
+    }
+
+    var out = { cmd: '', sum: '', lines: [] };
+    if (cmd) {
+      out = {
+        cmd: cmd.cmd,
+        sum: cmd.plain ? cmd.sum : cmd.hits.length + ' 件。' + cmd.sum,
+        lines: cmd.hits.map(function (h) { return { text: h.p + (h.to ? ' -> ' + h.to : ''), go: go(h.r) }; })
+      };
+    }
+
+    // ---- 外観（案内所を開いた直後。押すと中に入る）
+    var S = { pos: 'absolute', h: '0', minH: '0', pad: '0', fs: '1rem', w: 0, hh: 0, tr: 'none' };
+    var X = { op: 0, pe: 'none', tab: -1, tf: 'none', org: '50% 50%', tr: 'none', plates: [], faces: [], tops: [], door: [], hills: [], treesBack: [], treesFront: [], enter: function () { self.setState({ inside: true, room: 'c:1F' }); } };
+    if (info) {
+      var SW = desk ? 1000 : 358, SG = desk ? 780 : 400, se = desk ? 0.8 : 0.36, SH = desk ? 96 : 46, ecx = SW / 2, ety = (SG - 4 * SH) / 2;
+      var pe = function (x, y) { return { x: ecx + ((x - 380) - (y - 260)) * 0.7071 * se, y: ety + ((x - 380) + (y - 260)) * 0.7071 * 0.5 * se }; };
+      var cL = pe(0, 520), cB = pe(760, 520), cR = pe(760, 0);
+      var tw = desk ? 70 : 30, th = desk ? 120 : 52;
+      HILLS.forEach(function (h) { X.hills.push({ x: h[0] * SW, y: h[1] * SG, w: h[2] * SW, h: h[3] * SG }); });
+      TREES.forEach(function (t, i) { (t[3] ? X.treesFront : X.treesBack).push({ x: t[0] * SW, y: t[1] * SG, w: tw * t[2], h: th * t[2], c1: i % 2 ? c.tr1 : c.tr2, c2: i % 2 ? c.tr2 : c.tr1 }); });
+      var wS = cB.x - cL.x, wE = cR.x - cB.x;
+      var plate = function (x, y, w, h, lift, bg) { var m = pe(x + w / 2, y + h / 2); return { x: m.x - w * se / 2, y: m.y - lift - h * se / 2, w: w * se, h: h * se, bg: bg }; };
+      var wins = function (fw, n, door) {
+        var out = [];
+        for (var k = 0; k < n; k++) out.push({ x: fw * (k + 0.5) / n - fw * 0.05, y: SH * 0.26, w: fw * 0.1, h: SH * 0.42, bg: c.at });
+        if (door) out[Math.floor(n / 2)] = { x: fw * 0.5 - fw * 0.06, y: SH * 0.3, w: fw * 0.12, h: SH * 0.7 - 2, bg: c.ac };
+        return out;
+      };
+      X.plates.push(plate(0, 0, 760, 520, 0, 'repeating-linear-gradient(90deg, ' + c.dk + ' 0 11px, ' + c.dkl + ' 11px 12px)'));
+      ['3F', '2F', '1F', 'B1'].forEach(function (id, k) {
+        var stone = id === 'B1';
+        X.faces.push({ x: cL.x, y: cL.y + k * SH, w: wS, h: SH, sk: 26.565, bg: stone ? c.stw : c.wdw, wins: stone ? [] : wins(wS, 4, false) });
+        X.faces.push({ x: cB.x, y: cB.y + k * SH, w: wE, h: SH, sk: -26.565, bg: stone ? c.std : c.wdd, wins: stone ? [] : wins(wE, 3, false) });
+      });
+      var tL = pe(640, 230), tB = pe(760, 230), tH = SH * 0.55;
+      X.faces.push({ x: tL.x, y: tL.y - tH, w: tB.x - tL.x, h: tH, sk: 26.565, bg: c.wdw, wins: [] });
+      X.faces.push({ x: tB.x, y: tB.y - tH, w: cR.x - tB.x, h: tH, sk: -26.565, bg: c.wdd, wins: [] });
+      X.tops.push(plate(640, 0, 120, 230, tH, c.wdw));
+      var ddx = wE * 0.44, dw = wE * 0.12, dh = SH * 0.7 - 2, dty = cB.y + 2 * SH + SH * 0.3 - ddx * 0.5;
+      X.door = [{ x: cB.x + ddx, y: dty, w: dw, h: dh, leaf: inside ? 'scaleX(0.1)' : 'none', tr: reduce ? 'none' : 'transform .35s .35s' }];
+      X.org = Math.round(cB.x + ddx + dw / 2) + 'px ' + Math.round(dty + dh / 2 - dw * 0.25) + 'px';
+      X.tr = reduce ? 'none' : 'transform 1.1s cubic-bezier(.5,0,.3,1)';
+      S = { pos: inside ? 'absolute' : 'relative', h: inside ? (desk ? '1100px' : '844px') : 'auto', minH: inside ? '0' : (desk ? '900px' : '700px'), pad: desk ? '64px 0 32px' : '40px 0 24px', fs: desk ? '2.5rem' : '1.75rem', w: SW, hh: SG, tr: reduce ? 'none' : 'opacity .4s .85s' };
+      if (inside) { X.tf = 'scale(5)'; } else { X.op = 1; X.pe = 'auto'; X.tab = 0; }
+    }
+
+    // ---- 案内人（PC が、いま見ているものを言葉で案内する）
+    var litTotal = 0; litF.forEach(function (n) { litTotal += n; });
+    var gText, gActs = [];
+    function act(label, go, strong) { gActs.push({ label: label, go: go || function () {}, bg: leaf, fg: c.fg, bd: strong ? c.ac : c.wdw }); }
+    if (!inside) {
+      gText = 'onclimb 山荘へようこそ。フルスタックエンジニア onclimb（おんりむ）の経歴・技術・作ったもの・考えを、階ごとに置いてあります。建物を押すと中に入れます。探しものがあれば、下のボタンでお調べします。';
+      act('中に入る', X.enter, false);
+    } else if (cmd && !cmd.plain && cur.kind === 'corridor') {
+      gText = litTotal + ' 件見つかりました。光っている部屋を押すと、中身をお見せします。ほかの階にもあるときは、階の横に件数が出ています。';
+    } else if (cur.kind === 'corridor') {
+      gText = 'ここは ' + F0.id + '「' + F0.ja + '」です。' + F0.lead + '部屋を押すと、中身をお見せします。';
+      act(F0.id + ' のページへ', null, false);
+      if (info) act('外から見る', function () { self.setState({ inside: false, cmd: null }); }, false);
+    } else if (cur.kind === 'stairs') {
+      gText = '階段です。上の階・下の階へは、下の一覧から移れます。';
+    } else if (cur.kind === 'ext') {
+      gText = cur.desc + '外のサイトが別のタブで開きます。';
+      act(cur.ja + ' を開く ↗', null, false);
+    } else {
+      gText = '「' + cur.full + '」です。' + cur.desc + (cur.papers.length ? '置いてあるものは、下のとおりです。' : '');
+      if (cur.page) act(cur.page.ja + 'のページで読む', null, false);
+    }
+    var goContact = function () { self.setState({ mode: 'floor', room: 'exit', inside: true }); };
+    act('Contact', goContact, true);
+
+    var isCo = cur.kind === 'corridor';
+    var page = cur.page;
+    if (isCo && info) page = { ja: F0.id + ' のページ', url: '/' + F0.dir, cmd: 'cd ~/' + F0.dir + ' && ls' };
+    var head = info
+      ? { cmd: 'tree -d -L 2 ~', title: TITLE, sub: 'インフォメーション', lead: 'フルスタックエンジニア onclimb（おんりむ）の経歴・技術・作ったもの・考えを、階ごとに分けて置いた山荘です。ここは案内所です。どの階の地図もここで見られます。横の PC が、いま見ているものを案内します。' }
+      : { cmd: 'cd ~/' + F0.dir + ' && ls', title: F0.id + ' ' + F0.ja, sub: TITLE, lead: F0.lead + 'この階の地図です。部屋を押すと概要が出ます。' };
+
+    return {
+      c: c, desk: desk, phone: !desk, isInfo: info, isFloor: mode === 'floor', isPeek: peek, isPeekDesk: peek && desk, rootMinH: peek ? '0' : '100%',
+      peekGuide: FLOORS.map(function (F, i) { var on = i === fi; return { name: F.id, ja: PEEKN[F.id], bg: on ? c.sf : (MAT[F.id] === 'stone' ? c.stn : c.bg), bd: on ? c.gr : c.dl, bw: on ? 2 : 1, fw: on ? 700 : 400 }; }).reverse(),
+      mf: "'M PLUS 1 Code', monospace", pf: "'M PLUS 1', sans-serif",
+      L: desk
+        ? { max: 1240, pad: 40, cols: '762px minmax(0, 1fr)', pcOrder: 1, roomOrder: 2, flPos: 'absolute', flDir: 'column', flMb: 0, flFlex: '0 0 auto', flW: '230px', roof: 'block', doorW: 150, doorH: 210, clsCols: 'repeat(3, minmax(0, 1fr))' }
+        : { max: 390, pad: 16, cols: 'minmax(0, 1fr)', pcOrder: 1, roomOrder: 2, flPos: 'static', flDir: 'row-reverse', flMb: 8, flFlex: '1 1 0', flW: 'auto', roof: 'none', doorW: 104, doorH: 150, clsCols: 'minmax(0, 1fr)' },
+      themeLabel: desk ? (theme === 'light' ? '表示: ライト' : '表示: ダーク') : (theme === 'light' ? 'ライト' : 'ダーク'),
+      toggleTheme: function () { self.setState({ theme: theme === 'light' ? 'dark' : 'light' }); },
+      promptPath: info ? '~' : cur.path,
+      head: head, goContact: goContact, B: { leaf: leaf, frame: c.wdw }, pcBadge: stage === 'before' ? 'ボタン版' : '',
+      nav: [{ label: '案内', on: info, go: function () { self.setState({ mode: 'info', inside: true }); } }].concat(FLOORS.map(function (F, i) {
+        return { label: NAVF[F.id], on: !info && i === fi, go: function () { self.setState({ mode: 'floor', room: 'c:' + F.id }); } };
+      })).map(function (n) { return { label: n.label, go: n.go, ul: n.on ? c.ac : 'transparent', fw: n.on ? 700 : 400, cur: n.on ? 'page' : undefined }; }),
+      stages: [['before', '初期'], ['after', 'ターミナル実装後']].map(function (v) {
+        var on = v[0] === stage;
+        return { label: v[1], pressed: on ? 'true' : 'false', bg: on ? c.sf : 'transparent', bd: on ? c.fg : c.bd, fw: on ? 700 : 400, set: function () { self.setState({ stage: v[0] }); } };
+      }),
+      crumb: info ? 'フロアガイド — ' + F0.id + ' ' + F0.ja : 'この階の地図',
+      floorBtns: FLOORS.map(function (F, i) {
+        var on = i === fi;
+        return { name: F.id, ja: desk ? F.ja : '', lit: litF[i] ? '●' + litF[i] : '', pressed: on ? 'true' : 'false', bg: on ? c.sf : (MAT[F.id] === 'stone' ? c.stn : c.bg), bd: on ? c.fg : c.bd, go: go('c:' + F.id) };
+      }).reverse(),
+      M: { bw: bw, bh: bh, pl: (bw - 762) / 2, planeT: 'scaleY(0.5) rotate(45deg) scale(' + s + ')', cam: 'none', inOp: 1, guideVis: 'visible' },
+      homeDisp: (peek || (info && !inside)) ? 'none' : 'flex', S: S,
+      X: X, guide: { text: gText, acts: gActs },
+      deckBg: 'repeating-linear-gradient(90deg, ' + c.dk + ' 0 22px, ' + c.dkl + ' 22px 24px)',
+      slabSh: '8px 8px 0 ' + c.sh + ', 16px 16px 0 ' + c.sh,
+      trCam: reduce ? 'none' : 'opacity .45s .4s',
+      trFloor: reduce ? 'none' : 'top .6s cubic-bezier(.2,.7,.2,1), opacity .4s',
+      trRoom: reduce ? 'none' : 'background-color .3s, border-color .3s',
+      floors: floors, tags: tags,
+      cls: F0.cls,
+      door: (function () { var st = MAT[F0.id] === 'stone'; return { frame: st ? c.stw : c.wdw, leaf: 'repeating-linear-gradient(90deg, ' + c.wd + ' 0 22px, ' + c.wdl + ' 22px 24px)', line: c.wdw }; })(),
+      isBefore: stage === 'before', isAfter: stage === 'after',
+      hasOut: !!cmd, showOutBefore: !!cmd && stage === 'before',
+      out: out,
+      cmds: CMDS.map(function (b) {
+        var on = b.id === cmdId;
+        return { ja: b.ja, cmd: b.cmd, pressed: on ? 'true' : 'false', bd: on ? c.ac : c.wdw, fw: on ? 700 : 400, run: function () { self.setState({ cmd: b.id }); } };
+      }),
+      pcNote: stage === 'before'
+        ? '※ いまはボタンで動きます（中身はブラウザの JavaScript）。ブラウザの中で動く Linux（準備中）ができたら、ここで同じコマンドを自由に打てます。見つかった紙のある部屋が地図で光り、階の横に件数が出ます。'
+        : '本物の Linux がブラウザの中で動き、自由にコマンドを打てます（このモックは見た目だけ）。読まれたファイルのある部屋が地図で光り、階の横に件数が出ます。',
+      room: {
+        kicker: isCo ? 'この階の概要' : '選んでいる部屋',
+        full: isCo ? F0.id + ' ' + F0.ja : cur.full, path: cur.path, desc: isCo ? F0.lead : cur.desc,
+        canEnter: false, enter: function () {}, enterLabel: '',
+        papers: cur.papers, hasPapers: cur.papers.length > 0,
+        more: cur.more, hasMore: !!cur.more,
+        hasPage: !!page, pageJa: page ? page.ja : '', pageUrl: page ? page.url : '', pageCmd: page ? page.cmd : ''
+      },
+      exitsTitle: isCo ? 'この階の部屋' : 'つながっている部屋',
+      exits: exits
+    };
+  }
+}
+</script>
+</body>
+</html>

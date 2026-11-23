@@ -4,6 +4,12 @@ name: スキル名（例: TypeScript, React, AWS）
 category: language | framework | infrastructure | tools | architecture | api | cs-protocol | ai-ml
 level: production | basic | learning
 
+# 任意項目:
+# context: work | study
+#   - work: 業務で使った（2F のスキルに置く）
+#   - study: 自己学習（B1 に置く）
+#   - 書かないときは level で決まる（3 以上 = 2F、2 以下 = B1）
+
 # カテゴリの説明:
 # - language: プログラミング言語
 # - framework: フレームワーク・ライブラリ
