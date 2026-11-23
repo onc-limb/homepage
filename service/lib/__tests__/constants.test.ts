@@ -5,9 +5,9 @@ import { NAV_ITEMS, SOCIAL_LINKS } from "@/lib/constants"
 /**
  * NAV_ITEMS contract tests for the site shell.
  *
- * The header nav, the mobile nav, the footer page list and the top page Explore
- * cards are all built from NAV_ITEMS. The navigation is 案内 (the site root) and
- * the five floors built from FLOORS, each shown as "<label> <navName>".
+ * The header nav, the mobile nav and the footer page list use NAV_ITEMS.
+ * The navigation is 案内 (the site root) and the five floors from FLOORS,
+ * each shown as "<label> <navName>".
  * Books and Blog stay out of the navigation (their pages stay reachable by URL).
  */
 describe("NAV_ITEMS", () => {

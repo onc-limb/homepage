@@ -2,8 +2,10 @@
 
 import { useEffect } from "react"
 
-import { Reveal } from "@/components/animations"
-import { Button } from "@/components/ui/button"
+import { DoorButton } from "@/components/ds/DoorButton"
+import { Page } from "@/components/ds/Page"
+
+import { ERROR_TITLE } from "./error-copy"
 
 // App Router のセグメントエラーバウンダリ規約に沿った Client Component。
 // error / reset プロップを受け取り、reset() で該当セグメントの再レンダリングを試みる。
@@ -20,26 +22,18 @@ export default function ErrorBoundary({ error, reset }: ErrorBoundaryProps) {
     }, [error])
 
     return (
-        <div className="flex min-h-[60vh] flex-col items-center justify-center px-6 py-24 text-center">
-            <Reveal>
-                <div className="mx-auto flex max-w-md flex-col items-center gap-6">
-                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                        Error
-                    </p>
-                    <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-                        問題が発生しました
-                    </h1>
-                    <p className="text-muted-foreground">
+        <main className="flex-1">
+            <Page title={ERROR_TITLE}>
+                <div className="space-y-ds-3">
+                    <p>
                         ページの表示中に予期しないエラーが発生しました。お手数ですが、時間をおいて再度お試しください。
                     </p>
                     {error.digest ? (
-                        <p className="text-xs text-muted-foreground/70">
-                            エラー ID: {error.digest}
-                        </p>
+                        <p className="text-ds-sm">エラー ID: {error.digest}</p>
                     ) : null}
-                    <Button onClick={() => reset()}>再試行する</Button>
+                    <DoorButton onClick={() => reset()}>再試行する</DoorButton>
                 </div>
-            </Reveal>
-        </div>
+            </Page>
+        </main>
     )
 }
