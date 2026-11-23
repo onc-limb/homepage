@@ -153,8 +153,8 @@
    theme blocks above are intentionally left untouched.
    ============================================================ */
 :root {
-    --ds-font: var(--font-m-plus-1-code), monospace;
-    --ds-font-prose: var(--font-m-plus-1), sans-serif;
+    --ds-font: var(--font-m-plus-1-code, monospace), monospace;
+    --ds-font-prose: var(--font-m-plus-1, sans-serif), sans-serif;
 
     --ds-text-sm: 0.875rem;
     --ds-text-base: 1rem;

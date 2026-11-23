@@ -1,7 +1,7 @@
 import { DoorButton } from "@/components/ds/DoorButton"
 import { Page } from "@/components/ds/Page"
 import { findFloor, type Floor, type FloorId } from "@/lib/building/floors"
-import { createPageMetadata, SITE_NAME } from "@/lib/seo"
+import { createPageMetadata, LODGE_NAME } from "@/lib/seo"
 
 type FloorDoor = {
     name: string
@@ -10,7 +10,7 @@ type FloorDoor = {
     caption?: string
 }
 
-function floorTitle(floor: Floor): string {
+export function floorTitle(floor: Floor): string {
     return `${floor.label} ${floor.name}`
 }
 
@@ -19,7 +19,7 @@ export function floorMetadata(id: FloorId) {
     const title = floorTitle(floor)
     return createPageMetadata({
         title,
-        description: `${SITE_NAME} 山荘の ${title}。`,
+        description: `${LODGE_NAME}の ${title}。`,
         path: floor.url,
     })
 }

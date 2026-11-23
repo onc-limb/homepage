@@ -199,13 +199,15 @@ describe("design system tokens (--ds-*)", () => {
             ["--ds-font", "M_PLUS_1_Code", "monospace"],
             ["--ds-font-prose", "M_PLUS_1", "sans-serif"],
         ] as const)(
-            "defines %s from the next/font %s variable with a %s fallback, resolvable on <html>",
+            "defines %s from the next/font %s variable with a %s fallback even without the root layout",
             (token, fontLoader, fallback) => {
                 // Given --ds-font is declared on :root, the next/font variable it
                 // references must be defined on <html> (not only on <body>)
                 const value = rootVars[token]
                 expect(value, `${token} missing on :root`).toBeDefined()
-                const m = value.match(new RegExp(`^var\\((--[\\w-]+)\\),\\s*${fallback}$`))
+                const m = value.match(
+                    new RegExp(`^var\\((--[\\w-]+),\\s*${fallback}\\),\\s*${fallback}$`),
+                )
                 expect(m, `${token}: ${value}`).not.toBeNull()
                 const fontVar = m![1]
 

@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 
 export const SITE_NAME = "onclimb"
+export const LODGE_NAME = `${SITE_NAME} 山荘`
 export const SITE_DESCRIPTION =
     "ソフトウェアアーキテクトの視点で、設計から実装・運用まで担うフルスタックエンジニア onclimb のポートフォリオ。"
 export const SITE_URL = new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://onc-limb.com")
