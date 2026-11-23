@@ -102,6 +102,15 @@ describe("tailwind ds namespace", () => {
         expect(rules.get(`.${cls}`), `.${cls}`).toMatchObject({ [prop]: value })
     })
 
+    // FloorMap frame widths from the mock (Maze.dc.html): 762 desktop, 358 phone.
+    it.each([
+        ["max-w-ds-map", "max-width", "762px"],
+        ["max-w-ds-map-small", "max-width", "358px"],
+    ] as const)("generates the map utility %s as %s: %s", async (cls, prop, value) => {
+        const rules = await generate([cls])
+        expect(rules.get(`.${cls}`), `.${cls}`).toMatchObject({ [prop]: value })
+    })
+
     it("switches the door size and the log columns at the md breakpoint", async () => {
         const result = await postcss([
             tailwindcss({

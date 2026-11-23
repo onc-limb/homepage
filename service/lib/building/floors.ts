@@ -4,6 +4,7 @@
 
 export type FloorId = "b1" | "1f" | "2f" | "3f" | "rf"
 export type GroupSlug = "studies" | "profile" | "contact" | "histories" | "skills" | "portfolios"
+export type FloorMaterial = "wood" | "stone" | "deck"
 
 export interface FloorGroup {
     floor: FloorId // この分類が属する階
@@ -22,6 +23,7 @@ export interface Floor {
     name: string
     navName: string
     url: string
+    material: FloorMaterial
     groups: FloorGroup[]
 }
 
@@ -42,6 +44,7 @@ export const FLOORS: Floor[] = [
         name: "自己学習",
         navName: "自己学習",
         url: "/b1",
+        material: "stone",
         groups: [group("b1", "studies", "自己学習", null, null, "ls -l ~/b1/studies | sort -k level", "/skills")],
     },
     {
@@ -50,6 +53,7 @@ export const FLOORS: Floor[] = [
         name: "プロフィール・連絡先",
         navName: "プロフィール",
         url: "/1f",
+        material: "wood",
         groups: [
             group("1f", "profile", "プロフィール", "プロフィール", "自己紹介・関心・資格", "man onclimb", "/profile"),
             group("1f", "contact", "連絡先", "受付・連絡先", "フォーム・メール", "finger onclimb", "/contact"),
@@ -61,6 +65,7 @@ export const FLOORS: Floor[] = [
         name: "経歴・業務の技術",
         navName: "経歴・技術",
         url: "/2f",
+        material: "wood",
         groups: [
             group("2f", "histories", "経歴", "経歴", null, "ls -tr ~/2f/histories", "/profile"),
             group("2f", "skills", "スキル", null, null, "ls -l ~/2f/skills | sort -k level", "/skills"),
@@ -72,6 +77,7 @@ export const FLOORS: Floor[] = [
         name: "作ったもの・考え",
         navName: "作品・考え",
         url: "/3f",
+        material: "wood",
         groups: [group("3f", "portfolios", "ポートフォリオ", "作ったもの", null, "git log --oneline ~/3f/portfolios", "/portfolio")],
     },
     {
@@ -80,6 +86,7 @@ export const FLOORS: Floor[] = [
         name: "屋上テラス・外部リンク",
         navName: "リンク",
         url: "/rf",
+        material: "deck",
         groups: [],
     },
 ]
