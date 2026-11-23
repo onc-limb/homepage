@@ -1,5 +1,5 @@
 import Link from "next/link"
-import type { MouseEventHandler, ReactNode } from "react"
+import type { MouseEventHandler, ReactNode, Ref } from "react"
 
 import { Planks } from "./Planks"
 import { FOCUS_RING } from "./focus-styles"
@@ -9,23 +9,32 @@ type DoorCommonProps = {
     size?: "small" | "large"
     /** Main destination: the frame turns accent. */
     primary?: boolean
-    /** Large doors only: the count shown on the nameplate. */
+    /** Large doors only: the second line of the nameplate. */
     count?: string
     children: ReactNode
 }
 
 type DoorLinkProps = DoorCommonProps & {
     href: string
+    /** Large links only: overrides the URL displayed below the door. */
+    caption?: string
     type?: undefined
     pressed?: undefined
+    "aria-expanded"?: undefined
+    "aria-controls"?: undefined
+    ref?: undefined
     onClick?: undefined
 }
 
 type DoorActionProps = DoorCommonProps & {
     href?: undefined
+    caption?: undefined
     type?: "button" | "submit" | "reset"
     /** Toggle state; sets aria-pressed and turns the frame accent while true. */
     pressed?: boolean
+    "aria-expanded"?: boolean
+    "aria-controls"?: string
+    ref?: Ref<HTMLButtonElement>
     onClick?: MouseEventHandler<HTMLButtonElement>
 }
 
@@ -36,9 +45,22 @@ function Handle() {
 }
 
 export function DoorButton(props: DoorButtonProps) {
-    const { size = "small", primary = false, count, children, href } = props
+    const {
+        size = "small",
+        primary = false,
+        count,
+        caption,
+        children,
+        href,
+        type,
+        pressed,
+        "aria-expanded": expanded,
+        "aria-controls": controls,
+        ref,
+        onClick,
+    } = props
     const external = href !== undefined && isExternalHref(href)
-    const accent = primary || props.pressed === true
+    const accent = primary || pressed === true
     const frameColor = accent ? "border-ds-accent" : "border-ds-map-wood-wall"
     const mark = external ? <span> ↗</span> : null
 
@@ -62,7 +84,7 @@ export function DoorButton(props: DoorButtonProps) {
                 </span>
                 {href !== undefined ? (
                     <span className="mt-ds-2 text-ds-sm text-ds-link underline underline-offset-4">
-                        {href}
+                        {caption ?? href}
                         {mark}
                     </span>
                 ) : null}
@@ -84,10 +106,13 @@ export function DoorButton(props: DoorButtonProps) {
     if (href === undefined) {
         return (
             <button
-                type={props.type ?? "button"}
-                aria-pressed={props.pressed}
+                ref={ref}
+                type={type ?? "button"}
+                aria-pressed={pressed}
+                aria-expanded={expanded}
+                aria-controls={controls}
                 data-primary={primary ? "true" : undefined}
-                onClick={props.onClick}
+                onClick={onClick}
                 className={className}
             >
                 {content}

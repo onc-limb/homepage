@@ -1,159 +1,174 @@
 // @vitest-environment jsdom
+import fs from "node:fs"
+import path from "node:path"
+import * as React from "react"
 import { renderToStaticMarkup } from "react-dom/server"
-import { afterAll, beforeEach, describe, expect, it, vi } from "vitest"
+import { afterAll, describe, expect, it, vi } from "vitest"
 
-const mocks = vi.hoisted(() => {
+import { elementWithText, precedes } from "@/components/ds/__tests__/render"
+import { FLOORS, findGroup } from "@/lib/building/floors"
+
+vi.hoisted(() => {
     // SITE_URL is evaluated when @/lib/seo is imported, so pin the default origin first.
     vi.stubEnv("NEXT_PUBLIC_SITE_URL", undefined)
-    return { getHomeStats: vi.fn() }
 })
-vi.mock("@/lib/stats", () => ({ getHomeStats: mocks.getHomeStats }))
 
-import TopPage, { dynamic, metadata } from "@/app/page"
-import { NAV_ITEMS } from "@/lib/constants"
+// next/link -> plain anchor so href assertions work under a static render.
+vi.mock("next/link", () => ({
+    default: ({ children, ...props }: React.ComponentProps<"a">) => <a {...props}>{children}</a>,
+}))
+
+import TopPage, * as pageModule from "@/app/page"
+
+/**
+ * Home contract tests (/).
+ *
+ * From the top: the h1 "onclimb 山荘", then the small primary Contact door with
+ * one sentence beside it, then one text link per floor from the roof down to B1.
+ * Nothing else is shown: no prose under the heading, no `$ command` line.
+ */
 
 const ORIGIN_ROOT = "https://onc-limb.com/"
 const DESCRIPTION =
     "ソフトウェアアーキテクトの視点で、設計から実装・運用まで担うフルスタックエンジニア onclimb のポートフォリオ。"
-const STAT_LABELS = ["books read", "articles published", "topics covered", "books logged"]
+const TITLE = "onclimb 山荘"
+const CONTACT_NOTE = "お仕事のご相談、技術的なご相談・壁打ちを受け付けています"
+const FLOOR_ORDER = ["/rf", "/3f", "/2f", "/1f", "/b1"]
+const floorText = (url: string): string => {
+    const floor = FLOORS.find((f) => f.url === url)
+    if (!floor) throw new Error(`No floor for ${url}`)
+    return `${floor.label} ${floor.name}`
+}
 
-async function renderTopPage(): Promise<Document> {
+async function renderMain(): Promise<HTMLElement> {
     const html = renderToStaticMarkup(await TopPage())
-    return new DOMParser().parseFromString(html, "text/html")
+    const doc = new DOMParser().parseFromString(html, "text/html")
+    const main = doc.querySelector("main")
+    expect(main).not.toBeNull()
+    return main as HTMLElement
 }
 
-function statValues(doc: Document): Array<{ label: string; value: string }> {
-    const labelElements = Array.from(doc.querySelectorAll("div")).filter(
-        (el) =>
-            el.children.length === 0 && STAT_LABELS.includes(el.textContent?.trim() ?? "")
-    )
-    return labelElements.map((el) => ({
-        label: el.textContent?.trim() ?? "",
-        value: el.previousElementSibling?.textContent?.trim() ?? "",
-    }))
-}
-
-function linkByText(doc: Document, text: string): HTMLAnchorElement {
-    const links = Array.from(doc.querySelectorAll("a")).filter(
-        (a) => a.textContent?.trim() === text
-    )
+function contactLink(main: HTMLElement): HTMLAnchorElement {
+    const links = Array.from(main.querySelectorAll("a")).filter((a) => a.textContent === "Contact")
     expect(links).toHaveLength(1)
     return links[0]
 }
 
-beforeEach(() => {
-    mocks.getHomeStats.mockReset()
-    mocks.getHomeStats.mockResolvedValue({
-        readBooksCount: 8,
-        publishedArticlesCount: 5,
-        usedTagCount: 7,
-        totalBooksCount: 12,
-    })
-})
+function floorLinks(main: HTMLElement): HTMLAnchorElement[] {
+    const floorUrls = FLOORS.map((floor) => floor.url)
+    return Array.from(main.querySelectorAll("a")).filter((a) => floorUrls.includes(a.getAttribute("href") ?? ""))
+}
 
 afterAll(() => {
     vi.unstubAllEnvs()
 })
 
-describe("top page STATS", () => {
-    it("shows the four getHomeStats values with their labels in a fixed order", async () => {
-        const doc = await renderTopPage()
+describe("home heading", () => {
+    it("has exactly one h1 reading the lodge name", async () => {
+        const main = await renderMain()
+        const headings = main.querySelectorAll("h1")
 
-        expect(mocks.getHomeStats).toHaveBeenCalledTimes(1)
-        expect(statValues(doc)).toEqual([
-            { label: "books read", value: "8" },
-            { label: "articles published", value: "5" },
-            { label: "topics covered", value: "7" },
-            { label: "books logged", value: "12" },
-        ])
-    })
-
-    it("shows 0 in every slot when there is nothing to count", async () => {
-        mocks.getHomeStats.mockResolvedValue({
-            readBooksCount: 0,
-            publishedArticlesCount: 0,
-            usedTagCount: 0,
-            totalBooksCount: 0,
-        })
-
-        const doc = await renderTopPage()
-
-        expect(statValues(doc)).toEqual([
-            { label: "books read", value: "0" },
-            { label: "articles published", value: "0" },
-            { label: "topics covered", value: "0" },
-            { label: "books logged", value: "0" },
-        ])
+        expect(headings).toHaveLength(1)
+        expect(headings[0].textContent).toBe(TITLE)
     })
 })
 
-describe("top page Explore", () => {
-    it("links every NAV_ITEMS entry except Home and Contact, in order", async () => {
-        const doc = await renderTopPage()
-        const cards = Array.from(doc.querySelectorAll("a")).filter((a) =>
-            a.textContent?.includes("→ /")
-        )
-        const expected = NAV_ITEMS.filter(
-            (item) => item.label !== "Home" && item.label !== "Contact"
-        )
+describe("home Contact door", () => {
+    it("is a small primary door linking to the contact group's href", async () => {
+        const main = await renderMain()
+        const link = contactLink(main)
 
-        expect(cards.map((a) => a.getAttribute("href"))).toEqual([
-            "/profile",
-            "/skills",
-            "/portfolio",
-            "/books",
-            "/blog",
-        ])
-        expect(cards.map((a) => a.getAttribute("href"))).toEqual(
-            expected.map((item) => item.href)
-        )
-        cards.forEach((card, i) => {
-            const item = expected[i]
-            expect(card.textContent).toContain(`→ ${item.href}`)
-            expect(card.textContent).toContain(item.label)
-            expect(card.textContent).toContain(item.description)
-        })
+        expect(link.getAttribute("href")).toBe(findGroup("contact").href)
+        expect(link.getAttribute("data-primary")).toBe("true")
     })
 
-    it("has no card for Home or Contact", async () => {
-        const doc = await renderTopPage()
-        const cards = Array.from(doc.querySelectorAll("a")).filter((a) =>
-            a.textContent?.includes("→ /")
-        )
+    it("has the contact sentence beside it, in the same parent element", async () => {
+        const main = await renderMain()
+        const link = contactLink(main)
+        const note = elementWithText(main, CONTACT_NOTE)
 
-        for (const card of cards) {
-            expect(card.textContent).not.toContain("トップページ")
-            expect(card.textContent).not.toContain("仕事のご相談・お問い合わせ")
-        }
+        expect(note).toBeDefined()
+        expect(note?.parentElement).toBe(link.parentElement)
     })
 })
 
-describe("top page calls to action", () => {
-    it("links the hero and CTA band buttons to their pages", async () => {
-        const doc = await renderTopPage()
+describe("home floor links", () => {
+    it("links every floor from the roof down to B1, labelled '<label> <name>'", async () => {
+        const main = await renderMain()
+        const links = floorLinks(main)
 
-        expect(linkByText(doc, "仕事のお問い合わせはこちら").getAttribute("href")).toBe(
-            "/contact"
-        )
-        expect(linkByText(doc, "Profileを見る").getAttribute("href")).toBe("/profile")
-        expect(linkByText(doc, "作ったものを見る").getAttribute("href")).toBe("/portfolio")
-        expect(linkByText(doc, "お問い合わせ / ご相談").getAttribute("href")).toBe(
-            "/contact"
-        )
+        expect(links.map((a) => a.getAttribute("href"))).toEqual(FLOOR_ORDER)
+        expect(links.map((a) => a.textContent)).toEqual(FLOOR_ORDER.map(floorText))
     })
 
-    it("opens GitHub as an external link in a new tab", async () => {
-        const doc = await renderTopPage()
-        const github = linkByText(doc, "GitHub ↗")
+    it("has no links other than Contact and the five floors", async () => {
+        const main = await renderMain()
 
-        expect(github.getAttribute("href")).toBe("https://github.com/onc-limb")
-        expect(github.getAttribute("target")).toBe("_blank")
-        expect(github.getAttribute("rel")).toBe("noopener noreferrer")
+        expect(main.querySelectorAll("a")).toHaveLength(1 + FLOOR_ORDER.length)
+    })
+
+    it("does not reorder the shared FLOORS definition", async () => {
+        await renderMain()
+
+        expect(FLOORS.map((floor) => floor.url)).toEqual(["/b1", "/1f", "/2f", "/3f", "/rf"])
     })
 })
 
-describe("top page metadata and structured data", () => {
+describe("home order and content", () => {
+    it("places the h1 before Contact, and Contact before the first floor link", async () => {
+        const main = await renderMain()
+        const heading = main.querySelector("h1") as HTMLElement
+        const link = contactLink(main)
+        const [firstFloor] = floorLinks(main)
+
+        expect(precedes(heading, link)).toBe(true)
+        expect(precedes(link, firstFloor)).toBe(true)
+    })
+
+    it("shows only the title, Contact, its sentence and the floor names", async () => {
+        const main = await renderMain()
+        main.querySelectorAll("script").forEach((script) => script.remove())
+
+        expect(main.textContent).toBe([TITLE, "Contact", CONTACT_NOTE, ...FLOOR_ORDER.map(floorText)].join(""))
+    })
+
+    it("shows no `$ command` line", async () => {
+        const main = await renderMain()
+        const lines = Array.from(main.querySelectorAll("*")).map((el) => el.textContent ?? "")
+
+        expect(lines.some((text) => text.trimStart().startsWith("$ "))).toBe(false)
+    })
+})
+
+describe("home source", () => {
+    it("imports neither lib/stats nor components/animations", () => {
+        const source = fs.readFileSync(path.resolve(__dirname, "page.tsx"), "utf-8")
+
+        expect(source).not.toContain("@/lib/stats")
+        expect(source).not.toContain("@/components/animations")
+    })
+
+    it("is no longer forced to render dynamically", () => {
+        expect("dynamic" in pageModule).toBe(false)
+    })
+
+    it("has removed the stats module and its test", () => {
+        const root = path.resolve(__dirname, "..")
+
+        expect(fs.existsSync(path.join(root, "lib/stats.ts"))).toBe(false)
+        expect(fs.existsSync(path.join(root, "lib/__tests__/stats.test.ts"))).toBe(false)
+    })
+
+    it("has removed the unused home view model and its test", () => {
+        expect(fs.existsSync(path.resolve(__dirname, "home-view-model.ts"))).toBe(false)
+        expect(fs.existsSync(path.resolve(__dirname, "home-view-model.test.ts"))).toBe(false)
+    })
+})
+
+describe("home metadata and structured data", () => {
     it("exports metadata for the root path", () => {
+        const { metadata } = pageModule
+
         expect(metadata.title).toBe("Home")
         expect(metadata.description).toBe(DESCRIPTION)
         expect(metadata.alternates?.canonical).toBe(ORIGIN_ROOT)
@@ -165,8 +180,8 @@ describe("top page metadata and structured data", () => {
     })
 
     it("embeds WebSite JSON-LD", async () => {
-        const doc = await renderTopPage()
-        const scripts = doc.querySelectorAll('script[type="application/ld+json"]')
+        const main = await renderMain()
+        const scripts = main.querySelectorAll('script[type="application/ld+json"]')
 
         expect(scripts).toHaveLength(1)
         expect(JSON.parse(scripts[0].textContent ?? "")).toEqual({
@@ -177,9 +192,5 @@ describe("top page metadata and structured data", () => {
             description: DESCRIPTION,
             inLanguage: "ja-JP",
         })
-    })
-
-    it("renders dynamically on every request", () => {
-        expect(dynamic).toBe("force-dynamic")
     })
 })

@@ -3,7 +3,9 @@ import {
     THEME_STORAGE_KEY,
     DEFAULT_THEME,
     THEMES,
+    PREFERS_DARK_QUERY,
     isTheme,
+    resolveTheme,
     type Theme,
 } from "@/lib/theme"
 
@@ -37,6 +39,22 @@ describe("lib/theme", () => {
         // Then it lists "dark" and "light" without any third value
         expect([...THEMES].sort()).toEqual(["dark", "light"].sort())
         expect(THEMES).toHaveLength(2)
+    })
+
+    it("queries the OS dark colour scheme", () => {
+        expect(PREFERS_DARK_QUERY).toBe("(prefers-color-scheme: dark)")
+    })
+
+    describe("resolveTheme()", () => {
+        it("follows the OS setting when nothing is saved", () => {
+            expect(resolveTheme(null, true)).toBe("dark")
+            expect(resolveTheme(null, false)).toBe("light")
+        })
+
+        it("prefers the saved choice over the OS setting", () => {
+            expect(resolveTheme("light", true)).toBe("light")
+            expect(resolveTheme("dark", false)).toBe("dark")
+        })
     })
 
     describe("isTheme()", () => {

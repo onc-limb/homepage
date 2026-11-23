@@ -1,5 +1,6 @@
 import { MetadataRoute } from "next"
 import { listPublishedArticles } from "@/lib/articles"
+import { FLOORS } from "@/lib/building/floors"
 import { getProjects } from "@/lib/portfolio"
 
 export const dynamic = "force-dynamic"
@@ -24,6 +25,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             changeFrequency: "weekly",
             priority: 1.0,
         },
+        ...FLOORS.map((floor) => ({
+            url: `${baseUrl}${floor.url}`,
+            changeFrequency: "monthly" as const,
+            priority: 0.8,
+        })),
         {
             url: `${baseUrl}/profile`,
             changeFrequency: "monthly",

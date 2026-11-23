@@ -2,7 +2,12 @@
 
 import Link from "next/link"
 import { useId, useRef, useState, type KeyboardEvent } from "react"
+import { DoorButton } from "@/components/ds/DoorButton"
+import { FOCUS_RING } from "@/components/ds/focus-styles"
+import { NARROW_SCREEN_ONLY } from "@/components/ds/screen-styles"
+import { toPromptPath } from "@/lib/building/floors"
 import { NAV_ITEMS } from "@/lib/constants"
+import { CURRENT_NAV_ITEM } from "./nav-styles"
 import { isNavItemActive } from "./nav-utils"
 
 export function MobileNav({ pathname }: { pathname: string }) {
@@ -19,27 +24,20 @@ export function MobileNav({ pathname }: { pathname: string }) {
     }
 
     return (
-        <>
-            <button
-                type="button"
+        <div className={NARROW_SCREEN_ONLY} onKeyDown={handleKeyDown}>
+            <DoorButton
                 ref={toggleRef}
-                aria-label={open ? "close menu" : "open menu"}
                 aria-expanded={open}
                 aria-controls={open ? menuId : undefined}
-                onKeyDown={handleKeyDown}
-                onClick={() => setOpen((v) => !v)}
-                className="grid h-[38px] w-[38px] place-content-center justify-items-center gap-1 rounded-[var(--radius)] border border-hairline-strong [@media(min-width:880px)]:hidden"
+                onClick={() => setOpen((value) => !value)}
             >
-                <span className="block h-[1.5px] w-4 bg-fg transition-all duration-200" />
-                <span className="block h-[1.5px] w-4 bg-fg transition-all duration-200" />
-                <span className="block h-[1.5px] w-4 bg-fg transition-all duration-200" />
-            </button>
+                メニュー
+            </DoorButton>
             {open && (
-                <div
+                <nav
                     id={menuId}
-                    onKeyDown={handleKeyDown}
-                    className="absolute left-0 right-0 top-full flex flex-col border-t border-hairline px-6 pb-4 pt-2 [@media(min-width:880px)]:hidden"
-                    style={{ background: "var(--bg-elev)" }}
+                    aria-label="サイト"
+                    className="absolute inset-x-0 top-full flex flex-col border-y border-ds-border bg-ds-bg px-ds-3 pb-ds-3 pt-ds-1"
                 >
                     {NAV_ITEMS.map((item) => {
                         const active = isNavItemActive(pathname, item.href)
@@ -47,18 +45,19 @@ export function MobileNav({ pathname }: { pathname: string }) {
                             <Link
                                 key={item.href}
                                 href={item.href}
+                                aria-current={active ? "page" : undefined}
                                 onClick={() => setOpen(false)}
-                                className={
-                                    "border-b border-hairline py-2.5 text-sm " +
-                                    (active ? "text-accent" : "text-fg-muted")
-                                }
+                                className={`flex items-center justify-between gap-ds-3 border-b border-ds-border py-ds-2 text-ds-fg ${FOCUS_RING}`}
                             >
-                                {item.label}
+                                <span className={`font-ds-prose underline underline-offset-4${active ? ` ${CURRENT_NAV_ITEM}` : ""}`}>
+                                    {item.label}
+                                </span>
+                                <span className="text-ds-sm text-ds-link">{toPromptPath(item.href)}</span>
                             </Link>
                         )
                     })}
-                </div>
+                </nav>
             )}
-        </>
+        </div>
     )
 }

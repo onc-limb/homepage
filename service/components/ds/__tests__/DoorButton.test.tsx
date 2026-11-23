@@ -1,5 +1,7 @@
 // @vitest-environment jsdom
 import * as React from "react"
+import { act } from "react"
+import { createRoot } from "react-dom/client"
 import { renderToStaticMarkup } from "react-dom/server"
 import { describe, expect, it, vi } from "vitest"
 
@@ -49,6 +51,47 @@ describe("DoorButton", () => {
             const el = control(render(<DoorButton type="submit">送信</DoorButton>))
             expect(el.tagName).toBe("BUTTON")
             expect(el.getAttribute("type")).toBe("submit")
+        })
+
+        it.each([true, false])("passes aria-expanded=%s and aria-controls through", (expanded) => {
+            const el = control(
+                render(
+                    <DoorButton aria-expanded={expanded} aria-controls="menu-panel">
+                        メニュー
+                    </DoorButton>
+                )
+            )
+            expect(el.getAttribute("aria-expanded")).toBe(String(expanded))
+            expect(el.getAttribute("aria-controls")).toBe("menu-panel")
+        })
+
+        it("omits aria-expanded and aria-controls when not given", () => {
+            const el = control(render(<DoorButton>開く</DoorButton>))
+            expect(el.hasAttribute("aria-expanded")).toBe(false)
+            expect(el.hasAttribute("aria-controls")).toBe(false)
+        })
+
+        it("forwards ref to the button element", async () => {
+            vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true)
+            const container = document.createElement("div")
+            document.body.append(container)
+            const root = createRoot(container)
+            const ref = React.createRef<HTMLButtonElement>()
+            try {
+                await act(async () => root.render(<DoorButton ref={ref}>メニュー</DoorButton>))
+                expect(ref.current).toBeInstanceOf(HTMLButtonElement)
+                expect(ref.current).toBe(container.querySelector("button"))
+            } finally {
+                await act(async () => root.unmount())
+                container.remove()
+                vi.unstubAllGlobals()
+            }
+        })
+
+        it("does not accept the disclosure props on a link", () => {
+            // @ts-expect-error aria-expanded is only for the button form
+            const el = <DoorButton href="/contact" aria-expanded={true}>Contact</DoorButton>
+            expect(el).toBeDefined()
         })
     })
 
@@ -151,6 +194,39 @@ describe("DoorButton", () => {
             for (const cls of ["w-ds-door-narrow", "md:w-ds-door", "h-ds-door-narrow", "md:h-ds-door"]) {
                 expect(withClass(el, cls).length, cls).toBeGreaterThan(0)
             }
+        })
+
+        it("shows the caption below the door in place of the URL", () => {
+            const root = render(
+                <DoorButton size="large" href="/2f/skills" count="3 件" caption="スキルの一覧">
+                    Skills
+                </DoorButton>
+            )
+            const el = control(root)
+            const f = frame(root, "large")
+            expect(el.getAttribute("href")).toBe("/2f/skills")
+            const caption = elementWithText(el, "スキルの一覧")
+            expect(caption, "caption under the door").toBeDefined()
+            expect(f.contains(caption!), "caption is outside the door face").toBe(false)
+            expect(precedes(f, caption!), "caption below the door").toBe(true)
+            expect(el.textContent, "no URL text").not.toContain("/2f/skills")
+        })
+
+        it("adds the ↗ mark after the caption of an external door", () => {
+            const root = render(
+                <DoorButton size="large" href="https://github.com/onc-limb" count="ソースコード" caption="外のサイトへ">
+                    GitHub
+                </DoorButton>
+            )
+            const el = control(root)
+            expect(el.getAttribute("href")).toBe("https://github.com/onc-limb")
+            expect(el.getAttribute("target")).toBe("_blank")
+            expect(el.getAttribute("rel")).toBe("noopener noreferrer")
+            const f = frame(root, "large")
+            expect(f.contains(elementWithText(el, "ソースコード")!), "note on the nameplate").toBe(true)
+            const below = Array.from(el.children).filter((child) => child !== f)
+            expect(below.map((child) => child.textContent)).toEqual(["外のサイトへ ↗"])
+            expect(el.textContent, "no URL text").not.toContain("github.com")
         })
 
         it("shows no URL when used as a button", () => {

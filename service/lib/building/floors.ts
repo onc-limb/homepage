@@ -11,6 +11,7 @@ export interface FloorGroup {
     slug: GroupSlug
     name: string
     roomName: string | null // 地図の部屋の名前。null は分野ごとに部屋を分ける分類（スキル・自己学習）
+    note: string | null
     command: string // 見出しに添えるコマンド（`$ ` は付けない）
     url: string // 最終の URL（/<階>/<slug>）
     href: string // 移行中のリンク先（今の URL）
@@ -20,6 +21,7 @@ export interface Floor {
     id: FloorId
     label: string
     name: string
+    navName: string
     url: string
     material: FloorMaterial
     groups: FloorGroup[]
@@ -30,53 +32,59 @@ const group = (
     slug: GroupSlug,
     name: string,
     roomName: string | null,
+    note: string | null,
     command: string,
     href: string,
-): FloorGroup => ({ floor, slug, name, roomName, command, url: `/${floor}/${slug}`, href })
+): FloorGroup => ({ floor, slug, name, roomName, note, command, url: `/${floor}/${slug}`, href })
 
 export const FLOORS: Floor[] = [
     {
         id: "b1",
         label: "B1",
         name: "自己学習",
+        navName: "自己学習",
         url: "/b1",
         material: "stone",
-        groups: [group("b1", "studies", "自己学習", null, "ls -l ~/b1/studies | sort -k level", "/skills")],
+        groups: [group("b1", "studies", "自己学習", null, null, "ls -l ~/b1/studies | sort -k level", "/skills")],
     },
     {
         id: "1f",
         label: "1F",
         name: "プロフィール・連絡先",
+        navName: "プロフィール",
         url: "/1f",
         material: "wood",
         groups: [
-            group("1f", "profile", "プロフィール", "プロフィール", "man onclimb", "/profile"),
-            group("1f", "contact", "連絡先", "受付・連絡先", "finger onclimb", "/contact"),
+            group("1f", "profile", "プロフィール", "プロフィール", "自己紹介・関心・資格", "man onclimb", "/profile"),
+            group("1f", "contact", "連絡先", "受付・連絡先", "フォーム・メール", "finger onclimb", "/contact"),
         ],
     },
     {
         id: "2f",
         label: "2F",
         name: "経歴・業務の技術",
+        navName: "経歴・技術",
         url: "/2f",
         material: "wood",
         groups: [
-            group("2f", "histories", "経歴", "経歴", "ls -tr ~/2f/histories", "/profile"),
-            group("2f", "skills", "スキル", null, "ls -l ~/2f/skills | sort -k level", "/skills"),
+            group("2f", "histories", "経歴", "経歴", null, "ls -tr ~/2f/histories", "/profile"),
+            group("2f", "skills", "スキル", null, null, "ls -l ~/2f/skills | sort -k level", "/skills"),
         ],
     },
     {
         id: "3f",
         label: "3F",
         name: "作ったもの・考え",
+        navName: "作品・考え",
         url: "/3f",
         material: "wood",
-        groups: [group("3f", "portfolios", "ポートフォリオ", "作ったもの", "git log --oneline ~/3f/portfolios", "/portfolio")],
+        groups: [group("3f", "portfolios", "ポートフォリオ", "作ったもの", null, "git log --oneline ~/3f/portfolios", "/portfolio")],
     },
     {
         id: "rf",
         label: "屋上",
         name: "屋上テラス・外部リンク",
+        navName: "リンク",
         url: "/rf",
         material: "deck",
         groups: [],
@@ -107,4 +115,37 @@ export function toVirtualPath(url: string): string {
 export function toUrl(virtualPath: string): string {
     if (!virtualPath.startsWith("~/")) throw new Error(`Expected a virtual path starting with "~/": ${virtualPath}`)
     return virtualPath.slice(1)
+}
+
+function matchesPath(url: string, base: string): boolean {
+    return url === base || url.startsWith(base + "/")
+}
+
+function resolveFloorUrl(url: string): { floor: FloorId | null; promptPath: string } {
+    if (url === "/") return { floor: null, promptPath: "~" }
+    const promptPath = toVirtualPath(url)
+
+    const floor = FLOORS.find((floor) => matchesPath(url, floor.url))
+    if (floor) return { floor: floor.id, promptPath }
+
+    const groups = FLOORS.flatMap((floor) => floor.groups).filter((group) => matchesPath(url, group.href))
+    if (groups.length === 0) return { floor: null, promptPath }
+
+    // Shared transitional links belong to the group named by their first path segment.
+    const firstSegment = url.split("/", 2)[1]
+    const group = groups.length === 1 ? groups[0] : groups.find((group) => group.slug === firstSegment)
+    if (!group) throw new Error(`Ambiguous floor for URL: ${url}`)
+
+    return {
+        floor: group.floor,
+        promptPath: toVirtualPath(group.url) + url.slice(group.href.length),
+    }
+}
+
+export function floorOfUrl(url: string): FloorId | null {
+    return resolveFloorUrl(url).floor
+}
+
+export function toPromptPath(url: string): string {
+    return resolveFloorUrl(url).promptPath
 }
