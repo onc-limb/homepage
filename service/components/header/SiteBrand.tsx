@@ -1,8 +1,8 @@
 import Link from "next/link"
 
 import { FOCUS_RING } from "@/components/ds/focus-styles"
+import { toPromptPath } from "@/lib/building/floors"
 import { SITE_NAME } from "@/lib/seo"
-import { toPromptPath } from "./nav-utils"
 
 export function SiteBrand({ pathname }: { pathname: string }) {
     return (

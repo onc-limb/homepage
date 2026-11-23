@@ -8,13 +8,15 @@ type DoorCommonProps = {
     size?: "small" | "large"
     /** Main destination: the frame turns accent. */
     primary?: boolean
-    /** Large doors only: the count shown on the nameplate. */
+    /** Large doors only: the second line of the nameplate. */
     count?: string
     children: ReactNode
 }
 
 type DoorLinkProps = DoorCommonProps & {
     href: string
+    /** Large links only: overrides the URL displayed below the door. */
+    caption?: string
     type?: undefined
     pressed?: undefined
     "aria-expanded"?: undefined
@@ -25,6 +27,7 @@ type DoorLinkProps = DoorCommonProps & {
 
 type DoorActionProps = DoorCommonProps & {
     href?: undefined
+    caption?: undefined
     type?: "button" | "submit" | "reset"
     /** Toggle state; sets aria-pressed and turns the frame accent while true. */
     pressed?: boolean
@@ -58,6 +61,7 @@ export function DoorButton(props: DoorButtonProps) {
         size = "small",
         primary = false,
         count,
+        caption,
         children,
         href,
         type,
@@ -92,7 +96,7 @@ export function DoorButton(props: DoorButtonProps) {
                 </span>
                 {href !== undefined ? (
                     <span className="mt-ds-2 text-ds-sm text-ds-link underline underline-offset-4">
-                        {href}
+                        {caption ?? href}
                         {mark}
                     </span>
                 ) : null}

@@ -1,51 +1,42 @@
 import { describe, it, expect } from "vitest"
+import { FLOORS } from "@/lib/building/floors"
 import { NAV_ITEMS, SOCIAL_LINKS } from "@/lib/constants"
 
 /**
  * NAV_ITEMS contract tests for the site shell.
  *
  * The header nav, the mobile nav, the footer page list and the top page Explore
- * cards are all built from NAV_ITEMS. The renewal (#294) keeps the five places
- * Home / Profile / Skills / Portfolio / Contact with Japanese labels and drops
- * Books and Blog from the navigation (their pages stay reachable by URL).
+ * cards are all built from NAV_ITEMS. The navigation is 案内 (the site root) and
+ * the five floors built from FLOORS, each shown as "<label> <navName>".
+ * Books and Blog stay out of the navigation (their pages stay reachable by URL).
  */
 describe("NAV_ITEMS", () => {
-    it("has the 5 entries left after Books and Blog are removed", () => {
-        // Given the renewal keeps Home / Profile / Skills / Portfolio / Contact
-        // When NAV_ITEMS is loaded
-        // Then it provides exactly 5 entries
-        expect(NAV_ITEMS).toHaveLength(5)
+    it("has 6 entries: 案内 and the five floors", () => {
+        expect(NAV_ITEMS).toHaveLength(6)
     })
 
-    it("starts with the Home entry pointing at the site root", () => {
-        // Given Home is the first nav link
-        // When the first entry is read
-        // Then it is the Home entry with href "/" and the Japanese label
+    it("starts with 案内 pointing at the site root", () => {
         expect(NAV_ITEMS[0]).toMatchObject({
             href: "/",
-            label: "ホーム",
+            label: "案内",
         })
     })
 
-    it("orders the Japanese labels Home, Profile, Skills, Portfolio, Contact", () => {
-        // Given the labels are shown in Japanese in this order
-        // When labels are extracted
-        // Then they appear in that exact order
-        const labels = NAV_ITEMS.map((item) => item.label)
-        expect(labels).toEqual(["ホーム", "プロフィール", "スキル", "ポートフォリオ", "連絡先"])
+    it("lists 案内 / B1 自己学習 / 1F プロフィール / 2F 経歴・技術 / 3F 作品・考え / 屋上 リンク in order", () => {
+        expect(NAV_ITEMS.map((item) => [item.href, item.label])).toEqual([
+            ["/", "案内"],
+            ["/b1", "B1 自己学習"],
+            ["/1f", "1F プロフィール"],
+            ["/2f", "2F 経歴・技術"],
+            ["/3f", "3F 作品・考え"],
+            ["/rf", "屋上 リンク"],
+        ])
     })
 
-    it("maps each label to the existing service route", () => {
-        // Given only the labels change, not the routes
-        // When NAV_ITEMS is read
-        // Then each entry keeps its href in order
-        expect(NAV_ITEMS.map((item) => [item.href, item.label])).toEqual([
-            ["/", "ホーム"],
-            ["/profile", "プロフィール"],
-            ["/skills", "スキル"],
-            ["/portfolio", "ポートフォリオ"],
-            ["/contact", "連絡先"],
-        ])
+    it("builds the floor entries from FLOORS (floor url, label and navName)", () => {
+        expect(NAV_ITEMS.slice(1).map((item) => [item.href, item.label])).toEqual(
+            FLOORS.map((floor) => [floor.url, `${floor.label} ${floor.navName}`])
+        )
     })
 
     it.each(["/books", "/blog"])("does not include the %s entry", (href) => {
@@ -120,6 +111,17 @@ describe("SOCIAL_LINKS", () => {
             expect(link.username.length).toBeGreaterThan(0)
             expect(link.url.length).toBeGreaterThan(0)
         }
+    })
+
+    it("gives every entry a one-line note of what is found there", () => {
+        // Given the rooftop doors show the site name and a one-line note
+        // When note is read for each entry
+        // Then GitHub = ソースコード, Zenn = 技術記事, X = 近況
+        expect(SOCIAL_LINKS.map((link) => [link.url, link.note])).toEqual([
+            ["https://github.com/onc-limb", "ソースコード"],
+            ["https://zenn.dev/onclimb", "技術記事"],
+            ["https://twitter.com/onc_limb", "近況"],
+        ])
     })
 
     it("uses absolute https URLs for every entry", () => {

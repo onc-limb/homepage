@@ -14,6 +14,7 @@ vi.mock("@/lib/portfolio", () => ({
 }))
 
 import sitemap from "@/app/sitemap"
+import { FLOORS } from "@/lib/building/floors"
 
 beforeEach(() => {
     vi.unstubAllEnvs()
@@ -36,6 +37,11 @@ describe("sitemap", () => {
 
         expect(urls).toEqual([
             "https://onc-limb.com",
+            "https://onc-limb.com/b1",
+            "https://onc-limb.com/1f",
+            "https://onc-limb.com/2f",
+            "https://onc-limb.com/3f",
+            "https://onc-limb.com/rf",
             "https://onc-limb.com/profile",
             "https://onc-limb.com/skills",
             "https://onc-limb.com/portfolio",
@@ -49,6 +55,13 @@ describe("sitemap", () => {
             "https://onc-limb.com/blog/published-b",
         ])
         expect(mocks.listPublishedArticles).toHaveBeenCalledOnce()
+    })
+
+    it("lists the five floor pages built from FLOORS", async () => {
+        const entries = await sitemap()
+        const paths = entries.map((entry) => new URL(entry.url).pathname)
+
+        expect(paths).toEqual(expect.arrayContaining(FLOORS.map((floor) => floor.url)))
     })
 
     it("uses content timestamps instead of the build time", async () => {

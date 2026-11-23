@@ -10,10 +10,10 @@ import {
 } from "./home-view-model"
 
 describe("findSocialLinkUrl", () => {
-    const links = [
-        { name: "X", url: "https://example.com/x" },
-        { name: "GitHub", url: "https://example.com/gh" },
-    ] as SocialLink[]
+    const links: SocialLink[] = [
+        { name: "X", url: "https://example.com/x", username: "@example", note: "Updates" },
+        { name: "GitHub", url: "https://example.com/gh", username: "@example", note: "Source code" },
+    ]
 
     it("returns the url of the link with the given name", () => {
         expect(findSocialLinkUrl(links, "GitHub")).toBe("https://example.com/gh")

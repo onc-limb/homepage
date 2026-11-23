@@ -1,7 +1,15 @@
 import fs from "node:fs"
 import path from "node:path"
 import { describe, it, expect } from "vitest"
-import { FLOORS, findFloor, findGroup, toUrl, toVirtualPath } from "@/lib/building/floors"
+import {
+    FLOORS,
+    findFloor,
+    findGroup,
+    floorOfUrl,
+    toPromptPath,
+    toUrl,
+    toVirtualPath,
+} from "@/lib/building/floors"
 
 /**
  * FLOORS contract tests.
@@ -134,6 +142,121 @@ describe("FLOORS", () => {
         for (const { floor, group } of allGroups()) {
             expect(group.url).toBe(`/${floor}/${group.slug}`)
         }
+    })
+})
+
+describe("FLOORS nav names and group notes", () => {
+    it("gives each floor the short name shown in the navigation", () => {
+        // Given the nav reads 案内 / B1 自己学習 / 1F プロフィール / 2F 経歴・技術 / 3F 作品・考え / 屋上 リンク
+        // When navName is read for each floor
+        // Then it is the short name that follows the label
+        expect(FLOORS.map((floor) => [floor.id, floor.navName])).toEqual([
+            ["b1", "自己学習"],
+            ["1f", "プロフィール"],
+            ["2f", "経歴・技術"],
+            ["3f", "作品・考え"],
+            ["rf", "リンク"],
+        ])
+    })
+
+    it("gives a one-line note only to the single-page groups profile and contact", () => {
+        // Given profile and contact hold a single page, the others are counted
+        // When note is read for each group
+        // Then only those two have a note and every other group has null
+        expect(allGroups().map(({ group }) => [group.slug, group.note])).toEqual([
+            ["studies", null],
+            ["profile", "自己紹介・関心・資格"],
+            ["contact", "フォーム・メール"],
+            ["histories", null],
+            ["skills", null],
+            ["portfolios", null],
+        ])
+    })
+})
+
+describe("floorOfUrl()", () => {
+    it.each(FLOORS.map((floor) => [floor.url, floor.id]))("places the floor url %s on %s", (url, id) => {
+        expect(floorOfUrl(url)).toBe(id)
+    })
+
+    it.each([
+        ["/2f/skills", "2f"],
+        ["/2f/skills/typescript", "2f"],
+        ["/b1/studies", "b1"],
+        ["/1f/contact", "1f"],
+    ])("places %s under its floor url on %s", (url, id) => {
+        // Given a URL under a floor url (the final group URLs)
+        // Then it belongs to that floor
+        expect(floorOfUrl(url)).toBe(id)
+    })
+
+    it.each([
+        ["/skills", "2f"],
+        ["/skills/typescript", "2f"],
+        ["/profile", "1f"],
+        ["/contact", "1f"],
+        ["/portfolio", "3f"],
+        ["/portfolio/onc-limb", "3f"],
+    ])("places the transitional URL %s on %s", (url, id) => {
+        // Given the group pages still live at their old URLs (FLOORS href)
+        // When the URL is the href of a group, or under it
+        // Then it belongs to the floor of that group (/skills is the 2F skills, not the B1 studies)
+        expect(floorOfUrl(url)).toBe(id)
+    })
+
+    it.each(["/skillset", "/profiles", "/portfolios", "/2fx", "/b10", "/books", "/blog", "/"])(
+        "places %s on no floor",
+        (url) => {
+            // Given a URL that only shares leading characters with a floor url or a group href,
+            //   or that belongs to no floor at all
+            // Then it is on no floor (the boundary is "/")
+            expect(floorOfUrl(url)).toBeNull()
+        },
+    )
+
+    it("resolves every group href without failing", () => {
+        for (const { group } of allGroups()) {
+            expect(floorOfUrl(group.href), group.href).not.toBeNull()
+        }
+    })
+
+    it("rejects a value that does not start with /", () => {
+        expect(() => floorOfUrl("skills")).toThrow()
+    })
+})
+
+describe("toPromptPath()", () => {
+    it("shows the site root as the bare home directory", () => {
+        expect(toPromptPath("/")).toBe("~")
+    })
+
+    it.each([
+        ["/skills", "~/2f/skills"],
+        ["/skills/typescript", "~/2f/skills/typescript"],
+        ["/2f/skills", "~/2f/skills"],
+        ["/2f", "~/2f"],
+        ["/rf", "~/rf"],
+        ["/profile", "~/1f/profile"],
+        ["/contact", "~/1f/contact"],
+        ["/portfolio", "~/3f/portfolios"],
+        ["/portfolio/onc-limb", "~/3f/portfolios/onc-limb"],
+    ])("turns %s into the virtual path %s", (url, expected) => {
+        // Given a floor URL, a final group URL, or a transitional group href (or a page under it)
+        // When it is turned into a prompt path
+        // Then it is the virtual path of the floor / group it belongs to
+        expect(toPromptPath(url)).toBe(expected)
+    })
+
+    it.each([
+        ["/books", "~/books"],
+        ["/skillset", "~/skillset"],
+        ["/2fx", "~/2fx"],
+    ])("keeps %s, which belongs to no floor, as is under ~", (url, expected) => {
+        expect(toPromptPath(url)).toBe(expected)
+    })
+
+    it("rejects a value that does not start with /", () => {
+        expect(() => toPromptPath("skills")).toThrow()
     })
 })
 

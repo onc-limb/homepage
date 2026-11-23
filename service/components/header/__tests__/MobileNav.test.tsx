@@ -6,8 +6,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { NARROW_SCREEN_ONLY } from "@/components/ds/screen-styles"
 import { elementWithText, precedes } from "@/components/ds/__tests__/render"
 import { NAV_ITEMS } from "@/lib/constants"
+import { toPromptPath } from "@/lib/building/floors"
 import { MobileNav } from "../MobileNav"
-import { toPromptPath } from "../nav-utils"
 
 vi.mock("next/link", () => ({
     default: (props: React.AnchorHTMLAttributes<HTMLAnchorElement>) => <a {...props} />,
@@ -147,20 +147,36 @@ describe("MobileNav items", () => {
         })
     })
 
-    it("shows the home path as ~ and nested pages under ~/", async () => {
+    it("shows the home path as ~ and each floor under ~/", async () => {
         await renderAt("/")
         await click(toggle())
         const byHref = (href: string) => links().find((a) => a.getAttribute("href") === href)!
         expect(elementWithText(byHref("/"), "~")).toBeDefined()
-        expect(byHref("/").textContent).toBe("ホーム~")
-        expect(byHref("/skills").textContent).toBe("スキル~/skills")
+        expect(byHref("/").textContent).toBe("案内~")
+        expect(byHref("/2f").textContent).toBe("2F 経歴・技術~/2f")
+        expect(byHref("/rf").textContent).toBe("屋上 リンク~/rf")
     })
 
-    it("marks only the current page", async () => {
-        await renderAt("/skills")
+    it("lists 案内 and the five floors", async () => {
+        await renderAt("/")
+        await click(toggle())
+        expect(links().map((a) => a.getAttribute("href"))).toEqual(["/", "/b1", "/1f", "/2f", "/3f", "/rf"])
+    })
+
+    it.each([
+        ["/skills", ["/2f"]],
+        ["/2f/skills", ["/2f"]],
+        ["/portfolio/onc-limb", ["/3f"]],
+        ["/contact", ["/1f"]],
+        ["/", ["/"]],
+        ["/books", []],
+    ])("marks only the floor the page belongs to as current on %s", async (pathname, expected) => {
+        await renderAt(pathname)
         await click(toggle())
         const current = links().filter((a) => a.getAttribute("aria-current") === "page")
-        expect(current.map((a) => a.getAttribute("href"))).toEqual(["/skills"])
+        expect(current.map((a) => a.getAttribute("href"))).toEqual(expected)
+        const accented = links().filter((link) => link.querySelector(".underline.decoration-ds-accent"))
+        expect(accented.map((link) => link.getAttribute("href"))).toEqual(expected)
     })
 })
 

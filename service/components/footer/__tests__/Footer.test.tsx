@@ -45,13 +45,14 @@ describe("Footer page links", () => {
         )
     })
 
-    it("shows the five Japanese labels", () => {
-        expect(internalLinks(renderFooter()).map((a) => a.textContent)).toEqual([
-            "ホーム",
-            "プロフィール",
-            "スキル",
-            "ポートフォリオ",
-            "連絡先",
+    it("shows 案内 and the five floors", () => {
+        expect(internalLinks(renderFooter()).map((a) => [a.getAttribute("href"), a.textContent])).toEqual([
+            ["/", "案内"],
+            ["/b1", "B1 自己学習"],
+            ["/1f", "1F プロフィール"],
+            ["/2f", "2F 経歴・技術"],
+            ["/3f", "3F 作品・考え"],
+            ["/rf", "屋上 リンク"],
         ])
     })
 
