@@ -44,7 +44,7 @@ const EXPECTED_GROUPS = [
         name: "連絡先",
         command: "finger onclimb",
         url: "/1f/contact",
-        href: "/contact",
+        href: "/1f/contact",
     },
     {
         floor: "2f",
@@ -205,7 +205,6 @@ describe("floorOfUrl()", () => {
         ["/skills", "2f"],
         ["/skills/typescript", "2f"],
         ["/profile", "1f"],
-        ["/contact", "1f"],
         ["/portfolio", "3f"],
         ["/portfolio/onc-limb", "3f"],
     ])("places the transitional URL %s on %s", (url, id) => {
@@ -248,7 +247,7 @@ describe("toPromptPath()", () => {
         ["/2f", "~/2f"],
         ["/rf", "~/rf"],
         ["/profile", "~/1f/profile"],
-        ["/contact", "~/1f/contact"],
+        ["/1f/contact", "~/1f/contact"],
         ["/portfolio", "~/3f/portfolios"],
         ["/portfolio/onc-limb", "~/3f/portfolios/onc-limb"],
     ])("turns %s into the virtual path %s", (url, expected) => {

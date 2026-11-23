@@ -167,7 +167,7 @@ describe("MobileNav items", () => {
         ["/skills", ["/2f"]],
         ["/2f/skills", ["/2f"]],
         ["/portfolio/onc-limb", ["/3f"]],
-        ["/contact", ["/1f"]],
+        ["/1f/contact", ["/1f"]],
         ["/", ["/"]],
         ["/books", []],
     ])("marks only the floor the page belongs to as current on %s", async (pathname, expected) => {

@@ -93,6 +93,31 @@ describe("DoorButton", () => {
             const el = <DoorButton href="/contact" aria-expanded={true}>Contact</DoorButton>
             expect(el).toBeDefined()
         })
+
+        it("passes disabled through to the button", () => {
+            const el = control(
+                render(
+                    <DoorButton type="submit" primary disabled>
+                        送信
+                    </DoorButton>
+                )
+            )
+            expect(el.tagName).toBe("BUTTON")
+            expect((el as HTMLButtonElement).disabled).toBe(true)
+        })
+
+        it("keeps the button enabled when disabled is false or not given", () => {
+            expect((control(render(<DoorButton>開く</DoorButton>)) as HTMLButtonElement).disabled).toBe(false)
+            expect(
+                (control(render(<DoorButton disabled={false}>開く</DoorButton>)) as HTMLButtonElement).disabled
+            ).toBe(false)
+        })
+
+        it("does not accept disabled on a link", () => {
+            // @ts-expect-error disabled is only for the button form
+            const el = <DoorButton href="/contact" disabled>Contact</DoorButton>
+            expect(el).toBeDefined()
+        })
     })
 
     describe("as a link", () => {

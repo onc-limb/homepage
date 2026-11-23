@@ -1,9 +1,9 @@
 "use client"
 
 import { useActionState, useEffect, useId, useRef, useState } from "react"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+import { DoorButton } from "@/components/ds/DoorButton"
+import { FOCUS_RING } from "@/components/ds/focus-styles"
+import { BOXED_SURFACE } from "@/components/ds/surface-styles"
 import { initialContactFormState } from "@/lib/contact-form-state"
 import {
     CONTACT_CATEGORIES,
@@ -14,13 +14,15 @@ import {
 } from "@/lib/validations/contact"
 import { submitContactAction } from "./actions"
 
-const FIELD_CLASS =
-    "border-hairline-solid bg-bg-elev text-fg placeholder:text-fg-dim focus-visible:ring-accent"
+const PROSE_TEXT = "font-ds-prose text-ds-base leading-ds text-ds-fg"
+const NOTE_TEXT = "text-ds-sm text-ds-fg-muted"
+const FIELD_BLOCK = "flex flex-col gap-ds-2"
+const FIELD_CLASS = `w-full border border-ds-fg-muted bg-ds-surface px-ds-3 py-ds-2 placeholder:text-ds-fg-muted ${FOCUS_RING}`
 
 function FieldError({ id, message }: { id: string; message?: string }) {
     if (!message) return null
     return (
-        <p id={id} className="text-[13px] text-red-400">
+        <p id={id} className="text-ds-sm text-ds-accent">
             {message}
         </p>
     )
@@ -67,14 +69,9 @@ export function ContactForm() {
 
     if (state.status === "success") {
         return (
-            <div
-                role="status"
-                className="rounded-[var(--radius-lg)] border border-hairline-solid bg-surface-solid p-8 shadow-card"
-            >
-                <h3 className="mb-3 text-[20px] font-semibold text-fg-strong">
-                    送信しました
-                </h3>
-                <p className="text-sm leading-[1.8] text-fg-muted">
+            <div role="status" className={`${BOXED_SURFACE} ${PROSE_TEXT}`}>
+                <h3 className="mb-ds-2 text-ds-lg font-bold">送信しました</h3>
+                <p className={NOTE_TEXT}>
                     お問い合わせありがとうございます。内容を確認のうえ、
                     ご記入いただいたメールアドレス宛に折り返しご連絡します。
                     数日たっても返信が届かない場合は、お手数ですが直接メールでご連絡ください。
@@ -84,27 +81,24 @@ export function ContactForm() {
     }
 
     return (
-        <form
-            action={formAction}
-            noValidate
-            className="flex flex-col gap-5 rounded-[var(--radius-lg)] border border-hairline-solid bg-surface-solid p-7 shadow-card"
-        >
+        <form action={formAction} noValidate className={`flex flex-col gap-ds-4 ${PROSE_TEXT}`}>
             {state.status === "error" && (
                 <p
                     role="alert"
-                    className="rounded-[var(--radius)] border border-red-500/40 bg-red-500/10 px-4 py-3 text-[13px] leading-[1.7] text-red-300"
+                    className="border border-ds-accent bg-ds-surface px-ds-3 py-ds-2 text-ds-sm text-ds-fg"
                 >
                     {state.message}
                 </p>
             )}
 
-            <div className="flex flex-col gap-2">
-                <Label htmlFor={`${uid}-name`} className="text-fg">
-                    お名前 <span className="text-accent">*</span>
-                </Label>
-                <Input
+            <div className={FIELD_BLOCK}>
+                <label htmlFor={`${uid}-name`}>
+                    お名前 <span className="text-ds-accent">*</span>
+                </label>
+                <input
                     id={`${uid}-name`}
                     name="name"
+                    type="text"
                     required
                     maxLength={100}
                     autoComplete="name"
@@ -116,11 +110,11 @@ export function ContactForm() {
                 <FieldError id={`${uid}-name-error`} message={errorOf("name")} />
             </div>
 
-            <div className="flex flex-col gap-2">
-                <Label htmlFor={`${uid}-email`} className="text-fg">
-                    メールアドレス <span className="text-accent">*</span>
-                </Label>
-                <Input
+            <div className={FIELD_BLOCK}>
+                <label htmlFor={`${uid}-email`}>
+                    メールアドレス <span className="text-ds-accent">*</span>
+                </label>
+                <input
                     id={`${uid}-email`}
                     name="email"
                     type="email"
@@ -135,14 +129,15 @@ export function ContactForm() {
                 <FieldError id={`${uid}-email-error`} message={errorOf("email")} />
             </div>
 
-            <div className="flex flex-col gap-2">
-                <Label htmlFor={`${uid}-company`} className="text-fg">
+            <div className={FIELD_BLOCK}>
+                <label htmlFor={`${uid}-company`}>
                     会社・組織名
-                    <span className="ml-2 text-xs text-fg-dim">（任意）</span>
-                </Label>
-                <Input
+                    <span className={`ml-ds-2 ${NOTE_TEXT}`}>（任意）</span>
+                </label>
+                <input
                     id={`${uid}-company`}
                     name="company"
+                    type="text"
                     maxLength={100}
                     autoComplete="organization"
                     defaultValue={values?.company}
@@ -155,10 +150,10 @@ export function ContactForm() {
                 <FieldError id={`${uid}-company-error`} message={errorOf("company")} />
             </div>
 
-            <div className="flex flex-col gap-2">
-                <Label htmlFor={`${uid}-category`} className="text-fg">
-                    ご相談の種別 <span className="text-accent">*</span>
-                </Label>
+            <div className={FIELD_BLOCK}>
+                <label htmlFor={`${uid}-category`}>
+                    ご相談の種別 <span className="text-ds-accent">*</span>
+                </label>
                 {/* ASSUMPTION: Server Action へ formData で載せるため、Radix の Select ではなく
                     ネイティブ select を使う（JS 無しでも値が送られ、hidden input を挟まずに済む）。 */}
                 <select
@@ -171,7 +166,7 @@ export function ContactForm() {
                     aria-describedby={
                         errorOf("category") ? `${uid}-category-error` : undefined
                     }
-                    className="flex h-10 w-full rounded-md border border-hairline-solid bg-bg-elev px-3 py-2 text-sm text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+                    className={FIELD_CLASS}
                 >
                     {CONTACT_CATEGORIES.map((category) => (
                         <option key={category.value} value={category.value}>
@@ -182,15 +177,15 @@ export function ContactForm() {
                 <FieldError id={`${uid}-category-error`} message={errorOf("category")} />
             </div>
 
-            <div className="flex flex-col gap-2">
-                <Label htmlFor={`${uid}-message`} className="text-fg">
-                    お問い合わせ内容 <span className="text-accent">*</span>
-                </Label>
-                <Textarea
+            <div className={FIELD_BLOCK}>
+                <label htmlFor={`${uid}-message`}>
+                    お問い合わせ内容 <span className="text-ds-accent">*</span>
+                </label>
+                <textarea
                     id={`${uid}-message`}
                     name="message"
                     required
-                    rows={8}
+                    rows={6}
                     maxLength={CONTACT_MESSAGE_MAX_LENGTH}
                     placeholder="ご相談の背景や、実現したいことをお書きください。分かる範囲で構いません。"
                     value={message}
@@ -199,22 +194,19 @@ export function ContactForm() {
                     aria-describedby={`${uid}-message-hint ${uid}-message-count${errorOf("message") ? ` ${uid}-message-error` : ""}`}
                     className={FIELD_CLASS}
                 />
-                <p
-                    id={`${uid}-message-hint`}
-                    className="text-xs leading-relaxed text-fg-muted"
-                >
+                <p id={`${uid}-message-hint`} className={NOTE_TEXT}>
                     {CONTACT_MESSAGE_MIN_LENGTH}〜{CONTACT_MESSAGE_MAX_LENGTH}
                     文字で入力してください。
                     絵文字などは複数文字として数える場合があります。
                 </p>
-                <p id={`${uid}-message-count`} className="text-xs text-fg-muted">
+                <p id={`${uid}-message-count`} className={NOTE_TEXT}>
                     入力文字数: {message.length} / {CONTACT_MESSAGE_MAX_LENGTH}
                 </p>
                 <p
                     role="status"
                     className={
                         message.length >= CONTACT_MESSAGE_MAX_LENGTH
-                            ? "text-xs text-fg-muted"
+                            ? NOTE_TEXT
                             : "sr-only"
                     }
                 >
@@ -248,11 +240,11 @@ export function ContactForm() {
                 defaultValue=""
             />
 
-            <div className="flex flex-col gap-3 [@media(min-width:560px)]:flex-row [@media(min-width:560px)]:items-center">
-                <button type="submit" className="btn btn-primary" disabled={isPending}>
+            <div className="flex flex-col gap-ds-3">
+                <DoorButton type="submit" primary disabled={isPending}>
                     {isPending ? "送信中..." : "送信する"}
-                </button>
-                <p className="text-xs leading-[1.7] text-fg-dim">
+                </DoorButton>
+                <p className={NOTE_TEXT}>
                     いただいた内容は返信のためだけに利用します。
                 </p>
             </div>

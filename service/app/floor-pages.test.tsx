@@ -176,7 +176,7 @@ describe("floor page values", () => {
         const doors = doorsOf(main)
         expect(doors.map((door) => door.textContent)).toEqual([
             "プロフィール自己紹介・関心・資格/profile",
-            "連絡先フォーム・メール/contact",
+            "連絡先フォーム・メール/1f/contact",
         ])
         for (const door of doors) expect(door.textContent).not.toContain("件")
     })
