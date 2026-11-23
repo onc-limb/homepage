@@ -166,7 +166,7 @@ describe("floor page values", () => {
     it("shows the counts of each group on 2F, not the floor total", async () => {
         const main = await renderPage(PAGES[2].module)
         expect(doorsOf(main).map((door) => door.textContent)).toEqual([
-            `経歴${COUNTS.histories} 件/profile`,
+            `経歴${COUNTS.histories} 件/2f/histories`,
             `スキル${COUNTS.skills} 件/skills`,
         ])
     })
@@ -175,7 +175,7 @@ describe("floor page values", () => {
         const main = await renderPage(PAGES[1].module)
         const doors = doorsOf(main)
         expect(doors.map((door) => door.textContent)).toEqual([
-            "プロフィール自己紹介・関心・資格/profile",
+            "プロフィール自己紹介・関心・資格/1f/profile",
             "連絡先フォーム・メール/1f/contact",
         ])
         for (const door of doors) expect(door.textContent).not.toContain("件")

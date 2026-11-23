@@ -31,7 +31,8 @@ describe("isNavItemActive()", () => {
         ["/skills", "/2f"],
         ["/skills/typescript", "/2f"],
         ["/portfolio/onc-limb", "/3f"],
-        ["/profile", "/1f"],
+        ["/1f/profile", "/1f"],
+        ["/2f/histories", "/2f"],
         ["/1f/contact", "/1f"],
         ["/rf", "/rf"],
     ])("marks the floor item on %s as active for %s", (pathname, href) => {
@@ -43,7 +44,8 @@ describe("isNavItemActive()", () => {
 
     it.each([
         ["/skills", "/b1"],
-        ["/profile", "/2f"],
+        ["/1f/profile", "/2f"],
+        ["/profile", "/1f"],
         ["/2f/skills", "/1f"],
         ["/2fx", "/2f"],
         ["/skillset", "/2f"],

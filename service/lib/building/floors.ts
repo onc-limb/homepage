@@ -58,7 +58,7 @@ export const FLOORS: Floor[] = [
         url: "/1f",
         material: "wood",
         groups: [
-            group("1f", "profile", "プロフィール", "プロフィール", "自己紹介・関心・資格", "man onclimb", "/profile"),
+            group("1f", "profile", "プロフィール", "プロフィール", "自己紹介・関心・資格", "man onclimb"),
             group("1f", "contact", "連絡先", "受付・連絡先", "フォーム・メール", "finger onclimb"),
         ],
     },
@@ -70,7 +70,7 @@ export const FLOORS: Floor[] = [
         url: "/2f",
         material: "wood",
         groups: [
-            group("2f", "histories", "経歴", "経歴", null, "ls -tr ~/2f/histories", "/profile"),
+            group("2f", "histories", "経歴", "経歴", null, "ls -tr ~/2f/histories"),
             group("2f", "skills", "スキル", null, null, "ls -l ~/2f/skills | sort -k level", "/skills"),
         ],
     },

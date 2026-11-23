@@ -190,7 +190,7 @@ describe("getEntries()", () => {
 
         it("replaces only '/' and whitespace in the title with '-'", async () => {
             // Given: 題名に "/"・空白・全角括弧を含む経歴が 1 件だけある
-            careerOverride.value = [{ period: "CURRENT", role: "CI/CD 基盤（社内）", bullets: ["基盤の構築"] }]
+            careerOverride.value = [{ role: "CI/CD 基盤（社内）", bullets: ["基盤の構築"] }]
 
             const entries = await getEntries()
             const histories = entries.filter((entry) => entry.group === "histories")
@@ -201,8 +201,8 @@ describe("getEntries()", () => {
 
         it("keeps paths unique when two histories share the same heading", async () => {
             careerOverride.value = [
-                { period: "CURRENT", role: "Web開発", bullets: ["新しい方"] },
-                { period: "START", role: "Web開発", bullets: ["古い方"] },
+                { role: "Web開発", bullets: ["新しい方"] },
+                { role: "Web開発", bullets: ["古い方"] },
             ]
 
             const entries = await getEntries()

@@ -31,7 +31,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             priority: 0.8,
         })),
         {
-            url: `${baseUrl}/profile`,
+            url: `${baseUrl}${findGroup("profile").url}`,
+            changeFrequency: "monthly",
+            priority: 0.9,
+        },
+        {
+            url: `${baseUrl}${findGroup("histories").url}`,
             changeFrequency: "monthly",
             priority: 0.9,
         },

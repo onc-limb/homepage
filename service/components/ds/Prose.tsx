@@ -3,13 +3,13 @@ import ReactMarkdown, { type Components, type ExtraProps } from "react-markdown"
 import remarkGfm from "remark-gfm"
 
 import { CodeBlock } from "./CodeBlock"
+import { PROSE_BODY, PROSE_HEADING_MINOR } from "./prose-styles"
 import { BOXED_SURFACE } from "./surface-styles"
 import { TABLE, TABLE_SCROLL, TD, TH } from "./table-styles"
 
 type HastElement = NonNullable<ExtraProps["node"]>
 
 const HEADING_MAJOR = "font-ds text-ds-lg font-bold text-ds-fg"
-const HEADING_MINOR = "font-ds text-ds-base font-bold text-ds-fg"
 
 // Concatenates the text children of the `code` element inside a fenced block.
 function codeText(node: HastElement | undefined): string {
@@ -35,10 +35,10 @@ function tag<T extends "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "ul" | "ol" | "
 const COMPONENTS: Components = {
     h1: tag("h1", HEADING_MAJOR),
     h2: tag("h2", HEADING_MAJOR),
-    h3: tag("h3", HEADING_MINOR),
-    h4: tag("h4", HEADING_MINOR),
-    h5: tag("h5", HEADING_MINOR),
-    h6: tag("h6", HEADING_MINOR),
+    h3: tag("h3", PROSE_HEADING_MINOR),
+    h4: tag("h4", PROSE_HEADING_MINOR),
+    h5: tag("h5", PROSE_HEADING_MINOR),
+    h6: tag("h6", PROSE_HEADING_MINOR),
     ul: tag("ul", "list-disc pl-ds-4"),
     ol: tag("ol", "list-decimal pl-ds-4"),
     blockquote: tag("blockquote", BOXED_SURFACE),
@@ -64,7 +64,7 @@ type ProseProps = {
 /** Renders Markdown with ds tokens. Raw HTML in the text is not rendered (no rehype-raw). */
 export function Prose({ markdown }: ProseProps) {
     return (
-        <div className="flex max-w-ds-measure flex-col gap-ds-3 font-ds-prose text-ds-base leading-ds-prose text-ds-fg">
+        <div className={PROSE_BODY}>
             <ReactMarkdown remarkPlugins={[remarkGfm]} components={COMPONENTS}>
                 {markdown}
             </ReactMarkdown>

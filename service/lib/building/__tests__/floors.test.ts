@@ -36,7 +36,7 @@ const EXPECTED_GROUPS = [
         name: "プロフィール",
         command: "man onclimb",
         url: "/1f/profile",
-        href: "/profile",
+        href: "/1f/profile",
     },
     {
         floor: "1f",
@@ -52,7 +52,7 @@ const EXPECTED_GROUPS = [
         name: "経歴",
         command: "ls -tr ~/2f/histories",
         url: "/2f/histories",
-        href: "/profile",
+        href: "/2f/histories",
     },
     {
         floor: "2f",
@@ -195,6 +195,8 @@ describe("floorOfUrl()", () => {
         ["/2f/skills/typescript", "2f"],
         ["/b1/studies", "b1"],
         ["/1f/contact", "1f"],
+        ["/1f/profile", "1f"],
+        ["/2f/histories", "2f"],
     ])("places %s under its floor url on %s", (url, id) => {
         // Given a URL under a floor url (the final group URLs)
         // Then it belongs to that floor
@@ -204,7 +206,6 @@ describe("floorOfUrl()", () => {
     it.each([
         ["/skills", "2f"],
         ["/skills/typescript", "2f"],
-        ["/profile", "1f"],
         ["/portfolio", "3f"],
         ["/portfolio/onc-limb", "3f"],
     ])("places the transitional URL %s on %s", (url, id) => {
@@ -214,7 +215,7 @@ describe("floorOfUrl()", () => {
         expect(floorOfUrl(url)).toBe(id)
     })
 
-    it.each(["/skillset", "/profiles", "/portfolios", "/2fx", "/b10", "/books", "/blog", "/"])(
+    it.each(["/profile", "/skillset", "/profiles", "/portfolios", "/2fx", "/b10", "/books", "/blog", "/"])(
         "places %s on no floor",
         (url) => {
             // Given a URL that only shares leading characters with a floor url or a group href,
@@ -246,7 +247,8 @@ describe("toPromptPath()", () => {
         ["/2f/skills", "~/2f/skills"],
         ["/2f", "~/2f"],
         ["/rf", "~/rf"],
-        ["/profile", "~/1f/profile"],
+        ["/1f/profile", "~/1f/profile"],
+        ["/2f/histories", "~/2f/histories"],
         ["/1f/contact", "~/1f/contact"],
         ["/portfolio", "~/3f/portfolios"],
         ["/portfolio/onc-limb", "~/3f/portfolios/onc-limb"],
@@ -259,6 +261,7 @@ describe("toPromptPath()", () => {
 
     it.each([
         ["/books", "~/books"],
+        ["/profile", "~/profile"],
         ["/skillset", "~/skillset"],
         ["/2fx", "~/2fx"],
     ])("keeps %s, which belongs to no floor, as is under ~", (url, expected) => {
