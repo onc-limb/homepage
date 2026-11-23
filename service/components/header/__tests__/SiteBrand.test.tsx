@@ -1,52 +1,57 @@
+// @vitest-environment jsdom
 import * as React from "react"
 import { describe, expect, it, vi } from "vitest"
-import { renderToStaticMarkup } from "react-dom/server"
 
+import { SITE_NAME } from "@/lib/seo"
+import { closestClass, elementWithText, render } from "../../ds/__tests__/render"
 import { SiteBrand } from "../SiteBrand"
 
-// next/link -> plain anchor so aria-label / href assertions work under a static render.
+// next/link -> plain anchor so href / text assertions work under a static render.
 vi.mock("next/link", () => ({
     default: ({ children, ...props }: any) => <a {...props}>{children}</a>,
 }))
 
-// next/image -> plain img, forwarding only the attributes we assert on.
-vi.mock("next/image", () => ({
-    default: ({ src, alt, width, height, className }: any) => (
-        <img
-            src={typeof src === "string" ? src : src?.src}
-            alt={alt}
-            width={width}
-            height={height}
-            className={className}
-        />
-    ),
-}))
+/** ds color utilities (text-ds-sm/base/lg/xl are font sizes, not colors). */
+const TEXT_COLOR = /^text-ds-(?!(sm|base|lg|xl)$)/
+const USER_HOST = `guest@${SITE_NAME}`
 
-describe("SiteBrand", () => {
-    it("renders the brand logo image as a home link", () => {
-        const html = renderToStaticMarkup(<SiteBrand pathname="/" />)
+function promptLink(pathname: string): HTMLAnchorElement {
+    const anchors = render(<SiteBrand pathname={pathname} />).querySelectorAll("a")
+    expect(anchors).toHaveLength(1)
+    return anchors[0]
+}
 
-        expect(html).toContain('aria-label="onclimb home"')
-        expect(html).toContain('href="/"')
-        expect(html).toContain("/MainLogo.png")
-        // alt must be non-empty and mention onclimb.
-        expect(html).toMatch(/alt="[^"]*onclimb[^"]*"/)
-        // brand text + page label are preserved.
-        expect(html).toContain("onclimb")
-        expect(html).toContain("home")
+describe("SiteBrand prompt", () => {
+    it("shows the current URL under ~ as `guest@onclimb:~/skills$`", () => {
+        expect(promptLink("/skills").textContent).toBe("guest@onclimb:~/skills$")
     })
 
-    it("no longer renders the gradient placeholder icon", () => {
-        const html = renderToStaticMarkup(<SiteBrand pathname="/profile" />)
-
-        expect(html).not.toContain("linear-gradient")
-        expect(html).not.toContain("radial-gradient")
-        expect(html).toContain("profile")
+    it.each([
+        ["/", `${USER_HOST}:~$`],
+        ["/skills", `${USER_HOST}:~/skills$`],
+        ["/portfolio/onc-limb", `${USER_HOST}:~/portfolio/onc-limb$`],
+    ])("renders the prompt for %s", (pathname, expected) => {
+        expect(promptLink(pathname).textContent).toBe(expected)
     })
 
-    it("falls back to the top-level label for dynamic sub-routes", () => {
-        const html = renderToStaticMarkup(<SiteBrand pathname="/portfolio/onc-limb" />)
+    it("links the prompt to the home page", () => {
+        for (const pathname of ["/", "/skills", "/portfolio/onc-limb"]) {
+            expect(promptLink(pathname).getAttribute("href"), pathname).toBe("/")
+        }
+    })
 
-        expect(html).toContain("portfolio")
+    it("colors guest@onclimb with the prompt color and the path with the link color", () => {
+        const a = promptLink("/skills")
+        const user = elementWithText(a, USER_HOST)
+        const path = elementWithText(a, "~/skills")
+        expect(user, "element with guest@onclimb").toBeDefined()
+        expect(path, "element with ~/skills").toBeDefined()
+        expect(closestClass(user!, TEXT_COLOR, a.parentElement!)).toBe("text-ds-prompt")
+        expect(closestClass(path!, TEXT_COLOR, a.parentElement!)).toBe("text-ds-link")
+    })
+
+    it("does not render a gradient", () => {
+        const html = promptLink("/profile").outerHTML
+        expect(html).not.toMatch(/gradient/i)
     })
 })

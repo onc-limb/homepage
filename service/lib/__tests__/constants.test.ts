@@ -2,72 +2,61 @@ import { describe, it, expect } from "vitest"
 import { NAV_ITEMS, SOCIAL_LINKS } from "@/lib/constants"
 
 /**
- * NAV_ITEMS contract tests for the docs/design site shell.
+ * NAV_ITEMS contract tests for the site shell.
  *
- * Plan: design 素案 `shared/shell.js` の `NAV` 配列順序に合わせ、
- *   [Home, Profile, Skills, Portfolio, News, Books] とする。
- *   Social はヘッダーから外し、フッター "Find me" カラムへ降格する。
- *   #124: Blog を末尾に加え、他項目と同じく NAV_ITEMS 経由で
- *   SiteNav / MobileNav から一貫描画する（SiteShell の別建てナビは撤去）。
- *   ニュース機能撤去に伴い、まず導線として News エントリを NAV_ITEMS から削除。
- *   これによりヘッダー / トップ 02 カード / フッター Sitemap の 3 箇所すべてから
- *   News リンクが一括で消える（機能本体の撤去は #141）。
- *   コンタクトページ新設に伴い Contact を末尾に追加し、ヘッダー / フッターへ
- *   一括で載せる。ただしトップ 02 カード（Explore）は「深掘りする読み物」を選ぶ
- *   セクションなので、app/page.tsx 側で Home と併せて除外している。
- *
- * Reference: docs/design/shared/shell.js:34-41
+ * The header nav, the mobile nav, the footer page list and the top page Explore
+ * cards are all built from NAV_ITEMS. The renewal (#294) keeps the five places
+ * Home / Profile / Skills / Portfolio / Contact with Japanese labels and drops
+ * Books and Blog from the navigation (their pages stay reachable by URL).
  */
 describe("NAV_ITEMS", () => {
-    it("has the 7 entries remaining after News removal (Blog added in #124, Contact appended)", () => {
-        // Given the design draft NAV plus Blog (#124) and Contact, minus the removed News entry
+    it("has the 5 entries left after Books and Blog are removed", () => {
+        // Given the renewal keeps Home / Profile / Skills / Portfolio / Contact
         // When NAV_ITEMS is loaded
-        // Then it provides exactly 7 entries
-        expect(NAV_ITEMS).toHaveLength(7)
+        // Then it provides exactly 5 entries
+        expect(NAV_ITEMS).toHaveLength(5)
     })
 
     it("starts with the Home entry pointing at the site root", () => {
-        // Given the draft places Home as the first nav link
+        // Given Home is the first nav link
         // When the first entry is read
-        // Then it is the Home entry with href "/"
+        // Then it is the Home entry with href "/" and the Japanese label
         expect(NAV_ITEMS[0]).toMatchObject({
             href: "/",
-            label: "Home",
+            label: "ホーム",
         })
     })
 
-    it("orders entries to match the design draft sequence without News", () => {
-        // Given the draft NAV order minus News, with Contact last as the action entry
+    it("orders the Japanese labels Home, Profile, Skills, Portfolio, Contact", () => {
+        // Given the labels are shown in Japanese in this order
         // When labels are extracted
         // Then they appear in that exact order
         const labels = NAV_ITEMS.map((item) => item.label)
-        expect(labels).toEqual([
-            "Home",
-            "Profile",
-            "Skills",
-            "Portfolio",
-            "Books",
-            "Blog",
-            "Contact",
-        ])
+        expect(labels).toEqual(["ホーム", "プロフィール", "スキル", "ポートフォリオ", "連絡先"])
     })
 
     it("maps each label to the existing service route", () => {
-        // Given the route map between draft labels and existing service routes
+        // Given only the labels change, not the routes
         // When NAV_ITEMS is read
-        // Then each label resolves to the expected href
-        const hrefByLabel = Object.fromEntries(
-            NAV_ITEMS.map((item) => [item.label, item.href])
-        )
-        expect(hrefByLabel).toEqual({
-            Home: "/",
-            Profile: "/profile",
-            Skills: "/skills",
-            Portfolio: "/portfolio",
-            Books: "/books",
-            Blog: "/blog",
-            Contact: "/contact",
-        })
+        // Then each entry keeps its href in order
+        expect(NAV_ITEMS.map((item) => [item.href, item.label])).toEqual([
+            ["/", "ホーム"],
+            ["/profile", "プロフィール"],
+            ["/skills", "スキル"],
+            ["/portfolio", "ポートフォリオ"],
+            ["/contact", "連絡先"],
+        ])
+    })
+
+    it.each(["/books", "/blog"])("does not include the %s entry", (href) => {
+        // Given Books and Blog are dropped from the navigation (the pages stay)
+        // When NAV_ITEMS is searched by href and by label
+        // Then neither form of the entry is present
+        expect(NAV_ITEMS.find((item) => item.href === href)).toBeUndefined()
+        const name = href.slice(1)
+        expect(
+            NAV_ITEMS.find((item) => item.label.trim().toLowerCase() === name)
+        ).toBeUndefined()
     })
 
     it("does not include the News entry (news navigation removed)", () => {

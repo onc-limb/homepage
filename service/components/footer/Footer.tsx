@@ -1,57 +1,27 @@
-import Link from "next/link"
+import { PAGE_WIDTH } from "@/components/ds/page-styles"
+import { TextLink } from "@/components/ds/TextLink"
 import { NAV_ITEMS, SOCIAL_LINKS } from "@/lib/constants"
+import { SITE_NAME } from "@/lib/seo"
 
 export default function Footer() {
     return (
-        <footer
-            className="relative z-[1] mt-20 border-t border-hairline px-0 pb-10 pt-[60px]"
-            style={{
-                // グラデーション廃止・単色化: 線形グラデーションのフェード背景を単色に置換
-                background: "var(--bg-elev)",
-            }}
-        >
-            <div className="mx-auto grid max-w-[var(--container)] grid-cols-1 gap-8 px-6 md:px-10 [@media(min-width:720px)]:grid-cols-4">
-                <div className="flex flex-col gap-1.5 text-[13px]">
-                    <div className="text-[20px] font-semibold tracking-[-0.02em] text-fg-strong">
-                        onclimb
-                    </div>
-                    <p className="text-xs text-fg-muted">
-                        Fullstack engineer / software architect — Tokyo
-                    </p>
-                </div>
-                <div className="flex flex-col gap-1.5 text-[13px]">
-                    <div className="mb-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-fg-dim">
-                        Sitemap
-                    </div>
+        <footer className="border-t border-ds-border font-ds text-ds-sm text-ds-fg-muted">
+            <div
+                className={`${PAGE_WIDTH} flex flex-wrap justify-between gap-x-ds-4 gap-y-ds-2 py-ds-4`}
+            >
+                <p>© {new Date().getFullYear()} {SITE_NAME}</p>
+                <nav aria-label="フッター" className="flex flex-wrap gap-ds-4">
                     {NAV_ITEMS.map((item) => (
-                        <Link
-                            key={item.href}
-                            href={item.href}
-                            className="py-0.5 text-fg-muted transition-colors duration-150 hover:text-accent"
-                        >
+                        <TextLink key={item.href} href={item.href}>
                             {item.label}
-                        </Link>
+                        </TextLink>
                     ))}
-                </div>
-                <div className="flex flex-col gap-1.5 text-[13px]">
-                    <div className="mb-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-fg-dim">
-                        Find me
-                    </div>
-                    {SOCIAL_LINKS.map((s) => (
-                        <a
-                            key={s.name}
-                            href={s.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="py-0.5 text-fg-muted transition-colors duration-150 hover:text-accent"
-                        >
-                            {s.name} ↗
-                        </a>
+                    {SOCIAL_LINKS.map((link) => (
+                        <TextLink key={link.url} href={link.url}>
+                            {link.name}
+                        </TextLink>
                     ))}
-                </div>
-                <div className="flex flex-col gap-1.5 text-[13px]">
-                    <div className="font-mono text-fg-muted">© {new Date().getFullYear()} onclimb</div>
-                </div>
+                </nav>
             </div>
         </footer>
     )

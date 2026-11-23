@@ -12,8 +12,7 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
         return <>{children}</>
     }
 
-    // /blog は NAV_ITEMS の一項目として SiteNav / MobileNav から他項目と同じ粒度で
-    // 描画される（#124）。gh#107 当時にここへ別建てしていた /blog 専用サブナビは撤去した。
+    // /books と /blog はナビから外すが、ページ自体は残す。
     return (
         <>
             <Header />

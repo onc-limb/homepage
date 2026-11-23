@@ -1,3 +1,5 @@
+import { toVirtualPath } from "@/lib/building/floors"
+
 /**
  * NAV_ITEMS の active 判定。SiteNav / MobileNav 共通。
  * - "/" は完全一致のみ active
@@ -6,4 +8,9 @@
 export function isNavItemActive(pathname: string, href: string): boolean {
     if (href === "/") return pathname === "/"
     return pathname === href || pathname.startsWith(href + "/")
+}
+
+export function toPromptPath(pathname: string): string {
+    if (pathname === "/") return "~"
+    return toVirtualPath(pathname)
 }
