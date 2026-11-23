@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { isNavItemActive } from "@/components/header/nav-utils"
+import { isNavItemActive, toPromptPath } from "@/components/header/nav-utils"
 
 /**
  * isNavItemActive contract tests.
@@ -45,5 +45,39 @@ describe("isNavItemActive()", () => {
         // When pathname is "/profile"
         // Then it is not active
         expect(isNavItemActive("/profile", "/portfolio")).toBe(false)
+    })
+})
+
+/**
+ * toPromptPath contract tests.
+ *
+ * The header prompt `guest@onclimb:<path>$` shows the current URL under `~`.
+ * The desktop header, the mobile nav and the floor navigation share this one
+ * function, so the rule is fixed here.
+ */
+describe("toPromptPath()", () => {
+    it("shows the site root as the bare home directory", () => {
+        // Given the root URL
+        // When it is turned into a prompt path
+        // Then it is "~" without a trailing slash
+        expect(toPromptPath("/")).toBe("~")
+    })
+
+    it.each([
+        ["/skills", "~/skills"],
+        ["/portfolio/onc-limb", "~/portfolio/onc-limb"],
+        ["/books", "~/books"],
+    ])("places the URL %s as is under ~", (pathname, expected) => {
+        // Given a URL that is not the root (including pages outside NAV_ITEMS)
+        // When it is turned into a prompt path
+        // Then the URL is kept unchanged under "~" (no floor prefix such as ~/2f)
+        expect(toPromptPath(pathname)).toBe(expected)
+    })
+
+    it("rejects a pathname that does not start with /", () => {
+        // Given a value that is not a URL path
+        // When it is turned into a prompt path
+        // Then it is refused instead of being silently rewritten
+        expect(() => toPromptPath("skills")).toThrow()
     })
 })

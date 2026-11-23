@@ -94,15 +94,13 @@ describe("top page Explore", () => {
             a.textContent?.includes("→ /")
         )
         const expected = NAV_ITEMS.filter(
-            (item) => item.label !== "Home" && item.label !== "Contact"
+            (item) => item.href !== "/" && item.href !== "/contact"
         )
 
         expect(cards.map((a) => a.getAttribute("href"))).toEqual([
             "/profile",
             "/skills",
             "/portfolio",
-            "/books",
-            "/blog",
         ])
         expect(cards.map((a) => a.getAttribute("href"))).toEqual(
             expected.map((item) => item.href)
