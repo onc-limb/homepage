@@ -173,9 +173,12 @@ describe("/design page", () => {
 
         it("does not render icons or inline hard-coded values", () => {
             expect(root.querySelector("svg")).toBeNull()
-            const inline = Array.from(root.querySelectorAll<HTMLElement>("[style]")).map(
-                (el) => el.getAttribute("style") ?? ""
-            )
+            // LodgeExterior is a fixed-geometry drawing whose leaf positions come
+            // straight from the mock (Maze.dc.html), so only its subtree carries
+            // px inline styles; the rest of the page stays free of them.
+            const inline = Array.from(root.querySelectorAll<HTMLElement>("[style]"))
+                .filter((el) => el.closest('[data-part="lodge-exterior"]') === null)
+                .map((el) => el.getAttribute("style") ?? "")
             for (const style of inline) {
                 expect(style).not.toMatch(/#[0-9a-fA-F]{3,8}|rgba?\(|hsla?\(|\d(px|rem|em)\b/)
             }
