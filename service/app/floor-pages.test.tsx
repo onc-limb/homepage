@@ -45,7 +45,7 @@ const PAGES: Array<{ id: Exclude<FloorId, "rf">; module: PageModule; file: strin
     { id: "3f", module: { ...f3Module, default: Floor3Page }, file: "3f/page.tsx" },
 ]
 
-/** Entry counts per group. Every group differs, and so do the floor totals and the /skills href totals. */
+/** Entry counts per group. Every group differs, and so do the floor totals. */
 const COUNTS: Record<GroupSlug, number> = {
     studies: 4,
     profile: 3,
@@ -167,7 +167,7 @@ describe("floor page values", () => {
         const main = await renderPage(PAGES[2].module)
         expect(doorsOf(main).map((door) => door.textContent)).toEqual([
             `経歴${COUNTS.histories} 件/2f/histories`,
-            `スキル${COUNTS.skills} 件/skills`,
+            `スキル${COUNTS.skills} 件/2f/skills`,
         ])
     })
 
@@ -181,8 +181,8 @@ describe("floor page values", () => {
         for (const door of doors) expect(door.textContent).not.toContain("件")
     })
 
-    it("counts only the studies on B1 even though skills share the /skills href", async () => {
+    it("counts only the studies on B1 and links the door to /b1/studies", async () => {
         const main = await renderPage(PAGES[0].module)
-        expect(doorsOf(main).map((door) => door.textContent)).toEqual([`自己学習${COUNTS.studies} 件/skills`])
+        expect(doorsOf(main).map((door) => door.textContent)).toEqual([`自己学習${COUNTS.studies} 件/b1/studies`])
     })
 })

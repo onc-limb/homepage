@@ -21,15 +21,15 @@ describe("isNavItemActive()", () => {
         // Then it is active; otherwise inactive
         expect(isNavItemActive("/", "/")).toBe(true)
         expect(isNavItemActive("/2f", "/")).toBe(false)
-        expect(isNavItemActive("/skills", "/")).toBe(false)
+        expect(isNavItemActive("/2f/skills", "/")).toBe(false)
         expect(isNavItemActive("/books", "/")).toBe(false)
     })
 
     it.each([
         ["/2f", "/2f"],
         ["/2f/skills", "/2f"],
-        ["/skills", "/2f"],
-        ["/skills/typescript", "/2f"],
+        ["/b1/studies", "/b1"],
+        ["/portfolio", "/3f"],
         ["/portfolio/onc-limb", "/3f"],
         ["/1f/profile", "/1f"],
         ["/2f/histories", "/2f"],
@@ -43,6 +43,7 @@ describe("isNavItemActive()", () => {
     })
 
     it.each([
+        ["/skills", "/2f"],
         ["/skills", "/b1"],
         ["/1f/profile", "/2f"],
         ["/profile", "/1f"],

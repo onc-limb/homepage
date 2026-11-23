@@ -3,6 +3,8 @@
 // 読み込むため、Client Component から import するとそれらがクライアントバンドルに載ってしまう。
 // クライアント側で必要な型・ラベル・ソートはこちらから import する。
 
+import type { FloorId } from "./building/floors"
+
 // ネストされたリストアイテムを表す型
 export interface ListItem {
     text: string
@@ -91,15 +93,12 @@ export const categoryShortLabels: Record<SkillCategory, string> = {
     security: "セキュリティ",
     auth: "認証",
 }
-export const levelLabels: Record<
-    SkillLevel,
-    { label: string; color: string; icon: string }
-> = {
-    1: { label: "学習中", color: "text-yellow-500", icon: "🟡" },
-    2: { label: "個人利用", color: "text-orange-500", icon: "🟠" },
-    3: { label: "実務経験あり", color: "text-red-500", icon: "🔴" },
-    4: { label: "実務継続利用", color: "text-blue-500", icon: "🔵" },
-    5: { label: "専門", color: "text-green-500", icon: "🟢" },
+export const levelLabels: Record<SkillLevel, { label: string }> = {
+    1: { label: "学習中" },
+    2: { label: "個人利用" },
+    3: { label: "実務経験あり" },
+    4: { label: "実務継続利用" },
+    5: { label: "専門" },
 }
 // カテゴリの表示順序
 export const categoryOrder: SkillCategory[] = [
@@ -136,4 +135,30 @@ export type SkillFloor = "2f" | "b1"
 export function getSkillFloor(skill: Pick<SkillMeta, "context" | "level">): SkillFloor {
     if (skill.context) return skill.context === "work" ? "2f" : "b1"
     return skill.level >= 3 ? "2f" : "b1"
+}
+
+// level を 5 段の印にする（filled = ●、empty = ○）
+const GAUGE_STEPS = 5
+
+export function levelGauge(level: SkillLevel): { filled: string; empty: string } {
+    return {
+        filled: "●".repeat(level),
+        empty: "○".repeat(GAUGE_STEPS - level),
+    }
+}
+
+export interface SkillCategoryGroup {
+    category: SkillCategory
+    skills: Skill[]
+}
+
+// 指定した階のスキルだけを、categoryOrder の順に分野でまとめる（0 件の分野は返さない）
+export function groupSkillsByCategory(skills: Skill[], floor: FloorId): SkillCategoryGroup[] {
+    const onFloor = skills.filter((skill) => getSkillFloor(skill) === floor)
+    return categoryOrder
+        .map((category) => ({
+            category,
+            skills: sortSkillsByLevel(onFloor.filter((skill) => skill.category === category)),
+        }))
+        .filter((group) => group.skills.length > 0)
 }

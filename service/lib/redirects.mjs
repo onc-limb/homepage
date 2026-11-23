@@ -2,7 +2,8 @@
  * 旧 URL と新しい URL の対応表。
  * next.config.mjs は .mjs なので lib/building/floors.ts (TypeScript) を import できず、
  * 行き先はここに直接書く。FLOORS の値（findGroup("contact").url = /1f/contact、
- * findGroup("profile").url = /1f/profile、findFloor("rf").url = /rf）と同じであることを
+ * findGroup("profile").url = /1f/profile、findGroup("skills").url = /2f/skills、
+ * findFloor("rf").url = /rf）と同じであることを
  * lib/__tests__/redirects.test.ts で縛る。
  */
 
@@ -11,4 +12,5 @@ export const PERMANENT_REDIRECTS = [
     { source: "/contact", destination: "/1f/contact", permanent: true },
     { source: "/social", destination: "/rf", permanent: true },
     { source: "/profile", destination: "/1f/profile", permanent: true },
+    { source: "/skills", destination: "/2f/skills", permanent: true },
 ]

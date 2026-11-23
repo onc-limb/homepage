@@ -44,7 +44,8 @@ describe("sitemap", () => {
             "https://onc-limb.com/rf",
             "https://onc-limb.com/1f/profile",
             "https://onc-limb.com/2f/histories",
-            "https://onc-limb.com/skills",
+            "https://onc-limb.com/2f/skills",
+            "https://onc-limb.com/b1/studies",
             "https://onc-limb.com/portfolio",
             "https://onc-limb.com/1f/contact",
             "https://onc-limb.com/books",
@@ -83,6 +84,17 @@ describe("sitemap", () => {
         expect(paths).toContain(findGroup("histories").url)
         expect(paths).toContain("/2f/histories")
         expect(paths).not.toContain("/profile")
+    })
+
+    it("lists the skills at their 2F URL and the studies at their B1 URL, and drops the retired /skills", async () => {
+        const entries = await sitemap()
+        const paths = entries.map((entry) => new URL(entry.url).pathname)
+
+        expect(paths).toContain(findGroup("skills").url)
+        expect(paths).toContain("/2f/skills")
+        expect(paths).toContain(findGroup("studies").url)
+        expect(paths).toContain("/b1/studies")
+        expect(paths).not.toContain("/skills")
     })
 
     it("uses content timestamps instead of the build time", async () => {

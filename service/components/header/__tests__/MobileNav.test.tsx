@@ -130,7 +130,7 @@ describe("MobileNav disclosure", () => {
 
 describe("MobileNav items", () => {
     it("lists every nav item in order with its Japanese label and the virtual path on the right", async () => {
-        await renderAt("/skills")
+        await renderAt("/2f/skills")
         await click(toggle())
         const rendered = links()
         expect(rendered.map((a) => a.getAttribute("href"))).toEqual(NAV_ITEMS.map((item) => item.href))
@@ -164,8 +164,10 @@ describe("MobileNav items", () => {
     })
 
     it.each([
-        ["/skills", ["/2f"]],
+        ["/portfolio", ["/3f"]],
         ["/2f/skills", ["/2f"]],
+        ["/b1/studies", ["/b1"]],
+        ["/skills", []],
         ["/portfolio/onc-limb", ["/3f"]],
         ["/1f/contact", ["/1f"]],
         ["/", ["/"]],

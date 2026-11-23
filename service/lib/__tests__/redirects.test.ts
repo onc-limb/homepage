@@ -38,8 +38,15 @@ describe("PERMANENT_REDIRECTS", () => {
         expect(findGroup("profile").url).toBe("/1f/profile")
     })
 
-    it("holds only these three redirects, each permanent without a status code override", () => {
-        expect(PERMANENT_REDIRECTS.map((entry) => entry.source)).toEqual(["/contact", "/social", "/profile"])
+    it("sends /skills permanently to the skills page on 2F", () => {
+        expect(byOldUrl("/skills")).toEqual([
+            { source: "/skills", destination: findGroup("skills").url, permanent: true },
+        ])
+        expect(findGroup("skills").url).toBe("/2f/skills")
+    })
+
+    it("holds only these four redirects, each permanent without a status code override", () => {
+        expect(PERMANENT_REDIRECTS.map((entry) => entry.source)).toEqual(["/contact", "/social", "/profile", "/skills"])
         for (const entry of PERMANENT_REDIRECTS) {
             expect(entry.permanent, entry.source).toBe(true)
             expect(entry, entry.source).not.toHaveProperty("statusCode")
@@ -68,6 +75,15 @@ describe("retired pages", () => {
 
     it("no longer has the app/profile route", () => {
         expect(fs.existsSync(path.join(SERVICE_ROOT, "app/profile")), "app/profile").toBe(false)
+    })
+
+    it("no longer has the app/skills route", () => {
+        expect(fs.existsSync(path.join(SERVICE_ROOT, "app/skills")), "app/skills").toBe(false)
+    })
+
+    it("keeps the skills page under app/2f/skills and the studies page under app/b1/studies", () => {
+        expect(fs.existsSync(path.join(SERVICE_ROOT, "app/2f/skills/page.tsx")), "app/2f/skills/page.tsx").toBe(true)
+        expect(fs.existsSync(path.join(SERVICE_ROOT, "app/b1/studies/page.tsx")), "app/b1/studies/page.tsx").toBe(true)
     })
 
     it("keeps the profile page under app/1f/profile and the histories page under app/2f/histories", () => {
