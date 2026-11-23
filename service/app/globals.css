@@ -403,20 +403,6 @@
         background-color: var(--bg-elev);
     }
 
-    /* Theme toggle icons (driven by data-theme on <html>) */
-    .theme-toggle .theme-toggle__sun {
-        display: none;
-    }
-    .theme-toggle .theme-toggle__moon {
-        display: block;
-    }
-    :root[data-theme="light"] .theme-toggle .theme-toggle__sun {
-        display: block;
-    }
-    :root[data-theme="light"] .theme-toggle .theme-toggle__moon {
-        display: none;
-    }
-
     /* Nav link underline animation */
     .site-nav__link::after {
         content: "";

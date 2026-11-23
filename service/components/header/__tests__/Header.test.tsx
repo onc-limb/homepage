@@ -67,12 +67,12 @@ describe("Header surface", () => {
     })
 })
 
-describe("Header controls kept for job 06", () => {
-    it("still renders the theme toggle and the mobile menu button", () => {
+describe("Header controls", () => {
+    it("renders the theme toggle and the mobile menu door", () => {
         const header = renderHeaderAt("/")
-        const labels = Array.from(header.querySelectorAll("button")).map((b) =>
-            b.getAttribute("aria-label")
-        )
-        expect(labels).toEqual(expect.arrayContaining(["toggle theme", "open menu"]))
+        const texts = Array.from(header.querySelectorAll("button")).map((b) => b.textContent ?? "")
+        // The static render uses the server snapshot (DEFAULT_THEME = dark).
+        expect(texts.some((t) => t.includes("表示: ダーク")), "theme toggle").toBe(true)
+        expect(texts, "menu door").toContain("メニュー")
     })
 })
