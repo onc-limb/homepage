@@ -33,7 +33,9 @@ export function FloorGuide({ selected, counts, onSelect }: FloorGuideProps) {
             <div
                 role="group"
                 aria-label="階"
-                className="flex flex-row-reverse gap-ds-1 md:flex-col"
+                // DOM order is the visual order on both widths (屋上 → B1, left to right
+                // on narrow screens and top to bottom on wide ones), so Tab follows the eye.
+                className="flex flex-row gap-ds-1 md:flex-col"
             >
                 {[...FLOORS].reverse().map((floor) => {
                     const pressed = floor.id === selected

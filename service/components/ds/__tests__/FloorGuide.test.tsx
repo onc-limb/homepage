@@ -124,7 +124,9 @@ describe("FloorGuide (static)", () => {
     it("lays the floors in one row on narrow screens, showing only the label and the count", () => {
         const root = render(<FloorGuide counts={{ "1f": 2 }} />)
         const group = floorGroup(root)
-        expect(group.classList.contains("flex-row-reverse"), "row on narrow").toBe(true)
+        expect(group.classList.contains("flex-row"), "row on narrow").toBe(true)
+        // A reversed row would make Tab run right to left against the eye
+        expect(Array.from(group.classList).some((cls) => /reverse/.test(cls)), "no reversed order").toBe(false)
         expect(group.classList.contains("md:flex-col"), "column on wide").toBe(true)
 
         const roof = root.querySelector<HTMLElement>('[data-part="roof"]')!
