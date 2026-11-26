@@ -3,13 +3,11 @@ import ReactMarkdown, { type Components, type ExtraProps } from "react-markdown"
 import remarkGfm from "remark-gfm"
 
 import { CodeBlock } from "./CodeBlock"
+import { HEADING_MAJOR, HEADING_MINOR } from "./heading-styles"
 import { BOXED_SURFACE } from "./surface-styles"
 import { TABLE, TABLE_SCROLL, TD, TH } from "./table-styles"
 
 type HastElement = NonNullable<ExtraProps["node"]>
-
-const HEADING_MAJOR = "font-ds text-ds-lg font-bold text-ds-fg"
-const HEADING_MINOR = "font-ds text-ds-base font-bold text-ds-fg"
 
 // Concatenates the text children of the `code` element inside a fenced block.
 function codeText(node: HastElement | undefined): string {
