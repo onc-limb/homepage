@@ -20,7 +20,8 @@ import { categoryLabels, getSkillFloor, levelLabels, type SkillCategory, type Sk
  * レベルの名前. Categories follow categoryOrder, rows go from the highest level
  * down, and a category without skills is not shown. The skills list shows only
  * the work skills (getSkillFloor = 2f), the studies list only the study skills
- * (b1), both only publish: true. Skill names are not links yet.
+ * (b1), both only publish: true. Each skill name links to its detail page
+ * (/<floor>/<slug>/<md file name>).
  *
  * vitest stubs require.context, so getSkills() is replaced by a function that
  * passes md sources to the real parseSkillSources (publish filter included):
@@ -341,10 +342,27 @@ describe.each(PAGES)("$file category tables", (page) => {
         }
     })
 
-    it("does not link the skill names", async () => {
+    it("links each skill name to its detail page /<floor>/<slug>/<file name>", async () => {
         sourcesOverride.value = FIXTURES
         const main = await renderMain(page)
-        expect(main.querySelectorAll("table a")).toHaveLength(0)
+        const links = categoryBlocks(main).flatMap(({ table }) =>
+            bodyRows(table).map((cells) => {
+                const anchors = cells[0].querySelectorAll("a")
+                expect(anchors, cells[0].textContent ?? "").toHaveLength(1)
+                return [anchors[0].textContent?.trim(), anchors[0].getAttribute("href")]
+            }),
+        )
+        const slugOf = new Map(
+            FIXTURES.map((source) => [
+                source.raw.match(/^name: (.+)$/m)![1],
+                source.key.replace(/^.*\//, "").replace(/\.md$/, ""),
+            ]),
+        )
+        expect(links).toEqual(
+            expected.flatMap(({ rows }) => rows.map(([name]) => [name, `${group.url}/${slugOf.get(name)}`])),
+        )
+        // only the name cells are links
+        expect(main.querySelectorAll("table a")).toHaveLength(links.length)
     })
 })
 

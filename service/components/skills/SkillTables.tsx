@@ -2,8 +2,10 @@ import type { ReactNode } from "react"
 
 import { DataTable, type DataTableColumn } from "@/components/ds/DataTable"
 import { HashHeading } from "@/components/ds/HashHeading"
+import { TextLink } from "@/components/ds/TextLink"
 import { toVirtualPath, type FloorGroup } from "@/lib/building/floors"
-import { categoryLabels, levelGauge, levelLabels, type Skill, type SkillCategoryGroup } from "@/lib/skills-meta"
+import { categoryLabels, levelLabels, skillHref, type Skill, type SkillCategoryGroup } from "@/lib/skills-meta"
+import { LevelGauge } from "./LevelGauge"
 
 const COLUMNS: readonly DataTableColumn<"name" | "level" | "label">[] = [
     { key: "name", header: "名前" },
@@ -33,13 +35,11 @@ export function SkillTables({ group, categories }: SkillTablesProps) {
 }
 
 function skillRows(skill: Skill): Record<"name" | "level" | "label", ReactNode> {
-    const gauge = levelGauge(skill.level)
     return {
-        name: skill.name,
+        name: <TextLink href={skillHref(skill)}>{skill.name}</TextLink>,
         level: (
             <>
-                <span className="text-ds-accent">{gauge.filled}</span>
-                {gauge.empty ? <span className="text-ds-border">{gauge.empty}</span> : null}{" "}
+                <LevelGauge level={skill.level} />{" "}
                 <span className="text-ds-fg-muted">{skill.level}</span>
             </>
         ),

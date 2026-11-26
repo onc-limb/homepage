@@ -2,6 +2,8 @@ import { MetadataRoute } from "next"
 import { listPublishedArticles } from "@/lib/articles"
 import { FLOORS, findGroup } from "@/lib/building/floors"
 import { getProjects } from "@/lib/portfolio"
+import { getSkills } from "@/lib/skills"
+import { skillHref } from "@/lib/skills-meta"
 
 export const dynamic = "force-dynamic"
 
@@ -89,5 +91,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.8,
     }))
 
-    return [...staticPages, ...portfolioPages, ...articlePages]
+    // スキル詳細ページ
+    const skillPages: MetadataRoute.Sitemap = getSkills().map((skill) => ({
+        url: `${baseUrl}${skillHref(skill)}`,
+        changeFrequency: "monthly" as const,
+        priority: 0.8,
+    }))
+
+    return [...staticPages, ...portfolioPages, ...articlePages, ...skillPages]
 }
