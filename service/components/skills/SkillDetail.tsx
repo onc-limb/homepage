@@ -1,4 +1,3 @@
-import { notFound, permanentRedirect } from "next/navigation"
 import type { Metadata } from "next"
 
 import { floorTitle } from "@/components/building/FloorFrame"
@@ -9,12 +8,10 @@ import { PagerDoors } from "@/components/ds/PagerDoors"
 import { PROSE_BODY, PROSE_LIST } from "@/components/ds/prose-styles"
 import { findFloor, type FloorGroup } from "@/lib/building/floors"
 import { createPageMetadata } from "@/lib/seo"
-import { getSkills } from "@/lib/skills"
 import {
     SKILL_SECTION_TITLES,
     categoryLabels,
     levelLabels,
-    resolveSkillPage,
     skillHref,
     skillVirtualPath,
     type ListItem,
@@ -23,17 +20,18 @@ import {
 } from "@/lib/skills-meta"
 import { LevelGauge } from "./LevelGauge"
 
-type SkillDetailPageProps = {
+type SkillDetailProps = {
     group: FloorGroup
-    name: string
+    skill: Skill
+    prev?: Skill
+    next?: Skill
 }
 
-/** The detail page of the skill whose md file name is `name`, on the floor group `group`. */
-export function SkillDetailPage({ group, name }: SkillDetailPageProps) {
-    const resolved = resolveSkillPage(getSkills(), group, name)
-    if (resolved.kind === "missing") notFound()
-    if (resolved.kind === "moved") permanentRedirect(resolved.href)
-    const { skill, prev, next } = resolved
+/**
+ * The detail page of a skill already resolved by the route (which owns the
+ * 404 and the redirect to the right floor).
+ */
+export function SkillDetail({ group, skill, prev, next }: SkillDetailProps) {
     return (
         <main className="flex-1">
             <Page title={skill.name} command={`cat ${skillVirtualPath(skill)}`}>
@@ -65,11 +63,8 @@ export function SkillDetailPage({ group, name }: SkillDetailPageProps) {
     )
 }
 
-/** Metadata of the detail page. An unknown name gets none (the page itself is a 404). */
-export function skillDetailMetadata(group: FloorGroup, name: string): Metadata {
-    const resolved = resolveSkillPage(getSkills(), group, name)
-    if (resolved.kind !== "found") return {}
-    const { skill } = resolved
+/** Metadata of the detail page of a resolved skill. */
+export function skillDetailMetadata(skill: Skill): Metadata {
     return createPageMetadata({
         title: skill.name,
         description: `${skill.name}（${categoryLabels[skill.category]}・${levelLabels[skill.level].label}）の経験と知識。`,

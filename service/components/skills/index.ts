@@ -1,2 +1,2 @@
-export { SkillDetailPage, skillDetailMetadata } from "./SkillDetail"
+export { SkillDetail, skillDetailMetadata } from "./SkillDetail"
 export { SkillTables } from "./SkillTables"
