@@ -12,7 +12,8 @@ import {
 
 import { Planks } from "./Planks"
 import { FOCUS_RING } from "./focus-styles"
-import { CLIPPED_SURFACE } from "./surface-styles"
+import { LIT_MARK } from "./lit-mark"
+import { CLIPPED_SURFACE, MAP_EDGE } from "./surface-styles"
 
 type FloorMapProps = {
     layout: FloorLayout
@@ -51,8 +52,6 @@ const MATERIAL_STYLES: Record<FloorMaterial, { floor: string; wall: string }> = 
 
 const ROOM_TRANSITION = "background-color .3s, border-color .3s"
 const CORRIDOR_FILL = "bg-ds-map-corridor"
-const MAP_EDGE = "border-2 border-ds-fg"
-const ROOM_MARK = "●"
 
 const percent = (value: number, total: number) => `${(value / total) * 100}%`
 
@@ -315,7 +314,7 @@ export function FloorMap({
                                 transform: "translate(-50%, -50%)",
                             }}
                         >
-                            {small ? ROOM_MARK : isLit ? `${name} ${ROOM_MARK}` : name}
+                            {small ? LIT_MARK : isLit ? `${name} ${LIT_MARK}` : name}
                         </span>
                     )
                 })}

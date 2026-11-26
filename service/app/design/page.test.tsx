@@ -173,11 +173,16 @@ describe("/design page", () => {
 
         it("does not render icons or inline hard-coded values", () => {
             expect(root.querySelector("svg")).toBeNull()
-            const inline = Array.from(root.querySelectorAll<HTMLElement>("[style]")).map(
-                (el) => el.getAttribute("style") ?? ""
-            )
-            for (const style of inline) {
-                expect(style).not.toMatch(/#[0-9a-fA-F]{3,8}|rgba?\(|hsla?\(|\d(px|rem|em)\b/)
+            for (const el of Array.from(root.querySelectorAll<HTMLElement>("[style]"))) {
+                const style = el.getAttribute("style") ?? ""
+                // No element, LodgeExterior included, may hard-code a colour inline.
+                expect(style).not.toMatch(/#[0-9a-fA-F]{3,8}|rgba?\(|hsla?\(/)
+                // LodgeExterior is a fixed-geometry drawing whose leaf positions come
+                // straight from the mock (Maze.dc.html), so only its subtree may carry
+                // length units inline; the rest of the page stays free of them.
+                if (el.closest('[data-part="lodge-exterior"]') === null) {
+                    expect(style).not.toMatch(/\d(px|rem|em)\b/)
+                }
             }
         })
     })
