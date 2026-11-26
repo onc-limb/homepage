@@ -30,7 +30,7 @@ type FloorStackProps = InfoCenterProps & {
 function FloorStack({ layouts, size, selection, onSelectRoom }: FloorStackProps) {
     const selectedIndex = FLOORS.findIndex((floor) => floor.id === selection.floor)
     return (
-        <div className="overflow-hidden py-ds-5">
+        <div className="overflow-y-clip py-ds-5">
             <div className="grid">
                 {FLOORS.map((floor, index) => {
                     const current = floor.id === selection.floor
