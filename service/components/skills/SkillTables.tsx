@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
 
 import { DataTable, type DataTableColumn } from "@/components/ds/DataTable"
+import { HashHeading } from "@/components/ds/HashHeading"
 import { toVirtualPath, type FloorGroup } from "@/lib/building/floors"
 import { categoryLabels, levelGauge, levelLabels, type Skill, type SkillCategoryGroup } from "@/lib/skills-meta"
 
@@ -20,10 +21,7 @@ export function SkillTables({ group, categories }: SkillTablesProps) {
         <>
             {categories.map(({ category, skills }) => (
                 <section key={category} className="mt-ds-5">
-                    <h2 className="font-ds text-ds-lg font-bold">
-                        <span className="text-ds-fg-muted"># </span>
-                        {categoryLabels[category]}
-                    </h2>
+                    <HashHeading>{categoryLabels[category]}</HashHeading>
                     <p className="mb-ds-2 text-ds-sm text-ds-link">
                         {toVirtualPath(group.url)}/{category}/
                     </p>
