@@ -70,7 +70,7 @@ export function ContactForm() {
     if (state.status === "success") {
         return (
             <div role="status" className={`${BOXED_SURFACE} ${PROSE_TEXT}`}>
-                <h3 className="mb-ds-2 text-ds-lg font-bold">送信しました</h3>
+                <h3 className="mb-ds-2 text-ds-lg font-bold text-ds-fg">送信しました</h3>
                 <p className={NOTE_TEXT}>
                     お問い合わせありがとうございます。内容を確認のうえ、
                     ご記入いただいたメールアドレス宛に折り返しご連絡します。

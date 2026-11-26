@@ -3,6 +3,7 @@ import { colorsSample } from "./colors"
 import { dataTableSample } from "./data-table"
 import { doorButtonSample } from "./door-button"
 import { floorMapSample } from "./floor-map"
+import { hashHeadingSample } from "./hash-heading"
 import { keyValueSample } from "./key-value"
 import { logListSample } from "./log-list"
 import { pageFrameSample } from "./page-frame"
@@ -24,6 +25,7 @@ export const DESIGN_SAMPLES: readonly DesignSample[] = [
     spacingSample,
     pageFrameSample,
     sectionSample,
+    hashHeadingSample,
     keyValueSample,
     dataTableSample,
     codeBlockSample,

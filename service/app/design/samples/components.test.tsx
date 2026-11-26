@@ -11,6 +11,7 @@ const THEMES = ["light", "dark"] as const
 const COMPONENT_SAMPLES: Array<[string, string]> = [
     ["page", "h1"],
     ["section", "section > h2"],
+    ["hash-heading", "h2 > span[aria-hidden]"],
     ["key-value", "dl dt + dd"],
     ["data-table", "table thead th"],
     ["code-block", "pre > code"],
@@ -42,7 +43,7 @@ function sampleBlock(theme: (typeof THEMES)[number], id: string): HTMLElement {
 }
 
 describe("/design component samples", () => {
-    it("registers a sample for each of the ten components", () => {
+    it("registers a sample for each of the eleven components", () => {
         const ids = DESIGN_SAMPLES.map((s) => s.id)
         for (const [id] of COMPONENT_SAMPLES) expect(ids, id).toContain(id)
     })

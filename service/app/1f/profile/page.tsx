@@ -3,7 +3,8 @@ import { KeyValue } from "@/components/ds/KeyValue"
 import { Page } from "@/components/ds/Page"
 import { Section } from "@/components/ds/Section"
 import { TextLink } from "@/components/ds/TextLink"
-import { PROSE_BODY, PROSE_HEADING_MINOR } from "@/components/ds/prose-styles"
+import { HEADING_MINOR } from "@/components/ds/heading-styles"
+import { PROSE_BODY } from "@/components/ds/prose-styles"
 import { BOXED_SURFACE } from "@/components/ds/surface-styles"
 import { JsonLd } from "@/components/seo"
 import { findFloor, findGroup } from "@/lib/building/floors"
@@ -84,7 +85,7 @@ export default async function ProfilePage() {
                             <div className="flex flex-col gap-ds-3">
                                 {notes.map((note) => (
                                     <div key={note.heading} className="flex flex-col gap-ds-2">
-                                        <h3 className={PROSE_HEADING_MINOR}>{note.heading}</h3>
+                                        <h3 className={HEADING_MINOR}>{note.heading}</h3>
                                         <KeyValue items={note.items} />
                                     </div>
                                 ))}
