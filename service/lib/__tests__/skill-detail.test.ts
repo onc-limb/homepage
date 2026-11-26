@@ -4,6 +4,8 @@ import { findGroup } from "@/lib/building/floors"
 import { parseSkillSources } from "@/lib/skills"
 import {
     SKILL_SECTION_TITLES,
+    hasSkillDetail,
+    listSkillDetailsOnFloor,
     listSkillsOnFloor,
     resolveSkillPage,
     skillGroup,
@@ -22,6 +24,9 @@ import {
  *   (~/2f/skills/<category>/<slug>.md) of a skill, from FLOORS.
  * - listSkillsOnFloor gives the skills of one floor in the order of the list
  *   page: categoryOrder, then level (highest first), then name.
+ * - hasSkillDetail(skill) is true when any of the four body sections has an
+ *   item. Only those skills get a detail page (static params, sitemap,
+ *   prev / next); a skill with an empty body is missing (404).
  * - resolveSkillPage(skills, group, slug) returns
  *   found (with prev / next on the same floor), moved (the URL on the right
  *   floor) or missing. It only looks at the skills it is given, which are the
@@ -34,7 +39,8 @@ const factorySkill = (
     overrides: Partial<Skill> & { name: string; slug: string; category: SkillCategory; level: SkillLevel },
 ): Skill => ({
     publish: true,
-    experience: { items: [], subsections: [] },
+    // A detail page needs a body; the default skill has one experience item.
+    experience: { items: [{ text: "used it at work", children: [] }], subsections: [] },
     knowledge: { items: [], subsections: [] },
     relatedTech: [],
     relatedBooks: [],
@@ -139,6 +145,44 @@ describe("resolveSkillPage()", () => {
             },
         ])
         expect(resolveSkillPage(published, skills, "hidden")).toEqual({ kind: "missing" })
+    })
+})
+
+describe("skills with an empty body", () => {
+    const skills = findGroup("skills")
+    const empty = (overrides: Partial<Skill> = {}) =>
+        factorySkill({
+            name: "Empty",
+            slug: "empty",
+            category: "language",
+            level: 4,
+            experience: { items: [], subsections: [] },
+            ...overrides,
+        })
+
+    it("have no detail when all four sections are empty, or a ### has no items", () => {
+        expect(hasSkillDetail(empty())).toBe(false)
+        expect(hasSkillDetail(empty({ experience: { items: [], subsections: [{ title: "業務", items: [] }] } }))).toBe(false)
+    })
+
+    it("have a detail as soon as any section has an item", () => {
+        const item = { text: "x", children: [] }
+        expect(hasSkillDetail(empty({ experience: { items: [], subsections: [{ title: "業務", items: [item] }] } }))).toBe(true)
+        expect(hasSkillDetail(empty({ knowledge: { items: [item], subsections: [] } }))).toBe(true)
+        expect(hasSkillDetail(empty({ relatedTech: ["Node.js"] }))).toBe(true)
+        expect(hasSkillDetail(empty({ relatedBooks: ["a book"] }))).toBe(true)
+    })
+
+    it("are missing (404) on both floors, and are skipped by the previous and next doors", () => {
+        // Go 5 / Empty 4 / Alpha 3 on 2F language: Empty sits between Go and Alpha in the list.
+        const withEmpty = [...SKILLS, empty()]
+        expect(resolveSkillPage(withEmpty, skills, "empty")).toEqual({ kind: "missing" })
+        expect(resolveSkillPage(withEmpty, findGroup("studies"), "empty")).toEqual({ kind: "missing" })
+        expect(listSkillDetailsOnFloor(withEmpty, "2f").map((skill) => skill.slug)).not.toContain("empty")
+
+        const alpha = resolveSkillPage(withEmpty, skills, "alpha")
+        if (alpha.kind !== "found") throw new Error(`expected found, got ${alpha.kind}`)
+        expect(alpha.prev?.slug).toBe("golang")
     })
 })
 

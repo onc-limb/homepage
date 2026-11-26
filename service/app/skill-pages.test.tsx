@@ -326,7 +326,7 @@ describe.each(PAGES)("$file category tables", (page) => {
         })
     })
 
-    it("colors the filled marks with the accent color and the empty marks with the border color", async () => {
+    it("colors the filled marks with the accent color and the empty marks with fg-muted", async () => {
         sourcesOverride.value = FIXTURES
         const main = await renderMain(page)
         const cells = categoryBlocks(main).flatMap(({ table }) => bodyRows(table).map((row) => row[1]))
@@ -338,7 +338,8 @@ describe.each(PAGES)("$file category tables", (page) => {
             expect(filled, cell.textContent ?? "").toBeDefined()
             expect(empty, cell.textContent ?? "").toBeDefined()
             expect(filled!.closest(".text-ds-accent"), `${cell.textContent} filled`).not.toBeNull()
-            expect(empty!.closest(".text-ds-border"), `${cell.textContent} empty`).not.toBeNull()
+            expect(empty!.closest(".text-ds-fg-muted"), `${cell.textContent} empty`).not.toBeNull()
+            expect(empty!.closest('[aria-hidden="true"]'), `${cell.textContent} hidden`).not.toBeNull()
         }
     })
 

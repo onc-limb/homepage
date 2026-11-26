@@ -10,7 +10,7 @@ import { afterEach, describe, expect, it, vi } from "vitest"
 import { floorTitle } from "@/components/building/FloorFrame"
 import { findFloor, findGroup, type FloorGroup } from "@/lib/building/floors"
 import type { SkillSource } from "@/lib/skills"
-import { categoryLabels, levelLabels, listSkillsOnFloor, skillHref, type SkillCategory, type SkillLevel } from "@/lib/skills-meta"
+import { categoryLabels, hasSkillDetail, levelLabels, listSkillsOnFloor, skillHref, type SkillCategory, type SkillLevel } from "@/lib/skills-meta"
 
 /**
  * Skill detail pages (/2f/skills/[name] and /b1/studies/[name]) contract tests.
@@ -216,9 +216,9 @@ describe.each(ROUTES)("$file static params", (route) => {
         expect(route.module.dynamicParams).not.toBe(false)
     })
 
-    it("with the real docs/skills, generates exactly the published skills of this floor", async () => {
+    it("with the real docs/skills, generates exactly the published skills of this floor that have a body", async () => {
         const { getSkills } = await import("@/lib/skills")
-        const onFloor = listSkillsOnFloor(getSkills(), groupOf(route).floor)
+        const onFloor = listSkillsOnFloor(getSkills(), groupOf(route).floor).filter(hasSkillDetail)
         expect(onFloor.length).toBeGreaterThan(0)
         const generated = (await route.module.generateStaticParams()).map(({ name }) => name).sort()
         expect(generated).toEqual(onFloor.map((skill) => skill.slug).sort())
@@ -293,14 +293,24 @@ describe("skill detail KeyValue", () => {
         }
     })
 
-    it("colors the filled marks with the accent color and the empty marks with the border color, like the list", async () => {
+    it("colors the filled marks with the accent color and the empty marks with fg-muted, like the list", async () => {
         sourcesOverride.value = FIXTURES
         const main = await renderMain(SKILLS_ROUTE, "alpha")
         const cell = keyValues(main).values[1]
         const filled = Array.from(cell.querySelectorAll("*")).find((el) => /^●+$/.test(el.textContent ?? ""))
         const empty = Array.from(cell.querySelectorAll("*")).find((el) => /^○+$/.test(el.textContent ?? ""))
         expect(filled?.closest(".text-ds-accent"), "filled").not.toBeNull()
-        expect(empty?.closest(".text-ds-border"), "empty").not.toBeNull()
+        expect(empty?.closest(".text-ds-fg-muted"), "empty").not.toBeNull()
+        // The marks are not read out: the level name next to them carries the same information.
+        expect(filled?.closest('[aria-hidden="true"]'), "filled hidden").not.toBeNull()
+        expect(empty?.closest('[aria-hidden="true"]'), "empty hidden").not.toBeNull()
+    })
+
+    it("keeps the KeyValue within the prose measure", async () => {
+        sourcesOverride.value = FIXTURES
+        const main = await renderMain(SKILLS_ROUTE, "golang")
+        const dl = main.querySelector("dl")
+        expect(dl?.closest(".max-w-ds-measure"), "measure").not.toBeNull()
     })
 })
 
@@ -514,6 +524,26 @@ describe("skill detail 404", () => {
         sourcesOverride.value = FIXTURES
         const error = await thrownBy(route, name)
         expect(error.digest).toBe(NOT_FOUND_DIGEST)
+    })
+
+    it("is not found for a published skill whose body is empty, on either floor, and the list does not link it", async () => {
+        // Empty sits on 2F language between Go (5) and Alpha (3).
+        sourcesOverride.value = [
+            ...FIXTURES,
+            fixture("./language/empty-body.md", { name: "Empty Body", category: "language", level: 4, publish: true }, ["## 経験", ""]),
+        ]
+        expect((await thrownBy(SKILLS_ROUTE, "empty-body")).digest).toBe(NOT_FOUND_DIGEST)
+        expect((await thrownBy(STUDIES_ROUTE, "empty-body")).digest).toBe(NOT_FOUND_DIGEST)
+        expect((await SKILLS_ROUTE.module.generateStaticParams()).map(({ name }) => name)).not.toContain("empty-body")
+
+        const alpha = await renderMain(SKILLS_ROUTE, "alpha")
+        expect(doors(alpha)[0][1]).toBe("/2f/skills/golang")
+
+        const listHtml = renderToStaticMarkup(await SKILLS_ROUTE.list())
+        const list = new DOMParser().parseFromString(listHtml, "text/html")
+        const cell = Array.from(list.querySelectorAll("td")).find((td) => td.textContent?.trim() === "Empty Body")
+        expect(cell, "listed by name").toBeDefined()
+        expect(cell?.querySelector("a"), "no link").toBeNull()
     })
 
     it("exports no metadata of a skill for an unknown name", async () => {

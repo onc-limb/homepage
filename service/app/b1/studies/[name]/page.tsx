@@ -4,14 +4,14 @@ import { notFound, permanentRedirect } from "next/navigation"
 import { SkillDetail, skillDetailMetadata } from "@/components/skills"
 import { findGroup } from "@/lib/building/floors"
 import { getSkills } from "@/lib/skills"
-import { listSkillsOnFloor, resolveSkillPage } from "@/lib/skills-meta"
+import { listSkillDetailsOnFloor, resolveSkillPage } from "@/lib/skills-meta"
 
 const group = findGroup("studies")
 
 type Props = { params: Promise<{ name: string }> }
 
 export function generateStaticParams() {
-    return listSkillsOnFloor(getSkills(), group.floor).map((skill) => ({ name: skill.slug }))
+    return listSkillDetailsOnFloor(getSkills(), group.floor).map((skill) => ({ name: skill.slug }))
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

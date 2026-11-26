@@ -36,20 +36,22 @@ export function SkillDetail({ group, skill, prev, next }: SkillDetailProps) {
         <main className="flex-1">
             <Page title={skill.name} command={`cat ${skillVirtualPath(skill)}`}>
                 <div className="flex flex-col gap-ds-5">
-                    <KeyValue
-                        items={[
-                            { key: "分野", value: categoryLabels[skill.category] },
-                            {
-                                key: "レベル",
-                                value: (
-                                    <>
-                                        <LevelGauge level={skill.level} /> {levelLabels[skill.level].label}
-                                    </>
-                                ),
-                            },
-                            { key: "置いてある階", value: floorTitle(findFloor(group.floor)) },
-                        ]}
-                    />
+                    <div className="max-w-ds-measure">
+                        <KeyValue
+                            items={[
+                                { key: "分野", value: categoryLabels[skill.category] },
+                                {
+                                    key: "レベル",
+                                    value: (
+                                        <>
+                                            <LevelGauge level={skill.level} /> {levelLabels[skill.level].label}
+                                        </>
+                                    ),
+                                },
+                                { key: "置いてある階", value: floorTitle(findFloor(group.floor)) },
+                            ]}
+                        />
+                    </div>
                     <SkillBody skill={skill} />
                     <PagerDoors
                         prev={prev && skillLink(prev)}

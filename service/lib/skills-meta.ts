@@ -200,6 +200,24 @@ export function listSkillsOnFloor(skills: Skill[], floor: FloorId): Skill[] {
     return groupSkillsByCategory(skills, floor).flatMap((group) => group.skills)
 }
 
+// 本文（経験・知識・関連技術・関連書籍）のどれかに中身があるスキルだけが、詳細ページを持つ。
+// 本文が空のスキルは一覧に名前だけを出し、詳細の URL は 404 にする。
+export function hasSkillDetail(skill: Pick<Skill, "experience" | "knowledge" | "relatedTech" | "relatedBooks">): boolean {
+    const hasList = (section: ListSection) =>
+        section.items.length > 0 || section.subsections.some((subsection) => subsection.items.length > 0)
+    return (
+        hasList(skill.experience) ||
+        hasList(skill.knowledge) ||
+        skill.relatedTech.length > 0 ||
+        skill.relatedBooks.length > 0
+    )
+}
+
+// 詳細ページを持つスキルを、一覧の並びで返す。静的生成・sitemap・前後の扉はこれを使う
+export function listSkillDetailsOnFloor(skills: Skill[], floor: FloorId): Skill[] {
+    return listSkillsOnFloor(skills, floor).filter(hasSkillDetail)
+}
+
 export type SkillPageResolution =
     | { kind: "found"; skill: Skill; prev?: Skill; next?: Skill }
     | { kind: "moved"; href: string }
@@ -208,9 +226,9 @@ export type SkillPageResolution =
 // 詳細ページの [name]（md のファイル名）を解決する。skills は公開済みのスキルだけを渡す
 export function resolveSkillPage(skills: Skill[], group: FloorGroup, slug: string): SkillPageResolution {
     const skill = skills.find((candidate) => candidate.slug === slug)
-    if (!skill) return { kind: "missing" }
+    if (!skill || !hasSkillDetail(skill)) return { kind: "missing" }
     if (skillGroup(skill).slug !== group.slug) return { kind: "moved", href: skillHref(skill) }
-    const onFloor = listSkillsOnFloor(skills, group.floor)
+    const onFloor = listSkillDetailsOnFloor(skills, group.floor)
     const index = onFloor.indexOf(skill)
     return { kind: "found", skill, prev: onFloor[index - 1], next: onFloor[index + 1] }
 }

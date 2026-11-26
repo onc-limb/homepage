@@ -55,7 +55,7 @@ afterEach(() => {
 
 const SKILLS_ROOT = path.resolve(__dirname, "../../../docs/skills")
 
-type SkillFile = { category: string; name: string; level: number; publish: boolean; displayName: string }
+type SkillFile = { category: string; name: string; level: number; publish: boolean; displayName: string; hasBody: boolean }
 
 const readSkillFiles = (): SkillFile[] =>
     fs
@@ -70,6 +70,8 @@ const readSkillFiles = (): SkillFile[] =>
                 level: Number(raw.match(/^level:\s*(\d)\s*$/m)?.[1]),
                 publish: /^publish:\s*true\s*$/m.test(raw),
                 displayName: raw.match(/^name:\s*(.+?)\s*$/m)?.[1] ?? "",
+                // 本文（frontmatter の後）に箇条書きが 1 つでもあるか
+                hasBody: /^\s*-\s+\S/m.test(raw.replace(/^---[\s\S]*?\n---/, "")),
             }
         })
 
@@ -138,7 +140,8 @@ describe("getEntries()", () => {
                 const entry = byPath(entries, `~/${dir}/${group}/${file.category}/${file.name}.md`)
 
                 expect(entry, `${file.category}/${file.name}.md`).toBeDefined()
-                expect(entry?.href).toBe(`/${dir}/${group}/${file.name}`)
+                // 本文が空のスキルは詳細ページを持たないので、一覧へ行く
+                expect(entry?.href).toBe(file.hasBody ? `/${dir}/${group}/${file.name}` : `/${dir}/${group}`)
                 expect(entry?.room).toBe(file.category)
             }
         })

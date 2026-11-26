@@ -25,7 +25,7 @@ vi.mock("@/lib/skills", async (importOriginal) => ({
 import sitemap from "@/app/sitemap"
 import { FLOORS, findGroup } from "@/lib/building/floors"
 import { parseSkillSources } from "@/lib/skills"
-import { skillHref } from "@/lib/skills-meta"
+import { hasSkillDetail, skillHref } from "@/lib/skills-meta"
 
 /** The real docs/skills md, as require.context would give them. */
 function realSkillSources() {
@@ -165,7 +165,7 @@ describe("sitemap", () => {
         expect(entries.some((entry) => entry.url.includes(".com//"))).toBe(false)
     })
 
-    it("lists one detail page per published skill, at its own floor's URL, after the existing URLs", async () => {
+    it("lists one detail page per published skill that has a body, at its own floor's URL, after the existing URLs", async () => {
         const sources = realSkillSources()
         const published = parseSkillSources(sources)
         expect(published.length).toBeGreaterThan(0)
@@ -177,15 +177,20 @@ describe("sitemap", () => {
         // the existing URLs keep their order; the skill pages are added after them
         expect(urls.slice(0, withoutSkills.length)).toEqual(withoutSkills)
         const added = urls.slice(withoutSkills.length)
-        expect([...added].sort()).toEqual(published.map((skill) => `https://onc-limb.com${skillHref(skill)}`).sort())
+        expect([...added].sort()).toEqual(
+            published.filter(hasSkillDetail).map((skill) => `https://onc-limb.com${skillHref(skill)}`).sort(),
+        )
+        // skills with an empty body have no detail page, so the sitemap leaves them out
+        expect(added.length).toBeLessThan(published.length)
 
         const detailPaths = urls
             .map((url) => new URL(url).pathname)
             .filter((pathname) =>
                 [findGroup("skills").url, findGroup("studies").url].some((list) => pathname.startsWith(`${list}/`)),
             )
-        expect(detailPaths).toHaveLength(published.length)
-        expect(new Set(detailPaths).size).toBe(published.length)
+        const withBody = published.filter(hasSkillDetail).length
+        expect(detailPaths).toHaveLength(withBody)
+        expect(new Set(detailPaths).size).toBe(withBody)
 
         // no unpublished skill is listed
         const unpublished = sources

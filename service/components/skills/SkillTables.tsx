@@ -4,7 +4,7 @@ import { DataTable, type DataTableColumn } from "@/components/ds/DataTable"
 import { HashHeading } from "@/components/ds/HashHeading"
 import { TextLink } from "@/components/ds/TextLink"
 import { toVirtualPath, type FloorGroup } from "@/lib/building/floors"
-import { categoryLabels, levelLabels, skillHref, type Skill, type SkillCategoryGroup } from "@/lib/skills-meta"
+import { categoryLabels, hasSkillDetail, levelLabels, skillHref, type Skill, type SkillCategoryGroup } from "@/lib/skills-meta"
 import { LevelGauge } from "./LevelGauge"
 
 const COLUMNS: readonly DataTableColumn<"name" | "level" | "label">[] = [
@@ -36,7 +36,7 @@ export function SkillTables({ group, categories }: SkillTablesProps) {
 
 function skillRows(skill: Skill): Record<"name" | "level" | "label", ReactNode> {
     return {
-        name: <TextLink href={skillHref(skill)}>{skill.name}</TextLink>,
+        name: hasSkillDetail(skill) ? <TextLink href={skillHref(skill)}>{skill.name}</TextLink> : skill.name,
         level: (
             <>
                 <LevelGauge level={skill.level} />{" "}

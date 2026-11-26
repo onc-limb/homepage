@@ -6,7 +6,7 @@ import { SOCIAL_LINKS } from "../constants"
 import { getParsedProfile, getProfile, listHistories, toSerialNumber, type CareerItem } from "../profile"
 import { getProjects } from "../portfolio"
 import { getSkills, levelLabels, type SkillLevel } from "../skills"
-import { skillGroup, skillHref, skillVirtualPath } from "../skills-meta"
+import { hasSkillDetail, skillGroup, skillHref, skillVirtualPath } from "../skills-meta"
 import { findFloor, findGroup, toVirtualPath, type FloorId, type GroupSlug } from "./floors"
 
 export interface Entry {
@@ -51,7 +51,8 @@ function skillEntries(): Entry[] {
             room: skill.category,
             title: skill.name,
             excerpt: `level ${skill.level}（${levelLabels[skill.level].label}）`,
-            href: skillHref(skill),
+            // 本文が空のスキルは詳細ページを持たないので、一覧へ行かせる
+            href: hasSkillDetail(skill) ? skillHref(skill) : group.url,
             tags: [skill.category],
             level: skill.level,
         }
