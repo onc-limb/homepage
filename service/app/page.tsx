@@ -1,11 +1,12 @@
 import type { Metadata } from "next"
 
 import { floorTitle } from "@/components/building/FloorFrame"
+import { CONTACT_DOOR } from "@/components/ds/contact-door"
 import { DoorButton } from "@/components/ds/DoorButton"
 import { Page } from "@/components/ds/Page"
 import { TextLink } from "@/components/ds/TextLink"
 import { JsonLd } from "@/components/seo"
-import { findGroup, FLOORS } from "@/lib/building/floors"
+import { FLOORS } from "@/lib/building/floors"
 import { absoluteUrl, createPageMetadata, LODGE_NAME, SITE_DESCRIPTION, SITE_NAME } from "@/lib/seo"
 
 export const metadata: Metadata = createPageMetadata({
@@ -29,8 +30,8 @@ export default function TopPage() {
             />
             <Page title={LODGE_NAME}>
                 <p className="flex flex-wrap items-center gap-x-ds-3 gap-y-ds-2">
-                    <DoorButton href={findGroup("contact").href} primary>
-                        Contact
+                    <DoorButton href={CONTACT_DOOR.href} primary>
+                        {CONTACT_DOOR.label}
                     </DoorButton>
                     <span className="font-ds-prose text-ds-sm text-ds-fg-muted">
                         お仕事のご相談、技術的なご相談・壁打ちを受け付けています

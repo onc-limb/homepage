@@ -2,6 +2,9 @@
 import { renderToStaticMarkup } from "react-dom/server"
 import { beforeAll, describe, expect, it } from "vitest"
 
+import { LIT_MARK } from "@/components/ds/lit-mark"
+import { findGroup } from "@/lib/building/floors"
+
 import DesignPage from "../page"
 import { DESIGN_SAMPLES } from "./index"
 
@@ -20,6 +23,9 @@ const COMPONENT_SAMPLES: Array<[string, string]> = [
     ["log-list", "ul > li a[href]"],
     ["door-button", "button, a[href]"],
     ["pager-doors", "nav[aria-label] a[href]"],
+    ["floor-guide", '[role="group"][aria-label="階"] button[aria-pressed]'],
+    ["guide-pc", "section h2"],
+    ["lodge-exterior", '[data-part="lodge-exterior"][aria-hidden="true"]'],
 ]
 
 let root: HTMLElement
@@ -43,7 +49,7 @@ function sampleBlock(theme: (typeof THEMES)[number], id: string): HTMLElement {
 }
 
 describe("/design component samples", () => {
-    it("registers a sample for each of the eleven components", () => {
+    it("registers a sample for each of the components", () => {
         const ids = DESIGN_SAMPLES.map((s) => s.id)
         for (const [id] of COMPONENT_SAMPLES) expect(ids, id).toContain(id)
     })
@@ -90,6 +96,34 @@ describe("/design component samples", () => {
             expect(block.querySelectorAll('button[aria-pressed="true"]').length, "selected").toBeGreaterThan(0)
             expect(block.querySelectorAll('[data-lit="true"]').length, "lit").toBeGreaterThan(0)
             expect(block.querySelectorAll('[data-part="label"]').length, "labels").toBeGreaterThan(0)
+        })
+
+        it("shows FloorGuide with a selected floor and a floor with a count", () => {
+            const block = sampleBlock(theme, "floor-guide")
+            const floors = block.querySelectorAll('[role="group"][aria-label="階"] button')
+            expect(floors, "floors").toHaveLength(5)
+            expect(block.querySelectorAll('button[aria-pressed="true"]'), "selected").toHaveLength(1)
+            expect(block.querySelector('[data-part="roof"]'), "roof").not.toBeNull()
+            expect(block.textContent, "count").toMatch(new RegExp(`${LIT_MARK}\\d`))
+        })
+
+        it("shows GuidePc with the heading, more than five papers and the Contact door", () => {
+            const block = sampleBlock(theme, "guide-pc")
+            expect(block.querySelector("section h2")?.textContent).toContain("案内人")
+            expect(block.textContent, "docent").toContain("$ docent")
+            expect(block.textContent, "rest of the papers").toMatch(/ほか\s*\d+\s*枚/)
+            const contact = block.querySelector<HTMLElement>('[data-primary="true"]')
+            expect(contact?.textContent?.trim(), "Contact").toBe("Contact")
+            expect(contact?.getAttribute("href"), "Contact href").toBe(findGroup("contact").href)
+            expect(block.querySelectorAll("button[aria-pressed]").length, "searches").toBeGreaterThan(0)
+        })
+
+        it("shows LodgeExterior with the door closed and open, at the desktop and the narrow size", () => {
+            const drawings = Array.from(
+                sampleBlock(theme, "lodge-exterior").querySelectorAll<HTMLElement>('[data-part="lodge-exterior"]')
+            )
+            const shown = drawings.map((d) => `${d.getAttribute("data-size")}/${d.getAttribute("data-door")}`)
+            expect([...shown].sort()).toEqual(["desktop/closed", "desktop/open", "narrow/closed", "narrow/open"])
         })
 
         it("shows PagerDoors in the middle, on the first and on the last page", () => {

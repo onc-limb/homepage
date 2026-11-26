@@ -155,6 +155,8 @@ const config: Config = {
             height: {
                 "ds-door": "210px",
                 "ds-door-narrow": "150px",
+                // FloorGuide roof: the gable above the floor list (Maze.dc.html).
+                "ds-roof": "34px",
             },
             borderWidth: {
                 "ds-door": "3px",
