@@ -14,7 +14,7 @@ vi.mock("@/lib/portfolio", () => ({
 }))
 
 import sitemap from "@/app/sitemap"
-import { FLOORS } from "@/lib/building/floors"
+import { FLOORS, findGroup } from "@/lib/building/floors"
 
 beforeEach(() => {
     vi.unstubAllEnvs()
@@ -45,8 +45,7 @@ describe("sitemap", () => {
             "https://onc-limb.com/profile",
             "https://onc-limb.com/skills",
             "https://onc-limb.com/portfolio",
-            "https://onc-limb.com/social",
-            "https://onc-limb.com/contact",
+            "https://onc-limb.com/1f/contact",
             "https://onc-limb.com/books",
             "https://onc-limb.com/blog",
             "https://onc-limb.com/portfolio/project-a",
@@ -62,6 +61,16 @@ describe("sitemap", () => {
         const paths = entries.map((entry) => new URL(entry.url).pathname)
 
         expect(paths).toEqual(expect.arrayContaining(FLOORS.map((floor) => floor.url)))
+    })
+
+    it("lists the contact page at its 1F URL and drops the retired /contact and /social", async () => {
+        const entries = await sitemap()
+        const paths = entries.map((entry) => new URL(entry.url).pathname)
+
+        expect(paths).toContain(findGroup("contact").url)
+        expect(paths).toContain("/1f/contact")
+        expect(paths).not.toContain("/contact")
+        expect(paths).not.toContain("/social")
     })
 
     it("uses content timestamps instead of the build time", async () => {

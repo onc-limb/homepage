@@ -12,7 +12,7 @@ export interface NavItem {
 
 /**
  * 外部 SNS / プロフィールリンクの正準定義。
- * Footer / Social ページ / Top の CTA バンドから参照する。
+ * Footer / 屋上（/rf）の扉・プロフィールから参照する。
  * URL を変更する場合はこの 1 箇所だけを更新すること。
  */
 export interface SocialLink {
@@ -24,7 +24,7 @@ export interface SocialLink {
 
 /**
  * 公開する連絡先メールアドレス。
- * コンタクトページの mailto 経路とトップの導線から参照する。
+ * 連絡先ページ（/1f/contact）の mailto 経路とエラーの文面から参照する。
  * アドレスを変更する場合はこの 1 箇所だけを更新すること。
  */
 export const CONTACT_EMAIL = "satoshi.onga@onc-limb.com"

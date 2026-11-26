@@ -86,7 +86,7 @@ export const articleTags = sqliteTable(
     ]
 )
 
-// /contact のフォームから届いた問い合わせ。
+// /1f/contact のフォームから届いた問い合わせ。
 // 通知（Slack / メール）より先にここへ保存することで、通知が全滅しても内容は失われない。
 export const contacts = sqliteTable(
     "contacts",

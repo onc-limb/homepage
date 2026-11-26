@@ -32,7 +32,7 @@ describe("isNavItemActive()", () => {
         ["/skills/typescript", "/2f"],
         ["/portfolio/onc-limb", "/3f"],
         ["/profile", "/1f"],
-        ["/contact", "/1f"],
+        ["/1f/contact", "/1f"],
         ["/rf", "/rf"],
     ])("marks the floor item on %s as active for %s", (pathname, href) => {
         // Given a page that belongs to a floor (including transitional URLs)

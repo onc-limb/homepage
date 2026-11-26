@@ -5,6 +5,7 @@ import { doorButtonSample } from "./door-button"
 import { floorGuideSample } from "./floor-guide"
 import { floorMapSample } from "./floor-map"
 import { guidePcSample } from "./guide-pc"
+import { hashHeadingSample } from "./hash-heading"
 import { keyValueSample } from "./key-value"
 import { lodgeExteriorSample } from "./lodge-exterior"
 import { logListSample } from "./log-list"
@@ -27,6 +28,7 @@ export const DESIGN_SAMPLES: readonly DesignSample[] = [
     spacingSample,
     pageFrameSample,
     sectionSample,
+    hashHeadingSample,
     keyValueSample,
     dataTableSample,
     codeBlockSample,

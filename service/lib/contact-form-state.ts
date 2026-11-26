@@ -1,7 +1,7 @@
 /**
  * コンタクトフォームの useActionState 用の状態定義。
  *
- * クライアントコンポーネント（app/contact/ContactForm.tsx）から import されるため、
+ * クライアントコンポーネント（app/1f/contact/ContactForm.tsx）から import されるため、
  * このファイルは DB・通知などサーバー専用モジュールに依存させないこと。
  * 依存させると lib/db 経由で libsql がクライアントバンドルに引き込まれて壊れる。
  * 処理本体は lib/contact-submission.ts 側にある。

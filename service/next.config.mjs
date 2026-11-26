@@ -1,3 +1,5 @@
+import { PERMANENT_REDIRECTS } from './lib/redirects.mjs'
+
 const isProduction = process.env.NODE_ENV === 'production'
 
 /** @type {import('next').NextConfig} */
@@ -45,6 +47,9 @@ const nextConfig = {
                 },
             }
             : {}),
+    },
+    async redirects() {
+        return PERMANENT_REDIRECTS
     },
 };
 export default nextConfig;

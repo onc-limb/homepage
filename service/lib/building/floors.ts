@@ -34,8 +34,11 @@ const group = (
     roomName: string | null,
     note: string | null,
     command: string,
-    href: string,
-): FloorGroup => ({ floor, slug, name, roomName, note, command, url: `/${floor}/${slug}`, href })
+    href?: string,
+): FloorGroup => {
+    const url = `/${floor}/${slug}`
+    return { floor, slug, name, roomName, note, command, url, href: href ?? url }
+}
 
 export const FLOORS: Floor[] = [
     {
@@ -56,7 +59,7 @@ export const FLOORS: Floor[] = [
         material: "wood",
         groups: [
             group("1f", "profile", "プロフィール", "プロフィール", "自己紹介・関心・資格", "man onclimb", "/profile"),
-            group("1f", "contact", "連絡先", "受付・連絡先", "フォーム・メール", "finger onclimb", "/contact"),
+            group("1f", "contact", "連絡先", "受付・連絡先", "フォーム・メール", "finger onclimb"),
         ],
     },
     {

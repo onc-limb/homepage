@@ -29,7 +29,7 @@ function formValue(formData: FormData, key: string): string {
 /**
  * コンタクトフォームの送信を処理する本体。
  *
- * Server Action（app/contact/actions.ts）から呼ばれる。"use server" ファイルは
+ * Server Action（app/1f/contact/actions.ts）から呼ばれる。"use server" ファイルは
  * async 関数しか export できないため、処理本体をここに置いている
  * （状態の型と初期値はクライアントからも使うので lib/contact-form-state.ts 側）。
  *

@@ -14,6 +14,7 @@ const THEMES = ["light", "dark"] as const
 const COMPONENT_SAMPLES: Array<[string, string]> = [
     ["page", "h1"],
     ["section", "section > h2"],
+    ["hash-heading", "h2 > span[aria-hidden]"],
     ["key-value", "dl dt + dd"],
     ["data-table", "table thead th"],
     ["code-block", "pre > code"],

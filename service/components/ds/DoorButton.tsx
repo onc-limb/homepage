@@ -24,6 +24,7 @@ type DoorLinkProps = DoorCommonProps & {
     "aria-controls"?: undefined
     ref?: undefined
     onClick?: undefined
+    disabled?: undefined
 }
 
 type DoorActionProps = DoorCommonProps & {
@@ -36,6 +37,7 @@ type DoorActionProps = DoorCommonProps & {
     "aria-controls"?: string
     ref?: Ref<HTMLButtonElement>
     onClick?: MouseEventHandler<HTMLButtonElement>
+    disabled?: boolean
 }
 
 export type DoorButtonProps = DoorLinkProps | DoorActionProps
@@ -58,6 +60,7 @@ export function DoorButton(props: DoorButtonProps) {
         "aria-controls": controls,
         ref,
         onClick,
+        disabled,
     } = props
     const external = href !== undefined && isExternalHref(href)
     const accent = primary || pressed === true
@@ -113,6 +116,7 @@ export function DoorButton(props: DoorButtonProps) {
                 aria-controls={controls}
                 data-primary={primary ? "true" : undefined}
                 onClick={onClick}
+                disabled={disabled}
                 className={className}
             >
                 {content}

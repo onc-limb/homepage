@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next"
 import { listPublishedArticles } from "@/lib/articles"
-import { FLOORS } from "@/lib/building/floors"
+import { FLOORS, findGroup } from "@/lib/building/floors"
 import { getProjects } from "@/lib/portfolio"
 
 export const dynamic = "force-dynamic"
@@ -47,12 +47,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             priority: 0.9,
         },
         {
-            url: `${baseUrl}/social`,
-            changeFrequency: "monthly",
-            priority: 0.7,
-        },
-        {
-            url: `${baseUrl}/contact`,
+            url: `${baseUrl}${findGroup("contact").url}`,
             changeFrequency: "yearly",
             priority: 0.9,
         },

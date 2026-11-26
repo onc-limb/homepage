@@ -77,7 +77,7 @@ describe("SiteNav current page", () => {
         ["/skills/typescript", ["2F 経歴・技術"]],
         ["/2f/skills", ["2F 経歴・技術"]],
         ["/portfolio/onc-limb", ["3F 作品・考え"]],
-        ["/contact", ["1F プロフィール"]],
+        ["/1f/contact", ["1F プロフィール"]],
         ["/b1", ["B1 自己学習"]],
         ["/rf", ["屋上 リンク"]],
         ["/", ["案内"]],
