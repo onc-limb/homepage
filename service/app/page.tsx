@@ -1,12 +1,13 @@
 import type { Metadata } from "next"
 
-import { floorTitle } from "@/components/building/FloorFrame"
+import { InfoCenter } from "@/components/building/InfoCenter"
 import { CONTACT_DOOR } from "@/components/ds/contact-door"
 import { DoorButton } from "@/components/ds/DoorButton"
 import { Page } from "@/components/ds/Page"
-import { TextLink } from "@/components/ds/TextLink"
 import { JsonLd } from "@/components/seo"
-import { FLOORS } from "@/lib/building/floors"
+import { getEntries } from "@/lib/building/entries"
+import { FLOORS, type FloorId } from "@/lib/building/floors"
+import { layoutFloor, type FloorLayout } from "@/lib/building/layout"
 import { absoluteUrl, createPageMetadata, LODGE_NAME, SITE_DESCRIPTION, SITE_NAME } from "@/lib/seo"
 
 export const metadata: Metadata = createPageMetadata({
@@ -15,7 +16,12 @@ export const metadata: Metadata = createPageMetadata({
     path: "/",
 })
 
-export default function TopPage() {
+export default async function TopPage() {
+    const entries = await getEntries()
+    const layouts = Object.fromEntries(
+        FLOORS.map((floor) => [floor.id, layoutFloor(floor, entries.filter((entry) => entry.floor === floor.id))])
+    ) as Record<FloorId, FloorLayout>
+
     return (
         <main className="flex-1">
             <JsonLd
@@ -37,13 +43,9 @@ export default function TopPage() {
                         お仕事のご相談、技術的なご相談・壁打ちを受け付けています
                     </span>
                 </p>
-                <ul className="mt-ds-4 flex flex-col gap-ds-2">
-                    {[...FLOORS].reverse().map((floor) => (
-                        <li key={floor.id}>
-                            <TextLink href={floor.url}>{floorTitle(floor)}</TextLink>
-                        </li>
-                    ))}
-                </ul>
+                <div className="mt-ds-4">
+                    <InfoCenter layouts={layouts} />
+                </div>
             </Page>
         </main>
     )

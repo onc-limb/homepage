@@ -3,15 +3,21 @@ import fs from "node:fs"
 import path from "node:path"
 import * as React from "react"
 import { renderToStaticMarkup } from "react-dom/server"
-import { afterAll, describe, expect, it, vi } from "vitest"
+import { afterAll, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { elementWithText, precedes } from "@/components/ds/__tests__/render"
-import { FLOORS, findGroup } from "@/lib/building/floors"
+import type { Entry } from "@/lib/building/entries"
+import { FLOORS, findFloor, findGroup, type FloorId, type GroupSlug } from "@/lib/building/floors"
+import { layoutFloor } from "@/lib/building/layout"
+import { categoryOrder } from "@/lib/skills-meta"
 
 vi.hoisted(() => {
     // SITE_URL is evaluated when @/lib/seo is imported, so pin the default origin first.
     vi.stubEnv("NEXT_PUBLIC_SITE_URL", undefined)
 })
+
+const mocks = vi.hoisted(() => ({ getEntries: vi.fn() }))
+vi.mock("@/lib/building/entries", () => ({ getEntries: mocks.getEntries }))
 
 // next/link -> plain anchor so href assertions work under a static render.
 vi.mock("next/link", () => ({
@@ -24,8 +30,11 @@ import TopPage, * as pageModule from "@/app/page"
  * Home contract tests (/).
  *
  * From the top: the h1 "onclimb 山荘", then the small primary Contact door with
- * one sentence beside it, then one text link per floor from the roof down to B1.
- * Nothing else is shown: no prose under the heading, no `$ command` line.
+ * one sentence beside it, then the info center (the floor guide and the map of
+ * all five floors). The floor layouts are built on the server from getEntries().
+ * Nothing else is shown: no prose under the heading, no `$ command` line, no
+ * other links. Without JavaScript the HTML already holds the 1F map with its
+ * room names.
  */
 
 const ORIGIN_ROOT = "https://onc-limb.com/"
@@ -33,12 +42,31 @@ const DESCRIPTION =
     "ソフトウェアアーキテクトの視点で、設計から実装・運用まで担うフルスタックエンジニア onclimb のポートフォリオ。"
 const TITLE = "onclimb 山荘"
 const CONTACT_NOTE = "お仕事のご相談、技術的なご相談・壁打ちを受け付けています"
-const FLOOR_ORDER = ["/rf", "/3f", "/2f", "/1f", "/b1"]
-const floorText = (url: string): string => {
-    const floor = FLOORS.find((f) => f.url === url)
-    if (!floor) throw new Error(`No floor for ${url}`)
-    return `${floor.label} ${floor.name}`
+const GUIDE = '[role="group"][aria-label="階"]'
+
+function entry(floor: FloorId, group: GroupSlug | null, room: string | null, index: number): Entry {
+    return {
+        path: `~/${floor}/${group ?? "rooftop"}/${room ?? "link"}/${index}.md`,
+        floor,
+        group,
+        room,
+        title: `${room ?? "link"} ${index}`,
+        excerpt: "",
+        href: `/${floor}`,
+        tags: [],
+    }
 }
+
+const ENTRIES: Entry[] = [
+    entry("b1", "studies", categoryOrder[1], 0),
+    entry("1f", "profile", "profile", 0),
+    entry("1f", "profile", "profile", 1),
+    entry("1f", "contact", "contact", 0),
+    entry("2f", "histories", "histories", 0),
+    entry("2f", "skills", categoryOrder[0], 0),
+    entry("3f", "portfolios", "portfolios", 0),
+    { ...entry("rf", null, null, 0), title: "GitHub" },
+]
 
 async function renderMain(): Promise<HTMLElement> {
     const html = renderToStaticMarkup(await TopPage())
@@ -54,10 +82,18 @@ function contactLink(main: HTMLElement): HTMLAnchorElement {
     return links[0]
 }
 
-function floorLinks(main: HTMLElement): HTMLAnchorElement[] {
-    const floorUrls = FLOORS.map((floor) => floor.url)
-    return Array.from(main.querySelectorAll("a")).filter((a) => floorUrls.includes(a.getAttribute("href") ?? ""))
+function currentNormalMap(main: HTMLElement): HTMLElement {
+    const maps = Array.from(main.querySelectorAll<HTMLElement>('[data-floor-layer][data-current="true"]'))
+        .map((layer) => layer.querySelector<HTMLElement>('[data-floor][data-size="normal"]'))
+        .filter((map): map is HTMLElement => map !== null)
+    expect(maps, "one current normal-size map").toHaveLength(1)
+    return maps[0]
 }
+
+beforeEach(() => {
+    mocks.getEntries.mockReset()
+    mocks.getEntries.mockResolvedValue(ENTRIES)
+})
 
 afterAll(() => {
     vi.unstubAllEnvs()
@@ -92,19 +128,41 @@ describe("home Contact door", () => {
     })
 })
 
-describe("home floor links", () => {
-    it("links every floor from the roof down to B1, labelled '<label> <name>'", async () => {
-        const main = await renderMain()
-        const links = floorLinks(main)
+describe("home info center", () => {
+    it("builds the floor layouts on the server from the entries", async () => {
+        await renderMain()
 
-        expect(links.map((a) => a.getAttribute("href"))).toEqual(FLOOR_ORDER)
-        expect(links.map((a) => a.textContent)).toEqual(FLOOR_ORDER.map(floorText))
+        expect(mocks.getEntries).toHaveBeenCalled()
     })
 
-    it("has no links other than Contact and the five floors", async () => {
+    it("has replaced the per-floor links with the floor guide and the map of every floor", async () => {
+        const main = await renderMain()
+        const floorUrls = FLOORS.map((floor) => floor.url)
+
+        expect(main.querySelector(GUIDE), "floor guide").not.toBeNull()
+        expect(main.querySelectorAll("[data-floor-layer]").length).toBeGreaterThan(0)
+        expect(
+            Array.from(main.querySelectorAll("a")).filter((a) => floorUrls.includes(a.getAttribute("href") ?? ""))
+        ).toEqual([])
+    })
+
+    it("has no links other than Contact", async () => {
         const main = await renderMain()
 
-        expect(main.querySelectorAll("a")).toHaveLength(1 + FLOOR_ORDER.length)
+        expect(main.querySelectorAll("a")).toHaveLength(1)
+    })
+
+    it("starts on 1F without JavaScript, with the 1F room names in the HTML", async () => {
+        const main = await renderMain()
+        const map = currentNormalMap(main)
+        const expected = layoutFloor(
+            findFloor("1f"),
+            ENTRIES.filter((e) => e.floor === "1f")
+        ).rooms.map((room) => room.name)
+
+        expect(main.querySelector(`${GUIDE} button[data-floor="1f"]`)?.getAttribute("aria-pressed")).toBe("true")
+        expect(map.getAttribute("data-floor")).toBe("1f")
+        expect(Array.from(map.querySelectorAll('[data-part="label"]')).map((el) => el.textContent)).toEqual(expected)
     })
 
     it("does not reorder the shared FLOORS definition", async () => {
@@ -115,21 +173,33 @@ describe("home floor links", () => {
 })
 
 describe("home order and content", () => {
-    it("places the h1 before Contact, and Contact before the first floor link", async () => {
+    it("puts Contact and its sentence first right under the h1", async () => {
+        const main = await renderMain()
+        const heading = main.querySelector("h1") as HTMLElement
+        const first = heading.nextElementSibling?.firstElementChild
+
+        expect(first, "first element under the heading").not.toBeNull()
+        expect(first!.contains(contactLink(main))).toBe(true)
+        expect(first!.contains(elementWithText(main, CONTACT_NOTE) ?? null)).toBe(true)
+    })
+
+    it("places the h1, Contact, the floor guide and the map in that order", async () => {
         const main = await renderMain()
         const heading = main.querySelector("h1") as HTMLElement
         const link = contactLink(main)
-        const [firstFloor] = floorLinks(main)
+        const guide = main.querySelector(GUIDE) as HTMLElement
+        const layer = main.querySelector("[data-floor-layer]") as HTMLElement
 
         expect(precedes(heading, link)).toBe(true)
-        expect(precedes(link, firstFloor)).toBe(true)
+        expect(precedes(link, guide)).toBe(true)
+        expect(precedes(guide, layer)).toBe(true)
     })
 
-    it("shows only the title, Contact, its sentence and the floor names", async () => {
+    it("shows no text besides the title, Contact and its sentence outside the guide and the maps", async () => {
         const main = await renderMain()
-        main.querySelectorAll("script").forEach((script) => script.remove())
+        main.querySelectorAll(`script, ${GUIDE}, [data-floor][data-size]`).forEach((el) => el.remove())
 
-        expect(main.textContent).toBe([TITLE, "Contact", CONTACT_NOTE, ...FLOOR_ORDER.map(floorText)].join(""))
+        expect(main.textContent).toBe([TITLE, "Contact", CONTACT_NOTE].join(""))
     })
 
     it("shows no `$ command` line", async () => {
