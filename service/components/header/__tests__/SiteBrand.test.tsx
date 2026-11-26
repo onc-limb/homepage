@@ -22,14 +22,15 @@ function promptLink(pathname: string): HTMLAnchorElement {
 }
 
 describe("SiteBrand prompt", () => {
-    it("shows a transitional URL as the virtual path of its floor: `guest@onclimb:~/2f/skills$`", () => {
-        expect(promptLink("/skills").textContent).toBe("guest@onclimb:~/2f/skills$")
+    it("shows a transitional URL as the virtual path of its floor: `guest@onclimb:~/3f/portfolios$`", () => {
+        expect(promptLink("/portfolio").textContent).toBe("guest@onclimb:~/3f/portfolios$")
     })
 
     it.each([
         ["/", `${USER_HOST}:~$`],
-        ["/skills", `${USER_HOST}:~/2f/skills$`],
         ["/2f/skills", `${USER_HOST}:~/2f/skills$`],
+        ["/b1/studies", `${USER_HOST}:~/b1/studies$`],
+        ["/skills", `${USER_HOST}:~/skills$`],
         ["/2f", `${USER_HOST}:~/2f$`],
         ["/portfolio/onc-limb", `${USER_HOST}:~/3f/portfolios/onc-limb$`],
         ["/books", `${USER_HOST}:~/books$`],
@@ -38,13 +39,13 @@ describe("SiteBrand prompt", () => {
     })
 
     it("links the prompt to the home page", () => {
-        for (const pathname of ["/", "/skills", "/portfolio/onc-limb"]) {
+        for (const pathname of ["/", "/2f/skills", "/portfolio/onc-limb"]) {
             expect(promptLink(pathname).getAttribute("href"), pathname).toBe("/")
         }
     })
 
     it("colors guest@onclimb with the prompt color and the path with the link color", () => {
-        const a = promptLink("/skills")
+        const a = promptLink("/2f/skills")
         const user = elementWithText(a, USER_HOST)
         const path = elementWithText(a, "~/2f/skills")
         expect(user, "element with guest@onclimb").toBeDefined()

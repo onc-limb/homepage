@@ -48,7 +48,7 @@ export const FLOORS: Floor[] = [
         navName: "自己学習",
         url: "/b1",
         material: "stone",
-        groups: [group("b1", "studies", "自己学習", null, null, "ls -l ~/b1/studies | sort -k level", "/skills")],
+        groups: [group("b1", "studies", "自己学習", null, null, "ls -l ~/b1/studies | sort -k level")],
     },
     {
         id: "1f",
@@ -71,7 +71,7 @@ export const FLOORS: Floor[] = [
         material: "wood",
         groups: [
             group("2f", "histories", "経歴", "経歴", null, "ls -tr ~/2f/histories"),
-            group("2f", "skills", "スキル", null, null, "ls -l ~/2f/skills | sort -k level", "/skills"),
+            group("2f", "skills", "スキル", null, null, "ls -l ~/2f/skills | sort -k level"),
         ],
     },
     {
@@ -133,11 +133,8 @@ function resolveFloorUrl(url: string): { floor: FloorId | null; promptPath: stri
 
     const groups = FLOORS.flatMap((floor) => floor.groups).filter((group) => matchesPath(url, group.href))
     if (groups.length === 0) return { floor: null, promptPath }
-
-    // Shared transitional links belong to the group named by their first path segment.
-    const firstSegment = url.split("/", 2)[1]
-    const group = groups.length === 1 ? groups[0] : groups.find((group) => group.slug === firstSegment)
-    if (!group) throw new Error(`Ambiguous floor for URL: ${url}`)
+    if (groups.length > 1) throw new Error(`Ambiguous floor for URL: ${url}`)
+    const group = groups[0]
 
     return {
         floor: group.floor,

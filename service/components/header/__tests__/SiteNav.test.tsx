@@ -34,14 +34,14 @@ describe("SiteNav items", () => {
     })
 
     it("lists the NAV_ITEMS labels and hrefs in order", () => {
-        const links = linksOf("/skills")
+        const links = linksOf("/2f/skills")
         expect(links.map((a) => [a.getAttribute("href"), a.textContent])).toEqual(
             NAV_ITEMS.map((item) => [item.href, item.label])
         )
     })
 
     it("shows 案内 and the five floors", () => {
-        expect(linksOf("/skills").map((a) => [a.getAttribute("href"), a.textContent])).toEqual([
+        expect(linksOf("/2f/skills").map((a) => [a.getAttribute("href"), a.textContent])).toEqual([
             ["/", "案内"],
             ["/b1", "B1 自己学習"],
             ["/1f", "1F プロフィール"],
@@ -52,7 +52,7 @@ describe("SiteNav items", () => {
     })
 
     it.each(["books", "blog"])("has no link to %s by href or by label", (name) => {
-        for (const a of linksOf("/skills")) {
+        for (const a of linksOf("/2f/skills")) {
             const href = a.getAttribute("href") ?? ""
             expect(href.replace(/\/+$/, "").toLowerCase(), href).not.toBe(`/${name}`)
             expect((a.textContent ?? "").trim().toLowerCase(), href).not.toBe(name)
@@ -63,7 +63,7 @@ describe("SiteNav items", () => {
         const textLink = render(<TextLink href="/x">x</TextLink>).querySelector("a")!
         const shared = Array.from(textLink.classList)
         expect(shared).toEqual(expect.arrayContaining(["text-ds-link", "underline"]))
-        for (const a of linksOf("/skills")) {
+        for (const a of linksOf("/2f/skills")) {
             expect(Array.from(a.classList), a.textContent ?? "").toEqual(
                 expect.arrayContaining(shared)
             )
@@ -73,9 +73,10 @@ describe("SiteNav items", () => {
 
 describe("SiteNav current page", () => {
     it.each([
-        ["/skills", ["2F 経歴・技術"]],
-        ["/skills/typescript", ["2F 経歴・技術"]],
+        ["/portfolio", ["3F 作品・考え"]],
         ["/2f/skills", ["2F 経歴・技術"]],
+        ["/b1/studies", ["B1 自己学習"]],
+        ["/skills", []],
         ["/portfolio/onc-limb", ["3F 作品・考え"]],
         ["/1f/contact", ["1F プロフィール"]],
         ["/b1", ["B1 自己学習"]],
@@ -87,7 +88,7 @@ describe("SiteNav current page", () => {
     })
 
     it("underlines the current item with the accent color and no other item", () => {
-        for (const a of linksOf("/skills")) {
+        for (const a of linksOf("/2f/skills")) {
             const current = a.getAttribute("aria-current") === "page"
             expect(a.classList.contains("decoration-ds-accent"), a.textContent ?? "").toBe(
                 current

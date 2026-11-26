@@ -28,7 +28,7 @@ const EXPECTED_GROUPS = [
         name: "自己学習",
         command: "ls -l ~/b1/studies | sort -k level",
         url: "/b1/studies",
-        href: "/skills",
+        href: "/b1/studies",
     },
     {
         floor: "1f",
@@ -60,7 +60,7 @@ const EXPECTED_GROUPS = [
         name: "スキル",
         command: "ls -l ~/2f/skills | sort -k level",
         url: "/2f/skills",
-        href: "/skills",
+        href: "/2f/skills",
     },
     {
         floor: "3f",
@@ -204,18 +204,37 @@ describe("floorOfUrl()", () => {
     })
 
     it.each([
-        ["/skills", "2f"],
-        ["/skills/typescript", "2f"],
         ["/portfolio", "3f"],
         ["/portfolio/onc-limb", "3f"],
     ])("places the transitional URL %s on %s", (url, id) => {
         // Given the group pages still live at their old URLs (FLOORS href)
         // When the URL is the href of a group, or under it
-        // Then it belongs to the floor of that group (/skills is the 2F skills, not the B1 studies)
+        // Then it belongs to the floor of that group
         expect(floorOfUrl(url)).toBe(id)
     })
 
-    it.each(["/profile", "/skillset", "/profiles", "/portfolios", "/2fx", "/b10", "/books", "/blog", "/"])(
+    it("gives the skills and studies groups their final URLs as href", () => {
+        // Given the skills list moved to /2f/skills and the studies list to /b1/studies
+        // Then the doors, the navigation and the prompt link to the final URLs
+        expect(findGroup("skills").href).toBe(findGroup("skills").url)
+        expect(findGroup("skills").href).toBe("/2f/skills")
+        expect(findGroup("studies").href).toBe(findGroup("studies").url)
+        expect(findGroup("studies").href).toBe("/b1/studies")
+    })
+
+    it.each([
+        "/skills",
+        "/skills/typescript",
+        "/profile",
+        "/skillset",
+        "/profiles",
+        "/portfolios",
+        "/2fx",
+        "/b10",
+        "/books",
+        "/blog",
+        "/",
+    ])(
         "places %s on no floor",
         (url) => {
             // Given a URL that only shares leading characters with a floor url or a group href,
@@ -242,9 +261,9 @@ describe("toPromptPath()", () => {
     })
 
     it.each([
-        ["/skills", "~/2f/skills"],
-        ["/skills/typescript", "~/2f/skills/typescript"],
         ["/2f/skills", "~/2f/skills"],
+        ["/2f/skills/typescript", "~/2f/skills/typescript"],
+        ["/b1/studies", "~/b1/studies"],
         ["/2f", "~/2f"],
         ["/rf", "~/rf"],
         ["/1f/profile", "~/1f/profile"],
@@ -260,6 +279,7 @@ describe("toPromptPath()", () => {
     })
 
     it.each([
+        ["/skills", "~/skills"],
         ["/books", "~/books"],
         ["/profile", "~/profile"],
         ["/skillset", "~/skillset"],

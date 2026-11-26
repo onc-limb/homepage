@@ -39,16 +39,17 @@ beforeEach(() => {
 describe("Header prompt", () => {
     it.each([
         ["/", `guest@${SITE_NAME}:~$`],
-        ["/skills", `guest@${SITE_NAME}:~/2f/skills$`],
+        ["/2f/skills", `guest@${SITE_NAME}:~/2f/skills$`],
+        ["/portfolio", `guest@${SITE_NAME}:~/3f/portfolios$`],
         ["/portfolio/onc-limb", `guest@${SITE_NAME}:~/3f/portfolios/onc-limb$`],
     ])("shows the prompt of the current page %s as a home link", (pathname, expected) => {
         expect(promptTexts(renderHeaderAt(pathname))).toEqual([expected])
     })
 
     it("marks the floor for a transitional page in the desktop navigation", () => {
-        const header = renderHeaderAt("/skills")
+        const header = renderHeaderAt("/portfolio")
         const current = Array.from(header.querySelectorAll('nav a[aria-current="page"]'))
-        expect(current.map((a) => [a.getAttribute("href"), a.textContent])).toEqual([["/2f", "2F 経歴・技術"]])
+        expect(current.map((a) => [a.getAttribute("href"), a.textContent])).toEqual([["/3f", "3F 作品・考え"]])
     })
 })
 

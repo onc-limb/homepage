@@ -1,13 +1,6 @@
 import matter from "gray-matter"
 import { extractFlatListItems } from "./markdown-utils"
-import {
-    categoryOrder,
-    sortSkillsByLevel,
-    type ListItem,
-    type Skill,
-    type SkillCategory,
-    type SkillMeta,
-} from "./skills-meta"
+import { type ListItem, type Skill, type SkillMeta } from "./skills-meta"
 
 export {
     categoryLabels,
@@ -122,85 +115,4 @@ export function parseSkillSources(sources: SkillSource[]): Skill[] {
 // すべてのスキルを取得
 export function getSkills(): Skill[] {
     return parseSkillSources(skillSources)
-}
-
-// カテゴリ別にグループ化されたスキルを取得
-export function getSkillsByCategory(): Record<SkillCategory, Skill[]> {
-    const skills = getSkills()
-    return categoryOrder.reduce(
-        (acc, category) => {
-            acc[category] = sortSkillsByLevel(
-                skills.filter((skill) => skill.category === category)
-            )
-            return acc
-        },
-        {} as Record<SkillCategory, Skill[]>
-    )
-}
-
-/**
- * docs/design/skill.html の radar chart に必要な 8 軸定義。
- */
-export const RADAR_AXIS_KEYS = [
-    "backend",
-    "frontend",
-    "infra",
-    "arch",
-    "ai",
-    "devops",
-    "low",
-    "sec",
-] as const
-
-export type RadarAxisKey = (typeof RADAR_AXIS_KEYS)[number]
-
-export interface RadarAxis {
-    key: RadarAxisKey
-    label: string
-    total: number
-    count: number
-    ratio: number
-}
-
-const RADAR_AXIS_LABELS: Record<RadarAxisKey, string> = {
-    backend: "Backend",
-    frontend: "Frontend",
-    infra: "Infra/Cloud",
-    arch: "Architecture",
-    ai: "AI/MLOps",
-    devops: "DevOps",
-    low: "Low-level",
-    sec: "Security",
-}
-
-const AXIS_TO_CATEGORIES: Record<RadarAxisKey, SkillCategory[]> = {
-    backend: ["framework", "api", "database", "integration"],
-    frontend: ["frontend"],
-    infra: ["compute", "networking", "storage", "IaC", "container"],
-    arch: ["architecture"],
-    ai: ["ai-llm", "ml"],
-    devops: ["devops-sre", "tools", "testing"],
-    low: ["language"],
-    sec: ["security", "auth"],
-}
-
-/**
- * 各軸に紐付くカテゴリの level 合計と件数、描画用の相対値を返す。
- * 寄与スキルが 0 件の軸は total = 0, count = 0, ratio = 0 を返す。
- */
-export function getRadarAxes(skills: Skill[]): RadarAxis[] {
-    const totals = RADAR_AXIS_KEYS.map((key) => {
-        const categories = AXIS_TO_CATEGORIES[key]
-        const matched = skills.filter((s) => categories.includes(s.category))
-        const total = matched.reduce((sum, s) => sum + s.level, 0)
-        return { key, label: RADAR_AXIS_LABELS[key], total, count: matched.length }
-    })
-
-    const maxTotal = Math.max(0, ...totals.map((axis) => axis.total))
-
-    // スキル数の厚みを軸の大きさに反映しつつ外周内に収めるため、最大合計を 1 とする。
-    return totals.map((axis) => ({
-        ...axis,
-        ratio: maxTotal === 0 ? 0 : axis.total / maxTotal,
-    }))
 }

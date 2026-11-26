@@ -41,7 +41,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             priority: 0.9,
         },
         {
-            url: `${baseUrl}/skills`,
+            url: `${baseUrl}${findGroup("skills").url}`,
+            changeFrequency: "monthly",
+            priority: 0.9,
+        },
+        {
+            url: `${baseUrl}${findGroup("studies").url}`,
             changeFrequency: "monthly",
             priority: 0.9,
         },
