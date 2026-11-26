@@ -15,7 +15,12 @@ export type Profile = {
 }
 
 export interface CareerItem {
-    period: "CURRENT" | "PRIOR" | "START"
+    role: string
+    bullets: string[]
+}
+
+export interface HistoryItem {
+    number: string
     role: string
     bullets: string[]
 }
@@ -28,6 +33,8 @@ export interface InterestItem {
 export interface CertItem {
     title: string
     year: string
+    /** Text after the year, e.g. `※登録資格保有、未登録`. It belongs to the title, not the year. */
+    note?: string
 }
 
 export type IntroBlock =
@@ -38,6 +45,7 @@ export interface ParsedProfile {
     selfIntroduction: IntroBlock[]
     career: CareerItem[]
     interests: InterestItem[]
+    learning: InterestItem[]
     certs: CertItem[]
 }
 
@@ -53,16 +61,32 @@ export const getParsedProfile = async (): Promise<ParsedProfile> => {
     return parseProfile(profileMarkdown)
 }
 
+// 経歴ページの番号と getEntries() の path の番号を同じ形にするため、2 桁の整形はここだけが行う
+export function toSerialNumber(index: number): string {
+    return String(index + 1).padStart(2, "0")
+}
+
+/**
+ * 経歴を古い順に並べて 2 桁の整理番号を付ける。career は profile.md と同じく新しい順。
+ */
+export function listHistories(career: CareerItem[]): HistoryItem[] {
+    return [...career].reverse().map((item, index) => ({
+        number: toSerialNumber(index),
+        role: item.role,
+        bullets: item.bullets,
+    }))
+}
+
 /**
  * raw markdown を構造化して返す。design 素案の profile セクション構造に合わせる。
  * - story 01 自己紹介 (paragraphs)
- * - story 02 経歴 (### 役職 + - 箇条書き、period は配列順序から自動採番)
- * - story 03 関心 (### 関心 内の `**title** - description` リスト)
+ * - story 02 経歴 (### 役職 + - 箇条書き)
+ * - story 03 関心・学習 (### 関心 / ### 学習 内の `**title** - description` リスト)
  * - story 04 資格 (### 資格 内の `title (year ...)` リスト)
  */
 export function parseProfile(rawMarkdown: string): ParsedProfile {
     if (!rawMarkdown.trim()) {
-        return { selfIntroduction: [], career: [], interests: [], certs: [] }
+        return { selfIntroduction: [], career: [], interests: [], learning: [], certs: [] }
     }
 
     const { content } = matter(rawMarkdown)
@@ -71,6 +95,7 @@ export function parseProfile(rawMarkdown: string): ParsedProfile {
         selfIntroduction: extractSelfIntroduction(content),
         career: extractCareer(content),
         interests: extractInterestsLike(content, "関心"),
+        learning: extractInterestsLike(content, "学習"),
         certs: extractCerts(content),
     }
 }
@@ -103,25 +128,10 @@ function extractCareer(content: string): CareerItem[] {
     const section = extractTopLevelSection(content, "経歴")
     if (!section) return []
 
-    const subsections = splitSubsections(section)
-    if (subsections.length === 0) return []
-
-    const total = subsections.length
-    return subsections.map((sub, idx) => {
-        const period: CareerItem["period"] =
-            total === 1
-                ? "CURRENT"
-                : idx === 0
-                  ? "CURRENT"
-                  : idx === total - 1
-                    ? "START"
-                    : "PRIOR"
-        return {
-            period,
-            role: sub.title,
-            bullets: extractBullets(sub.body),
-        }
-    })
+    return splitSubsections(section).map((sub) => ({
+        role: sub.title,
+        bullets: extractBullets(sub.body),
+    }))
 }
 
 function extractInterestsLike(content: string, sectionName: string): InterestItem[] {
@@ -150,8 +160,9 @@ function extractCerts(content: string): CertItem[] {
         const yearMatch = raw.match(/\(([^)]+)\)\s*(.*)$/)
         if (yearMatch) {
             const title = raw.slice(0, raw.indexOf("(")).trim()
-            const year = `${yearMatch[1].trim()}${yearMatch[2] ? " " + yearMatch[2].trim() : ""}`.trim()
-            items.push({ title, year })
+            const year = yearMatch[1].trim()
+            const note = yearMatch[2].trim()
+            items.push(note ? { title, year, note } : { title, year })
         } else {
             items.push({ title: raw, year: "" })
         }

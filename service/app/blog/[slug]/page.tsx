@@ -9,6 +9,7 @@ import { getPublishedArticleBySlug } from "@/lib/articles"
 import { ArticleDetail, type BlogArticle } from "@/components/blog"
 import { excerpt } from "@/components/blog/blog-utils"
 import { JsonLd } from "@/components/seo"
+import { findGroup } from "@/lib/building/floors"
 import { absoluteUrl, breadcrumbJsonLd, createPageMetadata, SITE_NAME } from "@/lib/seo"
 
 export const dynamic = "force-dynamic"
@@ -76,12 +77,12 @@ export default async function ArticlePage({
                         author: {
                             "@type": "Person",
                             name: SITE_NAME,
-                            url: absoluteUrl("/profile"),
+                            url: absoluteUrl(findGroup("profile").url),
                         },
                         publisher: {
                             "@type": "Person",
                             name: SITE_NAME,
-                            url: absoluteUrl("/profile"),
+                            url: absoluteUrl(findGroup("profile").url),
                         },
                         image: absoluteUrl("/og-default.png"),
                         inLanguage: "ja-JP",

@@ -4,6 +4,7 @@ import remarkGfm from "remark-gfm"
 
 import { CodeBlock } from "./CodeBlock"
 import { HEADING_MAJOR, HEADING_MINOR } from "./heading-styles"
+import { PROSE_BODY } from "./prose-styles"
 import { BOXED_SURFACE } from "./surface-styles"
 import { TABLE, TABLE_SCROLL, TD, TH } from "./table-styles"
 
@@ -62,7 +63,7 @@ type ProseProps = {
 /** Renders Markdown with ds tokens. Raw HTML in the text is not rendered (no rehype-raw). */
 export function Prose({ markdown }: ProseProps) {
     return (
-        <div className="flex max-w-ds-measure flex-col gap-ds-3 font-ds-prose text-ds-base leading-ds-prose text-ds-fg">
+        <div className={PROSE_BODY}>
             <ReactMarkdown remarkPlugins={[remarkGfm]} components={COMPONENTS}>
                 {markdown}
             </ReactMarkdown>

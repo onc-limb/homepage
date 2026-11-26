@@ -12,6 +12,7 @@ import { Reveal } from "@/components/animations"
 import { ExternalIcon, GitHubIcon } from "@/components/icons"
 import { ArchDiagram, Pager } from "@/components/portfolio"
 import { JsonLd } from "@/components/seo"
+import { findGroup } from "@/lib/building/floors"
 import { absoluteUrl, breadcrumbJsonLd, createPageMetadata } from "@/lib/seo"
 
 export function generateStaticParams() {
@@ -82,7 +83,7 @@ export default async function ProjectDetailPage({
                         creator: {
                             "@type": "Person",
                             name: "onclimb",
-                            url: absoluteUrl("/profile"),
+                            url: absoluteUrl(findGroup("profile").url),
                         },
                         keywords: project.technologies.join(", "),
                         inLanguage: "ja-JP",

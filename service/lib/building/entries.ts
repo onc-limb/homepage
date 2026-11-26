@@ -3,7 +3,7 @@
 // クライアントで使う定数と変換は lib/building/floors.ts にある。
 
 import { SOCIAL_LINKS } from "../constants"
-import { getParsedProfile, getProfile } from "../profile"
+import { getParsedProfile, getProfile, listHistories, toSerialNumber, type CareerItem } from "../profile"
 import { getProjects } from "../portfolio"
 import { getSkills, levelLabels, type SkillLevel } from "../skills"
 import { getSkillFloor } from "../skills-meta"
@@ -27,8 +27,8 @@ const groupDir = (slug: GroupSlug): string => toVirtualPath(findGroup(slug).url)
 // 題名から仮想パスの名前を作る。"/" と空白だけを "-" に置き換える
 const toFileName = (title: string): string => title.replace(/[/\s]/g, "-")
 
-const toNumbered = (index: number, title: string): string =>
-    `${String(index + 1).padStart(2, "0")}-${toFileName(title)}.md`
+const toNumbered = (serial: string, title: string): string =>
+    `${serial}-${toFileName(title)}.md`
 
 export async function getEntries(): Promise<Entry[]> {
     const [profile, parsed] = await Promise.all([getProfile(), getParsedProfile()])
@@ -58,16 +58,15 @@ function skillEntries(): Entry[] {
     })
 }
 
-// 経歴は profile.md で新しい順に並ぶ。古い順に 01 から振るため、最後の項目が 01 になる
-function historyEntries(career: { role: string; bullets: string[] }[]): Entry[] {
-    const total = career.length
-    return career.map((item, index) => ({
-        path: `${groupDir("histories")}/${toNumbered(total - 1 - index, item.role)}`,
+// 経歴の並びと番号付けは listHistories が持つ（古い順・2 桁）
+function historyEntries(career: CareerItem[]): Entry[] {
+    return listHistories(career).map((history) => ({
+        path: `${groupDir("histories")}/${toNumbered(history.number, history.role)}`,
         floor: findGroup("histories").floor,
         group: "histories",
         room: "histories",
-        title: item.role,
-        excerpt: item.bullets[0] ?? "",
+        title: history.role,
+        excerpt: history.bullets[0] ?? "",
         href: findGroup("histories").url,
         tags: [],
     }))
@@ -86,14 +85,14 @@ function profileEntries(
         ...interests.map((item, index) => ({
             ...base,
             tags: [],
-            path: `${dir}/interests/${toNumbered(index, item.title)}`,
+            path: `${dir}/interests/${toNumbered(toSerialNumber(index), item.title)}`,
             title: item.title,
             excerpt: item.description,
         })),
         ...certs.map((item, index) => ({
             ...base,
             tags: [],
-            path: `${dir}/certs/${toNumbered(index, item.title)}`,
+            path: `${dir}/certs/${toNumbered(toSerialNumber(index), item.title)}`,
             title: item.title,
             excerpt: item.year,
         })),

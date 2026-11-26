@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { parseProfile } from "@/lib/profile"
+import { listHistories, parseProfile } from "@/lib/profile"
 
 /**
  * parseProfile contract tests.
@@ -7,7 +7,7 @@ import { parseProfile } from "@/lib/profile"
  * Plan: lib/profile.ts に parseProfile(rawMarkdown: string): ParsedProfile を追加し、
  *   docs/design/profile.html の以下の構造をサポートする:
  *     - story 01 自己紹介 (paragraphs)
- *     - story 02 経歴 (career timeline: period + role + bullets)
+ *     - story 02 経歴 (career timeline: role + bullets)
  *     - story 03 関心 (interest grid: title + description)
  *     - story 04 資格 (certs grid: title + year)
  *
@@ -142,32 +142,53 @@ describe("parseProfile", () => {
             ])
         })
 
-        it("labels the first career item as CURRENT and the last as START", () => {
-            // Given career items are ordered most-recent first per the design
-            // When parseProfile is invoked
-            // Then the first item period = CURRENT and the last = START
-            const result = parseProfile(FIXTURE_MARKDOWN)
-            expect(result.career[0].period).toBe("CURRENT")
-            expect(result.career.at(-1)?.period).toBe("START")
-        })
-
-        it("labels middle career items as PRIOR", () => {
-            // Given more than two career items
-            // When parseProfile is invoked
-            // Then middle items have period PRIOR
-            const result = parseProfile(FIXTURE_MARKDOWN)
-            expect(result.career[1].period).toBe("PRIOR")
-        })
-
-        it("falls back to a single CURRENT entry when only one career item exists", () => {
+        it("keeps the single career item when only one is defined", () => {
             // Given only one career item is defined
             // When parseProfile is invoked
-            // Then the lone item is labeled CURRENT
+            // Then career holds that one item with its role and bullets
             const md = `---\nname: x\ntitle: y\navatar: a\ngithub: g\n---\n\n## 経歴\n\n### Solo Role\n\n- only bullet\n`
             const result = parseProfile(md)
-            expect(result.career).toHaveLength(1)
-            expect(result.career[0].period).toBe("CURRENT")
-            expect(result.career[0].role).toBe("Solo Role")
+            expect(result.career).toEqual([{ role: "Solo Role", bullets: ["only bullet"] }])
+        })
+
+        it("does not attach a period label to career items", () => {
+            // Given the CURRENT / PRIOR / START labels belonged to the retired profile design
+            // When parseProfile is invoked
+            // Then each career item has only role and bullets
+            const result = parseProfile(FIXTURE_MARKDOWN)
+            for (const item of result.career) {
+                expect(Object.keys(item).sort()).toEqual(["bullets", "role"])
+            }
+        })
+    })
+
+    describe("学習 subsection", () => {
+        it("extracts the `**title** - description` lines under `### 学習`", () => {
+            // Given the markdown has one line under 学習
+            // When parseProfile is invoked
+            // Then learning holds that line split into title and description
+            const result = parseProfile(FIXTURE_MARKDOWN)
+            expect(result.learning).toEqual([
+                { title: "技術書", description: "月1万円ほど投資。体系的な知識を得るための読書習慣" },
+            ])
+        })
+
+        it("does not take lines of the same form from 関心 or 資格", () => {
+            // Given 関心 and 資格 have lines next to 学習
+            // When parseProfile is invoked
+            // Then only the 学習 line is in learning
+            const result = parseProfile(FIXTURE_MARKDOWN)
+            expect(result.learning).toHaveLength(1)
+            const titles = result.learning.map((item) => item.title)
+            expect(titles).not.toContain("アーキテクチャ")
+            expect(titles.join(" ")).not.toContain("AWS Certified Cloud Practitioner")
+        })
+
+        it("returns an empty array when 学習 is missing", () => {
+            const md = `---\nname: x\ntitle: y\navatar: a\ngithub: g\n---\n\n## エンジニアとしての今\n\n### 関心\n\n- **a** - b\n`
+            const result = parseProfile(md)
+            expect(result.learning).toEqual([])
+            expect(result.interests).toHaveLength(1)
         })
     })
 
@@ -221,14 +242,16 @@ describe("parseProfile", () => {
             })
         })
 
-        it("preserves trailing notes after the year as part of year text", () => {
+        it("keeps a trailing note after the year out of the year", () => {
             // Given the third cert includes a registration note after the year
             // When parseProfile is invoked
-            // Then year keeps the note (matching the design HTML behaviour)
+            // Then the year is only what is inside the parentheses and the note is kept apart
             const result = parseProfile(FIXTURE_MARKDOWN)
-            expect(result.certs[2].title).toBe("情報処理安全確保支援士試験 合格")
-            expect(result.certs[2].year).toContain("2022")
-            expect(result.certs[2].year).toContain("※登録資格保有、未登録")
+            expect(result.certs[2]).toEqual({
+                title: "情報処理安全確保支援士試験 合格",
+                year: "2022",
+                note: "※登録資格保有、未登録",
+            })
         })
 
         it("returns an empty array when 資格 is missing", () => {
@@ -260,7 +283,57 @@ describe("parseProfile", () => {
             expect(result.selfIntroduction).toEqual([])
             expect(result.career).toEqual([])
             expect(result.interests).toEqual([])
+            expect(result.learning).toEqual([])
             expect(result.certs).toEqual([])
         })
+    })
+})
+
+describe("listHistories", () => {
+    it("lists the career oldest first with two-digit numbers from 01", () => {
+        // Given career written newest first, as in profile.md
+        const career = [
+            { role: "AIドキュメント検索サービス", bullets: ["a1", "a2"] },
+            { role: "MLOps（推薦系）", bullets: ["m1"] },
+            { role: "組み込み開発（車載ソフトウェア）", bullets: ["e1", "e2", "e3"] },
+        ]
+
+        // When the histories list is made
+        // Then the oldest is 01 and every bullet is kept
+        expect(listHistories(career)).toEqual([
+            { number: "01", role: "組み込み開発（車載ソフトウェア）", bullets: ["e1", "e2", "e3"] },
+            { number: "02", role: "MLOps（推薦系）", bullets: ["m1"] },
+            { number: "03", role: "AIドキュメント検索サービス", bullets: ["a1", "a2"] },
+        ])
+    })
+
+    it("gives two histories with the same heading different numbers", () => {
+        const career = [
+            { role: "Web開発", bullets: ["新しい方"] },
+            { role: "Web開発", bullets: ["古い方"] },
+        ]
+
+        expect(listHistories(career)).toEqual([
+            { number: "01", role: "Web開発", bullets: ["古い方"] },
+            { number: "02", role: "Web開発", bullets: ["新しい方"] },
+        ])
+    })
+
+    it("pads to two digits past nine and does not reorder the input", () => {
+        const career = Array.from({ length: 10 }, (_, index) => ({ role: `role ${10 - index}`, bullets: [] }))
+        const snapshot = career.map((item) => item.role)
+
+        const histories = listHistories(career)
+
+        expect(histories.map((item) => item.number)).toEqual([
+            "01", "02", "03", "04", "05", "06", "07", "08", "09", "10",
+        ])
+        expect(histories[0].role).toBe("role 1")
+        expect(histories[9].role).toBe("role 10")
+        expect(career.map((item) => item.role)).toEqual(snapshot)
+    })
+
+    it("returns an empty list for no career", () => {
+        expect(listHistories([])).toEqual([])
     })
 })
