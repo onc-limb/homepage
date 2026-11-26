@@ -24,6 +24,7 @@ const COMPONENT_SAMPLES: Array<[string, string]> = [
     ["pager-doors", "nav[aria-label] a[href]"],
     ["floor-guide", '[role="group"][aria-label="階"] button[aria-pressed]'],
     ["guide-pc", "section h2"],
+    ["lodge-exterior", '[data-part="lodge-exterior"][aria-hidden="true"]'],
 ]
 
 let root: HTMLElement
@@ -114,6 +115,14 @@ describe("/design component samples", () => {
             expect(contact?.textContent?.trim(), "Contact").toBe("Contact")
             expect(contact?.getAttribute("href"), "Contact href").toBe(findGroup("contact").href)
             expect(block.querySelectorAll("button[aria-pressed]").length, "searches").toBeGreaterThan(0)
+        })
+
+        it("shows LodgeExterior with the door closed and open, at the desktop and the narrow size", () => {
+            const drawings = Array.from(
+                sampleBlock(theme, "lodge-exterior").querySelectorAll<HTMLElement>('[data-part="lodge-exterior"]')
+            )
+            const shown = drawings.map((d) => `${d.getAttribute("data-size")}/${d.getAttribute("data-door")}`)
+            expect([...shown].sort()).toEqual(["desktop/closed", "desktop/open", "narrow/closed", "narrow/open"])
         })
 
         it("shows PagerDoors in the middle, on the first and on the last page", () => {

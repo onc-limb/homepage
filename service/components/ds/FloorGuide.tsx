@@ -4,6 +4,7 @@ import { FLOORS, type FloorId, type FloorMaterial } from "@/lib/building/floors"
 
 import { FOCUS_RING } from "./focus-styles"
 import { LIT_MARK } from "./lit-mark"
+import { TRIANGLE_CLIP } from "./surface-styles"
 
 type FloorGuideProps = {
     selected?: FloorId | null
@@ -27,7 +28,7 @@ export function FloorGuide({ selected, counts, onSelect }: FloorGuideProps) {
             <span
                 aria-hidden="true"
                 data-part="roof"
-                className="hidden h-ds-roof -mx-ds-2 mb-ds-1 bg-ds-map-wood-wall [clip-path:polygon(50%_0,100%_100%,0_100%)] md:block"
+                className={`hidden h-ds-roof -mx-ds-2 mb-ds-1 bg-ds-map-wood-wall ${TRIANGLE_CLIP} md:block`}
             />
             <div
                 role="group"
