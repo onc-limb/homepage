@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { HashHeading } from "@/components/ds/HashHeading"
 import { KeyValue } from "@/components/ds/KeyValue"
 import { Page } from "@/components/ds/Page"
 import { TextLink } from "@/components/ds/TextLink"
@@ -47,9 +48,7 @@ export default function ContactPage() {
                             },
                         ]}
                     />
-                    <h2 className="mt-ds-4 mb-ds-3 font-ds text-ds-lg font-bold">
-                        <span className="text-ds-fg-muted"># </span>フォームで送る
-                    </h2>
+                    <HashHeading className="mt-ds-4 mb-ds-3">フォームで送る</HashHeading>
                     <ContactForm />
                 </div>
             </Page>

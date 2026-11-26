@@ -3,13 +3,14 @@ import { KeyValue } from "@/components/ds/KeyValue"
 import { Page } from "@/components/ds/Page"
 import { Section } from "@/components/ds/Section"
 import { TextLink } from "@/components/ds/TextLink"
-import { PROSE_BODY, PROSE_HEADING_MINOR } from "@/components/ds/prose-styles"
+import { HEADING_MINOR } from "@/components/ds/heading-styles"
+import { PROSE_BODY } from "@/components/ds/prose-styles"
 import { BOXED_SURFACE } from "@/components/ds/surface-styles"
 import { JsonLd } from "@/components/seo"
 import { findFloor, findGroup } from "@/lib/building/floors"
 import { SOCIAL_LINKS } from "@/lib/constants"
 import { getProfile, getParsedProfile } from "@/lib/profile"
-import { absoluteUrl, createPageMetadata } from "@/lib/seo"
+import { absoluteUrl, createPageMetadata, SITE_NAME } from "@/lib/seo"
 
 const group = findGroup("profile")
 const histories = findGroup("histories")
@@ -20,8 +21,7 @@ const rooftop = findFloor("rf")
 const SYNOPSIS =
     "「作る」と決まったプロダクトを、動き続けるソフトウェアとして実装し、運用まで担う当事者。ソフトウェアアーキテクトの視点で設計しながら、自ら手を動かす。フロントエンドからバックエンド、インフラまで一貫して携わるフルスタックエンジニア。"
 
-const description =
-    "フルスタックエンジニア onclimb の経歴、価値観、資格、ソフトウェア開発への向き合い方を紹介します。"
+const description = `フルスタックエンジニア ${SITE_NAME} の関心、学習、資格と、ソフトウェア開発への向き合い方を紹介します。`
 
 export const metadata: Metadata = createPageMetadata({
     title: group.name,
@@ -36,7 +36,7 @@ export default async function ProfilePage() {
     const notes = [
         { heading: "関心", items: parsed.interests.map((item) => ({ key: item.title, value: item.description })) },
         { heading: "学習", items: parsed.learning.map((item) => ({ key: item.title, value: item.description })) },
-        { heading: "資格", items: parsed.certs.map((item) => ({ key: item.year, value: item.title })) },
+        { heading: "資格", items: parsed.certs.map((item) => ({ key: item.year, value: item.note ? `${item.title} ${item.note}` : item.title })) },
     ]
     const seeAlso = [
         { href: histories.href, label: histories.name },
@@ -84,7 +84,7 @@ export default async function ProfilePage() {
                             <div className="flex flex-col gap-ds-3">
                                 {notes.map((note) => (
                                     <div key={note.heading} className="flex flex-col gap-ds-2">
-                                        <h3 className={PROSE_HEADING_MINOR}>{note.heading}</h3>
+                                        <h3 className={HEADING_MINOR}>{note.heading}</h3>
                                         <KeyValue items={note.items} />
                                     </div>
                                 ))}

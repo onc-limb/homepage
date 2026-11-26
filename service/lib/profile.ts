@@ -33,6 +33,8 @@ export interface InterestItem {
 export interface CertItem {
     title: string
     year: string
+    /** Text after the year, e.g. `※登録資格保有、未登録`. It belongs to the title, not the year. */
+    note?: string
 }
 
 export type IntroBlock =
@@ -158,8 +160,9 @@ function extractCerts(content: string): CertItem[] {
         const yearMatch = raw.match(/\(([^)]+)\)\s*(.*)$/)
         if (yearMatch) {
             const title = raw.slice(0, raw.indexOf("(")).trim()
-            const year = `${yearMatch[1].trim()}${yearMatch[2] ? " " + yearMatch[2].trim() : ""}`.trim()
-            items.push({ title, year })
+            const year = yearMatch[1].trim()
+            const note = yearMatch[2].trim()
+            items.push(note ? { title, year, note } : { title, year })
         } else {
             items.push({ title: raw, year: "" })
         }

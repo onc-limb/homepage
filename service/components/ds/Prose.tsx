@@ -3,13 +3,12 @@ import ReactMarkdown, { type Components, type ExtraProps } from "react-markdown"
 import remarkGfm from "remark-gfm"
 
 import { CodeBlock } from "./CodeBlock"
-import { PROSE_BODY, PROSE_HEADING_MINOR } from "./prose-styles"
+import { HEADING_MAJOR, HEADING_MINOR } from "./heading-styles"
+import { PROSE_BODY } from "./prose-styles"
 import { BOXED_SURFACE } from "./surface-styles"
 import { TABLE, TABLE_SCROLL, TD, TH } from "./table-styles"
 
 type HastElement = NonNullable<ExtraProps["node"]>
-
-const HEADING_MAJOR = "font-ds text-ds-lg font-bold text-ds-fg"
 
 // Concatenates the text children of the `code` element inside a fenced block.
 function codeText(node: HastElement | undefined): string {
@@ -35,10 +34,10 @@ function tag<T extends "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "ul" | "ol" | "
 const COMPONENTS: Components = {
     h1: tag("h1", HEADING_MAJOR),
     h2: tag("h2", HEADING_MAJOR),
-    h3: tag("h3", PROSE_HEADING_MINOR),
-    h4: tag("h4", PROSE_HEADING_MINOR),
-    h5: tag("h5", PROSE_HEADING_MINOR),
-    h6: tag("h6", PROSE_HEADING_MINOR),
+    h3: tag("h3", HEADING_MINOR),
+    h4: tag("h4", HEADING_MINOR),
+    h5: tag("h5", HEADING_MINOR),
+    h6: tag("h6", HEADING_MINOR),
     ul: tag("ul", "list-disc pl-ds-4"),
     ol: tag("ol", "list-decimal pl-ds-4"),
     blockquote: tag("blockquote", BOXED_SURFACE),
