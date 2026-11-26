@@ -10,7 +10,7 @@ import { JsonLd } from "@/components/seo"
 import { findFloor, findGroup } from "@/lib/building/floors"
 import { SOCIAL_LINKS } from "@/lib/constants"
 import { getProfile, getParsedProfile } from "@/lib/profile"
-import { absoluteUrl, createPageMetadata } from "@/lib/seo"
+import { absoluteUrl, createPageMetadata, SITE_NAME } from "@/lib/seo"
 
 const group = findGroup("profile")
 const histories = findGroup("histories")
@@ -21,8 +21,7 @@ const rooftop = findFloor("rf")
 const SYNOPSIS =
     "「作る」と決まったプロダクトを、動き続けるソフトウェアとして実装し、運用まで担う当事者。ソフトウェアアーキテクトの視点で設計しながら、自ら手を動かす。フロントエンドからバックエンド、インフラまで一貫して携わるフルスタックエンジニア。"
 
-const description =
-    "フルスタックエンジニア onclimb の経歴、価値観、資格、ソフトウェア開発への向き合い方を紹介します。"
+const description = `フルスタックエンジニア ${SITE_NAME} の関心、学習、資格と、ソフトウェア開発への向き合い方を紹介します。`
 
 export const metadata: Metadata = createPageMetadata({
     title: group.name,
@@ -37,7 +36,7 @@ export default async function ProfilePage() {
     const notes = [
         { heading: "関心", items: parsed.interests.map((item) => ({ key: item.title, value: item.description })) },
         { heading: "学習", items: parsed.learning.map((item) => ({ key: item.title, value: item.description })) },
-        { heading: "資格", items: parsed.certs.map((item) => ({ key: item.year, value: item.title })) },
+        { heading: "資格", items: parsed.certs.map((item) => ({ key: item.year, value: item.note ? `${item.title} ${item.note}` : item.title })) },
     ]
     const seeAlso = [
         { href: histories.href, label: histories.name },

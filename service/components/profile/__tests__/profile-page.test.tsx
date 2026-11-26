@@ -7,7 +7,7 @@ import { renderToStaticMarkup } from "react-dom/server"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { findFloor, findGroup } from "@/lib/building/floors"
-import { absoluteUrl } from "@/lib/seo"
+import { absoluteUrl, SITE_NAME } from "@/lib/seo"
 
 /**
  * Profile page contract tests (/1f/profile).
@@ -168,6 +168,21 @@ describe("profile page /1f/profile sections", () => {
         expect(subheadings).toEqual(["関心", "学習", "資格"])
     })
 
+    it("puts only the year in the certification key and keeps its note with the title", async () => {
+        mocks.getParsedProfile.mockResolvedValueOnce({
+            selfIntroduction: [],
+            career: [],
+            interests: [],
+            learning: [],
+            certs: [{ title: "Fixture certification", year: "2022", note: "※Fixture note" }],
+        })
+        const main = await renderProfile()
+        const notes = sectionOf(main, "NOTES")
+        const dt = Array.from(notes.querySelectorAll("dt")).find((el) => el.textContent?.includes("2022"))
+        expect(dt?.textContent).toBe("2022")
+        expect(dt?.nextElementSibling?.textContent).toBe("Fixture certification ※Fixture note")
+    })
+
     it("links to the histories, the portfolios and the rooftop in SEE ALSO", async () => {
         const main = await renderProfile()
         const hrefs = Array.from(sectionOf(main, "SEE ALSO").querySelectorAll("a")).map((a) => a.getAttribute("href"))
@@ -240,6 +255,9 @@ describe("profile page /1f/profile structured data and metadata", () => {
         expect(metadata?.title).toBe(group.name)
         expect(typeof metadata?.description).toBe("string")
         expect((metadata?.description as string).length).toBeGreaterThan(0)
+        // The career moved to /2f/histories, so the description must not promise it; the name comes from SITE_NAME.
+        expect(metadata?.description as string).not.toContain("経歴")
+        expect(metadata?.description as string).toContain(SITE_NAME)
         expect(String(metadata?.alternates?.canonical)).toMatch(/\/1f\/profile$/)
     })
 })

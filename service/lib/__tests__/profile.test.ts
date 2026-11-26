@@ -242,14 +242,16 @@ describe("parseProfile", () => {
             })
         })
 
-        it("preserves trailing notes after the year as part of year text", () => {
+        it("keeps a trailing note after the year out of the year", () => {
             // Given the third cert includes a registration note after the year
             // When parseProfile is invoked
-            // Then year keeps the note (matching the design HTML behaviour)
+            // Then the year is only what is inside the parentheses and the note is kept apart
             const result = parseProfile(FIXTURE_MARKDOWN)
-            expect(result.certs[2].title).toBe("情報処理安全確保支援士試験 合格")
-            expect(result.certs[2].year).toContain("2022")
-            expect(result.certs[2].year).toContain("※登録資格保有、未登録")
+            expect(result.certs[2]).toEqual({
+                title: "情報処理安全確保支援士試験 合格",
+                year: "2022",
+                note: "※登録資格保有、未登録",
+            })
         })
 
         it("returns an empty array when 資格 is missing", () => {
