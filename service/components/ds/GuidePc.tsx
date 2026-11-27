@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useRef } from "react"
 
 import { CONTACT_DOOR } from "./contact-door"
 import { DoorButton } from "./DoorButton"
@@ -20,9 +20,11 @@ export type GuidePaper = {
 
 export type GuideDestination = { label: string; href: string } | { label: string; onClick: () => void }
 
+// A room item is a link door when it has an href, otherwise a button that calls onSelect(id).
 export type GuideRoom = {
     id: string
     name: string
+    href?: string
 }
 
 export type GuideRooms = {
@@ -43,6 +45,9 @@ export type GuidePcProps = {
     destinations?: readonly GuideDestination[]
     rooms: GuideRooms
     searches: readonly GuideSearch[]
+    /** Command of the pressed search, owned by the parent (the map and the floor guide follow it). */
+    activeSearch?: string | null
+    onSearch?: (command: string) => void
     onSelect?: (roomId: string) => void
     onPick?: (path: string) => void
 }
@@ -87,12 +92,14 @@ export function GuidePc({
     destinations = [],
     rooms,
     searches,
+    activeSearch: activeCommand = null,
+    onSearch,
     onSelect,
     onPick,
 }: GuidePcProps) {
     validateGuidePcInput(searches, rooms)
 
-    const [activeCommand, setActiveCommand] = useState<string | null>(null)
+    const outputRef = useRef<HTMLDivElement>(null)
     const activeSearch = searches.find((search) => search.command === activeCommand) ?? null
     const visiblePapers = papers.slice(0, PAPER_PREVIEW_COUNT)
     const restCount = papers.length - visiblePapers.length
@@ -108,11 +115,14 @@ export function GuidePc({
                     ボタン版
                 </span>
             </h2>
-            <div className="mt-ds-3 border border-ds-border bg-ds-bg p-ds-2">
-                <p className="text-ds-sm text-ds-fg-muted">
-                    $ <span className="text-ds-fg">docent</span>
-                </p>
-                <p className="mt-ds-1 font-ds-prose text-ds-base">{text}</p>
+            {/* tabIndex -1: after a room button is pressed (and may be gone) the focus moves here */}
+            <div ref={outputRef} tabIndex={-1} className="mt-ds-3 border border-ds-border bg-ds-bg p-ds-2">
+                <div aria-live="polite">
+                    <p className="text-ds-sm text-ds-fg-muted">
+                        $ <span className="text-ds-fg">docent</span>
+                    </p>
+                    <p className="mt-ds-1 font-ds-prose text-ds-base">{text}</p>
+                </div>
                 {visiblePapers.length > 0 ? (
                     <ul className="mt-ds-3 border-t border-ds-border">
                         {visiblePapers.map((paper, index) => (
@@ -154,11 +164,23 @@ export function GuidePc({
                 {ROOMS_HEADING[rooms.scope]}
             </h3>
             <div className={STACK_LIST}>
-                {rooms.items.map((room) => (
-                    <DoorButton key={room.id} onClick={() => onSelect?.(room.id)}>
-                        {room.name}
-                    </DoorButton>
-                ))}
+                {rooms.items.map((room) =>
+                    room.href !== undefined ? (
+                        <DoorButton key={room.id} href={room.href}>
+                            {room.name}
+                        </DoorButton>
+                    ) : (
+                        <DoorButton
+                            key={room.id}
+                            onClick={() => {
+                                onSelect?.(room.id)
+                                outputRef.current?.focus()
+                            }}
+                        >
+                            {room.name}
+                        </DoorButton>
+                    )
+                )}
             </div>
             <p className={SECTION_LABEL}>
                 探しもの
@@ -168,7 +190,7 @@ export function GuidePc({
                     <DoorButton
                         key={search.command}
                         pressed={search.command === activeCommand}
-                        onClick={() => setActiveCommand(search.command)}
+                        onClick={() => onSearch?.(search.command)}
                     >
                         <span className="flex flex-col">
                             <span className="font-ds-prose font-normal">{search.label}</span>

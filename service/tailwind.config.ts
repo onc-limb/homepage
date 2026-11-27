@@ -6,6 +6,9 @@ import tailwindcssAnimate from "tailwindcss-animate"
  * The only Tailwind config. `darkMode: ["selector", '[data-theme="dark"]']` lets
  * the `dark:` variants follow the same data attribute the theme toggle sets.
  */
+// Width of one floor map; the map column of the two-column layout uses the same value.
+const MAP_WIDTH = "762px"
+
 const config: Config = {
     darkMode: ["selector", '[data-theme="dark"]'],
     content: [
@@ -139,13 +142,15 @@ const config: Config = {
             maxWidth: {
                 "ds-page": "var(--ds-page-max)",
                 "ds-measure": "var(--ds-measure)",
-                "ds-map": "762px",
+                "ds-map": MAP_WIDTH,
                 "ds-map-small": "358px",
             },
             gridTemplateColumns: {
                 "ds-kv": "max-content minmax(0, 1fr)",
                 // LogList row: date, identifier, title.
                 "ds-log": "7.5em 11em minmax(0, 1fr)",
+                // Info center and floor pages from xl: the map column as wide as the map, then the guide PC.
+                "ds-map-guide": `${MAP_WIDTH} minmax(0, 1fr)`,
             },
             // Door sizes (150x210 desktop, 104x150 narrow) and frame widths.
             width: {

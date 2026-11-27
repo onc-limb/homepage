@@ -53,7 +53,7 @@ export function FloorGuide({ selected, counts, onSelect }: FloorGuideProps) {
                             className={`${BUTTON_FRAME} ${frame} ${FOCUS_RING}`}
                         >
                             <span className="font-bold">{floor.label}</span>
-                            <span className="hidden font-ds-prose text-ds-fg-muted md:inline">
+                            <span className="sr-only font-ds-prose text-ds-fg-muted md:not-sr-only">
                                 {floor.name}
                             </span>
                             {count !== undefined && count > 0 ? (

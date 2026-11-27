@@ -4,7 +4,7 @@
 // 2D の地図と、後の一人称 3D は、同じ計算結果を使う。
 
 import { categoryOrder, categoryShortLabels, type SkillCategory } from "../skills-meta"
-import type { Floor, FloorId, GroupSlug } from "./floors"
+import { findGroup, type Floor, type FloorId, type GroupSlug } from "./floors"
 
 export interface Rect {
     x: number
@@ -88,6 +88,16 @@ const isCategory = (value: string | null): value is SkillCategory =>
 // 外部リンクの名前の末尾の " (…)" を除く（"X (Twitter)" → "X"）
 const linkName = (title: string): string => title.replace(/\s*\([^)]*\)\s*$/, "")
 
+// 紙が属する地図の部屋の id（RoomLayout.id）。屋上は紙の仮想パス、部屋が 1 つの分類はその slug、
+// 分野で分かれる分類は分野。部屋 id を紙から決める規則はここだけが持ち、探しものと案内人も使う
+export function roomIdOf(entry: Pick<LayoutEntry, "path" | "floor" | "group" | "room">): string {
+    if (entry.floor === "rf") return entry.path
+    if (entry.group === null) throw new LayoutInputError(`Entry ${entry.path} has no group, so it has no room`)
+    if (findGroup(entry.group).roomName !== null) return entry.group
+    if (entry.room === null) throw new LayoutInputError(`Entry ${entry.path} has no category, so it has no room`)
+    return entry.room
+}
+
 function collectRooms(floor: Floor, entries: readonly LayoutEntry[]): RoomSpec[] {
     for (const entry of entries) {
         if (entry.floor !== floor.id) {
@@ -96,7 +106,7 @@ function collectRooms(floor: Floor, entries: readonly LayoutEntry[]): RoomSpec[]
     }
 
     if (floor.id === "rf") {
-        return entries.map((entry) => ({ id: entry.path, name: linkName(entry.title), group: null, count: 1 }))
+        return entries.map((entry) => ({ id: roomIdOf(entry), name: linkName(entry.title), group: null, count: 1 }))
     }
 
     for (const entry of entries) {
@@ -119,7 +129,7 @@ function collectRooms(floor: Floor, entries: readonly LayoutEntry[]): RoomSpec[]
                 id: category,
                 name: categoryShortLabels[category],
                 group: g.slug,
-                count: inGroup.filter((entry) => entry.room === category).length,
+                count: inGroup.filter((entry) => roomIdOf(entry) === category).length,
             }))
             .filter((room) => room.count > 0)
     })

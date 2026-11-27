@@ -7,7 +7,9 @@ import { Page } from "@/components/ds/Page"
 import { JsonLd } from "@/components/seo"
 import { getEntries } from "@/lib/building/entries"
 import { FLOORS, type FloorId } from "@/lib/building/floors"
+import { buildGuideFloorData, type GuideFloorData } from "@/lib/building/guide"
 import { layoutFloor, type FloorLayout } from "@/lib/building/layout"
+import { runSearches } from "@/lib/building/searches"
 import { absoluteUrl, createPageMetadata, LODGE_NAME, SITE_DESCRIPTION, SITE_NAME } from "@/lib/seo"
 
 export const metadata: Metadata = createPageMetadata({
@@ -18,9 +20,13 @@ export const metadata: Metadata = createPageMetadata({
 
 export default async function TopPage() {
     const entries = await getEntries()
+    const papersOn = (id: FloorId) => entries.filter((entry) => entry.floor === id)
     const layouts = Object.fromEntries(
-        FLOORS.map((floor) => [floor.id, layoutFloor(floor, entries.filter((entry) => entry.floor === floor.id))])
+        FLOORS.map((floor) => [floor.id, layoutFloor(floor, papersOn(floor.id))])
     ) as Record<FloorId, FloorLayout>
+    const guides = Object.fromEntries(
+        FLOORS.map((floor) => [floor.id, buildGuideFloorData(layouts[floor.id], papersOn(floor.id))])
+    ) as Record<FloorId, GuideFloorData>
 
     return (
         <main className="flex-1">
@@ -44,7 +50,7 @@ export default async function TopPage() {
                     </span>
                 </p>
                 <div className="mt-ds-4">
-                    <InfoCenter layouts={layouts} />
+                    <InfoCenter layouts={layouts} guides={guides} searches={runSearches(entries)} />
                 </div>
             </Page>
         </main>

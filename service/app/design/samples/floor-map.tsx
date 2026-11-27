@@ -38,12 +38,7 @@ export const floorMapSample: DesignSample = {
             <FloorMap layout={wood} selected={wood.rooms[0].id} />
             <FloorMap layout={stone} lit={[stone.rooms[1].id]} />
             <FloorMap layout={deck} />
-            <FloorMap
-                layout={wood}
-                size="small"
-                selected={wood.rooms[0].id}
-                lit={[wood.rooms[1].id]}
-            />
+            <FloorMap layout={wood} selected={wood.rooms[0].id} lit={[wood.rooms[1].id]} />
         </div>
     ),
 }

@@ -54,6 +54,7 @@ export const guidePcSample: DesignSample = {
             destinations={[{ label: firstFloor.label, href: firstFloor.url }]}
             rooms={ROOMS}
             searches={SEARCHES}
+            activeSearch={SEARCHES[1].command}
         />
     ),
 }

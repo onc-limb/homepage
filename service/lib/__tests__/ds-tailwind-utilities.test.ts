@@ -171,4 +171,31 @@ describe("tailwind ds namespace", () => {
         expect(kv.media).toContain("768px")
         expect(kv.decls).toMatchObject({ "grid-template-columns": "max-content minmax(0, 1fr)" })
     })
+
+    it("lays the map and the guide PC in two columns at the xl breakpoint, the map column as wide as the map", async () => {
+        // ADR-0001 / order.md 守ること: xl 以上で [地図 | GuidePc]。地図の列の幅は maxWidth.ds-map と同じ値
+        const mapWidth = (config.theme?.extend?.maxWidth as Record<string, string>)["ds-map"]
+        const result = await postcss([
+            tailwindcss({
+                ...config,
+                content: [{ raw: "xl:grid-cols-ds-map-guide", extension: "html" }],
+            }),
+        ]).process("@tailwind utilities", { from: undefined })
+        const found: Record<string, { media: string; decls: Record<string, string> }> = {}
+        result.root.walkAtRules("media", (media) => {
+            media.walkRules((rule) => {
+                const decls: Record<string, string> = {}
+                rule.walkDecls((decl) => {
+                    decls[decl.prop] = decl.value
+                })
+                found[rule.selector] = { media: media.params, decls }
+            })
+        })
+        const columns = found[".xl\\:grid-cols-ds-map-guide"]
+        expect(columns, "xl:grid-cols-ds-map-guide").toBeDefined()
+        expect(columns.media).toContain("1280px")
+        const value = columns.decls["grid-template-columns"]
+        expect(value.split(/\s+/)[0], "first column is the map width").toBe(mapWidth)
+        expect(value.trim().split(/\s+(?![^(]*\))/), "two columns").toHaveLength(2)
+    })
 })

@@ -11,6 +11,7 @@ export interface FloorGroup {
     slug: GroupSlug
     name: string
     roomName: string | null // 地図の部屋の名前。null は分野ごとに部屋を分ける分類（スキル・自己学習）
+    roomDescription: string | null // 案内人が読む部屋の説明。roomName が null の分類は持たない（分野の部屋は案内人が組み立てる）
     note: string | null
     command: string // 見出しに添えるコマンド（`$ ` は付けない）
     url: string // 最終の URL（/<階>/<slug>）
@@ -24,6 +25,7 @@ export interface Floor {
     navName: string
     url: string
     material: FloorMaterial
+    description: string // 案内人が読む階の説明
     groups: FloorGroup[]
 }
 
@@ -32,12 +34,13 @@ const group = (
     slug: GroupSlug,
     name: string,
     roomName: string | null,
+    roomDescription: string | null,
     note: string | null,
     command: string,
     href?: string,
 ): FloorGroup => {
     const url = `/${floor}/${slug}`
-    return { floor, slug, name, roomName, note, command, url, href: href ?? url }
+    return { floor, slug, name, roomName, roomDescription, note, command, url, href: href ?? url }
 }
 
 export const FLOORS: Floor[] = [
@@ -48,7 +51,8 @@ export const FLOORS: Floor[] = [
         navName: "自己学習",
         url: "/b1",
         material: "stone",
-        groups: [group("b1", "studies", "自己学習", null, null, "ls -l ~/b1/studies | sort -k level")],
+        description: "関心を持って、個人開発や勉強で身につけた技術の階です。",
+        groups: [group("b1", "studies", "自己学習", null, null, null, "ls -l ~/b1/studies | sort -k level")],
     },
     {
         id: "1f",
@@ -57,9 +61,26 @@ export const FLOORS: Floor[] = [
         navName: "プロフィール",
         url: "/1f",
         material: "wood",
+        description: "入口のある階です。自己紹介と、連絡先があります。",
         groups: [
-            group("1f", "profile", "プロフィール", "プロフィール", "自己紹介・関心・資格", "man onclimb"),
-            group("1f", "contact", "連絡先", "受付・連絡先", "フォーム・メール", "finger onclimb"),
+            group(
+                "1f",
+                "profile",
+                "プロフィール",
+                "プロフィール",
+                "自己紹介と、変わらず持ち続けている関心、取得した資格です。",
+                "自己紹介・関心・資格",
+                "man onclimb",
+            ),
+            group(
+                "1f",
+                "contact",
+                "連絡先",
+                "受付・連絡先",
+                "お仕事のご相談、技術的なご相談・壁打ちを受け付けています。帰る前に、ここで用件を伝えられます。",
+                "フォーム・メール",
+                "finger onclimb",
+            ),
         ],
     },
     {
@@ -69,9 +90,18 @@ export const FLOORS: Floor[] = [
         navName: "経歴・技術",
         url: "/2f",
         material: "wood",
+        description: "実際に仕事で行ってきたことと、そこで使ってきた技術の階です。",
         groups: [
-            group("2f", "histories", "経歴", "経歴", null, "ls -tr ~/2f/histories"),
-            group("2f", "skills", "スキル", null, null, "ls -l ~/2f/skills | sort -k level"),
+            group(
+                "2f",
+                "histories",
+                "経歴",
+                "経歴",
+                "組み込みから Web、機械学習、AI まで。関わってきた仕事を古い順に置いてあります。",
+                null,
+                "ls -tr ~/2f/histories",
+            ),
+            group("2f", "skills", "スキル", null, null, null, "ls -l ~/2f/skills | sort -k level"),
         ],
     },
     {
@@ -81,7 +111,19 @@ export const FLOORS: Floor[] = [
         navName: "作品・考え",
         url: "/3f",
         material: "wood",
-        groups: [group("3f", "portfolios", "ポートフォリオ", "作ったもの", null, "git log --oneline ~/3f/portfolios", "/portfolio")],
+        description: "事実というより、考え方や思想に近いものを置いた階です。",
+        groups: [
+            group(
+                "3f",
+                "portfolios",
+                "ポートフォリオ",
+                "作ったもの",
+                "個人で設計・開発・運用しているプロダクトです。",
+                null,
+                "git log --oneline ~/3f/portfolios",
+                "/portfolio",
+            ),
+        ],
     },
     {
         id: "rf",
@@ -90,6 +132,7 @@ export const FLOORS: Floor[] = [
         navName: "リンク",
         url: "/rf",
         material: "deck",
+        description: "屋上です。ここから外のサイトへ出られます。",
         groups: [],
     },
 ]

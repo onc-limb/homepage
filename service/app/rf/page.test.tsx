@@ -2,9 +2,12 @@
 import * as React from "react"
 import type { Metadata } from "next"
 import { renderToStaticMarkup } from "react-dom/server"
-import { describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import { guidePcs, precedes, withoutGuidePcAndMaps } from "@/components/ds/__tests__/render"
+import type { Entry } from "@/lib/building/entries"
 import { findFloor } from "@/lib/building/floors"
+import { layoutFloor } from "@/lib/building/layout"
 import { SOCIAL_LINKS } from "@/lib/constants"
 
 /**
@@ -14,7 +17,46 @@ import { SOCIAL_LINKS } from "@/lib/constants"
  * one large door per SOCIAL_LINKS entry. The nameplate shows the site name and
  * its note; the door opens the external URL in a new tab and reads
  * 「外のサイトへ ↗」 below instead of the URL.
+ *
+ * renewal 20 (order.md やること 4, Issue #345): below the doors, the rooftop map and
+ * the guide PC, built on the server from getEntries(). The rules above are kept for
+ * what lies outside the map and the PC.
  */
+
+const mocks = vi.hoisted(() => ({ getEntries: vi.fn() }))
+vi.mock("@/lib/building/entries", () => ({ getEntries: mocks.getEntries }))
+
+// The floor view moves to another floor page with the router; a static render has no app router.
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn(), replace: vi.fn(), prefetch: vi.fn() }) }))
+
+// The rooftop papers as getEntries makes them from SOCIAL_LINKS, plus a paper on another floor for the searches
+const ENTRIES: Entry[] = [
+    ...SOCIAL_LINKS.map((link, i) => ({
+        path: `~/rf/link-${i}.url`,
+        floor: "rf" as const,
+        group: null,
+        room: null,
+        title: link.name,
+        excerpt: link.username,
+        href: link.url,
+        tags: [],
+    })),
+    {
+        path: "~/3f/portfolios/sample.md",
+        floor: "3f",
+        group: "portfolios",
+        room: "portfolios",
+        title: "Sample",
+        excerpt: "",
+        href: "/3f/portfolios/sample",
+        tags: [],
+    },
+]
+
+beforeEach(() => {
+    mocks.getEntries.mockReset()
+    mocks.getEntries.mockResolvedValue(ENTRIES)
+})
 
 // next/link -> plain anchor; external doors must not go through it.
 vi.mock("next/link", () => ({
@@ -49,9 +91,32 @@ describe("rooftop page /rf", () => {
         const headings = main.querySelectorAll("h1")
         expect(headings).toHaveLength(1)
         expect(headings[0].textContent).toBe(TITLE)
-        expect(main.querySelectorAll("p"), "no paragraph").toHaveLength(0)
-        expect(main.textContent).not.toContain("$ ")
-        expect(main.textContent).toBe(TITLE + doorsOf(main).map((door) => door.textContent).join(""))
+        const outside = withoutGuidePcAndMaps(main)
+        expect(outside.querySelectorAll("p"), "no paragraph").toHaveLength(0)
+        expect(outside.textContent).not.toContain("$ ")
+        expect(outside.textContent).toBe(TITLE + doorsOf(main).map((door) => door.textContent).join(""))
+    })
+
+    it("shows the rooftop map and the guide PC below the doors", async () => {
+        const main = await renderRooftop()
+        const maps = Array.from(main.querySelectorAll<HTMLElement>("[data-floor][data-material]"))
+        expect(maps.map((map) => map.getAttribute("data-floor")), "one map, of the rooftop").toEqual(["rf"])
+        const expectedRooms = layoutFloor(floor, ENTRIES.filter((entry) => entry.floor === "rf")).rooms
+        expect(maps[0].querySelectorAll("button"), "one button per rooftop room").toHaveLength(expectedRooms.length)
+        const pcs = guidePcs(main)
+        expect(pcs, "one guide PC").toHaveLength(1)
+        const doors = doorsOf(main)
+        expect(precedes(doors[doors.length - 1], maps[0]), "the doors, then the map").toBe(true)
+        expect(precedes(maps[0], pcs[0]), "the map, then the PC").toBe(true)
+        expect(mocks.getEntries).toHaveBeenCalled()
+    })
+
+    it("starts the guide with the rooftop introduction and without a link to its own page", async () => {
+        const pc = guidePcs(await renderRooftop())[0]
+        expect(pc.textContent).toContain(
+            `ここは ${floor.label}「${floor.name}」です。${floor.description}部屋を押すと、中身をお見せします。`
+        )
+        expect(pc.textContent).not.toContain("のページへ")
     })
 
     it("shows three doors, one per SOCIAL_LINKS entry, linking to the external URLs", async () => {
@@ -59,7 +124,7 @@ describe("rooftop page /rf", () => {
         const doors = doorsOf(main)
 
         expect(doors).toHaveLength(3)
-        expect(main.querySelectorAll("a"), "no other link").toHaveLength(3)
+        expect(withoutGuidePcAndMaps(main).querySelectorAll("a"), "no other link outside the PC").toHaveLength(3)
         expect(doors.map((door) => door.getAttribute("href"))).toEqual(SOCIAL_LINKS.map((link) => link.url))
         for (const door of doors) {
             const href = door.getAttribute("href") ?? ""

@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import fs from "node:fs"
 import path from "node:path"
-import { act } from "react"
+import { act, useState } from "react"
 import { createRoot, type Root } from "react-dom/client"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -33,6 +33,12 @@ vi.mock("next/link", () => ({
  *   受け入れ 4（tsc / test / lint）                              → 関門
  *
  * Reference: order.md やること 2・受け入れ条件, Issue #343
+ *
+ * renewal 20（order.md 守ること「GuidePc の口」）で足した契約:
+ *   - 探しものの状態は外から制御する: 押した状態と結果は activeSearch（コマンド）で決まり、押すと onSearch が呼ばれる
+ *   - 部屋の一覧の項目は href を持てる（階のページの「上の階・下の階」はリンク）
+ *   - 案内の文章は aria-live="polite" で伝える
+ *   - 部屋の一覧のボタンを押した後は、フォーカスを出力の枠（tabIndex -1）へ移す（押したボタンが消えても行き先がある）
  */
 
 // ---- 固定の入力 ----
@@ -72,8 +78,15 @@ function props(overrides: Partial<GuidePcProps> = {}): GuidePcProps {
         destinations: [{ label: secondFloor.label, href: secondFloor.url }],
         rooms: ROOMS,
         searches: SEARCHES,
+        activeSearch: null,
         ...overrides,
     }
+}
+
+/** A parent that owns the search state, as InfoCenter and the floor pages do. */
+function ControlledGuidePc(overrides: Partial<GuidePcProps> = {}) {
+    const [activeSearch, setActiveSearch] = useState<string | null>(null)
+    return <GuidePc {...props({ ...overrides, activeSearch, onSearch: setActiveSearch })} />
 }
 
 const squash = (s: string | null | undefined) => (s ?? "").replace(/\s+/g, "")
@@ -235,6 +248,41 @@ describe("GuidePc (static)", () => {
         expect(precedes(roomsHeading(root), heading), "rooms before 探しもの").toBe(true)
     })
 
+    it("announces the text with aria-live polite", () => {
+        const root = render(<GuidePc {...props()} />)
+        const text = mustText(root, TEXT)
+        const live = text.closest("[aria-live]")
+        expect(live, "a live region around the text").not.toBeNull()
+        expect(live!.getAttribute("aria-live")).toBe("polite")
+        expect(live!.contains(mustText(root, "$ docent")), "the region is the $ docent output").toBe(true)
+    })
+
+    it("shows a room item with href as a link door and the others as button doors", () => {
+        const rooms: GuidePcProps["rooms"] = {
+            scope: "floor",
+            items: [
+                { id: "up", name: "上の階へ — 3F", href: findFloor("3f").url },
+                { id: "profile", name: "プロフィール" },
+            ],
+        }
+        const root = render(<GuidePc {...props({ rooms })} />)
+        const [link] = doorsWithText(root, "上の階へ — 3F")
+        expect(link.tagName).toBe("A")
+        expect(link.getAttribute("href")).toBe(findFloor("3f").url)
+        expect(precedes(roomsHeading(root), link), "in the room list").toBe(true)
+        expect(doorsWithText(root, "プロフィール")[0].tagName).toBe("BUTTON")
+    })
+
+    it("shows the pressed state and the result from activeSearch without a click", () => {
+        const [first, second] = SEARCHES
+        const root = render(<GuidePc {...props({ activeSearch: second.command })} />)
+        expect(searchButton(root, first.label).getAttribute("aria-pressed")).toBe("false")
+        expect(searchButton(root, second.label).getAttribute("aria-pressed")).toBe("true")
+        expect(mustText(root, second.summary).classList.contains("font-bold")).toBe(true)
+        for (const p of second.paths) expect(mustText(root, p).tagName, p).toBe("BUTTON")
+        expect(root.textContent).not.toContain(first.summary)
+    })
+
     it("rejects searches with the same command and rooms with the same id", () => {
         expect(() =>
             render(<GuidePc {...props({ searches: [SEARCHES[0], { ...SEARCHES[1], command: SEARCHES[0].command }] })} />)
@@ -314,8 +362,40 @@ describe("GuidePc (interactive)", () => {
         expect(doorsWithText(container, ROOMS.items[0].name)).toHaveLength(1)
     })
 
+    it("calls onSearch with the command and leaves the pressed state to the parent", async () => {
+        const onSearch = vi.fn()
+        await act(async () => root.render(<GuidePc {...props({ onSearch })} />))
+        const [first] = SEARCHES
+
+        await click(searchButton(container, first.label))
+        expect(onSearch).toHaveBeenCalledTimes(1)
+        expect(onSearch).toHaveBeenCalledWith(first.command)
+        // Without a new activeSearch from the parent, nothing is pressed and no result is shown
+        expect(searchButton(container, first.label).getAttribute("aria-pressed")).toBe("false")
+        expect(container.textContent).not.toContain(first.summary)
+    })
+
+    it("follows activeSearch changes from the parent in the same component", async () => {
+        const [first, second] = SEARCHES
+        await act(async () => root.render(<GuidePc {...props({ activeSearch: first.command })} />))
+        const firstButton = searchButton(container, first.label)
+        expect(firstButton.getAttribute("aria-pressed")).toBe("true")
+        expect(container.textContent).toContain(first.summary)
+
+        await act(async () => root.render(<GuidePc {...props({ activeSearch: second.command })} />))
+        expect(searchButton(container, first.label), "same button element").toBe(firstButton)
+        expect(firstButton.getAttribute("aria-pressed")).toBe("false")
+        expect(searchButton(container, second.label).getAttribute("aria-pressed")).toBe("true")
+        expect(container.textContent).not.toContain(first.summary)
+        expect(container.textContent).toContain(second.summary)
+
+        await act(async () => root.render(<GuidePc {...props({ activeSearch: null })} />))
+        expect(container.querySelectorAll('button[aria-pressed="true"]')).toHaveLength(0)
+        expect(container.textContent).not.toContain(second.summary)
+    })
+
     it("shows the result of the pressed search and moves it when another search is pressed", async () => {
-        await act(async () => root.render(<GuidePc {...props()} />))
+        await act(async () => root.render(<ControlledGuidePc />))
         const [first, second] = SEARCHES
         const commandCount = (command: string) =>
             Array.from(container.querySelectorAll("*")).filter(
@@ -343,11 +423,41 @@ describe("GuidePc (interactive)", () => {
         expect(precedes(searchButton(container, second.label), mustText(container, second.summary))).toBe(true)
     })
 
+    it("moves the focus to the output frame after a room button is pressed, even when the button goes away", async () => {
+        function Parent() {
+            const [rooms, setRooms] = useState<GuidePcProps["rooms"]>(ROOMS)
+            const [text, setText] = useState(TEXT)
+            return (
+                <GuidePc
+                    {...props({
+                        text,
+                        rooms,
+                        onSelect: (id) => {
+                            setText(`selected ${id}`)
+                            setRooms({ scope: "room", items: ROOMS.items.filter((room) => room.id !== id) })
+                        },
+                    })}
+                />
+            )
+        }
+        await act(async () => root.render(<Parent />))
+        const pressed = doorsWithText(container, ROOMS.items[0].name)[0]
+        pressed.focus()
+        await click(pressed)
+
+        expect(doorsWithText(container, ROOMS.items[0].name), "the pressed button is gone").toHaveLength(0)
+        const focused = document.activeElement as HTMLElement | null
+        expect(focused, "focus stays inside the PC").not.toBe(document.body)
+        expect(container.contains(focused)).toBe(true)
+        expect(focused!.getAttribute("tabindex")).toBe("-1")
+        expect(focused!.textContent).toContain(`selected ${ROOMS.items[0].id}`)
+        expect(focused!.textContent).toContain("$ docent")
+    })
+
     it("shows the result paths as underlined text buttons and calls onPick once with the path", async () => {
         const onPick = vi.fn()
-        await act(async () => root.render(<GuidePc {...props({ onPick })} />))
         const search = SEARCHES[1]
-        await click(searchButton(container, search.label))
+        await act(async () => root.render(<GuidePc {...props({ onPick, activeSearch: search.command })} />))
 
         const pathButton = mustText(container, search.paths[1])
         expect(pathButton.tagName).toBe("BUTTON")

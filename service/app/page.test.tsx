@@ -5,10 +5,11 @@ import * as React from "react"
 import { renderToStaticMarkup } from "react-dom/server"
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest"
 
-import { elementWithText, precedes } from "@/components/ds/__tests__/render"
+import { elementWithText, guidePcs, precedes, withoutGuidePcAndMaps } from "@/components/ds/__tests__/render"
 import type { Entry } from "@/lib/building/entries"
 import { FLOORS, findFloor, findGroup, type FloorId, type GroupSlug } from "@/lib/building/floors"
 import { layoutFloor } from "@/lib/building/layout"
+import { SOCIAL_LINKS } from "@/lib/constants"
 import { categoryOrder } from "@/lib/skills-meta"
 
 vi.hoisted(() => {
@@ -30,11 +31,16 @@ import TopPage, * as pageModule from "@/app/page"
  * Home contract tests (/).
  *
  * From the top: the h1 "onclimb 山荘", then the small primary Contact door with
- * one sentence beside it, then the info center (the floor guide and the map of
- * all five floors). The floor layouts are built on the server from getEntries().
- * Nothing else is shown: no prose under the heading, no `$ command` line, no
- * other links. Without JavaScript the HTML already holds the 1F map with its
- * room names.
+ * one sentence beside it, then the info center (the floor guide, the map of
+ * all five floors and the guide PC after the map). The floor layouts, the guide
+ * data and the searches are built on the server from getEntries().
+ * Outside the guide PC and the maps nothing else is shown: no prose under the
+ * heading, no `$ command` line, no other links. Without JavaScript the HTML
+ * already holds the 1F map with its room names and the 1F guide.
+ *
+ * renewal 20 (order.md 守ること): the three checks on links and text are kept as
+ * rules for what lies outside the guide PC (and the maps), because the PC adds
+ * its own Contact, destination and `$ docent` lines.
  */
 
 const ORIGIN_ROOT = "https://onc-limb.com/"
@@ -65,7 +71,8 @@ const ENTRIES: Entry[] = [
     entry("2f", "histories", "histories", 0),
     entry("2f", "skills", categoryOrder[0], 0),
     entry("3f", "portfolios", "portfolios", 0),
-    { ...entry("rf", null, null, 0), title: "GitHub" },
+    // The rooftop paper is shaped as getEntries makes it from SOCIAL_LINKS (the guide reads its description)
+    { ...entry("rf", null, null, 0), path: "~/rf/github.url", title: SOCIAL_LINKS[0].name, href: SOCIAL_LINKS[0].url },
 ]
 
 async function renderMain(): Promise<HTMLElement> {
@@ -76,17 +83,27 @@ async function renderMain(): Promise<HTMLElement> {
     return main as HTMLElement
 }
 
+/** The Contact door outside the guide PC (the PC has its own Contact at the end of its destinations). */
 function contactLink(main: HTMLElement): HTMLAnchorElement {
-    const links = Array.from(main.querySelectorAll("a")).filter((a) => a.textContent === "Contact")
+    const pcs = guidePcs(main)
+    const links = Array.from(main.querySelectorAll("a")).filter(
+        (a) => a.textContent === "Contact" && !pcs.some((pc) => pc.contains(a))
+    )
     expect(links).toHaveLength(1)
     return links[0]
 }
 
-function currentNormalMap(main: HTMLElement): HTMLElement {
+function guidePc(main: HTMLElement): HTMLElement {
+    const pcs = guidePcs(main)
+    expect(pcs, "one guide PC").toHaveLength(1)
+    return pcs[0]
+}
+
+function currentMap(main: HTMLElement): HTMLElement {
     const maps = Array.from(main.querySelectorAll<HTMLElement>('[data-floor-layer][data-current="true"]'))
-        .map((layer) => layer.querySelector<HTMLElement>('[data-floor][data-size="normal"]'))
+        .map((layer) => layer.querySelector<HTMLElement>("[data-floor][data-material]"))
         .filter((map): map is HTMLElement => map !== null)
-    expect(maps, "one current normal-size map").toHaveLength(1)
+    expect(maps, "one current map").toHaveLength(1)
     return maps[0]
 }
 
@@ -135,26 +152,59 @@ describe("home info center", () => {
         expect(mocks.getEntries).toHaveBeenCalled()
     })
 
-    it("has replaced the per-floor links with the floor guide and the map of every floor", async () => {
+    it("has replaced the per-floor links with the floor guide and the map of every floor, outside the guide PC", async () => {
         const main = await renderMain()
         const floorUrls = FLOORS.map((floor) => floor.url)
+        const outside = withoutGuidePcAndMaps(main)
 
         expect(main.querySelector(GUIDE), "floor guide").not.toBeNull()
         expect(main.querySelectorAll("[data-floor-layer]").length).toBeGreaterThan(0)
         expect(
-            Array.from(main.querySelectorAll("a")).filter((a) => floorUrls.includes(a.getAttribute("href") ?? ""))
+            Array.from(outside.querySelectorAll("a")).filter((a) => floorUrls.includes(a.getAttribute("href") ?? ""))
         ).toEqual([])
     })
 
-    it("has no links other than Contact", async () => {
+    it("has no links other than Contact outside the guide PC", async () => {
         const main = await renderMain()
+        const links = Array.from(withoutGuidePcAndMaps(main).querySelectorAll("a"))
 
-        expect(main.querySelectorAll("a")).toHaveLength(1)
+        expect(links).toHaveLength(1)
+        expect(links[0].textContent).toBe("Contact")
+    })
+
+    it("draws the map of each floor once (no second set of maps for narrow screens)", async () => {
+        const main = await renderMain()
+        const maps = Array.from(main.querySelectorAll<HTMLElement>("[data-floor-layer] [data-floor][data-material]"))
+
+        expect(maps.map((map) => map.getAttribute("data-floor"))).toEqual(FLOORS.map((floor) => floor.id))
+    })
+
+    it("places the guide PC after the map, with the 1F guide in the HTML", async () => {
+        const main = await renderMain()
+        const pc = guidePc(main)
+        const floor = findFloor("1f")
+
+        expect(precedes(currentMap(main), pc), "map before the PC").toBe(true)
+        expect(pc.textContent).toContain("$ docent")
+        expect(pc.textContent).toContain(`ここは ${floor.label}「${floor.name}」です。${floor.description}`)
+        const toFloorPage = Array.from(pc.querySelectorAll("a")).find((a) => a.textContent === `${floor.label} のページへ`)
+        expect(toFloorPage?.getAttribute("href"), "the info center links to the floor page").toBe(floor.url)
+        const contact = Array.from(pc.querySelectorAll("a")).filter((a) => a.textContent === "Contact")
+        expect(contact, "the PC ends with Contact").toHaveLength(1)
+    })
+
+    it("passes the searches to the guide PC", async () => {
+        const main = await renderMain()
+        const pc = guidePc(main)
+
+        for (const label of ["AI に関わるもの", "設計に関わるもの", "いちばん得意な技術", "建物の構成を見る"]) {
+            expect(pc.textContent, label).toContain(label)
+        }
     })
 
     it("starts on 1F without JavaScript, with the 1F room names in the HTML", async () => {
         const main = await renderMain()
-        const map = currentNormalMap(main)
+        const map = currentMap(main)
         const expected = layoutFloor(
             findFloor("1f"),
             ENTRIES.filter((e) => e.floor === "1f")
@@ -183,7 +233,7 @@ describe("home order and content", () => {
         expect(first!.contains(elementWithText(main, CONTACT_NOTE) ?? null)).toBe(true)
     })
 
-    it("places the h1, Contact, the floor guide and the map in that order", async () => {
+    it("places the h1, Contact, the floor guide, the map and the guide PC in that order", async () => {
         const main = await renderMain()
         const heading = main.querySelector("h1") as HTMLElement
         const link = contactLink(main)
@@ -193,17 +243,18 @@ describe("home order and content", () => {
         expect(precedes(heading, link)).toBe(true)
         expect(precedes(link, guide)).toBe(true)
         expect(precedes(guide, layer)).toBe(true)
+        expect(precedes(layer, guidePc(main))).toBe(true)
     })
 
-    it("shows no text besides the title, Contact and its sentence outside the guide and the maps", async () => {
-        const main = await renderMain()
-        main.querySelectorAll(`script, ${GUIDE}, [data-floor][data-size]`).forEach((el) => el.remove())
+    it("shows no text besides the title, Contact and its sentence outside the guide, the maps and the guide PC", async () => {
+        const main = withoutGuidePcAndMaps(await renderMain())
+        main.querySelectorAll(`script, ${GUIDE}`).forEach((el) => el.remove())
 
         expect(main.textContent).toBe([TITLE, "Contact", CONTACT_NOTE].join(""))
     })
 
-    it("shows no `$ command` line", async () => {
-        const main = await renderMain()
+    it("shows no `$ command` line outside the guide PC", async () => {
+        const main = withoutGuidePcAndMaps(await renderMain())
         const lines = Array.from(main.querySelectorAll("*")).map((el) => el.textContent ?? "")
 
         expect(lines.some((text) => text.trimStart().startsWith("$ "))).toBe(false)

@@ -146,6 +146,19 @@ describe("getEntries()", () => {
             }
         })
 
+        it("lists the skills of each floor deepest experience first (level desc, then name), as sortSkillsByLevel does", async () => {
+            // order.md やること 1: 分野の部屋は「経験の深い順に置いてあります」。部屋の紙はこの並びのまま案内人が出す
+            const entries = await getEntries()
+            const skills = entries.filter((entry) => entry.level !== undefined)
+            expect(skills.length).toBeGreaterThan(1)
+            expect(new Set(skills.map((entry) => entry.level)).size, "fixture has several levels").toBeGreaterThan(1)
+            for (let i = 1; i < skills.length; i++) {
+                const [prev, cur] = [skills[i - 1], skills[i]]
+                const ordered = prev.level! > cur.level! || (prev.level === cur.level && prev.title.localeCompare(cur.title) <= 0)
+                expect(ordered, `${prev.title} (level ${prev.level}) before ${cur.title} (level ${cur.level})`).toBe(true)
+            }
+        })
+
         it("does not include unpublished skills or display names in paths", async () => {
             // Given: docs/skills/api/rest-api.md（name: REST API、publish: false）など非公開のスキル
             const unpublished = readSkillFiles().filter((file) => !file.publish)

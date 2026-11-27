@@ -136,8 +136,11 @@ describe("FloorGuide (static)", () => {
         const button = buttonOf(root, "1f")
         const spans = Array.from(button.querySelectorAll("span"))
         const name = spans.find((s) => s.textContent === findFloor("1f").name)!
-        expect(name.classList.contains("hidden"), "name hidden on narrow").toBe(true)
-        expect(name.classList.contains("md:inline"), "name shown on wide").toBe(true)
+        // Visually left out on narrow screens but always read out (not display: none)
+        expect(name.classList.contains("sr-only"), "name only for screen readers on narrow").toBe(true)
+        expect(name.classList.contains("md:not-sr-only"), "name shown on wide").toBe(true)
+        expect(name.classList.contains("hidden"), "name is not removed from the accessibility tree").toBe(false)
+        expect(Array.from(name.classList).some((cls) => /^(md:)?order-/.test(cls)), "no reordering").toBe(false)
 
         for (const text of [findFloor("1f").label, `${LIT_MARK}2`]) {
             const span = spans.find((s) => s.textContent === text)!

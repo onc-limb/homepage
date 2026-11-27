@@ -24,14 +24,17 @@ import { render } from "./render"
  * Plan: components/ds/FloorMap.tsx は layoutFloor の結果を props で受け取り、上から見下ろした階の地図を描く。
  *   床板・部屋（床と奥側の壁）・廊下・階段・扉・1F の入口とデッキ・部屋の名前のラベル。素材は階で変える。
  *   状態: selected（prompt の太い枠）/ lit（accent の枠と map-lit の地、ラベルに ●）/ onSelect（click と Enter）。
- *   size="small" ではラベルを出さず印だけ。interactive={false} では button を作らず全体を aria-hidden にする。
+ *   地図は 1 組だけ描き、幅の切り替えは md: のクラスで行う（狭い画面ではラベルを隠し、選んだ部屋と光る部屋に印）。
+ *   interactive={false} では button を作らず全体を aria-hidden にする。
+ *   部屋のボタンの読み上げ名は「階のラベル 部屋の名前」（例: 「2F 経歴」）。階のラベルは FLOORS から引く。
  *
  * DOM の目印（計画で決めたもの）:
- *   外の枠: data-floor / data-material / data-size、size で max-w-ds-map / max-w-ds-map-small
+ *   外の枠: data-floor / data-material、幅は max-w-ds-map-small md:max-w-ds-map（data-size は持たない）
  *   data-part: plane（変形する平面）, slab, corridor, stairs, door, deck, entrance-step,
- *              room（部屋の床。包みの中に wall と並ぶ）, wall, label（平面の外）, mark（小の印）
+ *              room（部屋の床。包みの中に wall と並ぶ）, wall, label（平面の外）, mark（狭い画面の印）
  *
  * Reference: order.md 作るもの・やること 1〜3・受け入れ条件, Issue #339, #340
+ *            renewal 20 order.md 守ること（地図は 1 組・読み上げ名に階）, Issue #345 受け入れ条件（幅 390px）
  */
 
 // ---- 固定の入力 ----
@@ -88,6 +91,10 @@ const MATERIAL_OF: Record<FloorId, "wood" | "stone" | "deck"> = {
 
 const FLOOR_IDS = Object.keys(LAYOUTS) as FloorId[]
 
+// 部屋のボタンの読み上げ名: 階のラベル（FLOORS）と部屋の名前
+const accessibleName = (layout: FloorLayout, name: string): string =>
+    `${findFloor(layout.floor).label} ${name}`
+
 // ---- DOM を読む補助 ----
 
 const parts = (root: Element, part: string): HTMLElement[] =>
@@ -117,15 +124,16 @@ const ancestors = (el: Element, stop: Element): HTMLElement[] => {
 }
 
 describe("FloorMap drawing", () => {
-    it("renders one button per room, named after the room, in layout order", () => {
+    it("renders one button per room, named after the floor and the room, in layout order", () => {
         const layout = LAYOUTS["2f"]
         const root = mapRoot(render(<FloorMap layout={layout} />))
         const buttons = Array.from(root.querySelectorAll("button"))
 
         expect(buttons).toHaveLength(layout.rooms.length)
         expect(buttons.map((b) => b.getAttribute("aria-label"))).toEqual(
-            layout.rooms.map((r) => r.name)
+            layout.rooms.map((r) => accessibleName(layout, r.name))
         )
+        expect(buttons[0].getAttribute("aria-label")).toBe("2F 経歴")
         for (const button of buttons) {
             expect(button.getAttribute("type")).toBe("button")
             expect(button.getAttribute("data-part")).toBe("room")
@@ -442,53 +450,53 @@ describe("FloorMap states (static)", () => {
     })
 })
 
-describe("FloorMap size", () => {
+describe("FloorMap on narrow and wide screens", () => {
     const layout = LAYOUTS["2f"]
     const [first, , third] = layout.rooms
 
-    it("is the normal size by default, with labels", () => {
+    it("draws a single map whose width switches at md, without a size attribute", () => {
+        const container = render(<FloorMap layout={layout} />)
+        expect(container.querySelectorAll("[data-floor]"), "one map").toHaveLength(1)
+        const root = mapRoot(container)
+        expect(root.hasAttribute("data-size")).toBe(false)
+        expect(has(root, "max-w-ds-map-small"), "narrow width").toBe(true)
+        expect(has(root, "md:max-w-ds-map"), "wide width from md").toBe(true)
+        expect(has(root, "max-w-ds-map"), "no unprefixed wide width").toBe(false)
+    })
+
+    it("draws one label per room, hidden below md and shown from md", () => {
         const root = mapRoot(render(<FloorMap layout={layout} />))
-        expect(root.getAttribute("data-size")).toBe("normal")
-        expect(has(root, "max-w-ds-map")).toBe(true)
-        expect(has(root, "max-w-ds-map-small")).toBe(false)
-        expect(parts(root, "label")).toHaveLength(layout.rooms.length)
+        const labels = parts(root, "label")
+        expect(labels).toHaveLength(layout.rooms.length)
+        for (const label of labels) {
+            expect(has(label, "hidden"), label.textContent ?? "").toBe(true)
+            expect(has(label, "md:block"), label.textContent ?? "").toBe(true)
+        }
+    })
+
+    it("marks only the selected and lit rooms with ●, shown only below md", () => {
+        const root = mapRoot(
+            render(<FloorMap layout={layout} selected={first.id} lit={[third.id]} />)
+        )
+        const marks = parts(root, "mark")
+        expect(marks, "one mark per selected or lit room").toHaveLength(2)
+        for (const mark of marks) {
+            expect(mark.textContent).toBe("●")
+            expect(mark.getAttribute("aria-hidden")).toBe("true")
+            expect(has(mark, "md:hidden"), "hidden from md").toBe(true)
+            expect(has(mark, "hidden"), "visible below md").toBe(false)
+        }
+        expect(parts(root, "label"), "labels are kept for md").toHaveLength(layout.rooms.length)
+    })
+
+    it("draws no mark when no room is selected or lit", () => {
+        const root = mapRoot(render(<FloorMap layout={layout} />))
         expect(parts(root, "mark")).toHaveLength(0)
     })
 
-    it("small: draws a smaller map without labels, marking only the selected and lit rooms", () => {
+    it("gives a room both selected and lit a single mark", () => {
         const root = mapRoot(
-            render(
-                <FloorMap
-                    layout={layout}
-                    size="small"
-                    selected={first.id}
-                    lit={[third.id]}
-                />
-            )
-        )
-        expect(root.getAttribute("data-size")).toBe("small")
-        expect(has(root, "max-w-ds-map-small")).toBe(true)
-        expect(has(root, "max-w-ds-map")).toBe(false)
-
-        expect(parts(root, "label"), "no labels").toHaveLength(0)
-        for (const room of layout.rooms) {
-            expect(root.textContent, `no name for ${room.name}`).not.toContain(room.name)
-        }
-        const marks = parts(root, "mark")
-        expect(marks, "one mark per selected or lit room").toHaveLength(2)
-        for (const mark of marks) expect(mark.textContent).toBe("●")
-    })
-
-    it("small: a room both selected and lit gets a single mark", () => {
-        const root = mapRoot(
-            render(
-                <FloorMap
-                    layout={layout}
-                    size="small"
-                    selected={first.id}
-                    lit={[first.id]}
-                />
-            )
+            render(<FloorMap layout={layout} selected={first.id} lit={[first.id]} />)
         )
         expect(parts(root, "mark")).toHaveLength(1)
         const room = parts(root, "room")[0]
@@ -497,18 +505,16 @@ describe("FloorMap size", () => {
         expect(has(room, "bg-ds-map-lit")).toBe(true)
     })
 
-    it("small: rooms stay buttons and keep the selected and lit states", () => {
+    it("keeps every room a button with its state on every width", () => {
         const root = mapRoot(
-            render(
-                <FloorMap
-                    layout={layout}
-                    size="small"
-                    selected={first.id}
-                    lit={[third.id]}
-                />
-            )
+            render(<FloorMap layout={layout} selected={first.id} lit={[third.id]} />)
         )
-        expect(root.querySelectorAll("button")).toHaveLength(layout.rooms.length)
+        const buttons = Array.from(root.querySelectorAll("button"))
+        expect(buttons).toHaveLength(layout.rooms.length)
+        for (const button of buttons) {
+            const classes = [button, ...ancestors(button, root)].flatMap((el) => Array.from(el.classList))
+            expect(classes, button.getAttribute("aria-label") ?? "").not.toContain("hidden")
+        }
         expect(root.querySelectorAll('button[aria-pressed="true"]')).toHaveLength(1)
         expect(root.querySelectorAll('[data-lit="true"]')).toHaveLength(1)
     })
@@ -557,7 +563,7 @@ describe("FloorMap keyboard order", () => {
             expect(
                 buttons.map((b) => b.getAttribute("aria-label")),
                 id
-            ).toEqual(layout.rooms.map((r) => r.name))
+            ).toEqual(layout.rooms.map((r) => accessibleName(layout, r.name)))
             for (const button of buttons) {
                 expect(button.hasAttribute("disabled"), `${id} disabled`).toBe(false)
                 const tabindex = button.getAttribute("tabindex")
@@ -600,7 +606,7 @@ describe("FloorMap selection (interactive)", () => {
 
     const buttonFor = (name: string): HTMLButtonElement => {
         const found = container.querySelector<HTMLButtonElement>(
-            `button[aria-label="${name}"]`
+            `button[aria-label="${accessibleName(layout, name)}"]`
         )
         expect(found, name).not.toBeNull()
         return found!
