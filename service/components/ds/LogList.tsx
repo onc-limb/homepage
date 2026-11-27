@@ -1,8 +1,9 @@
 import Link from "next/link"
 
 import { FOCUS_RING } from "./focus-styles"
+import { PROSE_TEXT } from "./prose-styles"
 
-export type LogListItem = { id: string; date: string; title: string; href: string }
+export type LogListItem = { id: string; date: string; title: string; href: string; description?: string }
 
 type LogListProps = {
     items: readonly LogListItem[]
@@ -19,8 +20,11 @@ export function LogList({ items }: LogListProps) {
                     >
                         <span className="text-ds-sm text-ds-fg-muted">{item.date}</span>
                         <span className="text-ds-sm text-ds-link">{item.id}</span>
-                        <span className="text-ds-lg font-bold text-ds-link underline underline-offset-4">
-                            {item.title}
+                        <span className="flex flex-col gap-ds-1">
+                            <span className="text-ds-lg font-bold text-ds-link underline underline-offset-4">
+                                {item.title}
+                            </span>
+                            {item.description ? <span className={PROSE_TEXT}>{item.description}</span> : null}
                         </span>
                     </Link>
                 </li>

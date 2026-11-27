@@ -1,127 +1,156 @@
+import fs from "node:fs"
+import path from "node:path"
 import { describe, it, expect } from "vitest"
+
+import { findGroup, toVirtualPath } from "@/lib/building/floors"
+import * as portfolio from "@/lib/portfolio"
 import {
-    findAdjacentProjectIds,
-    formatProjectNumber,
     getProjects,
+    listProjects,
+    projectDate,
+    projectHref,
+    projectVirtualPath,
+    resolveProjectPage,
+    type Project,
 } from "@/lib/portfolio"
 
-describe("portfolio metadata", () => {
+/**
+ * lib/portfolio contract tests.
+ *
+ * The list page, the detail pages (static params and pager doors) and the
+ * sitemap all take their set and order from listProjects(): newest updatedAt
+ * first, keeping the md order for equal timestamps. resolveProjectPage() finds
+ * the project of a detail URL and its neighbours in that order. The md body is
+ * kept whole (no section parsing) so the page can render it as is.
+ */
+
+const DOCS_ROOT = path.resolve(__dirname, "../../docs/portfolio")
+
+function project(id: string, updatedAt: string): Project {
+    return {
+        id,
+        updatedAt,
+        title: `title ${id}`,
+        description: `description ${id}`,
+        technologies: [],
+        role: "role",
+        period: "period",
+        highlights: [],
+        body: "",
+    }
+}
+
+/** Input order is neither the date order nor the id order; b and d share a timestamp. */
+const PROJECTS = [
+    project("c-old", "2025-01-01T00:00:00+09:00"),
+    project("b-tie", "2026-07-14T19:55:38+09:00"),
+    project("a-new", "2026-09-01T00:00:00+09:00"),
+    project("d-tie", "2026-07-14T19:55:38+09:00"),
+]
+
+describe("getProjects()", () => {
     it("has a valid updatedAt timestamp for every project", () => {
         for (const project of getProjects()) {
             expect(Number.isFinite(Date.parse(project.updatedAt))).toBe(true)
         }
     })
-})
 
-/**
- * findAdjacentProjectIds contract tests.
- *
- * Plan: docs/design/portfolio/onc-limb.html の pager（prev/next）に必要な
- *   隣接プロジェクト ID を導出する純粋関数を lib/portfolio.ts に追加する。
- *   getProjectIds() の順序で前後を導出する旨が計画レポートに記載されているが、
- *   テスト容易性のため id 配列と current id を受け取る純粋関数として実装する想定。
- *
- * Reference: docs/design/portfolio/onc-limb.html の pager セクション
- */
-
-describe("findAdjacentProjectIds()", () => {
-    it("returns the previous and next id for a middle entry", () => {
-        // Given a 3-id list and the middle id is current
-        // When adjacency is computed
-        // Then prev and next match the surrounding ids
-        const result = findAdjacentProjectIds(["a", "b", "c"], "b")
-        expect(result).toEqual({ prev: "a", next: "c" })
+    it("loads every md under docs/portfolio, each with its own id", () => {
+        const files = fs.readdirSync(DOCS_ROOT).filter((file) => file.endsWith(".md"))
+        const ids = getProjects().map((project) => project.id)
+        expect(ids).toHaveLength(files.length)
+        expect([...ids].sort()).toEqual(files.map((file) => file.replace(/\.md$/, "")).sort())
     })
 
-    it("returns no prev for the first entry", () => {
-        // Given the first id is current
-        // When adjacency is computed
-        // Then prev is undefined and next is the second id
-        const result = findAdjacentProjectIds(["a", "b", "c"], "a")
-        expect(result.prev).toBeUndefined()
-        expect(result.next).toBe("b")
+    it("keeps the md body after the frontmatter as is", () => {
+        for (const project of getProjects()) {
+            const raw = fs.readFileSync(path.join(DOCS_ROOT, `${project.id}.md`), "utf-8")
+            const afterFrontmatter = raw.replace(/^---\n[\s\S]*?\n---\n/, "")
+            expect(project.body.trim(), project.id).toBe(afterFrontmatter.trim())
+            // the frontmatter is not part of the body
+            expect(project.body, project.id).not.toMatch(/^title:/m)
+            expect(project.body, project.id).not.toMatch(/^highlights:/m)
+        }
     })
 
-    it("returns no next for the last entry", () => {
-        // Given the last id is current
-        // When adjacency is computed
-        // Then next is undefined and prev is the previous id
-        const result = findAdjacentProjectIds(["a", "b", "c"], "c")
-        expect(result.prev).toBe("b")
-        expect(result.next).toBeUndefined()
-    })
-
-    it("returns no prev or next when the list has a single id", () => {
-        // Given only one id exists
-        // When adjacency is computed for that id
-        // Then both prev and next are undefined
-        const result = findAdjacentProjectIds(["only"], "only")
-        expect(result.prev).toBeUndefined()
-        expect(result.next).toBeUndefined()
-    })
-
-    it("returns an empty object when the current id is not in the list", () => {
-        // Given a list that does not contain the current id
-        // When adjacency is computed
-        // Then both prev and next are undefined
-        const result = findAdjacentProjectIds(["a", "b"], "missing")
-        expect(result.prev).toBeUndefined()
-        expect(result.next).toBeUndefined()
-    })
-
-    it("returns an empty object for an empty id list", () => {
-        // Given an empty id list
-        // When adjacency is computed
-        // Then both prev and next are undefined
-        const result = findAdjacentProjectIds([], "x")
-        expect(result.prev).toBeUndefined()
-        expect(result.next).toBeUndefined()
-    })
-
-    it("does not wrap from last back to first", () => {
-        // Given the design pager has no wrap-around (no cycle indicator)
-        // When the last id is current
-        // Then next does not wrap to ids[0]
-        const result = findAdjacentProjectIds(["a", "b"], "b")
-        expect(result.next).toBeUndefined()
-    })
-
-    it("treats duplicate ids by using the first occurrence", () => {
-        // Given duplicate ids slip through (defensive)
-        // When adjacency is computed
-        // Then it uses the first match for index lookup
-        const result = findAdjacentProjectIds(["a", "b", "a", "c"], "a")
-        expect(result.prev).toBeUndefined()
-        expect(result.next).toBe("b")
+    it("no longer parses the body into sections", () => {
+        for (const project of getProjects()) {
+            expect(project, project.id).not.toHaveProperty("detail")
+        }
     })
 })
 
-/**
- * formatProjectNumber contract tests.
- *
- * Family tag: dry-violation (ARCH-NEW-projectNumber-dup) re-prevention.
- *  Portfolio 一覧 / 詳細 / Pager の番号フォーマットを 1 箇所に集約したため、
- *  プレフィックス・桁数・区切りの仕様を契約として固定する。
- */
-describe("formatProjectNumber()", () => {
-    it("formats a personal project at index 0 as 'P/01'", () => {
-        // Given category=personal and indexInList=0
-        // When the number is formatted
-        // Then prefix is P and the index becomes 01 (1-based, zero-padded to 2)
-        expect(formatProjectNumber("personal", 0)).toBe("P/01")
+describe("listProjects()", () => {
+    it("orders the projects newest first and keeps the input order for equal timestamps", () => {
+        expect(listProjects(PROJECTS).map((p) => p.id)).toEqual(["a-new", "b-tie", "d-tie", "c-old"])
     })
 
-    it("zero-pads the index to two digits for indices below 10", () => {
-        // Given indexInList=4 (5th entry)
-        // When the number is formatted
-        // Then the index is "05"
-        expect(formatProjectNumber("personal", 4)).toBe("P/05")
+    it("does not reorder its input", () => {
+        const input = [...PROJECTS]
+        listProjects(input)
+        expect(input.map((p) => p.id)).toEqual(PROJECTS.map((p) => p.id))
     })
 
-    it("does not truncate indices that already span two digits", () => {
-        // Given indexInList=11 (12th entry)
-        // When the number is formatted
-        // Then the index is "12" (no truncation, no padding)
-        expect(formatProjectNumber("personal", 11)).toBe("P/12")
+    it("with the real md, lists every project once", () => {
+        const projects = getProjects()
+        const listed = listProjects(projects)
+        expect(listed).toHaveLength(projects.length)
+        expect(new Set(listed.map((p) => p.id)).size).toBe(projects.length)
+        const dates = listed.map((p) => Date.parse(p.updatedAt))
+        expect(dates).toEqual([...dates].sort((a, b) => b - a))
     })
+})
+
+describe("project URL, virtual path and date", () => {
+    it("puts the detail page under the portfolios group URL", () => {
+        expect(projectHref(project("climbinsight", "2026-01-01"))).toBe(`${findGroup("portfolios").url}/climbinsight`)
+        expect(projectHref(project("climbinsight", "2026-01-01"))).toBe("/3f/portfolios/climbinsight")
+    })
+
+    it("names the md under the virtual path of the group", () => {
+        expect(projectVirtualPath(project("climbinsight", "2026-01-01"))).toBe(
+            `${toVirtualPath(findGroup("portfolios").url)}/climbinsight.md`,
+        )
+        expect(projectVirtualPath(project("climbinsight", "2026-01-01"))).toBe("~/3f/portfolios/climbinsight.md")
+    })
+
+    it("shows the date of updatedAt as YYYY-MM-DD", () => {
+        expect(projectDate(project("x", "2026-07-14T19:55:38+09:00"))).toBe("2026-07-14")
+        for (const p of getProjects()) {
+            expect(projectDate(p), p.id).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+        }
+    })
+})
+
+describe("resolveProjectPage()", () => {
+    it("finds a project with its neighbours in list order", () => {
+        const resolved = resolveProjectPage(PROJECTS, "b-tie")
+        expect(resolved.kind).toBe("found")
+        if (resolved.kind !== "found") return
+        expect(resolved.project.id).toBe("b-tie")
+        expect(resolved.prev?.id).toBe("a-new")
+        expect(resolved.next?.id).toBe("d-tie")
+    })
+
+    it("has no previous project for the first and no next project for the last", () => {
+        const first = resolveProjectPage(PROJECTS, "a-new")
+        const last = resolveProjectPage(PROJECTS, "c-old")
+        expect(first.kind === "found" && first.prev).toBeUndefined()
+        expect(first.kind === "found" && first.next?.id).toBe("b-tie")
+        expect(last.kind === "found" && last.prev?.id).toBe("d-tie")
+        expect(last.kind === "found" && last.next).toBeUndefined()
+    })
+
+    it.each(["unknown", "", "A-NEW", "title a-new"])("is missing for %j", (id) => {
+        expect(resolveProjectPage(PROJECTS, id)).toEqual({ kind: "missing" })
+    })
+})
+
+describe("removed helpers", () => {
+    it.each(["getProjectById", "getProjectIds", "findAdjacentProjectIds", "formatProjectNumber"])(
+        "no longer exports %s",
+        (name) => {
+            expect(name in portfolio).toBe(false)
+        },
+    )
 })

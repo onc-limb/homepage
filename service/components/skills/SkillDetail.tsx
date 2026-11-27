@@ -4,6 +4,7 @@ import { floorTitle } from "@/components/building/FloorFrame"
 import { HashHeading } from "@/components/ds/HashHeading"
 import { KeyValue } from "@/components/ds/KeyValue"
 import { Page } from "@/components/ds/Page"
+import { DETAIL_STACK } from "@/components/ds/page-styles"
 import { PagerDoors } from "@/components/ds/PagerDoors"
 import { PROSE_BODY, PROSE_LIST } from "@/components/ds/prose-styles"
 import { findFloor, type FloorGroup } from "@/lib/building/floors"
@@ -35,7 +36,7 @@ export function SkillDetail({ group, skill, prev, next }: SkillDetailProps) {
     return (
         <main className="flex-1">
             <Page title={skill.name} command={`cat ${skillVirtualPath(skill)}`}>
-                <div className="flex flex-col gap-ds-5">
+                <div className={DETAIL_STACK}>
                     <div className="max-w-ds-measure">
                         <KeyValue
                             items={[

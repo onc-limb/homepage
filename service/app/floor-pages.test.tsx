@@ -185,4 +185,11 @@ describe("floor page values", () => {
         const main = await renderPage(PAGES[0].module)
         expect(doorsOf(main).map((door) => door.textContent)).toEqual([`自己学習${COUNTS.studies} 件/b1/studies`])
     })
+
+    it("counts the portfolios on 3F and links the door to /3f/portfolios", async () => {
+        const main = await renderPage(PAGES[3].module)
+        const doors = doorsOf(main)
+        expect(doors.map((door) => door.textContent)).toEqual([`ポートフォリオ${COUNTS.portfolios} 件/3f/portfolios`])
+        expect(doors[0].getAttribute("href")).toBe("/3f/portfolios")
+    })
 })

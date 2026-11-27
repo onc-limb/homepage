@@ -81,7 +81,7 @@ export const FLOORS: Floor[] = [
         navName: "作品・考え",
         url: "/3f",
         material: "wood",
-        groups: [group("3f", "portfolios", "ポートフォリオ", "作ったもの", null, "git log --oneline ~/3f/portfolios", "/portfolio")],
+        groups: [group("3f", "portfolios", "ポートフォリオ", "作ったもの", null, "git log --oneline ~/3f/portfolios")],
     },
     {
         id: "rf",

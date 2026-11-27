@@ -164,11 +164,12 @@ describe("MobileNav items", () => {
     })
 
     it.each([
-        ["/portfolio", ["/3f"]],
+        ["/3f/portfolios", ["/3f"]],
         ["/2f/skills", ["/2f"]],
         ["/b1/studies", ["/b1"]],
         ["/skills", []],
-        ["/portfolio/onc-limb", ["/3f"]],
+        ["/3f/portfolios/climbinsight", ["/3f"]],
+        ["/portfolio", []],
         ["/1f/contact", ["/1f"]],
         ["/", ["/"]],
         ["/books", []],

@@ -204,7 +204,7 @@ Tailwind では余白のキー `ds-1`〜`ds-5` で使う（`p-ds-3` / `gap-ds-2`
 | `KeyValue` | キーと値の一覧（`dl`） |
 | `DataTable` | 表。罫線 1px、狭い画面では表の中だけ横にスクロール |
 | `TextLink` | リンク。外部は `↗` を付けて新しいタブで開く |
-| `LogList` | `git log --oneline` 風の一覧（日付・識別子・題名） |
+| `LogList` | `git log --oneline` 風の一覧（日付・識別子・題名・一行の説明） |
 | `CodeBlock` | コマンドやコードの表示（`pre`） |
 | `Prose` | Markdown の本文 |
 | `DoorButton` | 扉の形のボタン。小（ふつうのボタン）と大（分類への入口） |

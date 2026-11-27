@@ -4,7 +4,7 @@
 
 import { SOCIAL_LINKS } from "../constants"
 import { getParsedProfile, getProfile, listHistories, toSerialNumber, type CareerItem } from "../profile"
-import { getProjects } from "../portfolio"
+import { getProjects, projectHref } from "../portfolio"
 import { getSkills, levelLabels, type SkillLevel } from "../skills"
 import { hasSkillDetail, skillGroup, skillHref, skillVirtualPath } from "../skills-meta"
 import { findFloor, findGroup, toVirtualPath, type FloorId, type GroupSlug } from "./floors"
@@ -108,7 +108,7 @@ function portfolioEntries(): Entry[] {
         room: "portfolios",
         title: project.title,
         excerpt: project.description,
-        href: `${findGroup("portfolios").url}/${project.id}`,
+        href: projectHref(project),
         tags: project.technologies,
         date: project.updatedAt,
     }))

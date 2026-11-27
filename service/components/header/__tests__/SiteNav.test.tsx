@@ -73,11 +73,12 @@ describe("SiteNav items", () => {
 
 describe("SiteNav current page", () => {
     it.each([
-        ["/portfolio", ["3F 作品・考え"]],
+        ["/3f/portfolios", ["3F 作品・考え"]],
         ["/2f/skills", ["2F 経歴・技術"]],
         ["/b1/studies", ["B1 自己学習"]],
         ["/skills", []],
-        ["/portfolio/onc-limb", ["3F 作品・考え"]],
+        ["/3f/portfolios/climbinsight", ["3F 作品・考え"]],
+        ["/portfolio", []],
         ["/1f/contact", ["1F プロフィール"]],
         ["/b1", ["B1 自己学習"]],
         ["/rf", ["屋上 リンク"]],
