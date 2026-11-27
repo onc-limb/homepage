@@ -172,6 +172,10 @@ Tailwind では `font-ds` / `font-ds-prose` / `text-ds-sm` / `text-ds-base` / `t
 
 Tailwind では余白のキー `ds-1`〜`ds-5` で使う（`p-ds-3` / `gap-ds-2` など）。
 
+### 画面の幅
+
+境目はアプリで共通の `md`（768px）・`lg`（1024px）・`xl`（1280px）だけを使い、切り替えは CSS だけで行う。この文書の「狭い画面」「広い画面」がどの境目を指すかと、境目ごとの役割は [ADR-0001](adr/0001-responsive-breakpoints.md) の表で決める。部品やページに、別の境目の値を書かない。
+
 ## 4. 地図
 
 - 上から見下ろす 2D の絵にする（45° 回して縦を 1/2 にした投影。CSS では `scaleY(0.5) rotate(45deg)`）。3D のライブラリは使わない
