@@ -3,13 +3,30 @@
 // 読み込むため、Client Component から import するとそれらがクライアントバンドルに載ってしまう。
 // クライアント側で必要な型・ラベル・ソートはこちらから import する。
 
-import type { FloorId } from "./building/floors"
+import { findGroup, toVirtualPath, type FloorGroup, type FloorId } from "./building/floors"
 
 // ネストされたリストアイテムを表す型
 export interface ListItem {
     text: string
     children: ListItem[]
 }
+// ### の行で始まるまとまり（タイトルと、その下の箇条書き）
+export interface ListSubsection {
+    title: string
+    items: ListItem[]
+}
+// md の 1 つの節。items は最初の ### より前の箇条書き、subsections は ### ごとのまとまり
+export interface ListSection {
+    items: ListItem[]
+    subsections: ListSubsection[]
+}
+// md の本文にある 4 つの節の見出し。解析と表示の両方がここから引く
+export const SKILL_SECTION_TITLES = {
+    experience: "経験",
+    knowledge: "知識",
+    relatedTech: "関連技術",
+    relatedBooks: "関連書籍",
+} as const
 export type SkillCategory =
     | "language" // プログラミング言語
     | "frontend" // フロントエンド
@@ -43,8 +60,8 @@ export interface SkillMeta {
 }
 export interface Skill extends SkillMeta {
     slug: string // md のファイル名（拡張子なし）。仮想パスと URL に使う
-    experience: ListItem[] // やったこと（実績）
-    knowledge: ListItem[] // 知っていること（知識）
+    experience: ListSection // やったこと（実績）
+    knowledge: ListSection // 知っていること（知識）
     relatedTech: string[] // 関連技術
     relatedBooks: string[] // 関連書籍
 }
@@ -161,4 +178,57 @@ export function groupSkillsByCategory(skills: Skill[], floor: FloorId): SkillCat
             skills: sortSkillsByLevel(onFloor.filter((skill) => skill.category === category)),
         }))
         .filter((group) => group.skills.length > 0)
+}
+
+// スキルが属する分類。業務は 2F の skills、自己学習は B1 の studies
+export function skillGroup(skill: Pick<SkillMeta, "context" | "level">): FloorGroup {
+    return findGroup(getSkillFloor(skill) === "2f" ? "skills" : "studies")
+}
+
+// 詳細ページの URL（/2f/skills/<slug>、/b1/studies/<slug>）
+export function skillHref(skill: Pick<Skill, "context" | "level" | "slug">): string {
+    return `${skillGroup(skill).url}/${skill.slug}`
+}
+
+// 詳細ページのコマンドと地図に使う仮想パス（~/2f/skills/<category>/<slug>.md）
+export function skillVirtualPath(skill: Pick<Skill, "context" | "level" | "slug" | "category">): string {
+    return `${toVirtualPath(skillGroup(skill).url)}/${skill.category}/${skill.slug}.md`
+}
+
+// 一覧の表の行の並び（分野の順 → level の高い順 → 名前順）で、指定した階のスキルを返す
+export function listSkillsOnFloor(skills: Skill[], floor: FloorId): Skill[] {
+    return groupSkillsByCategory(skills, floor).flatMap((group) => group.skills)
+}
+
+// 本文（経験・知識・関連技術・関連書籍）のどれかに中身があるスキルだけが、詳細ページを持つ。
+// 本文が空のスキルは一覧に名前だけを出し、詳細の URL は 404 にする。
+export function hasSkillDetail(skill: Pick<Skill, "experience" | "knowledge" | "relatedTech" | "relatedBooks">): boolean {
+    const hasList = (section: ListSection) =>
+        section.items.length > 0 || section.subsections.some((subsection) => subsection.items.length > 0)
+    return (
+        hasList(skill.experience) ||
+        hasList(skill.knowledge) ||
+        skill.relatedTech.length > 0 ||
+        skill.relatedBooks.length > 0
+    )
+}
+
+// 詳細ページを持つスキルを、一覧の並びで返す。静的生成・sitemap・前後の扉はこれを使う
+export function listSkillDetailsOnFloor(skills: Skill[], floor: FloorId): Skill[] {
+    return listSkillsOnFloor(skills, floor).filter(hasSkillDetail)
+}
+
+export type SkillPageResolution =
+    | { kind: "found"; skill: Skill; prev?: Skill; next?: Skill }
+    | { kind: "moved"; href: string }
+    | { kind: "missing" }
+
+// 詳細ページの [name]（md のファイル名）を解決する。skills は公開済みのスキルだけを渡す
+export function resolveSkillPage(skills: Skill[], group: FloorGroup, slug: string): SkillPageResolution {
+    const skill = skills.find((candidate) => candidate.slug === slug)
+    if (!skill || !hasSkillDetail(skill)) return { kind: "missing" }
+    if (skillGroup(skill).slug !== group.slug) return { kind: "moved", href: skillHref(skill) }
+    const onFloor = listSkillDetailsOnFloor(skills, group.floor)
+    const index = onFloor.indexOf(skill)
+    return { kind: "found", skill, prev: onFloor[index - 1], next: onFloor[index + 1] }
 }

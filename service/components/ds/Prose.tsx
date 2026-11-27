@@ -4,7 +4,7 @@ import remarkGfm from "remark-gfm"
 
 import { CodeBlock } from "./CodeBlock"
 import { HEADING_MAJOR, HEADING_MINOR } from "./heading-styles"
-import { PROSE_BODY } from "./prose-styles"
+import { PROSE_BODY, PROSE_LIST } from "./prose-styles"
 import { BOXED_SURFACE } from "./surface-styles"
 import { TABLE, TABLE_SCROLL, TD, TH } from "./table-styles"
 
@@ -38,7 +38,7 @@ const COMPONENTS: Components = {
     h4: tag("h4", HEADING_MINOR),
     h5: tag("h5", HEADING_MINOR),
     h6: tag("h6", HEADING_MINOR),
-    ul: tag("ul", "list-disc pl-ds-4"),
+    ul: tag("ul", PROSE_LIST),
     ol: tag("ol", "list-decimal pl-ds-4"),
     blockquote: tag("blockquote", BOXED_SURFACE),
     a: tag("a", "text-ds-link underline"),

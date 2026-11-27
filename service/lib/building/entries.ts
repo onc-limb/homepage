@@ -6,7 +6,7 @@ import { SOCIAL_LINKS } from "../constants"
 import { getParsedProfile, getProfile, listHistories, toSerialNumber, type CareerItem } from "../profile"
 import { getProjects } from "../portfolio"
 import { getSkills, levelLabels, type SkillLevel } from "../skills"
-import { getSkillFloor } from "../skills-meta"
+import { hasSkillDetail, skillGroup, skillHref, skillVirtualPath } from "../skills-meta"
 import { findFloor, findGroup, toVirtualPath, type FloorId, type GroupSlug } from "./floors"
 
 export interface Entry {
@@ -43,15 +43,16 @@ export async function getEntries(): Promise<Entry[]> {
 
 function skillEntries(): Entry[] {
     return getSkills().map((skill) => {
-        const group: GroupSlug = getSkillFloor(skill) === "2f" ? "skills" : "studies"
+        const group = skillGroup(skill)
         return {
-            path: `${groupDir(group)}/${skill.category}/${skill.slug}.md`,
-            floor: findGroup(group).floor,
-            group,
+            path: skillVirtualPath(skill),
+            floor: group.floor,
+            group: group.slug,
             room: skill.category,
             title: skill.name,
             excerpt: `level ${skill.level}（${levelLabels[skill.level].label}）`,
-            href: `${findGroup(group).url}/${skill.slug}`,
+            // 本文が空のスキルは詳細ページを持たないので、一覧へ行かせる
+            href: hasSkillDetail(skill) ? skillHref(skill) : group.url,
             tags: [skill.category],
             level: skill.level,
         }

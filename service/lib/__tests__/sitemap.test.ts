@@ -1,8 +1,11 @@
+import fs from "node:fs"
+import path from "node:path"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 const mocks = vi.hoisted(() => ({
     listPublishedArticles: vi.fn(),
     getProjects: vi.fn(),
+    getSkills: vi.fn(),
 }))
 
 vi.mock("@/lib/articles", () => ({
@@ -13,13 +16,35 @@ vi.mock("@/lib/portfolio", () => ({
     getProjects: mocks.getProjects,
 }))
 
+// vitest stubs require.context, so getSkills() is replaced; the default is no skills
+vi.mock("@/lib/skills", async (importOriginal) => ({
+    ...(await importOriginal<typeof import("@/lib/skills")>()),
+    getSkills: mocks.getSkills,
+}))
+
 import sitemap from "@/app/sitemap"
 import { FLOORS, findGroup } from "@/lib/building/floors"
+import { parseSkillSources } from "@/lib/skills"
+import { hasSkillDetail, skillHref } from "@/lib/skills-meta"
+
+/** The real docs/skills md, as require.context would give them. */
+function realSkillSources() {
+    const root = path.resolve(__dirname, "../../docs/skills")
+    return fs
+        .readdirSync(root, { recursive: true, encoding: "utf-8" })
+        .filter((file) => file.endsWith(".md"))
+        .map((file) => ({
+            key: `./${file.split(path.sep).join("/")}`,
+            raw: fs.readFileSync(path.join(root, file), "utf-8"),
+        }))
+}
 
 beforeEach(() => {
     vi.unstubAllEnvs()
     mocks.getProjects.mockReset()
     mocks.listPublishedArticles.mockReset()
+    mocks.getSkills.mockReset()
+    mocks.getSkills.mockReturnValue([])
     mocks.getProjects.mockReturnValue([
         { id: "project-a", updatedAt: "2026-01-02T03:04:05+09:00" },
         { id: "project-b", updatedAt: "2026-02-03T04:05:06+09:00" },
@@ -138,5 +163,42 @@ describe("sitemap", () => {
             ),
         ).toBe(true)
         expect(entries.some((entry) => entry.url.includes(".com//"))).toBe(false)
+    })
+
+    it("lists one detail page per published skill that has a body, at its own floor's URL, after the existing URLs", async () => {
+        const sources = realSkillSources()
+        const published = parseSkillSources(sources)
+        expect(published.length).toBeGreaterThan(0)
+        const withoutSkills = (await sitemap()).map((entry) => entry.url)
+
+        mocks.getSkills.mockReturnValue(published)
+        const urls = (await sitemap()).map((entry) => entry.url)
+
+        // the existing URLs keep their order; the skill pages are added after them
+        expect(urls.slice(0, withoutSkills.length)).toEqual(withoutSkills)
+        const added = urls.slice(withoutSkills.length)
+        expect([...added].sort()).toEqual(
+            published.filter(hasSkillDetail).map((skill) => `https://onc-limb.com${skillHref(skill)}`).sort(),
+        )
+        // skills with an empty body have no detail page, so the sitemap leaves them out
+        expect(added.length).toBeLessThan(published.length)
+
+        const detailPaths = urls
+            .map((url) => new URL(url).pathname)
+            .filter((pathname) =>
+                [findGroup("skills").url, findGroup("studies").url].some((list) => pathname.startsWith(`${list}/`)),
+            )
+        const withBody = published.filter(hasSkillDetail).length
+        expect(detailPaths).toHaveLength(withBody)
+        expect(new Set(detailPaths).size).toBe(withBody)
+
+        // no unpublished skill is listed
+        const unpublished = sources
+            .filter((source) => /^publish:\s*false\s*$/m.test(source.raw))
+            .map((source) => source.key.replace(/^.*\//, "").replace(/\.md$/, ""))
+        expect(unpublished.length).toBeGreaterThan(0)
+        for (const slug of unpublished) {
+            expect(detailPaths.filter((pathname) => pathname.endsWith(`/${slug}`)), slug).toEqual([])
+        }
     })
 })

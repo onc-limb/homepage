@@ -1,6 +1,13 @@
 import matter from "gray-matter"
 import { extractFlatListItems } from "./markdown-utils"
-import { type ListItem, type Skill, type SkillMeta } from "./skills-meta"
+import {
+    SKILL_SECTION_TITLES,
+    type ListItem,
+    type ListSection,
+    type ListSubsection,
+    type Skill,
+    type SkillMeta,
+} from "./skills-meta"
 
 export {
     categoryLabels,
@@ -28,22 +35,22 @@ const skillSources: SkillSource[] = requireContext.keys().map((key: string) => {
     return { key, raw: typeof mdModule === "string" ? mdModule : mdModule.default || mdModule }
 })
 // Markdown から経験・知識を抽出するヘルパー関数（階層構造対応）
-function extractListItems(content: string, sectionTitle: string): ListItem[] {
+function extractListItems(content: string, sectionTitle: string): ListSection {
     const regex = new RegExp(`## ${sectionTitle}\\s*\\n([\\s\\S]*?)(?=\\n## |$)`, "i")
     const match = content.match(regex)
-    if (!match) return []
-    const sectionContent = match[1]
-    const lines = sectionContent.split("\n")
-    const result: ListItem[] = []
+    const result: ListSection = { items: [], subsections: [] }
+    if (!match) return result
+    const lines = match[1].split("\n")
     // サブセクション（### で始まる）とリストアイテムを解析
-    let currentSubsection: ListItem | null = null
+    let currentSubsection: ListSubsection | null = null
     const stack: { item: ListItem; indent: number }[] = []
+    const topLevel = () => (currentSubsection ? currentSubsection.items : result.items)
     for (const line of lines) {
         // サブセクション（### xxx）
         const subsectionMatch = line.match(/^###\s+(.+)$/)
         if (subsectionMatch) {
-            currentSubsection = { text: subsectionMatch[1], children: [] }
-            result.push(currentSubsection)
+            currentSubsection = { title: subsectionMatch[1], items: [] }
+            result.subsections.push(currentSubsection)
             stack.length = 0 // スタックをリセット
             continue
         }
@@ -51,17 +58,11 @@ function extractListItems(content: string, sectionTitle: string): ListItem[] {
         const listMatch = line.match(/^(\s*)-\s+(.+)$/)
         if (listMatch) {
             const indent = listMatch[1].length
-            const text = listMatch[2]
-            const newItem: ListItem = { text, children: [] }
+            const newItem: ListItem = { text: listMatch[2], children: [] }
             // インデントが0の場合はトップレベル
             if (indent === 0) {
-                if (currentSubsection) {
-                    currentSubsection.children.push(newItem)
-                } else {
-                    result.push(newItem)
-                }
+                topLevel().push(newItem)
                 stack.length = 0
-                stack.push({ item: newItem, indent })
             } else {
                 // インデントがある場合は親を探す
                 while (stack.length > 0 && stack[stack.length - 1].indent >= indent) {
@@ -69,13 +70,11 @@ function extractListItems(content: string, sectionTitle: string): ListItem[] {
                 }
                 if (stack.length > 0) {
                     stack[stack.length - 1].item.children.push(newItem)
-                } else if (currentSubsection) {
-                    currentSubsection.children.push(newItem)
                 } else {
-                    result.push(newItem)
+                    topLevel().push(newItem)
                 }
-                stack.push({ item: newItem, indent })
             }
+            stack.push({ item: newItem, indent })
         }
     }
     return result
@@ -92,10 +91,10 @@ function parseSkillMarkdown({ key, raw }: SkillSource): Skill {
         publish: meta.publish,
         // work / study 以外の値は無視し、階は level で決める
         context: meta.context === "work" || meta.context === "study" ? meta.context : undefined,
-        experience: extractListItems(content, "経験"),
-        knowledge: extractListItems(content, "知識"),
-        relatedTech: extractFlatListItems(content, "関連技術"),
-        relatedBooks: extractFlatListItems(content, "関連書籍"),
+        experience: extractListItems(content, SKILL_SECTION_TITLES.experience),
+        knowledge: extractListItems(content, SKILL_SECTION_TITLES.knowledge),
+        relatedTech: extractFlatListItems(content, SKILL_SECTION_TITLES.relatedTech),
+        relatedBooks: extractFlatListItems(content, SKILL_SECTION_TITLES.relatedBooks),
     }
 }
 
