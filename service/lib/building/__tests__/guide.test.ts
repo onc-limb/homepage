@@ -290,18 +290,21 @@ describe("composeGuide() room list", () => {
         expect(names(view), "not the current room").not.toContain(categoryLabels.language)
     })
 
-    it("lists the floor above and the floor below for the stairs", () => {
+    it("lists the way back to the corridor, then the floor above and the floor below for the stairs", () => {
         const view = guide("2f", STAIRS)
-        expect(names(view)).toEqual(["上の階へ — 3F 作ったもの・考え", "下の階へ — 1F プロフィール・連絡先"])
+        expect(names(view)).toEqual(["廊下へ戻る", "上の階へ — 3F 作ったもの・考え", "下の階へ — 1F プロフィール・連絡先"])
         expect(view.rooms.items.map((item) => item.target)).toEqual([
+            { kind: "focus", focus: FLOOR },
             { kind: "floor", floor: "3f" },
             { kind: "floor", floor: "1f" },
         ])
     })
 
     it("has only the floor below on the rooftop and only the floor above on B1", () => {
-        expect(guide("rf", STAIRS).rooms.items.map((item) => item.target)).toEqual([{ kind: "floor", floor: "3f" }])
-        expect(guide("b1", STAIRS).rooms.items.map((item) => item.target)).toEqual([{ kind: "floor", floor: "1f" }])
+        const floorsOf = (floor: FloorId) =>
+            guide(floor, STAIRS).rooms.items.flatMap((item) => (item.target.kind === "floor" ? [item.target] : []))
+        expect(floorsOf("rf")).toEqual([{ kind: "floor", floor: "3f" }])
+        expect(floorsOf("b1")).toEqual([{ kind: "floor", floor: "1f" }])
     })
 
     it("gives every item a unique id, as GuidePc requires", () => {

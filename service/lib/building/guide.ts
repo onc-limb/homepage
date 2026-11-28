@@ -155,6 +155,12 @@ const roomItem = (room: GuideRoomData): GuideRoomItem => ({
     target: { kind: "focus", focus: { kind: "room", id: room.id } },
 })
 
+const corridorItem = (): GuideRoomItem => ({
+    id: CORRIDOR_ITEM.id,
+    name: CORRIDOR_ITEM.name,
+    target: { kind: "focus", focus: { kind: "floor" } },
+})
+
 const stairsItem = (): GuideRoomItem => ({
     id: STAIRS_ITEM.id,
     name: STAIRS_ITEM.name,
@@ -196,7 +202,7 @@ export function composeGuide({
             text: STAIRS_TEXT,
             papers: [],
             destinations: [],
-            rooms: { scope: "room", items: neighbourItems(data.floor) },
+            rooms: { scope: "room", items: [corridorItem(), ...neighbourItems(data.floor)] },
         }
     }
 
@@ -210,7 +216,7 @@ export function composeGuide({
             rooms: {
                 scope: "room",
                 items: [
-                    { id: CORRIDOR_ITEM.id, name: CORRIDOR_ITEM.name, target: { kind: "focus", focus: { kind: "floor" } } },
+                    corridorItem(),
                     ...data.rooms.filter((candidate) => candidate !== room).map(roomItem),
                     stairsItem(),
                 ],
