@@ -1,3 +1,5 @@
+import type { ReactNode } from "react"
+
 import { DoorButton } from "@/components/ds/DoorButton"
 import { Page } from "@/components/ds/Page"
 import { findFloor, type Floor, type FloorId } from "@/lib/building/floors"
@@ -24,7 +26,7 @@ export function floorMetadata(id: FloorId) {
     })
 }
 
-export function FloorFrame({ floor, doors }: { floor: Floor; doors: FloorDoor[] }) {
+export function FloorFrame({ floor, doors, children }: { floor: Floor; doors: FloorDoor[]; children?: ReactNode }) {
     return (
         <main className="flex-1">
             <Page title={floorTitle(floor)}>
@@ -35,6 +37,7 @@ export function FloorFrame({ floor, doors }: { floor: Floor; doors: FloorDoor[] 
                         </DoorButton>
                     ))}
                 </div>
+                {children ? <div className="mt-ds-4">{children}</div> : null}
             </Page>
         </main>
     )

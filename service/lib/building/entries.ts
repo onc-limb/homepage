@@ -6,7 +6,7 @@ import { SOCIAL_LINKS } from "../constants"
 import { getParsedProfile, getProfile, listHistories, toSerialNumber, type CareerItem } from "../profile"
 import { getProjects, projectHref, projectVirtualPath } from "../portfolio"
 import { getSkills, levelLabels, type SkillLevel } from "../skills"
-import { hasSkillDetail, skillGroup, skillHref, skillVirtualPath } from "../skills-meta"
+import { hasSkillDetail, skillGroup, skillHref, skillVirtualPath, sortSkillsByLevel } from "../skills-meta"
 import { findFloor, findGroup, toVirtualPath, type FloorId, type GroupSlug } from "./floors"
 
 export interface Entry {
@@ -41,8 +41,9 @@ export async function getEntries(): Promise<Entry[]> {
     ]
 }
 
+// 経験の深い順（分野の部屋の説明「経験の深い順に置いてあります」）。並びの決まりは sortSkillsByLevel が持つ
 function skillEntries(): Entry[] {
-    return getSkills().map((skill) => {
+    return sortSkillsByLevel(getSkills()).map((skill) => {
         const group = skillGroup(skill)
         return {
             path: skillVirtualPath(skill),

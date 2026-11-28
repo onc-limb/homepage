@@ -1,3 +1,5 @@
+import fs from "node:fs"
+import path from "node:path"
 import { describe, it, expect } from "vitest"
 import { FLOORS } from "@/lib/building/floors"
 import { NAV_ITEMS, SOCIAL_LINKS } from "@/lib/constants"
@@ -122,6 +124,23 @@ describe("SOCIAL_LINKS", () => {
             ["https://zenn.dev/onclimb", "技術記事"],
             ["https://twitter.com/onc_limb", "近況"],
         ])
+    })
+
+    it("gives every entry the description the guide reads out on the rooftop", () => {
+        // order.md やること 1: GitHub / Zenn / X の説明は定義に持たせる（↗ は DoorButton が付けるので書かない）
+        expect(SOCIAL_LINKS.map((link) => [link.url, link.description])).toEqual([
+            ["https://github.com/onc-limb", "ソースコードを置いている GitHub へ出ます。"],
+            ["https://zenn.dev/onclimb", "技術記事を書いている Zenn へ出ます。"],
+            ["https://twitter.com/onc_limb", "X（@onc_limb）へ出ます。"],
+        ])
+        for (const link of SOCIAL_LINKS) expect(link.description, link.name).not.toContain("↗")
+    })
+
+    it("builds the X description from its username so the handle is written once", () => {
+        const source = fs.readFileSync(path.resolve(__dirname, "../constants.ts"), "utf-8")
+        const x = SOCIAL_LINKS.find((link) => link.url === "https://twitter.com/onc_limb")!
+        expect(x.description).toContain(x.username)
+        expect(source.split("@onc_limb").length - 1, "@onc_limb written once in constants.ts").toBe(1)
     })
 
     it("uses absolute https URLs for every entry", () => {

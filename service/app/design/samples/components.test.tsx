@@ -79,19 +79,18 @@ describe("/design component samples", () => {
             expect(block.querySelectorAll('button[aria-pressed="true"]'), "pressed").toHaveLength(2)
         })
 
-        it("shows FloorMap on wood, stone and terrace floors, with selected, lit and small maps", () => {
+        it("shows FloorMap on wood, stone and terrace floors, with selected, lit and narrow-screen marks", () => {
             const block = sampleBlock(theme, "floor-map")
             const maps = Array.from(block.querySelectorAll<HTMLElement>("[data-floor]"))
             const materials = new Set(maps.map((m) => m.getAttribute("data-material")))
             for (const material of ["wood", "stone", "deck"]) {
                 expect(materials.has(material), material).toBe(true)
             }
-            expect(maps.filter((m) => m.getAttribute("data-size") === "normal").length, "normal").toBeGreaterThan(0)
-            const small = maps.filter((m) => m.getAttribute("data-size") === "small")
-            expect(small.length, "small").toBeGreaterThan(0)
+            // One map per drawing; the width switches inside FloorMap with md:
+            expect(maps.filter((m) => m.hasAttribute("data-size")), "no size attribute").toEqual([])
             expect(
-                small.some((m) => m.querySelector('[data-part="mark"]') !== null),
-                "small map with a mark"
+                maps.some((m) => m.querySelector('[data-part="mark"]') !== null),
+                "a map with a narrow-screen mark"
             ).toBe(true)
             expect(block.querySelectorAll('button[aria-pressed="true"]').length, "selected").toBeGreaterThan(0)
             expect(block.querySelectorAll('[data-lit="true"]').length, "lit").toBeGreaterThan(0)

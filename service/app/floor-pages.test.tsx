@@ -7,8 +7,11 @@ import type { ReactElement } from "react"
 import { renderToStaticMarkup } from "react-dom/server"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import { guidePcs, precedes, withoutGuidePcAndMaps } from "@/components/ds/__tests__/render"
 import type { Entry } from "@/lib/building/entries"
 import { findFloor, type FloorGroup, type FloorId, type GroupSlug } from "@/lib/building/floors"
+import { SOCIAL_LINKS } from "@/lib/constants"
+import { categoryOrder } from "@/lib/skills-meta"
 
 /**
  * Floor page contract tests (/b1 /1f /2f /3f).
@@ -17,6 +20,10 @@ import { findFloor, type FloorGroup, type FloorId, type GroupSlug } from "@/lib/
  * one large door per group of the floor. The nameplate shows the group name and
  * the number of entries of that group ("N 件"), or the group's note for a
  * single-page group. The door links to the group's href and shows that href below.
+ *
+ * renewal 20 (order.md やること 4, Issue #345): below the doors, the map of that floor
+ * and the guide PC. The rules above are kept for what lies outside the map and the PC.
+ * The guide starts with the floor introduction and has no 「（階の番号） のページへ」.
  */
 
 const mocks = vi.hoisted(() => ({ getEntries: vi.fn() }))
@@ -26,6 +33,9 @@ vi.mock("@/lib/building/entries", () => ({ getEntries: mocks.getEntries }))
 vi.mock("next/link", () => ({
     default: ({ children, ...props }: any) => <a {...props}>{children}</a>,
 }))
+
+// The floor view moves to another floor page with the router; a static render has no app router.
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn(), replace: vi.fn(), prefetch: vi.fn() }) }))
 
 import B1Page, * as b1Module from "@/app/b1/page"
 import Floor1Page, * as f1Module from "@/app/1f/page"
@@ -55,25 +65,40 @@ const COUNTS: Record<GroupSlug, number> = {
     portfolios: 5,
 }
 
-function entry(floor: FloorId, group: GroupSlug | null, index: number): Entry {
+// Skills and studies papers sit in a category room (as getEntries makes them); the others in the group's room.
+const roomOf = (group: GroupSlug, index: number): string =>
+    group === "skills" || group === "studies" ? categoryOrder[index % 3] : group
+
+function entry(floor: FloorId, group: GroupSlug, index: number): Entry {
     return {
-        path: `~/${floor}/${group ?? "rooftop"}/${index}.md`,
+        path: `~/${floor}/${group}/${roomOf(group, index)}/${index}.md`,
         floor,
         group,
-        room: group,
-        title: `${group ?? "rooftop"} ${index}`,
+        room: roomOf(group, index),
+        title: `${group} ${index}`,
         excerpt: "",
-        href: `/${floor}/${group ?? "rooftop"}`,
+        href: `/${floor}/${group}`,
         tags: [],
     }
 }
+
+const rooftopEntry = (index: number): Entry => ({
+    path: `~/rf/link-${index}.url`,
+    floor: "rf",
+    group: null,
+    room: null,
+    title: SOCIAL_LINKS[index].name,
+    excerpt: SOCIAL_LINKS[index].username,
+    href: SOCIAL_LINKS[index].url,
+    tags: [],
+})
 
 const ENTRIES: Entry[] = [
     ...(Object.entries(COUNTS) as Array<[GroupSlug, number]>).flatMap(([slug, count]) =>
         Array.from({ length: count }, (_, i) => entry(slugFloor(slug), slug, i)),
     ),
-    entry("rf", null, 0),
-    entry("rf", null, 1),
+    rooftopEntry(0),
+    rooftopEntry(1),
 ]
 
 function slugFloor(slug: GroupSlug): FloorId {
@@ -123,13 +148,38 @@ describe.each(PAGES)("floor page /$id", ({ id, module, file }) => {
         expect(headings[0].textContent).toBe(title)
     })
 
-    it("has no description and no command line under the heading", async () => {
-        const main = await renderPage(module)
+    it("has no description and no command line under the heading, outside the map and the guide PC", async () => {
+        const main = withoutGuidePcAndMaps(await renderPage(module))
         expect(main.querySelectorAll("p"), "no paragraph").toHaveLength(0)
         expect(main.textContent).not.toContain("$ ")
-        // Nothing but the heading and the doors is written on the page.
+        // Nothing but the heading and the doors is written outside the map and the PC (no legend either).
         const doors = doorsOf(main)
         expect(main.textContent).toBe(title + doors.map((door) => door.textContent).join(""))
+    })
+
+    it("shows the map of this floor and the guide PC below the doors", async () => {
+        const main = await renderPage(module)
+        const maps = Array.from(main.querySelectorAll<HTMLElement>("[data-floor][data-material]"))
+        expect(maps.map((map) => map.getAttribute("data-floor")), "one map, of this floor").toEqual([id])
+        expect(maps[0].querySelectorAll("button").length, "rooms can be chosen").toBeGreaterThan(0)
+        const pcs = guidePcs(main)
+        expect(pcs, "one guide PC").toHaveLength(1)
+
+        const heading = main.querySelector("h1")!
+        const doors = doorsOf(main)
+        expect(precedes(heading, doors[0]), "heading, then the doors").toBe(true)
+        expect(precedes(doors[doors.length - 1], maps[0]), "the doors, then the map").toBe(true)
+        expect(precedes(maps[0], pcs[0]), "the map, then the PC").toBe(true)
+    })
+
+    it("starts the guide with the floor introduction and without a link to its own floor page", async () => {
+        const pc = guidePcs(await renderPage(module))[0]
+        expect(pc.textContent).toContain(
+            `ここは ${floor.label}「${floor.name}」です。${floor.description}部屋を押すと、中身をお見せします。`
+        )
+        expect(pc.textContent).not.toContain("のページへ")
+        expect(Array.from(pc.querySelectorAll("a")).map((a) => a.textContent), "only Contact links").toEqual(["Contact"])
+        expect(pc.textContent).toContain("この階の部屋")
     })
 
     it("shows one door per group with the name, the count or note, and the href below", async () => {
@@ -137,7 +187,9 @@ describe.each(PAGES)("floor page /$id", ({ id, module, file }) => {
         const doors = doorsOf(main)
 
         expect(doors).toHaveLength(floor.groups.length)
-        expect(main.querySelectorAll("a"), "no other link").toHaveLength(floor.groups.length)
+        expect(withoutGuidePcAndMaps(main).querySelectorAll("a"), "no other link outside the PC").toHaveLength(
+            floor.groups.length
+        )
         doors.forEach((door, i) => {
             const group = floor.groups[i]
             expect(door.getAttribute("href"), group.slug).toBe(group.href)

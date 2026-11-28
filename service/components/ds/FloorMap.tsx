@@ -1,6 +1,6 @@
 "use client"
 
-import type { CSSProperties } from "react"
+import { Fragment, type CSSProperties } from "react"
 
 import { findFloor, type FloorMaterial } from "@/lib/building/floors"
 import {
@@ -20,7 +20,6 @@ type FloorMapProps = {
     selected?: string | null
     lit?: readonly string[]
     onSelect?: (roomId: string) => void
-    size?: "normal" | "small"
     interactive?: boolean
 }
 
@@ -98,7 +97,6 @@ export function FloorMap({
     selected,
     lit = [],
     onSelect,
-    size = "normal",
     interactive = true,
 }: FloorMapProps) {
     const roomIds = new Set(layout.rooms.map(({ id }) => id))
@@ -115,10 +113,9 @@ export function FloorMap({
     }
 
     const { building, corridor, stairs, ground } = layout
-    const { material } = findFloor(layout.floor)
+    const { material, label: floorLabel } = findFloor(layout.floor)
     const colors = MATERIAL_STYLES[material]
     const offsets = material === "deck" ? RIM_OFFSETS : WALL_OFFSETS
-    const small = size === "small"
     const litRooms = new Set(lit)
     const rooms = layout.rooms.map((room) => ({
         ...room,
@@ -149,8 +146,7 @@ export function FloorMap({
             aria-hidden={interactive ? undefined : true}
             data-floor={layout.floor}
             data-material={material}
-            data-size={size}
-            className={`relative w-full overflow-hidden bg-ds-bg font-ds outline outline-1 outline-ds-border ${small ? "max-w-ds-map-small" : "max-w-ds-map"}`}
+            className="relative w-full max-w-ds-map-small overflow-hidden bg-ds-bg font-ds outline outline-1 outline-ds-border md:max-w-ds-map"
             style={{ aspectRatio: frame.w / frame.h }}
         >
             <div
@@ -257,7 +253,7 @@ export function FloorMap({
                                 <button
                                     {...roomProps}
                                     type="button"
-                                    aria-label={name}
+                                    aria-label={`${floorLabel} ${name}`}
                                     aria-pressed={isSelected}
                                     className={`${roomProps.className} pointer-events-auto ${FOCUS_RING}`}
                                     onClick={selectRoom}
@@ -285,39 +281,47 @@ export function FloorMap({
                     />
                 ))}
             </div>
-            {rooms
-                .filter(({ isSelected, isLit }) => !small || isSelected || isLit)
-                .map(({ id, name, rect, isSelected, isLit }) => {
-                    const center = projectTopDown({
-                        x: rect.x + rect.w / 2,
-                        y: rect.y + rect.h / 2,
-                    })
-                    const tone = isSelected
-                        ? "text-ds-prompt"
-                        : isLit
-                          ? "text-ds-accent"
-                          : "text-ds-fg"
-                    const labelFrame = isSelected
-                        ? "border border-ds-prompt"
-                        : isLit
-                          ? "border border-ds-accent"
-                          : ""
-                    return (
+            {/* The name labels are for md and wider; below md only the selected and lit rooms get a mark. */}
+            {rooms.map(({ id, name, rect, isSelected, isLit }) => {
+                const center = projectTopDown({
+                    x: rect.x + rect.w / 2,
+                    y: rect.y + rect.h / 2,
+                })
+                const tone = isSelected ? "text-ds-prompt" : isLit ? "text-ds-accent" : "text-ds-fg"
+                const labelFrame = isSelected
+                    ? "border border-ds-prompt"
+                    : isLit
+                      ? "border border-ds-accent"
+                      : ""
+                const emphasis = isSelected || isLit ? "font-bold" : ""
+                const position = {
+                    left: percent(center.x - frame.x, frame.w),
+                    top: percent(center.y - frame.y, frame.h),
+                    transform: "translate(-50%, -50%)",
+                }
+                return (
+                    <Fragment key={id}>
                         <span
-                            key={id}
                             aria-hidden="true"
-                            data-part={small ? "mark" : "label"}
-                            className={`pointer-events-none absolute whitespace-nowrap text-ds-sm ${tone} ${small ? "" : `bg-ds-bg px-ds-1 ${labelFrame}`} ${isSelected || isLit ? "font-bold" : ""}`}
-                            style={{
-                                left: percent(center.x - frame.x, frame.w),
-                                top: percent(center.y - frame.y, frame.h),
-                                transform: "translate(-50%, -50%)",
-                            }}
+                            data-part="label"
+                            className={`pointer-events-none absolute hidden whitespace-nowrap text-ds-sm md:block ${tone} bg-ds-bg px-ds-1 ${labelFrame} ${emphasis}`}
+                            style={position}
                         >
-                            {small ? LIT_MARK : isLit ? `${name} ${LIT_MARK}` : name}
+                            {isLit ? `${name} ${LIT_MARK}` : name}
                         </span>
-                    )
-                })}
+                        {isSelected || isLit ? (
+                            <span
+                                aria-hidden="true"
+                                data-part="mark"
+                                className={`pointer-events-none absolute whitespace-nowrap text-ds-sm md:hidden ${tone} ${emphasis}`}
+                                style={position}
+                            >
+                                {LIT_MARK}
+                            </span>
+                        ) : null}
+                    </Fragment>
+                )
+            })}
         </div>
     )
 }

@@ -20,6 +20,7 @@ export interface SocialLink {
     url: string
     username: string
     note: string
+    description: string // 案内人が屋上の部屋で読む説明（↗ は DoorButton が付けるので書かない）
 }
 
 /**
@@ -29,24 +30,29 @@ export interface SocialLink {
  */
 export const CONTACT_EMAIL = "satoshi.onga@onc-limb.com"
 
+const X_USERNAME = "@onc_limb"
+
 export const SOCIAL_LINKS: SocialLink[] = [
     {
         name: "GitHub",
         url: "https://github.com/onc-limb",
         username: "@onc-limb",
         note: "ソースコード",
+        description: "ソースコードを置いている GitHub へ出ます。",
     },
     {
         name: "Zenn",
         url: "https://zenn.dev/onclimb",
         username: "@onclimb",
         note: "技術記事",
+        description: "技術記事を書いている Zenn へ出ます。",
     },
     {
         name: "X (Twitter)",
         url: "https://twitter.com/onc_limb",
-        username: "@onc_limb",
+        username: X_USERNAME,
         note: "近況",
+        description: `X（${X_USERNAME}）へ出ます。`,
     },
 ]
 

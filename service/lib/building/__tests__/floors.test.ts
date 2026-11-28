@@ -185,6 +185,37 @@ describe("FLOORS nav names and group notes", () => {
     })
 })
 
+describe("FLOORS guide descriptions", () => {
+    // order.md やること 1（案内人の文面）: 階の説明と部屋の説明は定義に持たせ、組み立てはそこから引く
+    it("gives each floor the description the guide reads out", () => {
+        expect(FLOORS.map((floor) => [floor.id, floor.description])).toEqual([
+            ["b1", "関心を持って、個人開発や勉強で身につけた技術の階です。"],
+            ["1f", "入口のある階です。自己紹介と、連絡先があります。"],
+            ["2f", "実際に仕事で行ってきたことと、そこで使ってきた技術の階です。"],
+            ["3f", "事実というより、考え方や思想に近いものを置いた階です。"],
+            ["rf", "屋上です。ここから外のサイトへ出られます。"],
+        ])
+    })
+
+    it("gives a room description to the groups that are one room, and none to the groups split by category", () => {
+        expect(allGroups().map(({ group }) => [group.slug, group.roomDescription])).toEqual([
+            ["studies", null],
+            ["profile", "自己紹介と、変わらず持ち続けている関心、取得した資格です。"],
+            [
+                "contact",
+                "お仕事のご相談、技術的なご相談・壁打ちを受け付けています。帰る前に、ここで用件を伝えられます。",
+            ],
+            ["histories", "組み込みから Web、機械学習、AI まで。関わってきた仕事を古い順に置いてあります。"],
+            ["skills", null],
+            ["portfolios", "個人で設計・開発・運用しているプロダクトです。"],
+        ])
+        // A room description belongs exactly to the groups that have a single room on the map
+        for (const { group } of allGroups()) {
+            expect(group.roomDescription === null, group.slug).toBe(group.roomName === null)
+        }
+    })
+})
+
 describe("floorOfUrl()", () => {
     it.each(FLOORS.map((floor) => [floor.url, floor.id]))("places the floor url %s on %s", (url, id) => {
         expect(floorOfUrl(url)).toBe(id)
