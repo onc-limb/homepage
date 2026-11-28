@@ -1,8 +1,11 @@
 // @vitest-environment jsdom
+import fs from "node:fs"
+import path from "node:path"
 import * as React from "react"
 import { describe, expect, it, vi } from "vitest"
 
 import { LogList } from "../LogList"
+import { PROSE_TEXT } from "../prose-styles"
 import { elementWithText, precedes, render } from "./render"
 
 vi.mock("next/link", () => ({
@@ -56,5 +59,45 @@ describe("LogList", () => {
         const title = elementWithText(a, ITEMS[0].title)!
         expect(date).not.toBe(title)
         expect(date.contains(title) || title.contains(date), "separate elements").toBe(false)
+    })
+
+    it("shows the one-line description below the title inside the same link, in the prose text style", () => {
+        const items = [
+            { ...ITEMS[0], description: "Next.js で作った個人サイト" },
+            ITEMS[1],
+        ]
+        const root = render(<LogList items={items} />)
+        const [withDescription, withoutDescription] = Array.from(root.querySelectorAll("li"))
+
+        const a = withDescription.querySelector("a")!
+        const title = elementWithText(a, items[0].title)!
+        const description = elementWithText(a, "Next.js で作った個人サイト")
+        expect(description, "description inside the link").toBeDefined()
+        expect(precedes(title, description!), "title before description").toBe(true)
+        expect(title.contains(description!) || description!.contains(title), "separate elements").toBe(false)
+        // The description sits in the title column, not as a fourth grid cell.
+        expect(description!.parentElement, "same column as the title").toBe(title.parentElement)
+        expect(description!.parentElement).not.toBe(a)
+        // Inside a link the color is not inherited: the prose style carries text-ds-fg.
+        expect(PROSE_TEXT).toMatch(/\btext-ds-fg\b/)
+        expect(description!.className).toBe(PROSE_TEXT)
+
+        const b = withoutDescription.querySelector("a")!
+        expect(b.textContent).toBe(`${items[1].date}${items[1].id}${items[1].title}`)
+        expect(b.querySelector(`.${PROSE_TEXT.split(" ")[0]}`), "no empty description").toBeNull()
+    })
+
+    it("defines the prose text classes once, in prose-styles", () => {
+        const serviceRoot = path.resolve(__dirname, "../../..")
+        const sources = ["app", "components"].flatMap((dir) =>
+            fs
+                .readdirSync(path.join(serviceRoot, dir), { recursive: true, encoding: "utf-8" })
+                .filter((file) => /\.(ts|tsx)$/.test(file) && !/\.test\.(ts|tsx)$/.test(file))
+                .map((file) => path.join(dir, file)),
+        )
+        const withLiteral = sources.filter((file) =>
+            fs.readFileSync(path.join(serviceRoot, file), "utf-8").includes(`"${PROSE_TEXT}"`),
+        )
+        expect(withLiteral).toEqual([path.join("components", "ds", "prose-styles.ts")])
     })
 })

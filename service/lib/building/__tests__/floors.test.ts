@@ -68,7 +68,7 @@ const EXPECTED_GROUPS = [
         name: "ポートフォリオ",
         command: "git log --oneline ~/3f/portfolios",
         url: "/3f/portfolios",
-        href: "/portfolio",
+        href: "/3f/portfolios",
     },
 ] as const
 
@@ -235,12 +235,11 @@ describe("floorOfUrl()", () => {
     })
 
     it.each([
-        ["/portfolio", "3f"],
-        ["/portfolio/onc-limb", "3f"],
-    ])("places the transitional URL %s on %s", (url, id) => {
-        // Given the group pages still live at their old URLs (FLOORS href)
-        // When the URL is the href of a group, or under it
-        // Then it belongs to the floor of that group
+        ["/3f/portfolios", "3f"],
+        ["/3f/portfolios/climbinsight", "3f"],
+    ])("places the portfolios URL %s on %s", (url, id) => {
+        // Given the portfolios moved to /3f/portfolios
+        // Then the list and its detail pages belong to 3F
         expect(floorOfUrl(url)).toBe(id)
     })
 
@@ -253,10 +252,19 @@ describe("floorOfUrl()", () => {
         expect(findGroup("studies").href).toBe("/b1/studies")
     })
 
+    it("gives the portfolios group its final URL as href", () => {
+        // Given the portfolios moved to /3f/portfolios
+        // Then the 3F door, the navigation, the prompt and SEE ALSO link to the final URL
+        expect(findGroup("portfolios").href).toBe(findGroup("portfolios").url)
+        expect(findGroup("portfolios").href).toBe("/3f/portfolios")
+    })
+
     it.each([
         "/skills",
         "/skills/typescript",
         "/profile",
+        "/portfolio",
+        "/portfolio/climbinsight",
         "/skillset",
         "/profiles",
         "/portfolios",
@@ -300,8 +308,8 @@ describe("toPromptPath()", () => {
         ["/1f/profile", "~/1f/profile"],
         ["/2f/histories", "~/2f/histories"],
         ["/1f/contact", "~/1f/contact"],
-        ["/portfolio", "~/3f/portfolios"],
-        ["/portfolio/onc-limb", "~/3f/portfolios/onc-limb"],
+        ["/3f/portfolios", "~/3f/portfolios"],
+        ["/3f/portfolios/climbinsight", "~/3f/portfolios/climbinsight"],
     ])("turns %s into the virtual path %s", (url, expected) => {
         // Given a floor URL, a final group URL, or a transitional group href (or a page under it)
         // When it is turned into a prompt path
@@ -313,6 +321,8 @@ describe("toPromptPath()", () => {
         ["/skills", "~/skills"],
         ["/books", "~/books"],
         ["/profile", "~/profile"],
+        ["/portfolio", "~/portfolio"],
+        ["/portfolio/climbinsight", "~/portfolio/climbinsight"],
         ["/skillset", "~/skillset"],
         ["/2fx", "~/2fx"],
     ])("keeps %s, which belongs to no floor, as is under ~", (url, expected) => {

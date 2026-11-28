@@ -40,14 +40,15 @@ describe("Header prompt", () => {
     it.each([
         ["/", `guest@${SITE_NAME}:~$`],
         ["/2f/skills", `guest@${SITE_NAME}:~/2f/skills$`],
-        ["/portfolio", `guest@${SITE_NAME}:~/3f/portfolios$`],
-        ["/portfolio/onc-limb", `guest@${SITE_NAME}:~/3f/portfolios/onc-limb$`],
+        ["/3f/portfolios", `guest@${SITE_NAME}:~/3f/portfolios$`],
+        ["/3f/portfolios/climbinsight", `guest@${SITE_NAME}:~/3f/portfolios/climbinsight$`],
+        ["/portfolio", `guest@${SITE_NAME}:~/portfolio$`],
     ])("shows the prompt of the current page %s as a home link", (pathname, expected) => {
         expect(promptTexts(renderHeaderAt(pathname))).toEqual([expected])
     })
 
-    it("marks the floor for a transitional page in the desktop navigation", () => {
-        const header = renderHeaderAt("/portfolio")
+    it("marks 3F for a portfolio detail page in the desktop navigation", () => {
+        const header = renderHeaderAt("/3f/portfolios/climbinsight")
         const current = Array.from(header.querySelectorAll('nav a[aria-current="page"]'))
         expect(current.map((a) => [a.getAttribute("href"), a.textContent])).toEqual([["/3f", "3F 作品・考え"]])
     })

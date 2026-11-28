@@ -12,7 +12,9 @@ vi.mock("@/lib/articles", () => ({
     listPublishedArticles: mocks.listPublishedArticles,
 }))
 
-vi.mock("@/lib/portfolio", () => ({
+// the real listProjects / projectHref are kept; only the md loading is replaced
+vi.mock("@/lib/portfolio", async (importOriginal) => ({
+    ...(await importOriginal<typeof import("@/lib/portfolio")>()),
     getProjects: mocks.getProjects,
 }))
 
@@ -26,6 +28,7 @@ import sitemap from "@/app/sitemap"
 import { FLOORS, findGroup } from "@/lib/building/floors"
 import { parseSkillSources } from "@/lib/skills"
 import { hasSkillDetail, skillHref } from "@/lib/skills-meta"
+import { listProjects, projectHref, type Project } from "@/lib/portfolio"
 
 /** The real docs/skills md, as require.context would give them. */
 function realSkillSources() {
@@ -71,12 +74,13 @@ describe("sitemap", () => {
             "https://onc-limb.com/2f/histories",
             "https://onc-limb.com/2f/skills",
             "https://onc-limb.com/b1/studies",
-            "https://onc-limb.com/portfolio",
+            "https://onc-limb.com/3f/portfolios",
             "https://onc-limb.com/1f/contact",
             "https://onc-limb.com/books",
             "https://onc-limb.com/blog",
-            "https://onc-limb.com/portfolio/project-a",
-            "https://onc-limb.com/portfolio/project-b",
+            // newest first, in the order of the list page
+            "https://onc-limb.com/3f/portfolios/project-b",
+            "https://onc-limb.com/3f/portfolios/project-a",
             "https://onc-limb.com/blog/published-a",
             "https://onc-limb.com/blog/published-b",
         ])
@@ -127,18 +131,38 @@ describe("sitemap", () => {
         const byUrl = new Map(entries.map((entry) => [entry.url, entry]))
 
         expect(byUrl.get("https://onc-limb.com")?.lastModified).toBeUndefined()
-        expect(byUrl.get("https://onc-limb.com/portfolio")?.lastModified).toEqual(
+        expect(byUrl.get("https://onc-limb.com/3f/portfolios")?.lastModified).toEqual(
             new Date("2026-02-03T04:05:06+09:00"),
         )
         expect(byUrl.get("https://onc-limb.com/blog")?.lastModified).toEqual(
             new Date("2026-04-05T06:07:08+09:00"),
         )
-        expect(byUrl.get("https://onc-limb.com/portfolio/project-a")?.lastModified).toEqual(
+        expect(byUrl.get("https://onc-limb.com/3f/portfolios/project-a")?.lastModified).toEqual(
             new Date("2026-01-02T03:04:05+09:00"),
         )
         expect(byUrl.get("https://onc-limb.com/blog/published-a")?.lastModified).toEqual(
             new Date("2026-03-04T05:06:07+09:00"),
         )
+    })
+
+    it("lists the portfolios at their 3F URL and drops the retired /portfolio URLs", async () => {
+        const entries = await sitemap()
+        const paths = entries.map((entry) => new URL(entry.url).pathname)
+
+        expect(paths).toContain(findGroup("portfolios").url)
+        expect(paths).toContain("/3f/portfolios")
+        expect(paths.filter((pathname) => pathname === "/portfolio" || pathname.startsWith("/portfolio/"))).toEqual([])
+    })
+
+    it("lists one detail page per project, from the same list as the list page", async () => {
+        const projects = mocks.getProjects() as Project[]
+        const entries = await sitemap()
+        const prefix = `${findGroup("portfolios").url}/`
+        const detailPaths = entries
+            .map((entry) => new URL(entry.url).pathname)
+            .filter((pathname) => pathname.startsWith(prefix))
+
+        expect(detailPaths).toEqual(listProjects(projects).map(projectHref))
     })
 
     it("does not list the /design token showcase", async () => {

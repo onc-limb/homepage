@@ -121,7 +121,6 @@ export const FLOORS: Floor[] = [
                 "個人で設計・開発・運用しているプロダクトです。",
                 null,
                 "git log --oneline ~/3f/portfolios",
-                "/portfolio",
             ),
         ],
     },

@@ -3,8 +3,8 @@ import type { ReactNode } from "react"
 import { HEADING_MAJOR, HEADING_MINOR } from "./heading-styles"
 
 type HashHeadingProps = {
-    /** 2 renders `<h2># …`, 3 renders `<h3>## …` (same scale as Prose h2 / h3). */
-    level?: 2 | 3
+    /** 2 renders `<h2># …`, 3 `<h3>## …`, 4 `<h4>### …` (Prose uses the same headings). */
+    level?: 2 | 3 | 4
     /** Spacing only (margins); type and colour come from the heading scale. */
     className?: string
     children: ReactNode
@@ -15,7 +15,7 @@ type HashHeadingProps = {
  * The marker is decorative, so screen readers hear only the heading text.
  */
 export function HashHeading({ level = 2, className, children }: HashHeadingProps) {
-    const Tag = level === 2 ? "h2" : "h3"
+    const Tag = (["h2", "h3", "h4"] as const)[level - 2]
     const marker = "#".repeat(level - 1)
     const scale = level === 2 ? HEADING_MAJOR : HEADING_MINOR
     return (
