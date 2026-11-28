@@ -193,6 +193,10 @@ function neighbourItems(floor: FloorId): GuideRoomItem[] {
     )
 }
 
+// Pressing the active search again clears it (the button is a toggle: aria-pressed).
+export const toggleSearch = (active: string | null, command: string): string | null =>
+    active === command ? null : command
+
 export function composeGuide({
     place,
     data,

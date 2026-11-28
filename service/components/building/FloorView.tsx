@@ -7,7 +7,7 @@ import { FloorMap } from "@/components/ds/FloorMap"
 import { GuidePc } from "@/components/ds/GuidePc"
 import { MAP_AND_GUIDE_COLUMNS } from "@/components/ds/screen-styles"
 import { findFloor } from "@/lib/building/floors"
-import { composeGuide, type GuideFloorData, type GuideFocus } from "@/lib/building/guide"
+import { composeGuide, toggleSearch, type GuideFloorData, type GuideFocus } from "@/lib/building/guide"
 import type { FloorLayout } from "@/lib/building/layout"
 import { litRoomsOn, type SearchResult } from "@/lib/building/searches"
 
@@ -52,7 +52,7 @@ export function FloorView({ layout, guide, searches }: FloorViewProps) {
                 }}
                 searches={searches}
                 activeSearch={activeCommand}
-                onSearch={setActiveCommand}
+                onSearch={(command) => setActiveCommand((active) => toggleSearch(active, command))}
                 onSelect={(id) => {
                     const item = view.rooms.items.find((candidate) => candidate.id === id)
                     if (item?.target.kind === "focus") setFocus(item.target.focus)

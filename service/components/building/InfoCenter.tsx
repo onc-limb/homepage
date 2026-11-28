@@ -7,7 +7,7 @@ import { FloorMap } from "@/components/ds/FloorMap"
 import { GuidePc } from "@/components/ds/GuidePc"
 import { MAP_AND_GUIDE_COLUMNS } from "@/components/ds/screen-styles"
 import { FLOORS, type FloorId } from "@/lib/building/floors"
-import { composeGuide, type GuideFloorData, type GuideFocus, type GuideSelection } from "@/lib/building/guide"
+import { composeGuide, toggleSearch, type GuideFloorData, type GuideFocus, type GuideSelection } from "@/lib/building/guide"
 import type { FloorLayout } from "@/lib/building/layout"
 import { litRoomsOn, searchCounts, type SearchResult } from "@/lib/building/searches"
 
@@ -124,7 +124,7 @@ export function InfoCenter({
                 rooms={{ scope: view.rooms.scope, items: view.rooms.items.map(({ id, name }) => ({ id, name })) }}
                 searches={searches}
                 activeSearch={activeCommand}
-                onSearch={setActiveCommand}
+                onSearch={(command) => setActiveCommand((active) => toggleSearch(active, command))}
                 onSelect={(id) => {
                     const item = view.rooms.items.find((candidate) => candidate.id === id)
                     if (item?.target.kind === "focus") select({ floor: selection.floor, focus: item.target.focus })

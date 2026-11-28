@@ -10,6 +10,7 @@ import {
     type GuideFloorData,
     type GuideFocus,
     type GuideView,
+    toggleSearch,
 } from "@/lib/building/guide"
 import { layoutFloor } from "@/lib/building/layout"
 import { runSearches, type SearchResult } from "@/lib/building/searches"
@@ -376,5 +377,13 @@ describe("guide.ts source", () => {
             ...SOCIAL_LINKS.map((link) => link.description),
         ]
         for (const text of written) expect(source, text).not.toContain(text)
+    })
+})
+
+describe("toggleSearch", () => {
+    it("starts a search, clears it when pressed again, and switches to another one", () => {
+        expect(toggleSearch(null, "grep -rl ai ~")).toBe("grep -rl ai ~")
+        expect(toggleSearch("grep -rl ai ~", "grep -rl ai ~")).toBeNull()
+        expect(toggleSearch("grep -rl ai ~", "tree -d -L 2 ~")).toBe("tree -d -L 2 ~")
     })
 })
