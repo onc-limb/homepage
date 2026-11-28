@@ -4,6 +4,8 @@ import { useRef } from "react"
 
 import { CONTACT_DOOR } from "./contact-door"
 import { DoorButton } from "./DoorButton"
+import { FOCUS_RING } from "./focus-styles"
+import { HEADING_MINOR } from "./heading-styles"
 import { TEXT_LINK } from "./link-styles"
 
 export class GuidePcInputError extends Error {
@@ -99,14 +101,14 @@ export function GuidePc({
 }: GuidePcProps) {
     validateGuidePcInput(searches, rooms)
 
-    const outputRef = useRef<HTMLDivElement>(null)
+    const textRef = useRef<HTMLParagraphElement>(null)
     const activeSearch = searches.find((search) => search.command === activeCommand) ?? null
     const visiblePapers = papers.slice(0, PAPER_PREVIEW_COUNT)
     const restCount = papers.length - visiblePapers.length
 
     return (
         <section className="border border-ds-fg-muted bg-ds-surface p-ds-3">
-            <h2 className="font-ds text-ds-base">
+            <h2 className={HEADING_MINOR}>
                 PC{" "}
                 <span className={MUTED_LABEL}>
                     — 案内人
@@ -115,13 +117,16 @@ export function GuidePc({
                     ボタン版
                 </span>
             </h2>
-            {/* tabIndex -1: after a room button is pressed (and may be gone) the focus moves here */}
-            <div ref={outputRef} tabIndex={-1} className="mt-ds-3 border border-ds-border bg-ds-bg p-ds-2">
+            <div className="mt-ds-3 border border-ds-border bg-ds-bg p-ds-2">
                 <div aria-live="polite">
                     <p className="text-ds-sm text-ds-fg-muted">
                         $ <span className="text-ds-fg">docent</span>
                     </p>
-                    <p className="mt-ds-1 font-ds-prose text-ds-base">{text}</p>
+                    {/* tabIndex -1: after a room button is pressed (and may be gone) the focus moves to the
+                        new text, so only the text is read (aria-live stays for changes from the map) */}
+                    <p ref={textRef} tabIndex={-1} className={`mt-ds-1 font-ds-prose text-ds-base ${FOCUS_RING}`}>
+                        {text}
+                    </p>
                 </div>
                 {visiblePapers.length > 0 ? (
                     <ul className="mt-ds-3 border-t border-ds-border">
@@ -174,7 +179,7 @@ export function GuidePc({
                             key={room.id}
                             onClick={() => {
                                 onSelect?.(room.id)
-                                outputRef.current?.focus()
+                                textRef.current?.focus()
                             }}
                         >
                             {room.name}

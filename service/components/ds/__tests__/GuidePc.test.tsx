@@ -7,7 +7,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { findFloor, findGroup, toVirtualPath } from "@/lib/building/floors"
 
+import { FOCUS_RING } from "../focus-styles"
 import { GuidePc, GuidePcInputError, type GuidePcProps } from "../GuidePc"
+import { HEADING_MINOR } from "../heading-styles"
 import { elementWithText, precedes, render } from "./render"
 
 vi.mock("next/link", () => ({
@@ -38,7 +40,7 @@ vi.mock("next/link", () => ({
  *   - 探しものの状態は外から制御する: 押した状態と結果は activeSearch（コマンド）で決まり、押すと onSearch が呼ばれる
  *   - 部屋の一覧の項目は href を持てる（階のページの「上の階・下の階」はリンク）
  *   - 案内の文章は aria-live="polite" で伝える
- *   - 部屋の一覧のボタンを押した後は、フォーカスを出力の枠（tabIndex -1）へ移す（押したボタンが消えても行き先がある）
+ *   - 部屋の一覧のボタンを押した後は、フォーカスを案内の文章（tabIndex -1）へ移す（押したボタンが消えても行き先がある。読まれるのは文章だけ）
  */
 
 // ---- 固定の入力 ----
@@ -248,6 +250,13 @@ describe("GuidePc (static)", () => {
         expect(precedes(roomsHeading(root), heading), "rooms before 探しもの").toBe(true)
     })
 
+    // The legacy base CSS colours bare h1-h4; the PC heading takes the ds heading scale instead.
+    it("draws the PC heading with the ds heading scale", () => {
+        const root = render(<GuidePc {...props()} />)
+        const heading = root.querySelector("h2")!
+        for (const cls of HEADING_MINOR.split(" ")) expect(heading.classList.contains(cls), cls).toBe(true)
+    })
+
     it("announces the text with aria-live polite", () => {
         const root = render(<GuidePc {...props()} />)
         const text = mustText(root, TEXT)
@@ -450,8 +459,10 @@ describe("GuidePc (interactive)", () => {
         expect(focused, "focus stays inside the PC").not.toBe(document.body)
         expect(container.contains(focused)).toBe(true)
         expect(focused!.getAttribute("tabindex")).toBe("-1")
-        expect(focused!.textContent).toContain(`selected ${ROOMS.items[0].id}`)
-        expect(focused!.textContent).toContain("$ docent")
+        expect(focused!.tagName).toBe("P")
+        expect(focused!.textContent).toBe(`selected ${ROOMS.items[0].id}`)
+        expect(focused!.closest("[aria-live]"), "the text is still announced on other changes").not.toBeNull()
+        for (const cls of FOCUS_RING.split(" ")) expect(focused!.classList.contains(cls), cls).toBe(true)
     })
 
     it("shows the result paths as underlined text buttons and calls onPick once with the path", async () => {
