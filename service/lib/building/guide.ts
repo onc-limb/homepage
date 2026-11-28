@@ -141,9 +141,16 @@ function roomText(room: GuideRoomData): string {
     return room.papers.length > 0 ? `${intro}${PAPERS_HINT}` : intro
 }
 
-function floorText(floor: FloorId, search: SearchResult | null): string {
+function floorText(place: GuidePlace, floor: FloorId, search: SearchResult | null): string {
     if (search?.counted) {
-        return `${search.hits.length} 件見つかりました。光っている部屋を押すと、中身をお見せします。ほかの階にもあるときは、階の横に件数が出ています。`
+        const found = `${search.hits.length} 件見つかりました。`
+        if (place === "info") {
+            return `${found}光っている部屋を押すと、中身をお見せします。ほかの階にもあるときは、階の横に件数が出ています。`
+        }
+        // The floor page has no floor guide: say how many are here, and where the rest are.
+        const here = search.hits.filter((hit) => hit.floor === floor).length
+        const local = here > 0 ? `この階には ${here} 件あります。光っている部屋を押すと、中身をお見せします。` : "この階にはありません。"
+        return here < search.hits.length ? `${found}${local}ほかの階の紙は、下のパスから移れます。` : `${found}${local}`
     }
     const { label, name, description } = findFloor(floor)
     return `ここは ${label}「${name}」です。${description}${SELECT_HINT}`
@@ -226,7 +233,7 @@ export function composeGuide({
 
     const floor = findFloor(data.floor)
     return {
-        text: floorText(data.floor, search),
+        text: floorText(place, data.floor, search),
         papers: data.groups,
         destinations:
             place === "info" ? [{ label: `${floor.label} のページへ`, href: floor.url }] : [],

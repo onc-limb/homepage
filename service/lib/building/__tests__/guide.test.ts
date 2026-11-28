@@ -169,8 +169,22 @@ describe("composeGuide() text", () => {
         expect(guide("2f", FLOOR, { activeSearch: ai }).text).toBe(
             "2 件見つかりました。光っている部屋を押すと、中身をお見せします。ほかの階にもあるときは、階の横に件数が出ています。"
         )
-        // The count is the whole result, also on a floor without hits
-        expect(guide("3f", FLOOR, { activeSearch: ai, place: "floor" }).text).toMatch(/^2 件見つかりました。/)
+    })
+
+    it("tells the hits on this floor and points to the paths on a floor page, which has no floor guide", () => {
+        const ai = search("grep -rl ai ~")
+        const floorsWithHits = new Set(ai.hits.map((hit) => hit.floor))
+        const hitFloor = ai.hits[0].floor
+        const here = ai.hits.filter((hit) => hit.floor === hitFloor).length
+        const text = guide(hitFloor, FLOOR, { activeSearch: ai, place: "floor" }).text
+        expect(text.startsWith(`${ai.hits.length} 件見つかりました。この階には ${here} 件あります。`)).toBe(true)
+        expect(text).not.toMatch(/階の横に件数/)
+        if (here < ai.hits.length) expect(text).toMatch(/ほかの階の紙は、下のパスから移れます。$/)
+
+        const empty = FLOORS.find((floor) => !floorsWithHits.has(floor.id))!
+        expect(guide(empty.id, FLOOR, { activeSearch: ai, place: "floor" }).text).toBe(
+            `${ai.hits.length} 件見つかりました。この階にはありません。ほかの階の紙は、下のパスから移れます。`
+        )
     })
 
     it("shows the room, not the count, when a room is selected during a search", () => {
