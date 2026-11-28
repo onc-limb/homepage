@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useId, useRef, useState } from "react"
 import { DoorButton } from "@/components/ds/DoorButton"
 import { FOCUS_RING } from "@/components/ds/focus-styles"
+import { PROSE_TEXT } from "@/components/ds/prose-styles"
 import { BOXED_SURFACE } from "@/components/ds/surface-styles"
 import { initialContactFormState } from "@/lib/contact-form-state"
 import {
@@ -14,7 +15,6 @@ import {
 } from "@/lib/validations/contact"
 import { submitContactAction } from "./actions"
 
-const PROSE_TEXT = "font-ds-prose text-ds-base leading-ds text-ds-fg"
 const NOTE_TEXT = "text-ds-sm text-ds-fg-muted"
 const FIELD_BLOCK = "flex flex-col gap-ds-2"
 const FIELD_CLASS = `w-full border border-ds-fg-muted bg-ds-surface px-ds-3 py-ds-2 placeholder:text-ds-fg-muted ${FOCUS_RING}`

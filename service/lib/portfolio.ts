@@ -1,5 +1,5 @@
 import matter from "gray-matter"
-import { extractFlatListItems, extractSection } from "./markdown-utils"
+import { findGroup, toVirtualPath } from "./building/floors"
 // @ts-expect-error raw-loader returns string
 import portfolioSiteMd from "../docs/portfolio/portfolio-site.md"
 // @ts-expect-error raw-loader returns string
@@ -15,19 +15,6 @@ export interface ProjectLinks {
     demo?: string
     article?: string
 }
-export interface ArchitectureComponent {
-    name: string
-    description: string
-    technologies: string[]
-}
-export interface TechnicalPoint {
-    title: string
-    description: string
-}
-export interface Challenge {
-    problem: string
-    solution: string
-}
 export interface ProjectMeta {
     id: string
     updatedAt: string
@@ -40,80 +27,12 @@ export interface ProjectMeta {
     highlights: string[]
     links?: ProjectLinks
     image?: string
-    category: "personal"
-}
-export interface ProjectDetail {
-    overview?: string
-    background?: string
-    architecture?: {
-        description: string
-        diagram?: string
-        components?: ArchitectureComponent[]
-    }
-    technicalPoints?: TechnicalPoint[]
-    challenges?: Challenge[]
-    results?: string[]
-    futureWork?: string[]
 }
 export interface Project extends ProjectMeta {
-    detail?: ProjectDetail
+    /** md の本文（frontmatter を除いたもの）。部分的に解析せず、そのまま描く */
+    body: string
 }
-// アーキテクチャコンポーネントを抽出するヘルパー関数
-function extractArchitectureComponents(content: string): ArchitectureComponent[] {
-    const regex = /### コンポーネント\s*\n([\s\S]*?)(?=\n## |$)/i
-    const match = content.match(regex)
-    if (!match) return []
-    const components: ArchitectureComponent[] = []
-    const componentRegex = /#### ([^\n]+)\n\n([^\n]+)\n\n([\s\S]*?)(?=\n#### |$)/g
-    let componentMatch
-    while ((componentMatch = componentRegex.exec(match[1])) !== null) {
-        const [, name, description, techList] = componentMatch
-        const technologies = techList
-            .split("\n")
-            .filter((line) => line.trim().startsWith("-"))
-            .map((line) => line.replace(/^-\s*/, "").trim())
-            .filter((item) => item.length > 0)
-        components.push({
-            name: name.trim(),
-            description: description.trim(),
-            technologies,
-        })
-    }
-    return components
-}
-// 技術的な工夫を抽出するヘルパー関数
-function extractTechnicalPoints(content: string): TechnicalPoint[] {
-    const regex = /## 技術的な工夫\s*\n([\s\S]*?)(?=\n## |$)/i
-    const match = content.match(regex)
-    if (!match) return []
-    const points: TechnicalPoint[] = []
-    const pointRegex = /### ([^\n]+)\n\n([\s\S]*?)(?=\n### |\n## |$)/g
-    let pointMatch
-    while ((pointMatch = pointRegex.exec(match[1])) !== null) {
-        points.push({
-            title: pointMatch[1].trim(),
-            description: pointMatch[2].trim(),
-        })
-    }
-    return points
-}
-// 課題と解決策を抽出するヘルパー関数
-function extractChallenges(content: string): Challenge[] {
-    const regex = /## 課題と解決策\s*\n([\s\S]*?)(?=\n## |$)/i
-    const match = content.match(regex)
-    if (!match) return []
-    const challenges: Challenge[] = []
-    const challengeRegex =
-        /### ([^\n]+)\n\n\*\*課題\*\*:\s*([^\n]+)\n\n\*\*解決策\*\*:\s*([\s\S]*?)(?=\n### |\n## |$)/g
-    let challengeMatch
-    while ((challengeMatch = challengeRegex.exec(match[1])) !== null) {
-        challenges.push({
-            problem: challengeMatch[2].trim(),
-            solution: challengeMatch[3].trim(),
-        })
-    }
-    return challenges
-}
+
 // すべての Portfolio Markdown
 const portfolioMarkdowns: string[] = [
     portfolioSiteMd,
@@ -126,30 +45,6 @@ const portfolioMarkdowns: string[] = [
 function parsePortfolioMarkdown(rawContent: string): Project {
     const { data, content } = matter(rawContent)
     const meta = data as ProjectMeta
-    // アーキテクチャセクションを取得
-    const architectureDescription = extractSection(content, "アーキテクチャ")
-    const architectureComponents = extractArchitectureComponents(content)
-    const detail: ProjectDetail = {
-        overview: extractSection(content, "概要"),
-        background: extractSection(content, "背景・課題"),
-        architecture: architectureDescription
-            ? {
-                  description: architectureDescription.split("\n### ")[0].trim(),
-                  components:
-                      architectureComponents.length > 0
-                          ? architectureComponents
-                          : undefined,
-              }
-            : undefined,
-        technicalPoints: extractTechnicalPoints(content),
-        challenges: extractChallenges(content),
-        results: extractFlatListItems(content, "成果・学び"),
-        futureWork: extractFlatListItems(content, "今後の展望"),
-    }
-    // 詳細が空でないかチェック
-    const hasDetail = Object.values(detail).some((v) =>
-        Array.isArray(v) ? v.length > 0 : v !== undefined
-    )
     return {
         id: meta.id,
         updatedAt: meta.updatedAt,
@@ -162,57 +57,43 @@ function parsePortfolioMarkdown(rawContent: string): Project {
         highlights: meta.highlights || [],
         links: meta.links,
         image: meta.image,
-        category: meta.category,
-        detail: hasDetail ? detail : undefined,
+        body: content,
     }
 }
+
 // すべてのプロジェクトを取得
 export function getProjects(): Project[] {
     return portfolioMarkdowns.map(parsePortfolioMarkdown)
 }
-// IDでプロジェクトを取得
-export function getProjectById(id: string): Project | undefined {
-    const projects = getProjects()
-    return projects.find((project) => project.id === id)
-}
-// プロジェクトIDの一覧を取得
-export function getProjectIds(): string[] {
-    const projects = getProjects()
-    return projects.map((project) => project.id)
+// 一覧・詳細の静的生成・sitemap・前後の扉が使う並び。updatedAt の新しい順（同じ日時は id の順）
+export function listProjects(projects: Project[]): Project[] {
+    return projects
+        .map((project) => ({ project, time: Date.parse(project.updatedAt) }))
+        .sort((a, b) => b.time - a.time || a.project.id.localeCompare(b.project.id))
+        .map(({ project }) => project)
 }
 
-/**
- * 指定 id の前後 id を返す純粋関数 (pager 用)。
- * - currentId が ids に無い場合は両方 undefined
- * - 重複 id は最初の出現位置を採用
- * - ラップなし (末尾の next は undefined)
- */
-export function findAdjacentProjectIds(
-    ids: string[],
-    currentId: string,
-): { prev?: string; next?: string } {
-    const idx = ids.indexOf(currentId)
-    if (idx === -1) return {}
-    return {
-        prev: idx > 0 ? ids[idx - 1] : undefined,
-        next: idx < ids.length - 1 ? ids[idx + 1] : undefined,
-    }
+export function projectHref(project: Pick<Project, "id">): string {
+    return `${findGroup("portfolios").url}/${project.id}`
 }
 
-const CATEGORY_PREFIX: Record<Project["category"], string> = {
-    personal: "P",
+export function projectVirtualPath(project: Pick<Project, "id">): string {
+    return `${toVirtualPath(findGroup("portfolios").url)}/${project.id}.md`
 }
 
-/**
- * 表示用のプロジェクト番号を生成する純粋関数。
- * - personal は "P/01" 形式
- * - indexInList は 0 始まり
- * - フォーマット (prefix / 桁数 / 区切り) を変えるときはここだけを更新する
- */
-export function formatProjectNumber(
-    category: Project["category"],
-    indexInList: number,
-): string {
-    const prefix = CATEGORY_PREFIX[category]
-    return `${prefix}/${String(indexInList + 1).padStart(2, "0")}`
+/** 一覧に出す日付（updatedAt の YYYY-MM-DD） */
+export function projectDate(project: Pick<Project, "updatedAt">): string {
+    return project.updatedAt.slice(0, 10)
+}
+
+export type ProjectPageResolution =
+    | { kind: "found"; project: Project; prev?: Project; next?: Project }
+    | { kind: "missing" }
+
+// 詳細ページの [id] を解決する。前後は listProjects の順で決まる
+export function resolveProjectPage(projects: Project[], id: string): ProjectPageResolution {
+    const listed = listProjects(projects)
+    const index = listed.findIndex((project) => project.id === id)
+    if (index === -1) return { kind: "missing" }
+    return { kind: "found", project: listed[index], prev: listed[index - 1], next: listed[index + 1] }
 }

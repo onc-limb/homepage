@@ -4,19 +4,23 @@
  * SVG をハードコードした。他プロジェクトには表示されない。
  * docs/design/portfolio/onc-limb.html:439-524 を再構成。
  */
+import { BOXED_SURFACE } from "@/components/ds/surface-styles"
+
+const SVG_TEXT = "font-ds text-ds-sm"
+
+// Drawn at its own size so the text stays readable (14px) and the lines 1px;
+// on a narrow screen the box scrolls sideways, like a table.
+const WIDTH = 900
+const HEIGHT = 480
+
 export function ArchDiagram() {
     return (
-        <div
-            className="overflow-hidden rounded-[var(--radius-lg)] border border-hairline px-5 py-8"
-            style={{
-                // グラデーション廃止・単色化: 放射状グラデーションの背景を単色サーフェスに置換
-                background: "var(--surface-solid)",
-            }}
-        >
+        <div className={`overflow-x-auto ${BOXED_SURFACE}`}>
             <svg
-                viewBox="0 0 900 480"
-                preserveAspectRatio="xMidYMid meet"
-                className="block h-auto max-h-[560px] w-full"
+                viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+                width={WIDTH}
+                height={HEIGHT}
+                className="block max-w-none"
                 role="img"
                 aria-label="onc-limb.com architecture diagram"
             >
@@ -30,7 +34,7 @@ export function ArchDiagram() {
                         markerHeight="6"
                         orient="auto"
                     >
-                        <path d="M0,0 L10,5 L0,10 z" fill="var(--accent)" />
+                        <path d="M0,0 L10,5 L0,10 z" className="fill-ds-accent" />
                     </marker>
                 </defs>
 
@@ -91,10 +95,9 @@ export function ArchDiagram() {
                 <Box x={620} y={400} w={220} h={40} label="GitHub Repo (main)" />
 
                 <path
-                    className="arch-flow-step"
                     d="M 150 220 C 200 220, 220 120, 260 120"
-                    stroke="var(--accent)"
-                    strokeWidth={1.5}
+                    className="stroke-ds-accent"
+                    strokeWidth={1}
                     fill="none"
                     markerEnd="url(#arr)"
                     strokeDasharray="5 5"
@@ -103,24 +106,23 @@ export function ArchDiagram() {
 
                 <path
                     d="M 320 160 L 315 200"
-                    stroke="var(--accent)"
-                    strokeWidth={1.5}
+                    className="stroke-ds-accent"
+                    strokeWidth={1}
                     fill="none"
                     markerEnd="url(#arr)"
                 />
                 <path
                     d="M 440 160 L 445 200"
-                    stroke="var(--accent)"
-                    strokeWidth={1.5}
+                    className="stroke-ds-accent"
+                    strokeWidth={1}
                     fill="none"
                     markerEnd="url(#arr)"
                 />
 
                 <path
-                    className="arch-flow-step"
                     d="M 380 260 L 380 320"
-                    stroke="var(--accent)"
-                    strokeWidth={1.5}
+                    className="stroke-ds-accent"
+                    strokeWidth={1}
                     fill="none"
                     markerEnd="url(#arr)"
                     strokeDasharray="4 3"
@@ -129,8 +131,8 @@ export function ArchDiagram() {
 
                 <path
                     d="M 500 110 L 620 110"
-                    stroke="var(--accent)"
-                    strokeWidth={1.5}
+                    className="stroke-ds-accent"
+                    strokeWidth={1}
                     fill="none"
                     markerEnd="url(#arr)"
                 />
@@ -138,8 +140,8 @@ export function ArchDiagram() {
 
                 <path
                     d="M 620 200 L 500 140"
-                    stroke="var(--fg-dim)"
-                    strokeWidth={1.5}
+                    className="stroke-ds-fg-muted"
+                    strokeWidth={1}
                     fill="none"
                     markerEnd="url(#arr)"
                 />
@@ -147,8 +149,8 @@ export function ArchDiagram() {
 
                 <path
                     d="M 620 360 C 540 360, 540 130, 500 130"
-                    stroke="var(--fg-dim)"
-                    strokeWidth={1.5}
+                    className="stroke-ds-fg-muted"
+                    strokeWidth={1}
                     fill="none"
                     markerEnd="url(#arr)"
                 />
@@ -156,30 +158,18 @@ export function ArchDiagram() {
 
                 <path
                     d="M 730 400 L 730 390"
-                    stroke="var(--fg-dim)"
-                    strokeWidth={1.5}
+                    className="stroke-ds-fg-muted"
+                    strokeWidth={1}
                     fill="none"
                     markerEnd="url(#arr)"
                 />
             </svg>
 
-            <div className="mt-4 flex flex-wrap gap-4 font-mono text-[11px] text-fg-muted">
-                <Legend swatch="accent">Core compute</Legend>
-                <Legend swatch="base">Storage / external</Legend>
-                <div className="flex items-center gap-1.5">
-                    <span
-                        className="block h-0 w-3.5"
-                        style={{ borderTop: "2px dashed var(--accent)" }}
-                    />
-                    request flow
-                </div>
-                <div className="flex items-center gap-1.5">
-                    <span
-                        className="block h-0 w-3.5"
-                        style={{ borderTop: "1px solid var(--fg-dim)" }}
-                    />
-                    scheduled / deploy
-                </div>
+            <div className="mt-ds-3 flex flex-wrap gap-ds-3 font-ds text-ds-sm text-ds-fg-muted">
+                <Legend swatch="border-ds-accent">Core compute</Legend>
+                <Legend swatch="border-ds-border-strong">Storage / external</Legend>
+                <Legend line="border-t border-dashed border-ds-accent">request flow</Legend>
+                <Legend line="border-t border-ds-fg-muted">scheduled / deploy</Legend>
             </div>
         </div>
     )
@@ -206,17 +196,14 @@ function ClusterRect({
                 width={w}
                 height={h}
                 fill="none"
-                stroke="var(--hairline)"
+                className="stroke-ds-border"
+                strokeWidth={1}
                 strokeDasharray="4 3"
-                rx={12}
             />
             <text
                 x={x + 20}
                 y={y + 22}
-                fontFamily="var(--font-mono)"
-                fontSize="10"
-                fill="var(--fg-dim)"
-                letterSpacing="0.18em"
+                className={`${SVG_TEXT} fill-ds-fg-muted`}
             >
                 {label}
             </text>
@@ -250,19 +237,14 @@ function Box({
                 y={y}
                 width={w}
                 height={h}
-                fill={accent ? "var(--accent-soft)" : "var(--bg-elev)"}
-                stroke={accent ? "var(--accent)" : "var(--hairline-strong)"}
+                className={`fill-ds-bg ${accent ? "stroke-ds-accent" : "stroke-ds-border-strong"}`}
                 strokeWidth={1}
-                rx={8}
             />
             <text
                 x={x + w / 2}
                 y={y + (sub ? (sub2 ? 28 : 25) : h / 2 + 5)}
                 textAnchor="middle"
-                fontFamily="var(--font-sans)"
-                fontSize="13"
-                fontWeight={600}
-                fill="var(--fg-strong)"
+                className={`${SVG_TEXT} font-bold fill-ds-fg`}
             >
                 {label}
             </text>
@@ -271,10 +253,7 @@ function Box({
                     x={x + w / 2}
                     y={y + 45}
                     textAnchor="middle"
-                    fontFamily="var(--font-mono)"
-                    fontSize="10"
-                    fill="var(--fg-muted)"
-                    letterSpacing="0.06em"
+                    className={`${SVG_TEXT} fill-ds-fg-muted`}
                 >
                     {sub}
                 </text>
@@ -284,10 +263,7 @@ function Box({
                     x={x + w / 2}
                     y={y + 63}
                     textAnchor="middle"
-                    fontFamily="var(--font-mono)"
-                    fontSize="10"
-                    fill="var(--fg-muted)"
-                    letterSpacing="0.06em"
+                    className={`${SVG_TEXT} fill-ds-fg-muted`}
                 >
                     {sub2}
                 </text>
@@ -309,10 +285,7 @@ function ArrowLabel({
         <text
             x={x}
             y={y}
-            fontFamily="var(--font-mono)"
-            fontSize="10"
-            fill="var(--fg-muted)"
-            letterSpacing="0.04em"
+            className={`${SVG_TEXT} fill-ds-fg-muted`}
         >
             {children}
         </text>
@@ -321,27 +294,22 @@ function ArrowLabel({
 
 function Legend({
     swatch,
+    line,
     children,
 }: {
-    swatch: "accent" | "base"
+    /** Border color class of a filled sample box. */
+    swatch?: string
+    /** Border classes of a line sample. */
+    line?: string
     children: React.ReactNode
 }) {
     return (
-        <div className="flex items-center gap-1.5">
-            <span
-                className="block h-2 w-3.5 rounded-[2px] border"
-                style={
-                    swatch === "accent"
-                        ? {
-                              background: "var(--accent-soft)",
-                              borderColor: "var(--accent)",
-                          }
-                        : {
-                              background: "var(--bg-elev)",
-                              borderColor: "var(--hairline-strong)",
-                          }
-                }
-            />
+        <div className="flex items-center gap-ds-2">
+            {swatch ? (
+                <span className={`block h-ds-2 w-ds-3 border bg-ds-bg ${swatch}`} />
+            ) : (
+                <span className={`block h-0 w-ds-3 ${line}`} />
+            )}
             {children}
         </div>
     )

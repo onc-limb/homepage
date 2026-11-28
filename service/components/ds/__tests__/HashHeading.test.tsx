@@ -18,6 +18,11 @@ describe("HashHeading", () => {
         expect(root.querySelector("h3")!.textContent).toBe("## 業務")
     })
 
+    it("renders an h4 with a ### marker at level 4", () => {
+        const root = render(<HashHeading level={4}>Frontend</HashHeading>)
+        expect(root.querySelector("h4")!.textContent).toBe("### Frontend")
+    })
+
     it("hides the marker from screen readers", () => {
         const root = render(<HashHeading>見出し</HashHeading>)
         const marker = root.querySelector("h2 > span")!
@@ -26,9 +31,9 @@ describe("HashHeading", () => {
     })
 
     // The legacy base CSS colours bare h1-h4 with --fg-strong; the heading must set its own colour.
-    it.each([2, 3] as const)("sets the ds text colour at level %i", (level) => {
+    it.each([2, 3, 4] as const)("sets the ds text colour at level %i", (level) => {
         const root = render(<HashHeading level={level}>見出し</HashHeading>)
-        const heading = root.querySelector("h2, h3")!
+        const heading = root.querySelector("h2, h3, h4")!
         expect(heading.classList.contains("text-ds-fg")).toBe(true)
     })
 

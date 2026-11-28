@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next"
 import { listPublishedArticles } from "@/lib/articles"
 import { FLOORS, findGroup } from "@/lib/building/floors"
-import { getProjects } from "@/lib/portfolio"
+import { getProjects, listProjects, projectHref } from "@/lib/portfolio"
 import { getSkills } from "@/lib/skills"
 import { hasSkillDetail, skillHref } from "@/lib/skills-meta"
 
@@ -53,7 +53,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             priority: 0.9,
         },
         {
-            url: `${baseUrl}/portfolio`,
+            url: `${baseUrl}${findGroup("portfolios").url}`,
             ...(portfolioLastModified ? { lastModified: portfolioLastModified } : {}),
             changeFrequency: "monthly",
             priority: 0.9,
@@ -77,8 +77,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ]
 
     // ポートフォリオ詳細ページ
-    const portfolioPages: MetadataRoute.Sitemap = projects.map((project) => ({
-        url: `${baseUrl}/portfolio/${project.id}`,
+    const portfolioPages: MetadataRoute.Sitemap = listProjects(projects).map((project) => ({
+        url: `${baseUrl}${projectHref(project)}`,
         lastModified: new Date(project.updatedAt),
         changeFrequency: "monthly" as const,
         priority: 0.8,

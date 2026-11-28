@@ -45,8 +45,39 @@ describe("PERMANENT_REDIRECTS", () => {
         expect(findGroup("skills").url).toBe("/2f/skills")
     })
 
-    it("holds only these four redirects, each permanent without a status code override", () => {
-        expect(PERMANENT_REDIRECTS.map((entry) => entry.source)).toEqual(["/contact", "/social", "/profile", "/skills"])
+    it("sends /portfolio permanently to the portfolios list on 3F", () => {
+        expect(byOldUrl("/portfolio")).toEqual([
+            { source: "/portfolio", destination: findGroup("portfolios").url, permanent: true },
+        ])
+        expect(findGroup("portfolios").url).toBe("/3f/portfolios")
+    })
+
+    it("sends /portfolio/:id permanently to the same id under /3f/portfolios", () => {
+        expect(byOldUrl("/portfolio/:id")).toEqual([
+            { source: "/portfolio/:id", destination: `${findGroup("portfolios").url}/:id`, permanent: true },
+        ])
+    })
+
+    it("does not redirect the new portfolios URLs, so they cannot loop", () => {
+        // Next matches a source like /portfolio/:id against one path segment after /portfolio.
+        const matches = (source: string, pathname: string) =>
+            new RegExp(`^${source.replace(/:[a-z]+/gi, "[^/]+")}$`).test(pathname)
+        for (const pathname of ["/3f/portfolios", "/3f/portfolios/climbinsight"]) {
+            const hits = PERMANENT_REDIRECTS.filter((entry) => matches(entry.source, pathname))
+            expect(hits, pathname).toEqual([])
+        }
+        expect(matches("/portfolio/:id", "/portfolio/climbinsight")).toBe(true)
+    })
+
+    it("holds only these six redirects, each permanent without a status code override", () => {
+        expect(PERMANENT_REDIRECTS.map((entry) => entry.source)).toEqual([
+            "/contact",
+            "/social",
+            "/profile",
+            "/skills",
+            "/portfolio",
+            "/portfolio/:id",
+        ])
         for (const entry of PERMANENT_REDIRECTS) {
             expect(entry.permanent, entry.source).toBe(true)
             expect(entry, entry.source).not.toHaveProperty("statusCode")
@@ -79,6 +110,22 @@ describe("retired pages", () => {
 
     it("no longer has the app/skills route", () => {
         expect(fs.existsSync(path.join(SERVICE_ROOT, "app/skills")), "app/skills").toBe(false)
+    })
+
+    it("no longer has the app/portfolio route", () => {
+        expect(fs.existsSync(path.join(SERVICE_ROOT, "app/portfolio")), "app/portfolio").toBe(false)
+    })
+
+    it("keeps the portfolios list and detail pages under app/3f/portfolios", () => {
+        for (const file of ["page.tsx", "[id]/page.tsx"]) {
+            expect(fs.existsSync(path.join(SERVICE_ROOT, "app/3f/portfolios", file)), file).toBe(true)
+        }
+    })
+
+    it("no longer has the portfolio components replaced by the ds parts", () => {
+        for (const file of ["PortfolioListClient.tsx", "PortfolioSection.tsx", "ProjectCard.tsx", "Pager.tsx"]) {
+            expect(fs.existsSync(path.join(SERVICE_ROOT, "components/portfolio", file)), file).toBe(false)
+        }
     })
 
     it("keeps the skills page under app/2f/skills and the studies page under app/b1/studies", () => {
