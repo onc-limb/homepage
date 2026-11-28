@@ -41,9 +41,19 @@ describe("Prose", () => {
             const h1 = root.querySelector("h1")
             const h2 = root.querySelector("h2")
             expect(h1?.textContent).toBe("見出し")
-            expect(h2?.textContent).toBe("小見出し")
+            expect(h2?.textContent).toBe("# 小見出し")
             expect(h1!.classList.contains("font-ds"), "h1 font-ds").toBe(true)
             expect(h2!.classList.contains("font-ds"), "h2 font-ds").toBe(true)
+        })
+
+        it("marks h2-h4 with #, ## and ###, hidden from screen readers", () => {
+            const root = renderProse("## 概要\n\n### コンポーネント\n\n#### Frontend")
+            const marks = ["h2", "h3", "h4"].map((tagName) => {
+                const marker = root.querySelector(`${tagName} > span[aria-hidden="true"]`)
+                return marker?.textContent
+            })
+            expect(marks).toEqual(["# ", "## ", "### "])
+            expect(root.querySelector("h4")!.classList.contains("text-ds-fg")).toBe(true)
         })
 
         it("renders lists with visible markers", () => {

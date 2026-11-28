@@ -206,7 +206,8 @@ Tailwind では余白のキー `ds-1`〜`ds-5` で使う（`p-ds-3` / `gap-ds-2`
 | `TextLink` | リンク。外部は `↗` を付けて新しいタブで開く |
 | `LogList` | `git log --oneline` 風の一覧（日付・識別子・題名・一行の説明） |
 | `CodeBlock` | コマンドやコードの表示（`pre`） |
-| `Prose` | Markdown の本文 |
+| `Prose` | Markdown の本文。`##`〜`####` の見出しには、`HashHeading` と同じ `#`・`##`・`###` の印を付ける |
+| `HashHeading` | 薄い `#` の印を付けた見出し（`h2` は `#`、`h3` は `##`、`h4` は `###`）。印は読み上げない |
 | `DoorButton` | 扉の形のボタン。小（ふつうのボタン）と大（分類への入口） |
 | `PagerDoors` | 詳細のページの末尾に置く、前・一覧へ戻る・次の扉 |
 | `FloorMap` | 階の地図 |

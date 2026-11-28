@@ -3,6 +3,7 @@ import ReactMarkdown, { type Components, type ExtraProps } from "react-markdown"
 import remarkGfm from "remark-gfm"
 
 import { CodeBlock } from "./CodeBlock"
+import { HashHeading } from "./HashHeading"
 import { HEADING_MAJOR, HEADING_MINOR } from "./heading-styles"
 import { PROSE_BODY, PROSE_LIST } from "./prose-styles"
 import { BOXED_SURFACE } from "./surface-styles"
@@ -31,11 +32,19 @@ function tag<T extends "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "ul" | "ol" | "
     }
 }
 
+// h2-h4 carry the muted `#` marker (`#`, `##`, `###`), like the headings the
+// pages write around the text, so the nesting shows and the page reads as one.
+function hashHeading(level: 2 | 3 | 4) {
+    return function Heading({ children }: ComponentPropsWithoutRef<"h2"> & ExtraProps) {
+        return <HashHeading level={level}>{children}</HashHeading>
+    }
+}
+
 const COMPONENTS: Components = {
     h1: tag("h1", HEADING_MAJOR),
-    h2: tag("h2", HEADING_MAJOR),
-    h3: tag("h3", HEADING_MINOR),
-    h4: tag("h4", HEADING_MINOR),
+    h2: hashHeading(2),
+    h3: hashHeading(3),
+    h4: hashHeading(4),
     h5: tag("h5", HEADING_MINOR),
     h6: tag("h6", HEADING_MINOR),
     ul: tag("ul", PROSE_LIST),

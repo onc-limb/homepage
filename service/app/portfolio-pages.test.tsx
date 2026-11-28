@@ -128,6 +128,13 @@ function proseOf(main: HTMLElement): Element {
     return found[0]
 }
 
+/** A heading's text without its decorative `#` marker (aria-hidden). */
+function headingText(heading: Element): string {
+    const copy = heading.cloneNode(true) as Element
+    copy.querySelectorAll('[aria-hidden="true"]').forEach((marker) => marker.remove())
+    return (copy.textContent ?? "").trim()
+}
+
 /** Headings of an md body as [level, text], outside the frontmatter (the body has no code fences). */
 function mdHeadings(body: string): Array<[number, string]> {
     return Array.from(body.matchAll(/^(#{1,6})\s+(.+?)\s*$/gm)).map((m) => [m[1].length, m[2]])
@@ -297,7 +304,7 @@ describe.each(LIST_ORDER)("portfolio detail %s", (id) => {
         const expected = mdHeadings(project.body)
         expect(expected.length, "the md body has headings").toBeGreaterThan(0)
         const rendered = Array.from(prose.querySelectorAll("h1, h2, h3, h4, h5, h6")).map(
-            (h): [number, string] => [Number(h.tagName.slice(1)), (h.textContent ?? "").trim()],
+            (h): [number, string] => [Number(h.tagName.slice(1)), headingText(h)],
         )
         expect(rendered).toEqual(expected)
 
