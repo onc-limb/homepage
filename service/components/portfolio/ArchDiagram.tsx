@@ -8,13 +8,19 @@ import { BOXED_SURFACE } from "@/components/ds/surface-styles"
 
 const SVG_TEXT = "font-ds text-ds-sm"
 
+// Drawn at its own size so the text stays readable (14px) and the lines 1px;
+// on a narrow screen the box scrolls sideways, like a table.
+const WIDTH = 900
+const HEIGHT = 480
+
 export function ArchDiagram() {
     return (
-        <div className={`overflow-hidden ${BOXED_SURFACE}`}>
+        <div className={`overflow-x-auto ${BOXED_SURFACE}`}>
             <svg
-                viewBox="0 0 900 480"
-                preserveAspectRatio="xMidYMid meet"
-                className="block h-auto w-full"
+                viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+                width={WIDTH}
+                height={HEIGHT}
+                className="block max-w-none"
                 role="img"
                 aria-label="onc-limb.com architecture diagram"
             >
