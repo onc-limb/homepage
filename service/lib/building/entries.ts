@@ -4,7 +4,7 @@
 
 import { SOCIAL_LINKS } from "../constants"
 import { getParsedProfile, getProfile, listHistories, toSerialNumber, type CareerItem } from "../profile"
-import { getProjects, projectHref } from "../portfolio"
+import { getProjects, projectHref, projectVirtualPath } from "../portfolio"
 import { getSkills, levelLabels, type SkillLevel } from "../skills"
 import { hasSkillDetail, skillGroup, skillHref, skillVirtualPath } from "../skills-meta"
 import { findFloor, findGroup, toVirtualPath, type FloorId, type GroupSlug } from "./floors"
@@ -102,7 +102,7 @@ function profileEntries(
 
 function portfolioEntries(): Entry[] {
     return getProjects().map((project) => ({
-        path: `${groupDir("portfolios")}/${project.id}.md`,
+        path: projectVirtualPath(project),
         floor: findGroup("portfolios").floor,
         group: "portfolios",
         room: "portfolios",

@@ -11,7 +11,7 @@ import { TextLink } from "@/components/ds/TextLink"
 import { JsonLd } from "@/components/seo"
 import { findGroup, type FloorGroup } from "@/lib/building/floors"
 import { projectHref, projectVirtualPath, type Project, type ProjectLinks } from "@/lib/portfolio"
-import { absoluteUrl, breadcrumbJsonLd, createPageMetadata } from "@/lib/seo"
+import { absoluteUrl, breadcrumbJsonLd, createPageMetadata, SITE_NAME } from "@/lib/seo"
 import { ArchDiagram } from "./ArchDiagram"
 
 // The architecture diagram is drawn for this project only.
@@ -48,7 +48,7 @@ export function PortfolioDetail({ group, project, prev, next }: PortfolioDetailP
                         url: absoluteUrl(projectHref(project)),
                         creator: {
                             "@type": "Person",
-                            name: "onclimb",
+                            name: SITE_NAME,
                             url: absoluteUrl(findGroup("profile").url),
                         },
                         keywords: project.technologies.join(", "),
