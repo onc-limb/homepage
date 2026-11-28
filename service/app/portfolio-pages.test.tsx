@@ -58,8 +58,8 @@ const PROJECTS = getProjects()
 const LISTED = listProjects(PROJECTS)
 const byId = (id: string): Project => PROJECTS.find((project) => project.id === id)!
 
-/** The list order of the real md: newest updatedAt first, md order for equal timestamps. */
-const LIST_ORDER = ["noboru-note", "climbinsight", "iron-legion", "onclimb-industries", "portfolio-site"]
+/** The list order of the real md: newest updatedAt first, id order for equal timestamps. */
+const LIST_ORDER = ["climbinsight", "iron-legion", "noboru-note", "onclimb-industries", "portfolio-site"]
 
 const NOT_FOUND_DIGEST = "NEXT_HTTP_ERROR_FALLBACK;404"
 
@@ -386,18 +386,18 @@ describe("portfolio detail architecture diagram", () => {
 describe("portfolio detail pager", () => {
     it.each([
         {
-            id: "noboru-note",
+            id: "climbinsight",
             expected: [
                 ["ポートフォリオの一覧へ戻る", "/3f/portfolios"],
-                ["次: ClimbInsight →", "/3f/portfolios/climbinsight"],
+                ["次: iron-legion →", "/3f/portfolios/iron-legion"],
             ],
         },
         {
-            id: "climbinsight",
+            id: "noboru-note",
             expected: [
-                ["← 前: のぼるノート", "/3f/portfolios/noboru-note"],
+                ["← 前: iron-legion", "/3f/portfolios/iron-legion"],
                 ["ポートフォリオの一覧へ戻る", "/3f/portfolios"],
-                ["次: iron-legion →", "/3f/portfolios/iron-legion"],
+                ["次: onclimb-industries →", "/3f/portfolios/onclimb-industries"],
             ],
         },
         {

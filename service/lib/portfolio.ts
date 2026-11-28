@@ -65,11 +65,11 @@ function parsePortfolioMarkdown(rawContent: string): Project {
 export function getProjects(): Project[] {
     return portfolioMarkdowns.map(parsePortfolioMarkdown)
 }
-// 一覧・詳細の静的生成・sitemap・前後の扉が使う並び。updatedAt の新しい順（同じ日時は md の登録順）
+// 一覧・詳細の静的生成・sitemap・前後の扉が使う並び。updatedAt の新しい順（同じ日時は id の順）
 export function listProjects(projects: Project[]): Project[] {
     return projects
-        .map((project, index) => ({ project, index, time: Date.parse(project.updatedAt) }))
-        .sort((a, b) => b.time - a.time || a.index - b.index)
+        .map((project) => ({ project, time: Date.parse(project.updatedAt) }))
+        .sort((a, b) => b.time - a.time || a.project.id.localeCompare(b.project.id))
         .map(({ project }) => project)
 }
 
